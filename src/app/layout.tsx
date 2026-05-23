@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { siteConfig } from "@/lib/site-config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,18 +17,34 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
   title: {
-    default: "Hypervoid · Charon 的博客",
-    template: "%s · Hypervoid",
+    default: siteConfig.title,
+    template: `%s · ${siteConfig.name}`,
   },
-  description: "分享技术、记录生活、收集兴趣。Charon 的个人博客。",
-  authors: [{ name: "Charon", url: "https://github.com/Charon0415" }],
-  creator: "Charon",
+  description: siteConfig.description,
+  authors: [{ name: siteConfig.author.name, url: siteConfig.author.githubUrl }],
+  creator: siteConfig.author.name,
   openGraph: {
-    title: "Hypervoid · Charon 的博客",
-    description: "分享技术、记录生活、收集兴趣。",
+    title: siteConfig.title,
+    description: siteConfig.description,
+    url: siteConfig.url,
+    siteName: siteConfig.name,
     type: "website",
-    locale: "zh_CN",
+    locale: siteConfig.locale,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.title,
+    description: siteConfig.description,
+  },
+  alternates: {
+    canonical: "/",
+    types: {
+      "application/rss+xml": [
+        { url: "/rss.xml", title: siteConfig.rss.title },
+      ],
+    },
   },
 };
 
