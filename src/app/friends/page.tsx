@@ -1,41 +1,60 @@
 import type { Metadata } from "next";
+import { listFriends } from "@/db/friends";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = { title: "友链" };
 
-const FRIENDS = [
-  {
-    name: "示例朋友 A",
-    url: "https://example.com",
-    description: "他的博客 / 主页一句话介绍",
-  },
-];
+export default async function FriendsPage() {
+  const friends = await listFriends();
 
-export default function FriendsPage() {
   return (
     <div className="flex flex-col gap-6">
       <header>
         <h1 className="text-3xl font-bold tracking-tight">友链</h1>
         <p className="mt-2 text-muted">朋友们的博客与个人站点。</p>
       </header>
-      <div className="grid gap-3 sm:grid-cols-2">
-        {FRIENDS.map((friend) => (
-          <a
-            key={friend.url}
-            href={friend.url}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="group flex flex-col gap-1 rounded-xl border border-border bg-card p-5 transition hover:border-primary hover:shadow-md"
-          >
-            <h3 className="text-base font-semibold group-hover:text-primary">
-              {friend.name}
-            </h3>
-            <p className="text-sm text-muted">{friend.description}</p>
-            <p className="mt-1 text-xs text-muted">{friend.url}</p>
-          </a>
-        ))}
-      </div>
+      {friends.length === 0 ? (
+        <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
+          暂无友链。
+        </p>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {friends.map((f) => (
+            <a
+              key={f.id}
+              href={f.url}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="group flex gap-3 rounded-xl border border-border bg-card p-5 transition hover:border-primary hover:shadow-md"
+            >
+              {f.avatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={f.avatar}
+                  alt=""
+                  className="h-14 w-14 shrink-0 rounded-full object-cover"
+                />
+              ) : (
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary/10 text-lg font-medium text-primary">
+                  {f.name.slice(0, 1).toUpperCase()}
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-base font-semibold group-hover:text-primary">
+                  {f.name}
+                </p>
+                {f.description ? (
+                  <p className="mt-0.5 text-sm text-muted">{f.description}</p>
+                ) : null}
+                <p className="mt-1 truncate text-xs text-muted">{f.url}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
       <p className="rounded-md border border-dashed border-border p-4 text-sm text-muted">
-        想交换友链？欢迎在 GitHub 提 issue 或邮件联系。
+        想交换友链？在 GitHub 提 issue 或邮件联系。
       </p>
     </div>
   );

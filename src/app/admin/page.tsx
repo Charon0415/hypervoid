@@ -51,12 +51,17 @@ export default async function AdminHome() {
             创建、编辑、删除文章，草稿、定时发布。
           </p>
         </Link>
-        <div className="rounded-xl border border-dashed border-border p-6 text-muted">
-          <h2 className="text-lg font-semibold">媒体库（TBD）</h2>
-          <p className="mt-1 text-sm">
-            上传图片到 R2，编辑器粘贴用。
+        <Link
+          href="/admin/friends"
+          className="group rounded-xl border border-border bg-card p-6 transition hover:border-primary hover:shadow-md"
+        >
+          <h2 className="text-lg font-semibold group-hover:text-primary">
+            友链管理 →
+          </h2>
+          <p className="mt-1 text-sm text-muted">
+            维护朋友的博客与个人站点链接。
           </p>
-        </div>
+        </Link>
       </div>
     </div>
   );

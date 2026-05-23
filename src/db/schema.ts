@@ -62,3 +62,18 @@ export const subscribers = pgTable("subscribers", {
   verifiedAt: timestamp("verified_at", { withTimezone: true }),
   unsubscribedAt: timestamp("unsubscribed_at", { withTimezone: true }),
 });
+
+export const friends = pgTable("friends", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  url: text("url").notNull(),
+  avatar: text("avatar"),
+  description: text("description"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
