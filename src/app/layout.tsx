@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { UmamiScript } from "@/components/UmamiScript";
 import { siteConfig } from "@/lib/site-config";
 
 const geistSans = Geist({
@@ -67,6 +68,7 @@ export default function RootLayout({
           </main>
           <SiteFooter />
         </Providers>
+        <UmamiScript />
       </body>
     </html>
   );
