@@ -3,15 +3,35 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import {
   PostEditor,
-  postRowToInitial,
+  type PostEditorInitial,
 } from "@/components/admin/PostEditor";
-import { getPostForEditing } from "@/db/admin-posts";
+import { getPostForEditing, type AdminPost } from "@/db/admin-posts";
 import {
   deletePostAction,
   updatePostAction,
 } from "@/app/admin/posts/actions";
 
 type Params = { slug: string };
+
+function toLocalInputValue(date: Date | null): string {
+  if (!date) return "";
+  const tz = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - tz).toISOString().slice(0, 16);
+}
+
+function postRowToInitial(row: AdminPost): PostEditorInitial {
+  return {
+    slug: row.slug,
+    title: row.title,
+    description: row.description ?? "",
+    content: row.content,
+    category: row.category ?? "",
+    tags: (row.tags ?? []).join(", "),
+    cover: row.cover ?? "",
+    status: row.status,
+    publishAt: toLocalInputValue(row.publishAt),
+  };
+}
 
 export async function generateMetadata(props: {
   params: Promise<Params>;

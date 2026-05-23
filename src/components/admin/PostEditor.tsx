@@ -27,36 +27,6 @@ const EMPTY: PostEditorInitial = {
   publishAt: "",
 };
 
-function toLocalInputValue(date: Date | null): string {
-  if (!date) return "";
-  const tz = date.getTimezoneOffset() * 60000;
-  return new Date(date.getTime() - tz).toISOString().slice(0, 16);
-}
-
-export function postRowToInitial(row: {
-  slug: string;
-  title: string;
-  description: string | null;
-  content: string;
-  category: string | null;
-  tags: string[];
-  cover: string | null;
-  status: string;
-  publishAt: Date | null;
-}): PostEditorInitial {
-  return {
-    slug: row.slug,
-    title: row.title,
-    description: row.description ?? "",
-    content: row.content,
-    category: row.category ?? "",
-    tags: (row.tags ?? []).join(", "),
-    cover: row.cover ?? "",
-    status: row.status as "draft" | "scheduled" | "published",
-    publishAt: toLocalInputValue(row.publishAt),
-  };
-}
-
 function slugify(text: string): string {
   return text
     .toLowerCase()
