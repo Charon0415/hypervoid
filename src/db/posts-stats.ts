@@ -78,3 +78,22 @@ export async function incrementLikeCount(
     return null;
   }
 }
+
+export async function decrementLikeCount(
+  slug: string,
+): Promise<number | null> {
+  if (!isConfigured()) return null;
+  try {
+    const rows = await getDb()
+      .update(schema.postLikes)
+      .set({
+        count: sql`GREATEST(${schema.postLikes.count} - 1, 0)`,
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.postLikes.slug, slug))
+      .returning({ count: schema.postLikes.count });
+    return rows[0]?.count ?? 0;
+  } catch {
+    return null;
+  }
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { recordLike } from "@/app/posts/[slug]/actions";
+import { recordLike, unrecordLike } from "@/app/posts/[slug]/actions";
 
 const STORAGE_PREFIX = "hypervoid:liked:";
 
@@ -21,15 +21,21 @@ export function LikeButton({
     setLiked(localStorage.getItem(STORAGE_PREFIX + slug) === "1");
   }, [slug]);
 
-  const onLike = () => {
-    if (liked || pending) return;
+  const onToggle = () => {
+    if (pending) return;
     startTransition(async () => {
-      const newCount = await recordLike(slug);
+      const action = liked ? unrecordLike : recordLike;
+      const newCount = await action(slug);
       if (newCount !== null) {
         setCount(newCount);
-        setLiked(true);
+        const newLiked = !liked;
+        setLiked(newLiked);
         try {
-          localStorage.setItem(STORAGE_PREFIX + slug, "1");
+          if (newLiked) {
+            localStorage.setItem(STORAGE_PREFIX + slug, "1");
+          } else {
+            localStorage.removeItem(STORAGE_PREFIX + slug);
+          }
         } catch {
           // localStorage may be unavailable (Safari private mode etc.)
         }
@@ -42,15 +48,16 @@ export function LikeButton({
   return (
     <button
       type="button"
-      onClick={onLike}
-      disabled={liked || pending}
+      onClick={onToggle}
+      disabled={pending}
       aria-pressed={liked}
-      aria-label={liked ? "已点赞" : "点赞"}
+      aria-label={liked ? "取消点赞" : "点赞"}
+      title={liked ? "再点一下取消" : "点赞这篇文章"}
       className={`group inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm transition ${
         liked
           ? "border-primary bg-primary/10 text-primary"
           : "border-border bg-card hover:border-primary hover:text-primary"
-      } disabled:cursor-default`}
+      } disabled:opacity-60`}
     >
       <svg
         aria-hidden="true"
