@@ -29,7 +29,7 @@ export function Comments() {
       category={CATEGORY}
       categoryId={CATEGORY_ID}
       mapping="pathname"
-      strict="0"
+      strict="1"
       reactionsEnabled="1"
       emitMetadata="0"
       inputPosition="top"
