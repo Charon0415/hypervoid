@@ -3,8 +3,11 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import { remarkAlert } from "remark-github-blockquote-alert";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeKatex from "rehype-katex";
 import rehypeShiki from "@shikijs/rehype";
 import { getAllPostSlugs, getPostBySlug } from "@/lib/posts";
 import { mdxComponents } from "@/lib/mdx-components";
@@ -64,6 +67,11 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             {frontmatter.title}
           </h1>
           <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted">
+            {frontmatter.pinned ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
+                📌 置顶
+              </span>
+            ) : null}
             <time>{frontmatter.date}</time>
             {frontmatter.category ? (
               <>
@@ -71,6 +79,8 @@ export default async function PostPage(props: { params: Promise<Params> }) {
                 <span>{frontmatter.category}</span>
               </>
             ) : null}
+            <span>·</span>
+            <span>{frontmatter.readingMinutes} 分钟阅读</span>
             {viewCount !== null ? (
               <>
                 <span>·</span>
@@ -114,13 +124,14 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             components={mdxComponents}
             options={{
               mdxOptions: {
-                remarkPlugins: [remarkGfm],
+                remarkPlugins: [remarkGfm, remarkMath, remarkAlert],
                 rehypePlugins: [
                   rehypeSlug,
                   [
                     rehypeAutolinkHeadings,
                     { behavior: "wrap", properties: { className: ["heading-anchor"] } },
                   ],
+                  rehypeKatex,
                   [
                     rehypeShiki,
                     {

@@ -2,6 +2,7 @@ import "server-only";
 
 import { and, desc, eq, lte, or, sql } from "drizzle-orm";
 import { getDb, schema } from "@/db/client";
+import { estimateReadingTime } from "@/lib/reading-time";
 
 export type PostFrontmatter = {
   title: string;
@@ -11,6 +12,8 @@ export type PostFrontmatter = {
   category?: string | null;
   cover?: string | null;
   summary?: string | null;
+  pinned?: boolean;
+  readingMinutes: number;
   draft?: boolean;
 };
 
@@ -32,6 +35,7 @@ function visibleClause() {
 
 function toPost(row: typeof schema.posts.$inferSelect): Post {
   const dateSource = row.publishAt ?? row.createdAt;
+  const { minutes } = estimateReadingTime(row.content);
   return {
     slug: row.slug,
     content: row.content,
@@ -43,6 +47,8 @@ function toPost(row: typeof schema.posts.$inferSelect): Post {
       category: row.category,
       cover: row.cover,
       summary: row.summary,
+      pinned: row.pinned,
+      readingMinutes: minutes,
       draft: row.status === "draft",
     },
   };
@@ -61,7 +67,11 @@ export async function getAllPosts(): Promise<Post[]> {
     .select()
     .from(schema.posts)
     .where(visibleClause())
-    .orderBy(desc(schema.posts.publishAt), desc(schema.posts.createdAt));
+    .orderBy(
+      desc(schema.posts.pinned),
+      desc(schema.posts.publishAt),
+      desc(schema.posts.createdAt),
+    );
   return rows.map(toPost);
 }
 
@@ -109,6 +119,7 @@ export async function searchPosts(query: string): Promise<SearchHit[]> {
       tags: schema.posts.tags,
       cover: schema.posts.cover,
       summary: schema.posts.summary,
+      pinned: schema.posts.pinned,
       status: schema.posts.status,
       publishAt: schema.posts.publishAt,
       notifiedAt: schema.posts.notifiedAt,

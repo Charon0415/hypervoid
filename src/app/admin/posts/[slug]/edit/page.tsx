@@ -31,6 +31,7 @@ function postRowToInitial(row: AdminPost): PostEditorInitial {
     category: row.category ?? "",
     tags: (row.tags ?? []).join(", "),
     cover: row.cover ?? "",
+    pinned: row.pinned,
     status: row.status,
     publishAt: toLocalInputValue(row.publishAt),
   };

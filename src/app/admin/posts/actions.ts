@@ -43,6 +43,8 @@ function parseFormToInput(formData: FormData): {
         .map((t) => t.trim())
         .filter(Boolean)
     : [];
+  const pinnedRaw = formData.get("pinned");
+  const pinned = pinnedRaw === "on" || pinnedRaw === "true";
 
   const publishAt =
     status === "scheduled" && publishAtStr
@@ -64,6 +66,7 @@ function parseFormToInput(formData: FormData): {
       category: category || null,
       tags,
       cover: cover || null,
+      pinned,
       status,
       publishAt,
     },

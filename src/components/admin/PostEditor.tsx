@@ -11,6 +11,7 @@ export type PostEditorInitial = {
   category: string;
   tags: string;
   cover: string;
+  pinned: boolean;
   status: "draft" | "scheduled" | "published";
   publishAt: string;
 };
@@ -23,6 +24,7 @@ const EMPTY: PostEditorInitial = {
   category: "",
   tags: "",
   cover: "",
+  pinned: false,
   status: "draft",
   publishAt: "",
 };
@@ -279,7 +281,20 @@ export function PostEditor({
               className={inputClass}
             />
           </Field>
-        ) : null}
+        ) : (
+          <Field label="置顶" hint="勾选后会出现在列表最上方">
+            <label className="inline-flex h-10 items-center gap-2 rounded-md border border-border bg-background px-3 text-sm">
+              <input
+                type="checkbox"
+                name="pinned"
+                checked={state.pinned}
+                onChange={(e) => update("pinned", e.target.checked)}
+                className="h-4 w-4 rounded border-border accent-primary"
+              />
+              <span>📌 置顶这篇文章</span>
+            </label>
+          </Field>
+        )}
       </div>
 
       <Field label="正文 (MDX)" required>

@@ -24,6 +24,7 @@ export const posts = pgTable("posts", {
   tags: jsonb("tags").$type<string[]>().notNull().default([]),
   cover: text("cover"),
   summary: text("summary"),
+  pinned: boolean("pinned").notNull().default(false),
   status: postStatus("status").notNull().default("draft"),
   publishAt: timestamp("publish_at", { withTimezone: true }),
   notifiedAt: timestamp("notified_at", { withTimezone: true }),

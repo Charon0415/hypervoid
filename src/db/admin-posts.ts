@@ -12,6 +12,7 @@ export type AdminPostInput = {
   category?: string | null;
   tags: string[];
   cover?: string | null;
+  pinned: boolean;
   status: "draft" | "scheduled" | "published";
   publishAt: Date | null;
 };
@@ -46,6 +47,7 @@ export async function createPost(input: AdminPostInput): Promise<void> {
       category: input.category ?? null,
       tags: input.tags,
       cover: input.cover ?? null,
+      pinned: input.pinned,
       status: input.status,
       publishAt: input.publishAt,
       createdAt: now,
@@ -66,6 +68,7 @@ export async function updatePost(
       category: input.category ?? null,
       tags: input.tags,
       cover: input.cover ?? null,
+      pinned: input.pinned,
       status: input.status,
       publishAt: input.publishAt,
       updatedAt: new Date(),
