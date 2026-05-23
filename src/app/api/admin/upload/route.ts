@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { isR2Configured, uploadImage } from "@/lib/r2";
+import { isBlobConfigured, uploadImage } from "@/lib/blob";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -21,11 +21,11 @@ export async function POST(request: Request) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (!isR2Configured()) {
+  if (!isBlobConfigured()) {
     return Response.json(
       {
         error:
-          "R2 凭据未配置。请在 Vercel 环境变量中添加 R2_ACCOUNT_ID / R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY / R2_BUCKET / R2_PUBLIC_BASE_URL。",
+          "Vercel Blob 未配置。在 Vercel Dashboard → Storage 创建一个 Blob 库，它会自动注入 BLOB_READ_WRITE_TOKEN env 变量。",
       },
       { status: 503 },
     );
