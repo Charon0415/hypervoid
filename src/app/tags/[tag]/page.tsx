@@ -6,6 +6,8 @@ import { getAllTags, getPostsByTag } from "@/lib/posts";
 
 type Params = { tag: string };
 
+export const revalidate = 60;
+
 export async function generateStaticParams(): Promise<Params[]> {
   const tags = await getAllTags();
   return tags.map(({ tag }) => ({ tag }));

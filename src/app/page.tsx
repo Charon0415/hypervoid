@@ -2,6 +2,8 @@ import Link from "next/link";
 import { PostCard } from "@/components/PostCard";
 import { getAllPosts } from "@/lib/posts";
 
+export const revalidate = 60;
+
 export default async function Home() {
   const recent = (await getAllPosts()).slice(0, 4);
 

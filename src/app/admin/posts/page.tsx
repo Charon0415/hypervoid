@@ -19,6 +19,18 @@ const STATUS_CLASS: Record<string, string> = {
   published: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300",
 };
 
+function effectiveStatus(
+  status: string,
+  publishAt: Date | null,
+): { key: string; suffix: string } {
+  if (status === "scheduled" && publishAt && publishAt.getTime() <= Date.now()) {
+    return { key: "published", suffix: " · 来自定时" };
+  }
+  return { key: status, suffix: "" };
+}
+
+export const dynamic = "force-dynamic";
+
 export default async function AdminPostsList() {
   const posts = await listAllPosts();
 
@@ -66,40 +78,46 @@ export default async function AdminPostsList() {
                 </td>
               </tr>
             ) : (
-              posts.map((post) => (
-                <tr
-                  key={post.slug}
-                  className="border-t border-border bg-background"
-                >
-                  <td className="px-4 py-3 font-medium">{post.title}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-muted">
-                    {post.slug}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs ${STATUS_CLASS[post.status]}`}
-                    >
-                      {STATUS_LABEL[post.status]}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-xs text-muted">
-                    {post.publishAt
-                      ? post.publishAt.toISOString().slice(0, 16).replace("T", " ")
-                      : "—"}
-                  </td>
-                  <td className="px-4 py-3 text-xs text-muted">
-                    {post.updatedAt.toISOString().slice(0, 10)}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <Link
-                      href={`/admin/posts/${post.slug}/edit`}
-                      className="text-primary hover:underline"
-                    >
-                      编辑
-                    </Link>
-                  </td>
-                </tr>
-              ))
+              posts.map((post) => {
+                const eff = effectiveStatus(post.status, post.publishAt);
+                return (
+                  <tr
+                    key={post.slug}
+                    className="border-t border-border bg-background"
+                  >
+                    <td className="px-4 py-3 font-medium">{post.title}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-muted">
+                      {post.slug}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-xs ${STATUS_CLASS[eff.key]}`}
+                      >
+                        {STATUS_LABEL[eff.key]}
+                        {eff.suffix ? (
+                          <span className="text-muted">{eff.suffix}</span>
+                        ) : null}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-muted">
+                      {post.publishAt
+                        ? post.publishAt.toISOString().slice(0, 16).replace("T", " ")
+                        : "—"}
+                    </td>
+                    <td className="px-4 py-3 text-xs text-muted">
+                      {post.updatedAt.toISOString().slice(0, 10)}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <Link
+                        href={`/admin/posts/${post.slug}/edit`}
+                        className="text-primary hover:underline"
+                      >
+                        编辑
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>

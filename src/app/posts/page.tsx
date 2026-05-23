@@ -3,6 +3,8 @@ import Link from "next/link";
 import { PostCard } from "@/components/PostCard";
 import { getAllPosts } from "@/lib/posts";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "文章",
   description: "所有文章列表",
