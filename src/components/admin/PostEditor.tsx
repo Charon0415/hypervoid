@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
 
 export type PostEditorInitial = {
@@ -81,6 +81,11 @@ export function PostEditor({
   const [pending, startTransition] = useTransition();
   const [deletePending, startDeleteTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState<"cover" | "content" | null>(null);
+
+  const contentRef = useRef<HTMLTextAreaElement | null>(null);
+  const coverInputRef = useRef<HTMLInputElement | null>(null);
+  const contentInputRef = useRef<HTMLInputElement | null>(null);
 
   const update = <K extends keyof PostEditorInitial>(
     key: K,
@@ -91,6 +96,61 @@ export function PostEditor({
     update("title", v);
     if (mode === "new" && !state.slug) {
       update("slug", slugify(v));
+    }
+  };
+
+  async function uploadFile(file: File): Promise<string> {
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error ?? `Upload failed (${res.status})`);
+    return data.url as string;
+  }
+
+  const onCoverUpload = async (file: File | null) => {
+    if (!file) return;
+    setError(null);
+    setUploading("cover");
+    try {
+      const url = await uploadFile(file);
+      update("cover", url);
+    } catch (e) {
+      setError(`上传封面失败：${(e as Error).message}`);
+    } finally {
+      setUploading(null);
+      if (coverInputRef.current) coverInputRef.current.value = "";
+    }
+  };
+
+  const onContentImageUpload = async (file: File | null) => {
+    if (!file) return;
+    setError(null);
+    setUploading("content");
+    try {
+      const url = await uploadFile(file);
+      const alt = file.name.replace(/\.[^.]+$/, "");
+      const snippet = `![${alt}](${url})`;
+      const ta = contentRef.current;
+      if (ta) {
+        const start = ta.selectionStart ?? state.content.length;
+        const end = ta.selectionEnd ?? state.content.length;
+        const next =
+          state.content.slice(0, start) + snippet + state.content.slice(end);
+        update("content", next);
+        requestAnimationFrame(() => {
+          ta.focus();
+          const cursor = start + snippet.length;
+          ta.setSelectionRange(cursor, cursor);
+        });
+      } else {
+        update("content", state.content + "\n" + snippet);
+      }
+    } catch (e) {
+      setError(`上传图片失败：${(e as Error).message}`);
+    } finally {
+      setUploading(null);
+      if (contentInputRef.current) contentInputRef.current.value = "";
     }
   };
 
@@ -185,13 +245,32 @@ export function PostEditor({
           />
         </Field>
         <Field label="封面图 URL">
-          <input
-            name="cover"
-            type="url"
-            value={state.cover}
-            onChange={(e) => update("cover", e.target.value)}
-            className={inputClass}
-          />
+          <div className="flex gap-2">
+            <input
+              name="cover"
+              type="url"
+              value={state.cover}
+              onChange={(e) => update("cover", e.target.value)}
+              className={inputClass}
+            />
+            <button
+              type="button"
+              onClick={() => coverInputRef.current?.click()}
+              disabled={uploading !== null}
+              className="shrink-0 rounded-md border border-border bg-card px-3 py-2 text-sm transition hover:border-primary disabled:opacity-50"
+            >
+              {uploading === "cover" ? "上传中…" : "上传"}
+            </button>
+            <input
+              ref={coverInputRef}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={(e) =>
+                onCoverUpload(e.currentTarget.files?.[0] ?? null)
+              }
+            />
+          </div>
         </Field>
       </div>
 
@@ -228,14 +307,36 @@ export function PostEditor({
       </div>
 
       <Field label="正文 (MDX)" required>
-        <textarea
-          name="content"
-          required
-          rows={20}
-          value={state.content}
-          onChange={(e) => update("content", e.target.value)}
-          className={`${inputClass} font-mono text-sm`}
-        />
+        <div className="flex flex-col gap-2">
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => contentInputRef.current?.click()}
+              disabled={uploading !== null}
+              className="rounded-md border border-border bg-card px-3 py-1.5 text-xs transition hover:border-primary disabled:opacity-50"
+            >
+              {uploading === "content" ? "上传中…" : "🖼 插入图片"}
+            </button>
+            <input
+              ref={contentInputRef}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={(e) =>
+                onContentImageUpload(e.currentTarget.files?.[0] ?? null)
+              }
+            />
+          </div>
+          <textarea
+            ref={contentRef}
+            name="content"
+            required
+            rows={20}
+            value={state.content}
+            onChange={(e) => update("content", e.target.value)}
+            className={`${inputClass} font-mono text-sm`}
+          />
+        </div>
       </Field>
 
       <div className="flex items-center justify-between gap-3">
