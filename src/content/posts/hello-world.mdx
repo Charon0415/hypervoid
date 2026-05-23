@@ -1,0 +1,50 @@
+---
+title: 你好，Pluto！
+description: 这是 Pluto 博客的第一篇文章——简单介绍这个站点是什么、用什么搭建的，以及接下来要做什么。
+date: 2026-05-23
+tags: [元信息, Next.js, MDX]
+category: 杂谈
+---
+
+## 欢迎来到 Pluto
+
+如果你看到了这篇文章，那说明我成功部署上线了 ✨。Pluto 是我（**Charon**）的个人博客，
+名字来自冥王星与它的卫星 Charon。冥王星离太阳遥远、安静、有自己的轨道——很像我希望写博客的状态。
+
+## 它是怎么搭起来的
+
+这个博客并不是用现成主题套出来的，而是从空目录一行行写起来的。技术栈如下：
+
+| 部分 | 选择 |
+| --- | --- |
+| 框架 | Next.js 16（App Router） |
+| 语言 | TypeScript |
+| 样式 | Tailwind CSS v4 |
+| 内容 | MDX 文件 + gray-matter 解析 frontmatter |
+| 高亮 | Shiki |
+| 部署 | Vercel |
+
+写一篇文章的方式很简单：在 `src/content/posts/` 下放一个 `.mdx` 文件，
+带上 frontmatter（title / date / tags 等），它就会自动出现在文章列表和详情页。
+
+```ts
+// src/content/posts/example.mdx
+---
+title: 示例
+date: 2026-05-23
+---
+
+写正文……
+```
+
+## 接下来要做什么
+
+这是 v0.1 的最小版本。后续的路线图：
+
+1. **v0.2** — 标签页 / 全文搜索 / RSS / sitemap / OG 图像
+2. **v0.3** — 接入 Postgres，加上浏览量、点赞、评论
+3. **v0.4** — 私有管理后台 + Markdown 编辑器 + 草稿/定时发布
+4. **v0.5** — 邮件订阅 + 自托管访客统计
+5. **v1.0** — 多语言 / 付费墙 / AI 摘要 / AI 问答 / 留言 / 友链 / 相册
+
+如果你正在读这篇文章，欢迎一起见证它的成长 🚀。
