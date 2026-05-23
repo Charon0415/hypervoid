@@ -108,6 +108,7 @@ export async function searchPosts(query: string): Promise<SearchHit[]> {
       cover: schema.posts.cover,
       status: schema.posts.status,
       publishAt: schema.posts.publishAt,
+      notifiedAt: schema.posts.notifiedAt,
       createdAt: schema.posts.createdAt,
       updatedAt: schema.posts.updatedAt,
       score: sql<number>`GREATEST(

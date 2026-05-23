@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PostCard } from "@/components/PostCard";
+import { SubscribeForm } from "@/components/SubscribeForm";
 import { getAllPosts } from "@/lib/posts";
 
 export const revalidate = 60;
@@ -61,6 +62,10 @@ export default async function Home() {
             还没有文章。
           </p>
         )}
+      </section>
+
+      <section>
+        <SubscribeForm />
       </section>
     </div>
   );

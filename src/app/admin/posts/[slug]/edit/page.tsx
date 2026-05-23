@@ -5,11 +5,13 @@ import {
   PostEditor,
   type PostEditorInitial,
 } from "@/components/admin/PostEditor";
+import { BroadcastButton } from "@/components/admin/BroadcastButton";
 import { getPostForEditing, type AdminPost } from "@/db/admin-posts";
 import {
   deletePostAction,
   updatePostAction,
 } from "@/app/admin/posts/actions";
+import { countActiveSubscribers } from "@/lib/newsletter";
 
 type Params = { slug: string };
 
@@ -52,6 +54,7 @@ export default async function EditPostPage(props: {
   if (!post) notFound();
 
   const initial = postRowToInitial(post);
+  const subscriberCount = await countActiveSubscribers();
 
   const updateBound = updatePostAction.bind(null, slug);
   const deleteBound = deletePostAction.bind(null, slug);
@@ -77,6 +80,12 @@ export default async function EditPostPage(props: {
           线上预览 ↗
         </Link>
       </header>
+      <BroadcastButton
+        slug={slug}
+        status={post.status}
+        notifiedAt={post.notifiedAt}
+        subscriberCount={subscriberCount}
+      />
       <PostEditor
         mode="edit"
         initial={initial}

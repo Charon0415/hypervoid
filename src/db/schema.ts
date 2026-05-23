@@ -1,10 +1,12 @@
 import {
+  boolean,
   integer,
   jsonb,
   pgEnum,
   pgTable,
   text,
   timestamp,
+  uuid,
 } from "drizzle-orm/pg-core";
 
 export const postStatus = pgEnum("post_status", [
@@ -23,6 +25,7 @@ export const posts = pgTable("posts", {
   cover: text("cover"),
   status: postStatus("status").notNull().default("draft"),
   publishAt: timestamp("publish_at", { withTimezone: true }),
+  notifiedAt: timestamp("notified_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -45,4 +48,17 @@ export const postLikes = pgTable("post_likes", {
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
+});
+
+export const subscribers = pgTable("subscribers", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: text("email").notNull().unique(),
+  verified: boolean("verified").notNull().default(false),
+  verifyToken: text("verify_token").notNull(),
+  unsubscribeToken: text("unsubscribe_token").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  verifiedAt: timestamp("verified_at", { withTimezone: true }),
+  unsubscribedAt: timestamp("unsubscribed_at", { withTimezone: true }),
 });

@@ -10,6 +10,7 @@ import {
   updatePost,
   type AdminPostInput,
 } from "@/db/admin-posts";
+import { broadcastPost } from "@/lib/newsletter";
 
 async function requireAuth() {
   const session = await auth();
@@ -107,4 +108,11 @@ export async function deletePostAction(slug: string) {
   revalidatePath("/");
   revalidatePath(`/posts/${slug}`);
   redirect("/admin/posts");
+}
+
+export async function broadcastPostAction(
+  slug: string,
+): Promise<{ sent: number; failed: number; errors: string[]; alreadyNotified: boolean }> {
+  await requireAuth();
+  return broadcastPost(slug);
 }
