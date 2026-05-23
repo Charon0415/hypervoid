@@ -10,13 +10,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/admin/sign-in",
   },
   callbacks: {
-    async signIn({ profile }) {
-      const login = (profile as { login?: string } | undefined)?.login;
-      return login === ADMIN_GITHUB_LOGIN;
-    },
     async session({ session, token }) {
-      if (session.user && token?.login) {
-        (session.user as { login?: string }).login = token.login as string;
+      if (session.user) {
+        if (token?.login) {
+          (session.user as { login?: string }).login = token.login as string;
+        }
+        (session.user as { isAdmin?: boolean }).isAdmin =
+          token?.login === ADMIN_GITHUB_LOGIN;
       }
       return session;
     },
@@ -29,9 +29,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const { pathname } = request.nextUrl;
       if (pathname.startsWith("/admin")) {
         if (pathname === "/admin/sign-in") return true;
-        return Boolean(auth?.user);
+        const login = (auth?.user as { login?: string } | undefined)?.login;
+        return login === ADMIN_GITHUB_LOGIN;
       }
       return true;
     },
   },
 });
+
+export const ADMIN_LOGIN = ADMIN_GITHUB_LOGIN;
+

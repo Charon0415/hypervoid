@@ -77,3 +77,15 @@ export const friends = pgTable("friends", {
     .notNull()
     .defaultNow(),
 });
+
+export const guestbookMessages = pgTable("guestbook_messages", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  githubLogin: text("github_login").notNull(),
+  githubName: text("github_name"),
+  avatarUrl: text("avatar_url"),
+  message: text("message").notNull(),
+  hidden: boolean("hidden").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});

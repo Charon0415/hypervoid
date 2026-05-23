@@ -1,0 +1,148 @@
+import type { Metadata } from "next";
+import { auth, ADMIN_LOGIN } from "@/auth";
+import { listVisibleMessages } from "@/db/guestbook";
+import { GuestbookForm } from "@/components/GuestbookForm";
+import { GuestbookAdminControls } from "@/components/GuestbookAdminControls";
+import {
+  signInForGuestbook,
+  signOutFromGuestbook,
+} from "@/app/guestbook/actions";
+
+export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "留言板",
+  description: "给 Charon 留个言。",
+};
+
+function formatDate(d: Date): string {
+  const iso = d.toISOString();
+  return `${iso.slice(0, 10)} ${iso.slice(11, 16)}`;
+}
+
+export default async function GuestbookPage() {
+  const session = await auth();
+  const messages = await listVisibleMessages();
+  const currentLogin =
+    (session?.user as { login?: string } | undefined)?.login ?? null;
+  const isAdmin = currentLogin === ADMIN_LOGIN;
+
+  return (
+    <div className="mx-auto flex max-w-2xl flex-col gap-6">
+      <header>
+        <h1 className="text-3xl font-bold tracking-tight">留言板</h1>
+        <p className="mt-2 text-sm text-muted">
+          欢迎随便留言。用 GitHub 登录后发布，留言会同时显示你的头像和昵称。
+        </p>
+      </header>
+
+      <section className="rounded-xl border border-border bg-card p-5">
+        {session?.user ? (
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between gap-3 text-sm">
+              <span>
+                已登录：
+                <span className="font-medium">@{currentLogin ?? "?"}</span>
+              </span>
+              <form action={signOutFromGuestbook}>
+                <button
+                  type="submit"
+                  className="text-xs text-muted hover:text-foreground"
+                >
+                  退出
+                </button>
+              </form>
+            </div>
+            <GuestbookForm />
+          </div>
+        ) : (
+          <form
+            action={signInForGuestbook}
+            className="flex flex-col items-start gap-3"
+          >
+            <p className="text-sm text-muted">登录后即可留言。</p>
+            <button
+              type="submit"
+              className="inline-flex items-center gap-2 rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition hover:opacity-90"
+            >
+              <svg
+                aria-hidden="true"
+                className="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"
+                />
+              </svg>
+              用 GitHub 登录
+            </button>
+          </form>
+        )}
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <h2 className="text-sm font-medium text-muted">
+          {messages.length} 条留言
+        </h2>
+        {messages.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
+            还没有留言。第一个留言的是你？
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-3">
+            {messages.map((m) => (
+              <li
+                key={m.id}
+                className="rounded-xl border border-border bg-card p-4"
+              >
+                <div className="flex items-start gap-3">
+                  {m.avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={m.avatarUrl}
+                      alt=""
+                      className="h-10 w-10 shrink-0 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 font-medium text-primary">
+                      {(m.githubName || m.githubLogin).slice(0, 1).toUpperCase()}
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <a
+                        href={`https://github.com/${m.githubLogin}`}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="text-sm font-medium hover:text-primary"
+                      >
+                        {m.githubName || m.githubLogin}
+                        <span className="ml-1 font-normal text-muted">
+                          @{m.githubLogin}
+                        </span>
+                      </a>
+                      <time className="shrink-0 text-xs text-muted">
+                        {formatDate(m.createdAt)}
+                      </time>
+                    </div>
+                    <p className="mt-2 whitespace-pre-wrap break-words text-sm">
+                      {m.message}
+                    </p>
+                    {isAdmin ? (
+                      <div className="mt-2">
+                        <GuestbookAdminControls id={m.id} />
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </div>
+  );
+}

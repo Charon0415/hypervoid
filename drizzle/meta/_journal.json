@@ -29,6 +29,13 @@
       "when": 1779561192148,
       "tag": "0003_fluffy_pride",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1779561368591,
+      "tag": "0004_rare_king_bedlam",
+      "breakpoints": true
     }
   ]
 }

@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: "/timeline", label: "时间线" },
   { href: "/albums", label: "相册" },
   { href: "/diary", label: "日记" },
+  { href: "/guestbook", label: "留言" },
   { href: "/friends", label: "友链" },
   { href: "/about", label: "关于" },
 ];
