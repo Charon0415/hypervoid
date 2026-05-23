@@ -7,6 +7,7 @@ import { Providers } from "@/components/Providers";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { UmamiScript } from "@/components/UmamiScript";
+import { Starfield } from "@/components/Starfield";
 import { siteConfig } from "@/lib/site-config";
 
 const geistSans = Geist({
@@ -63,9 +64,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <Starfield />
         <Providers>
           <SiteHeader />
-          <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
+          <main className="page-fade mx-auto w-full max-w-6xl flex-1 px-4 py-8">
             {children}
           </main>
           <SiteFooter />

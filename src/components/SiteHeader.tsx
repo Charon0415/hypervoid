@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LocaleSwitch } from "@/components/LocaleSwitch";
+import { ThemeColorPicker } from "@/components/ThemeColorPicker";
 import { useT } from "@/components/LocaleProvider";
 
 export function SiteHeader() {
@@ -62,6 +63,7 @@ export function SiteHeader() {
           </svg>
         </Link>
         <LocaleSwitch />
+        <ThemeColorPicker />
         <ThemeToggle />
       </div>
     </header>
