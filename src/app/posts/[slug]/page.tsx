@@ -10,6 +10,7 @@ import { getAllPostSlugs, getPostBySlug } from "@/lib/posts";
 import { mdxComponents } from "@/lib/mdx-components";
 import { extractTOC } from "@/lib/toc";
 import { TableOfContents } from "@/components/TableOfContents";
+import { Comments } from "@/components/Comments";
 
 type Params = { slug: string };
 
@@ -120,6 +121,10 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             }}
           />
         </div>
+        <section className="mt-16 border-t border-border pt-8">
+          <h2 className="mb-6 text-xl font-semibold tracking-tight">评论</h2>
+          <Comments />
+        </section>
       </article>
       <aside className="hidden lg:block">
         <div className="sticky top-20">

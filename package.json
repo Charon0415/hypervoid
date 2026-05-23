@@ -6,10 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@giscus/react": "^3.1.0",
+    "@neondatabase/serverless": "^1.1.0",
     "@shikijs/rehype": "^4.1.0",
+    "drizzle-orm": "^0.45.2",
     "github-slugger": "^2.0.0",
     "gray-matter": "^4.0.3",
     "next": "16.2.6",
@@ -29,6 +35,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
