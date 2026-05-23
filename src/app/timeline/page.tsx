@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = { title: "时间线" };
 
 const EVENTS = [
-  { date: "2026-05-23", title: "开始用 Next.js 重建博客 Pluto" },
+  { date: "2026-05-23", title: "开始用 Next.js 重建博客 Hypervoid" },
   { date: "—", title: "更多事件，慢慢补充…" },
 ];
 

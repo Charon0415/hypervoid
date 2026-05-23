@@ -17,14 +17,14 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Pluto · Charon 的博客",
-    template: "%s · Pluto",
+    default: "Hypervoid · Charon 的博客",
+    template: "%s · Hypervoid",
   },
   description: "分享技术、记录生活、收集兴趣。Charon 的个人博客。",
   authors: [{ name: "Charon", url: "https://github.com/Charon0415" }],
   creator: "Charon",
   openGraph: {
-    title: "Pluto · Charon 的博客",
+    title: "Hypervoid · Charon 的博客",
     description: "分享技术、记录生活、收集兴趣。",
     type: "website",
     locale: "zh_CN",

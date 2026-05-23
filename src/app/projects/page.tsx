@@ -4,9 +4,9 @@ export const metadata: Metadata = { title: "项目" };
 
 const SAMPLE = [
   {
-    name: "Pluto",
+    name: "Hypervoid",
     description: "你正在浏览的这个博客本身——Next.js 16 + MDX 全栈博客。",
-    link: "https://github.com/Charon0415/Pluto",
+    link: "https://github.com/Charon0415/hypervoid",
     tags: ["Next.js", "TypeScript", "MDX"],
   },
 ];

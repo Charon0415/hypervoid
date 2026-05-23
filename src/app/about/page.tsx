@@ -7,13 +7,13 @@ export default function AboutPage() {
     <article className="prose prose-zinc dark:prose-invert mx-auto max-w-3xl">
       <h1>关于</h1>
       <p>
-        你好，我是 <strong>Charon</strong>。这里是 Pluto，我的个人博客。
+        你好，我是 <strong>Charon</strong>。这里是 Hypervoid，我的个人博客。
       </p>
       <h2>这个博客</h2>
       <ul>
         <li>用 Next.js 16 + MDX 搭建</li>
         <li>部署在 Vercel</li>
-        <li>源码在 GitHub: <a href="https://github.com/Charon0415/Pluto">Charon0415/Pluto</a></li>
+        <li>源码在 GitHub: <a href="https://github.com/Charon0415/hypervoid">Charon0415/hypervoid</a></li>
       </ul>
       <h2>联系方式</h2>
       <ul>

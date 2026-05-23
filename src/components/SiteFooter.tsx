@@ -3,7 +3,7 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-border mt-16">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-2 px-4 py-8 text-sm text-muted sm:flex-row sm:justify-between">
-        <p>© {year} Pluto · 由 Charon 用 Next.js 搭建</p>
+        <p>© {year} Hypervoid · 由 Charon 用 Next.js 搭建</p>
         <p className="flex gap-3">
           <a
             href="https://github.com/Charon0415"

@@ -23,9 +23,9 @@ export function SiteHeader() {
           className="flex items-center gap-2 font-bold tracking-tight"
         >
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm">
-            P
+            H
           </span>
-          <span className="hidden sm:inline">Pluto</span>
+          <span className="hidden sm:inline">Hypervoid</span>
         </Link>
         <nav className="ml-auto flex items-center gap-1 overflow-x-auto text-sm">
           {NAV_ITEMS.slice(1).map((item) => (

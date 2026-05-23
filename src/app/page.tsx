@@ -9,13 +9,13 @@ export default function Home() {
     <div className="flex flex-col gap-12">
       <section className="rounded-2xl border border-border bg-card p-8 sm:p-12">
         <p className="text-sm uppercase tracking-widest text-primary">
-          Pluto · 个人主页
+          Hypervoid · 个人主页
         </p>
         <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
           你好，我是 Charon。
         </h1>
         <p className="mt-4 max-w-2xl text-base text-muted sm:text-lg">
-          这里是冥王星 Pluto——我的个人博客与数字花园。
+          这里是 Hypervoid——我的个人博客与数字花园。
           我会在这里写技术笔记、记录项目、收集喜欢的番剧与瞬间。
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
