@@ -3,12 +3,12 @@
 import { useTheme } from "next-themes";
 import Giscus from "@giscus/react";
 
-const REPO = process.env.NEXT_PUBLIC_GISCUS_REPO as
+const REPO = process.env.NEXT_PUBLIC_GISCUS_REPO?.trim() as
   | `${string}/${string}`
   | undefined;
-const REPO_ID = process.env.NEXT_PUBLIC_GISCUS_REPO_ID;
-const CATEGORY = process.env.NEXT_PUBLIC_GISCUS_CATEGORY;
-const CATEGORY_ID = process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID;
+const REPO_ID = process.env.NEXT_PUBLIC_GISCUS_REPO_ID?.trim();
+const CATEGORY = process.env.NEXT_PUBLIC_GISCUS_CATEGORY?.trim();
+const CATEGORY_ID = process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID?.trim();
 
 export function Comments() {
   const { resolvedTheme } = useTheme();
