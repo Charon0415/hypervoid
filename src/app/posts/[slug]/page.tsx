@@ -11,8 +11,13 @@ import { mdxComponents } from "@/lib/mdx-components";
 import { extractTOC } from "@/lib/toc";
 import { TableOfContents } from "@/components/TableOfContents";
 import { Comments } from "@/components/Comments";
+import { ViewCounter } from "@/components/ViewCounter";
+import { LikeButton } from "@/components/LikeButton";
+import { getLikeCount, getViewCount } from "@/db/posts-stats";
 
 type Params = { slug: string };
+
+export const dynamic = "force-dynamic";
 
 export function generateStaticParams(): Params[] {
   return getAllPostSlugs().map((slug) => ({ slug }));
@@ -37,6 +42,10 @@ export default async function PostPage(props: { params: Promise<Params> }) {
 
   const { frontmatter, content } = post;
   const toc = extractTOC(content);
+  const [viewCount, likeCount] = await Promise.all([
+    getViewCount(slug),
+    getLikeCount(slug),
+  ]);
 
   return (
     <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_220px]">
@@ -57,6 +66,12 @@ export default async function PostPage(props: { params: Promise<Params> }) {
               <>
                 <span>·</span>
                 <span>{frontmatter.category}</span>
+              </>
+            ) : null}
+            {viewCount !== null ? (
+              <>
+                <span>·</span>
+                <ViewCounter slug={slug} initialCount={viewCount} />
               </>
             ) : null}
             {frontmatter.tags?.length ? (
@@ -121,6 +136,11 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             }}
           />
         </div>
+        {likeCount !== null ? (
+          <div className="mt-12 flex justify-center">
+            <LikeButton slug={slug} initialCount={likeCount} />
+          </div>
+        ) : null}
         <section className="mt-16 border-t border-border pt-8">
           <h2 className="mb-6 text-xl font-semibold tracking-tight">评论</h2>
           <Comments />
