@@ -13,7 +13,7 @@ function escapeXml(input: string): string {
 }
 
 export async function GET() {
-  const posts = getAllPosts();
+  const posts = await getAllPosts();
   const buildDate = new Date().toUTCString();
 
   const items = posts

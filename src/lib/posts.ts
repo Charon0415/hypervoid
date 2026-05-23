@@ -1,14 +1,15 @@
-import fs from "node:fs";
-import path from "node:path";
-import matter from "gray-matter";
+import "server-only";
+
+import { and, desc, eq, lte, or, sql } from "drizzle-orm";
+import { getDb, schema } from "@/db/client";
 
 export type PostFrontmatter = {
   title: string;
-  description?: string;
+  description?: string | null;
   date: string;
-  tags?: string[];
-  category?: string;
-  cover?: string;
+  tags: string[];
+  category?: string | null;
+  cover?: string | null;
   draft?: boolean;
 };
 
@@ -18,78 +19,64 @@ export type Post = {
   content: string;
 };
 
-const POSTS_DIR = path.join(process.cwd(), "src/content/posts");
-
-function readPostFile(slug: string): Post | null {
-  const candidates = [
-    path.join(POSTS_DIR, `${slug}.mdx`),
-    path.join(POSTS_DIR, `${slug}.md`),
-    path.join(POSTS_DIR, slug, "index.mdx"),
-    path.join(POSTS_DIR, slug, "index.md"),
-  ];
-  const filepath = candidates.find((p) => fs.existsSync(p));
-  if (!filepath) return null;
-
-  const raw = fs.readFileSync(filepath, "utf8");
-  const { data, content } = matter(raw);
-  const frontmatter = normalizeFrontmatter(data);
-  return { slug, frontmatter, content };
+function visibleClause() {
+  return or(
+    eq(schema.posts.status, "published"),
+    and(
+      eq(schema.posts.status, "scheduled"),
+      lte(schema.posts.publishAt, sql`NOW()`),
+    ),
+  );
 }
 
-function normalizeFrontmatter(data: Record<string, unknown>): PostFrontmatter {
-  const rawDate = data.date;
-  const date =
-    rawDate instanceof Date
-      ? rawDate.toISOString().slice(0, 10)
-      : typeof rawDate === "string"
-        ? rawDate
-        : "";
+function toPost(row: typeof schema.posts.$inferSelect): Post {
+  const dateSource = row.publishAt ?? row.createdAt;
   return {
-    title: String(data.title ?? "Untitled"),
-    description:
-      typeof data.description === "string" ? data.description : undefined,
-    date,
-    tags: Array.isArray(data.tags) ? data.tags.map(String) : undefined,
-    category:
-      typeof data.category === "string" ? data.category : undefined,
-    cover: typeof data.cover === "string" ? data.cover : undefined,
-    draft: Boolean(data.draft),
+    slug: row.slug,
+    content: row.content,
+    frontmatter: {
+      title: row.title,
+      description: row.description,
+      date: dateSource.toISOString().slice(0, 10),
+      tags: row.tags ?? [],
+      category: row.category,
+      cover: row.cover,
+      draft: row.status === "draft",
+    },
   };
 }
 
-export function getAllPostSlugs(): string[] {
-  if (!fs.existsSync(POSTS_DIR)) return [];
-  const entries = fs.readdirSync(POSTS_DIR, { withFileTypes: true });
-  const slugs: string[] = [];
-  for (const entry of entries) {
-    if (entry.isFile() && /\.(mdx|md)$/.test(entry.name)) {
-      slugs.push(entry.name.replace(/\.(mdx|md)$/, ""));
-    } else if (entry.isDirectory()) {
-      const idx = ["index.mdx", "index.md"].find((f) =>
-        fs.existsSync(path.join(POSTS_DIR, entry.name, f)),
-      );
-      if (idx) slugs.push(entry.name);
-    }
-  }
-  return slugs;
+export async function getAllPostSlugs(): Promise<string[]> {
+  const rows = await getDb()
+    .select({ slug: schema.posts.slug })
+    .from(schema.posts)
+    .where(visibleClause());
+  return rows.map((r) => r.slug);
 }
 
-export function getAllPosts(): Post[] {
-  return getAllPostSlugs()
-    .map((slug) => readPostFile(slug))
-    .filter((p): p is Post => !!p)
-    .filter((p) => !p.frontmatter.draft)
-    .sort((a, b) => (a.frontmatter.date < b.frontmatter.date ? 1 : -1));
+export async function getAllPosts(): Promise<Post[]> {
+  const rows = await getDb()
+    .select()
+    .from(schema.posts)
+    .where(visibleClause())
+    .orderBy(desc(schema.posts.publishAt), desc(schema.posts.createdAt));
+  return rows.map(toPost);
 }
 
-export function getPostBySlug(slug: string): Post | null {
-  return readPostFile(slug);
+export async function getPostBySlug(slug: string): Promise<Post | null> {
+  const rows = await getDb()
+    .select()
+    .from(schema.posts)
+    .where(and(eq(schema.posts.slug, slug), visibleClause()))
+    .limit(1);
+  return rows[0] ? toPost(rows[0]) : null;
 }
 
-export function getAllTags(): { tag: string; count: number }[] {
+export async function getAllTags(): Promise<{ tag: string; count: number }[]> {
+  const posts = await getAllPosts();
   const counts = new Map<string, number>();
-  for (const post of getAllPosts()) {
-    for (const tag of post.frontmatter.tags ?? []) {
+  for (const post of posts) {
+    for (const tag of post.frontmatter.tags) {
       counts.set(tag, (counts.get(tag) ?? 0) + 1);
     }
   }
@@ -98,6 +85,7 @@ export function getAllTags(): { tag: string; count: number }[] {
     .sort((a, b) => b.count - a.count);
 }
 
-export function getPostsByTag(tag: string): Post[] {
-  return getAllPosts().filter((p) => p.frontmatter.tags?.includes(tag));
+export async function getPostsByTag(tag: string): Promise<Post[]> {
+  const posts = await getAllPosts();
+  return posts.filter((p) => p.frontmatter.tags.includes(tag));
 }

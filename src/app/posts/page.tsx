@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   description: "所有文章列表",
 };
 
-export default function PostsIndex() {
-  const posts = getAllPosts();
+export default async function PostsIndex() {
+  const posts = await getAllPosts();
   return (
     <div className="flex flex-col gap-6">
       <header className="flex items-baseline justify-between gap-3">

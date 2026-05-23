@@ -19,25 +19,26 @@ type Params = { slug: string };
 
 export const dynamic = "force-dynamic";
 
-export function generateStaticParams(): Params[] {
-  return getAllPostSlugs().map((slug) => ({ slug }));
+export async function generateStaticParams(): Promise<Params[]> {
+  const slugs = await getAllPostSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata(
   props: { params: Promise<Params> },
 ): Promise<Metadata> {
   const { slug } = await props.params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
   if (!post) return {};
   return {
     title: post.frontmatter.title,
-    description: post.frontmatter.description,
+    description: post.frontmatter.description ?? undefined,
   };
 }
 
 export default async function PostPage(props: { params: Promise<Params> }) {
   const { slug } = await props.params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
   if (!post) notFound();
 
   const { frontmatter, content } = post;

@@ -6,8 +6,9 @@ import { getAllTags, getPostsByTag } from "@/lib/posts";
 
 type Params = { tag: string };
 
-export function generateStaticParams(): Params[] {
-  return getAllTags().map(({ tag }) => ({ tag }));
+export async function generateStaticParams(): Promise<Params[]> {
+  const tags = await getAllTags();
+  return tags.map(({ tag }) => ({ tag }));
 }
 
 export const dynamicParams = false;
@@ -28,7 +29,7 @@ export default async function TagDetailPage(props: {
 }) {
   const { tag } = await props.params;
   const decoded = decodeURIComponent(tag);
-  const posts = getPostsByTag(decoded);
+  const posts = await getPostsByTag(decoded);
   if (posts.length === 0) notFound();
 
   return (

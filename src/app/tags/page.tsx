@@ -7,8 +7,8 @@ export const metadata: Metadata = {
   description: "按标签浏览所有文章",
 };
 
-export default function TagsIndex() {
-  const tags = getAllTags();
+export default async function TagsIndex() {
+  const tags = await getAllTags();
   return (
     <div className="flex flex-col gap-6">
       <header className="flex items-baseline gap-3">

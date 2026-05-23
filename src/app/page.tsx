@@ -2,8 +2,8 @@ import Link from "next/link";
 import { PostCard } from "@/components/PostCard";
 import { getAllPosts } from "@/lib/posts";
 
-export default function Home() {
-  const recent = getAllPosts().slice(0, 4);
+export default async function Home() {
+  const recent = (await getAllPosts()).slice(0, 4);
 
   return (
     <div className="flex flex-col gap-12">

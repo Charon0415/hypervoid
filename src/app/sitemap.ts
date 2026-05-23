@@ -16,8 +16,12 @@ const STATIC_ROUTES: { path: string; priority: number }[] = [
   { path: "/friends", priority: 0.4 },
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+  const [allPosts, allTags] = await Promise.all([
+    getAllPosts(),
+    getAllTags(),
+  ]);
 
   const staticUrls: MetadataRoute.Sitemap = STATIC_ROUTES.map(
     ({ path, priority }) => ({
@@ -28,7 +32,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }),
   );
 
-  const postUrls: MetadataRoute.Sitemap = getAllPosts().map((post) => ({
+  const postUrls: MetadataRoute.Sitemap = allPosts.map((post) => ({
     url: `${siteConfig.url}/posts/${post.slug}`,
     lastModified: post.frontmatter.date
       ? new Date(post.frontmatter.date)
@@ -37,7 +41,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  const tagUrls: MetadataRoute.Sitemap = getAllTags().map(({ tag }) => ({
+  const tagUrls: MetadataRoute.Sitemap = allTags.map(({ tag }) => ({
     url: `${siteConfig.url}/tags/${encodeURIComponent(tag)}`,
     lastModified: now,
     changeFrequency: "monthly",
