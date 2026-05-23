@@ -1,27 +1,85 @@
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "关于我" };
+export const metadata: Metadata = { title: "关于" };
 
 export default function AboutPage() {
   return (
     <article className="prose prose-zinc dark:prose-invert mx-auto max-w-3xl">
       <h1>关于</h1>
-      <p>
-        你好，我是 <strong>Charon</strong>。这里是 Hypervoid，我的个人博客。
+
+      <p className="lead">
+        你好，我是 <strong>Charon</strong>。
       </p>
+
+      <blockquote>
+        <p>The world is big, you have to go and see.</p>
+      </blockquote>
+
+      <p>
+        这里是 <strong>Hypervoid</strong>——我自己造的词，
+        <em>hyper</em>（超）+ <em>void</em>（虚空），意思接近「超虚空 / 高维空白」。
+        我在这片虚空里给自己留了块坐标，写写画画、记录痕迹的地方。
+      </p>
+
+      <h2>这里写些什么</h2>
+      <ul>
+        <li>知识与经验：技术笔记、折腾过程、项目复盘</li>
+        <li>资源分享：好用的工具、好玩的网站、值得收藏的东西</li>
+        <li>游戏与番剧：攻略、追番记录、个人感想</li>
+        <li>零散思考：日记、灵感、生活片段</li>
+      </ul>
+
       <h2>这个博客</h2>
       <ul>
-        <li>用 Next.js 16 + MDX 搭建</li>
+        <li>用 Next.js 16 + React 19 + Tailwind v4 从零搭建</li>
+        <li>文章存 Postgres（Neon），图片走 Vercel Blob</li>
+        <li>评论由 GitHub Discussions（Giscus）承载</li>
         <li>部署在 Vercel</li>
-        <li>源码在 GitHub: <a href="https://github.com/HyperCharon/hypervoid">HyperCharon/hypervoid</a></li>
+        <li>
+          源码：
+          <a href="https://github.com/HyperCharon/hypervoid">
+            HyperCharon/hypervoid
+          </a>
+        </li>
+        <li>前一版（Astro）：charon0415.github.io（2023-07 起，已归档）</li>
       </ul>
+
       <h2>联系方式</h2>
       <ul>
-        <li>GitHub: <a href="https://github.com/HyperCharon">@HyperCharon</a></li>
+        <li>
+          GitHub:{" "}
+          <a href="https://github.com/HyperCharon">@HyperCharon</a>
+        </li>
+        <li>
+          Bilibili:{" "}
+          <a href="https://space.bilibili.com/405927049">
+            space.bilibili.com/405927049
+          </a>
+        </li>
+        <li>
+          Gitee:{" "}
+          <a href="https://gitee.com/charon0415">gitee.com/charon0415</a>
+        </li>
+        <li>
+          Codeberg:{" "}
+          <a href="https://codeberg.org/Charon0415">codeberg.org/Charon0415</a>
+        </li>
+        <li>
+          Steam:{" "}
+          <a href="https://steamcommunity.com/id/Charon0415/">Charon0415</a>
+        </li>
       </ul>
-      <p className="text-muted">
-        这是 v0.1 的占位关于页面，会随着博客成长继续完善。
+
+      <hr />
+
+      <p className="text-sm">
+        站内文章默认采用{" "}
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+          CC BY-NC-SA 4.0
+        </a>{" "}
+        协议；代码遵循仓库内 LICENSE。
       </p>
+      <p className="text-sm italic">— One &amp; Only</p>
     </article>
   );
 }
