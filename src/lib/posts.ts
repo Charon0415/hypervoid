@@ -97,3 +97,7 @@ export function getAllTags(): { tag: string; count: number }[] {
     .map(([tag, count]) => ({ tag, count }))
     .sort((a, b) => b.count - a.count);
 }
+
+export function getPostsByTag(tag: string): Post[] {
+  return getAllPosts().filter((p) => p.frontmatter.tags?.includes(tag));
+}

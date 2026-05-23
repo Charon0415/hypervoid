@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PostCard } from "@/components/PostCard";
 import { getAllPosts } from "@/lib/posts";
 
@@ -11,9 +12,17 @@ export default function PostsIndex() {
   const posts = getAllPosts();
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-baseline gap-3">
-        <h1 className="text-3xl font-bold tracking-tight">所有文章</h1>
-        <span className="text-sm text-muted">共 {posts.length} 篇</span>
+      <header className="flex items-baseline justify-between gap-3">
+        <div className="flex items-baseline gap-3">
+          <h1 className="text-3xl font-bold tracking-tight">所有文章</h1>
+          <span className="text-sm text-muted">共 {posts.length} 篇</span>
+        </div>
+        <Link
+          href="/tags"
+          className="text-sm text-muted hover:text-primary"
+        >
+          按标签浏览 →
+        </Link>
       </header>
       {posts.length ? (
         <div className="grid gap-4 sm:grid-cols-2">

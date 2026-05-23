@@ -59,7 +59,13 @@ export default async function PostPage(props: { params: Promise<Params> }) {
               <span>·</span>
               <span className="flex flex-wrap gap-1.5">
                 {frontmatter.tags.map((tag) => (
-                  <span key={tag}>#{tag}</span>
+                  <Link
+                    key={tag}
+                    href={`/tags/${encodeURIComponent(tag)}`}
+                    className="hover:text-primary"
+                  >
+                    #{tag}
+                  </Link>
                 ))}
               </span>
             </>
