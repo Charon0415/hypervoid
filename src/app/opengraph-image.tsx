@@ -89,7 +89,7 @@ export default async function Image() {
             letterSpacing: "1px",
           }}
         >
-          github.com/Charon0415
+          github.com/HyperCharon
         </div>
       </div>
     ),

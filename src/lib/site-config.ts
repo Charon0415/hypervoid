@@ -6,8 +6,8 @@ export const siteConfig = {
   locale: "zh_CN",
   author: {
     name: "Charon",
-    githubUsername: "Charon0415",
-    githubUrl: "https://github.com/Charon0415",
+    githubUsername: "HyperCharon",
+    githubUrl: "https://github.com/HyperCharon",
   },
   rss: {
     title: "Hypervoid",

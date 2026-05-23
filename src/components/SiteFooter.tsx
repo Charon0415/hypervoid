@@ -6,7 +6,7 @@ export function SiteFooter() {
         <p>© {year} Hypervoid · 由 Charon 用 Next.js 搭建</p>
         <p className="flex gap-3">
           <a
-            href="https://github.com/Charon0415"
+            href="https://github.com/HyperCharon"
             target="_blank"
             rel="noreferrer noopener"
             className="hover:text-primary"

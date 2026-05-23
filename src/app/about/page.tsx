@@ -13,11 +13,11 @@ export default function AboutPage() {
       <ul>
         <li>用 Next.js 16 + MDX 搭建</li>
         <li>部署在 Vercel</li>
-        <li>源码在 GitHub: <a href="https://github.com/Charon0415/hypervoid">Charon0415/hypervoid</a></li>
+        <li>源码在 GitHub: <a href="https://github.com/HyperCharon/hypervoid">HyperCharon/hypervoid</a></li>
       </ul>
       <h2>联系方式</h2>
       <ul>
-        <li>GitHub: <a href="https://github.com/Charon0415">@Charon0415</a></li>
+        <li>GitHub: <a href="https://github.com/HyperCharon">@HyperCharon</a></li>
       </ul>
       <p className="text-muted">
         这是 v0.1 的占位关于页面，会随着博客成长继续完善。
