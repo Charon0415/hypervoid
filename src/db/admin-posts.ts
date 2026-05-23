@@ -76,3 +76,17 @@ export async function updatePost(
 export async function deletePost(slug: string): Promise<void> {
   await getDb().delete(schema.posts).where(eq(schema.posts.slug, slug));
 }
+
+export async function setSummary(slug: string, summary: string): Promise<void> {
+  await getDb()
+    .update(schema.posts)
+    .set({ summary, updatedAt: new Date() })
+    .where(eq(schema.posts.slug, slug));
+}
+
+export async function clearSummary(slug: string): Promise<void> {
+  await getDb()
+    .update(schema.posts)
+    .set({ summary: null, updatedAt: new Date() })
+    .where(eq(schema.posts.slug, slug));
+}

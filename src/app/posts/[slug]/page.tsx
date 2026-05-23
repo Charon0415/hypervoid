@@ -13,7 +13,9 @@ import { TableOfContents } from "@/components/TableOfContents";
 import { Comments } from "@/components/Comments";
 import { ViewCounter } from "@/components/ViewCounter";
 import { LikeButton } from "@/components/LikeButton";
+import { AskAI } from "@/components/AskAI";
 import { getLikeCount, getViewCount } from "@/db/posts-stats";
+import { isAiConfigured } from "@/lib/ai";
 
 type Params = { slug: string };
 
@@ -98,6 +100,14 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             </p>
           ) : null}
         </header>
+        {frontmatter.summary ? (
+          <aside className="mt-8 rounded-md border-l-4 border-primary bg-primary/5 p-4">
+            <p className="mb-1 text-xs uppercase tracking-wider text-primary">
+              ✦ AI 摘要
+            </p>
+            <p className="text-sm leading-relaxed">{frontmatter.summary}</p>
+          </aside>
+        ) : null}
         <div className="prose prose-zinc dark:prose-invert mt-8 max-w-none">
           <MDXRemote
             source={content}
@@ -141,6 +151,11 @@ export default async function PostPage(props: { params: Promise<Params> }) {
           <div className="mt-12 flex justify-center">
             <LikeButton slug={slug} initialCount={likeCount} />
           </div>
+        ) : null}
+        {isAiConfigured() ? (
+          <section className="mt-12">
+            <AskAI slug={slug} />
+          </section>
         ) : null}
         <section className="mt-16 border-t border-border pt-8">
           <h2 className="mb-6 text-xl font-semibold tracking-tight">评论</h2>

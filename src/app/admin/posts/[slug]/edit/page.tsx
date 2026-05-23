@@ -6,6 +6,7 @@ import {
   type PostEditorInitial,
 } from "@/components/admin/PostEditor";
 import { BroadcastButton } from "@/components/admin/BroadcastButton";
+import { SummaryPanel } from "@/components/admin/SummaryPanel";
 import { getPostForEditing, type AdminPost } from "@/db/admin-posts";
 import {
   deletePostAction,
@@ -86,6 +87,7 @@ export default async function EditPostPage(props: {
         notifiedAt={post.notifiedAt}
         subscriberCount={subscriberCount}
       />
+      <SummaryPanel slug={slug} initialSummary={post.summary} />
       <PostEditor
         mode="edit"
         initial={initial}

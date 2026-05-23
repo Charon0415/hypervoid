@@ -4,13 +4,16 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import {
+  clearSummary,
   createPost,
   deletePost,
   getPostForEditing,
+  setSummary,
   updatePost,
   type AdminPostInput,
 } from "@/db/admin-posts";
 import { broadcastPost } from "@/lib/newsletter";
+import { summarizePost, isAiConfigured } from "@/lib/ai";
 
 async function requireAuth() {
   const session = await auth();
@@ -115,4 +118,34 @@ export async function broadcastPostAction(
 ): Promise<{ sent: number; failed: number; errors: string[]; alreadyNotified: boolean }> {
   await requireAuth();
   return broadcastPost(slug);
+}
+
+export async function generateSummaryAction(
+  slug: string,
+): Promise<{ summary: string } | { error: string }> {
+  await requireAuth();
+  if (!isAiConfigured()) {
+    return { error: "AI 未配置：缺少 ANTHROPIC_API_KEY env" };
+  }
+  const post = await getPostForEditing(slug);
+  if (!post) return { error: "文章不存在" };
+  try {
+    const summary = await summarizePost({
+      title: post.title,
+      content: post.content,
+    });
+    await setSummary(slug, summary);
+    revalidatePath(`/posts/${slug}`);
+    revalidatePath(`/admin/posts/${slug}/edit`);
+    return { summary };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
+export async function clearSummaryAction(slug: string): Promise<void> {
+  await requireAuth();
+  await clearSummary(slug);
+  revalidatePath(`/posts/${slug}`);
+  revalidatePath(`/admin/posts/${slug}/edit`);
 }

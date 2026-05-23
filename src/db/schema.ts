@@ -23,6 +23,7 @@ export const posts = pgTable("posts", {
   category: text("category"),
   tags: jsonb("tags").$type<string[]>().notNull().default([]),
   cover: text("cover"),
+  summary: text("summary"),
   status: postStatus("status").notNull().default("draft"),
   publishAt: timestamp("publish_at", { withTimezone: true }),
   notifiedAt: timestamp("notified_at", { withTimezone: true }),

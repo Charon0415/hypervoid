@@ -10,6 +10,7 @@ export type PostFrontmatter = {
   tags: string[];
   category?: string | null;
   cover?: string | null;
+  summary?: string | null;
   draft?: boolean;
 };
 
@@ -41,6 +42,7 @@ function toPost(row: typeof schema.posts.$inferSelect): Post {
       tags: row.tags ?? [],
       category: row.category,
       cover: row.cover,
+      summary: row.summary,
       draft: row.status === "draft",
     },
   };
@@ -106,6 +108,7 @@ export async function searchPosts(query: string): Promise<SearchHit[]> {
       category: schema.posts.category,
       tags: schema.posts.tags,
       cover: schema.posts.cover,
+      summary: schema.posts.summary,
       status: schema.posts.status,
       publishAt: schema.posts.publishAt,
       notifiedAt: schema.posts.notifiedAt,
