@@ -39,7 +39,7 @@ export default async function AdminHome() {
         </form>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Link
           href="/admin/posts"
           className="group rounded-xl border border-border bg-card p-6 transition hover:border-primary hover:shadow-md"
@@ -60,6 +60,17 @@ export default async function AdminHome() {
           </h2>
           <p className="mt-1 text-sm text-muted">
             维护朋友的博客与个人站点链接。
+          </p>
+        </Link>
+        <Link
+          href="/admin/albums"
+          className="group rounded-xl border border-border bg-card p-6 transition hover:border-primary hover:shadow-md"
+        >
+          <h2 className="text-lg font-semibold group-hover:text-primary">
+            相册管理 →
+          </h2>
+          <p className="mt-1 text-sm text-muted">
+            创建相册、上传照片、添加说明。
           </p>
         </Link>
       </div>
