@@ -1,0 +1,296 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import Link from "next/link";
+
+export type PostEditorInitial = {
+  slug: string;
+  title: string;
+  description: string;
+  content: string;
+  category: string;
+  tags: string;
+  cover: string;
+  status: "draft" | "scheduled" | "published";
+  publishAt: string;
+};
+
+const EMPTY: PostEditorInitial = {
+  slug: "",
+  title: "",
+  description: "",
+  content: "",
+  category: "",
+  tags: "",
+  cover: "",
+  status: "draft",
+  publishAt: "",
+};
+
+function toLocalInputValue(date: Date | null): string {
+  if (!date) return "";
+  const tz = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - tz).toISOString().slice(0, 16);
+}
+
+export function postRowToInitial(row: {
+  slug: string;
+  title: string;
+  description: string | null;
+  content: string;
+  category: string | null;
+  tags: string[];
+  cover: string | null;
+  status: string;
+  publishAt: Date | null;
+}): PostEditorInitial {
+  return {
+    slug: row.slug,
+    title: row.title,
+    description: row.description ?? "",
+    content: row.content,
+    category: row.category ?? "",
+    tags: (row.tags ?? []).join(", "),
+    cover: row.cover ?? "",
+    status: row.status as "draft" | "scheduled" | "published",
+    publishAt: toLocalInputValue(row.publishAt),
+  };
+}
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9一-龥\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+export function PostEditor({
+  mode,
+  initial = EMPTY,
+  onSubmit,
+  onDelete,
+}: {
+  mode: "new" | "edit";
+  initial?: PostEditorInitial;
+  onSubmit: (formData: FormData) => Promise<void>;
+  onDelete?: () => Promise<void>;
+}) {
+  const [state, setState] = useState<PostEditorInitial>(initial);
+  const [pending, startTransition] = useTransition();
+  const [deletePending, startDeleteTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  const update = <K extends keyof PostEditorInitial>(
+    key: K,
+    value: PostEditorInitial[K],
+  ) => setState((s) => ({ ...s, [key]: value }));
+
+  const handleTitleChange = (v: string) => {
+    update("title", v);
+    if (mode === "new" && !state.slug) {
+      update("slug", slugify(v));
+    }
+  };
+
+  const handleSubmit = (formData: FormData) => {
+    setError(null);
+    startTransition(async () => {
+      try {
+        await onSubmit(formData);
+      } catch (e) {
+        setError((e as Error).message);
+      }
+    });
+  };
+
+  const handleDelete = () => {
+    if (!onDelete) return;
+    if (!confirm(`确认删除「${state.title}」？此操作不可撤销。`)) return;
+    startDeleteTransition(async () => {
+      try {
+        await onDelete();
+      } catch (e) {
+        setError((e as Error).message);
+      }
+    });
+  };
+
+  return (
+    <form action={handleSubmit} className="flex flex-col gap-6">
+      {error ? (
+        <div className="rounded-md border border-red-400/50 bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">
+          {error}
+        </div>
+      ) : null}
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="标题" required>
+          <input
+            name="title"
+            type="text"
+            required
+            value={state.title}
+            onChange={(e) => handleTitleChange(e.target.value)}
+            className={inputClass}
+          />
+        </Field>
+        <Field
+          label="Slug (URL 路径)"
+          required
+          hint={mode === "edit" ? "已发布后不建议修改" : "小写字母 + 数字 + 连字符"}
+        >
+          <input
+            name="slug"
+            type="text"
+            required
+            readOnly={mode === "edit"}
+            value={state.slug}
+            onChange={(e) => update("slug", e.target.value)}
+            className={`${inputClass} ${mode === "edit" ? "cursor-not-allowed bg-muted/10 text-muted" : ""}`}
+            pattern="[a-z0-9][a-z0-9-]*"
+          />
+        </Field>
+      </div>
+
+      <Field label="简介 (用于列表卡片、SEO description)">
+        <textarea
+          name="description"
+          rows={2}
+          value={state.description}
+          onChange={(e) => update("description", e.target.value)}
+          className={inputClass}
+        />
+      </Field>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Field label="分类">
+          <input
+            name="category"
+            type="text"
+            value={state.category}
+            onChange={(e) => update("category", e.target.value)}
+            className={inputClass}
+          />
+        </Field>
+        <Field label="标签 (逗号分隔)">
+          <input
+            name="tags"
+            type="text"
+            placeholder="Next.js, MDX, 杂谈"
+            value={state.tags}
+            onChange={(e) => update("tags", e.target.value)}
+            className={inputClass}
+          />
+        </Field>
+        <Field label="封面图 URL">
+          <input
+            name="cover"
+            type="url"
+            value={state.cover}
+            onChange={(e) => update("cover", e.target.value)}
+            className={inputClass}
+          />
+        </Field>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="状态">
+          <select
+            name="status"
+            value={state.status}
+            onChange={(e) =>
+              update(
+                "status",
+                e.target.value as PostEditorInitial["status"],
+              )
+            }
+            className={inputClass}
+          >
+            <option value="draft">草稿 (不公开)</option>
+            <option value="scheduled">定时 (到点自动公开)</option>
+            <option value="published">立即发布</option>
+          </select>
+        </Field>
+        {state.status === "scheduled" ? (
+          <Field label="定时发布时间" required>
+            <input
+              name="publishAt"
+              type="datetime-local"
+              required
+              value={state.publishAt}
+              onChange={(e) => update("publishAt", e.target.value)}
+              className={inputClass}
+            />
+          </Field>
+        ) : null}
+      </div>
+
+      <Field label="正文 (MDX)" required>
+        <textarea
+          name="content"
+          required
+          rows={20}
+          value={state.content}
+          onChange={(e) => update("content", e.target.value)}
+          className={`${inputClass} font-mono text-sm`}
+        />
+      </Field>
+
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex gap-3">
+          <Link
+            href="/admin/posts"
+            className="rounded-md border border-border bg-card px-4 py-2 text-sm hover:border-primary"
+          >
+            取消
+          </Link>
+          {mode === "edit" && onDelete ? (
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deletePending}
+              className="rounded-md border border-red-400/50 bg-red-50 px-4 py-2 text-sm text-red-700 hover:border-red-500 disabled:opacity-50 dark:bg-red-950 dark:text-red-200"
+            >
+              {deletePending ? "删除中…" : "删除"}
+            </button>
+          ) : null}
+        </div>
+        <button
+          type="submit"
+          disabled={pending}
+          className="rounded-md bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
+        >
+          {pending ? "保存中…" : mode === "new" ? "创建" : "保存"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+const inputClass =
+  "w-full rounded-md border border-border bg-background px-3 py-2 text-sm transition focus:border-primary focus:outline-none";
+
+function Field({
+  label,
+  required,
+  hint,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="text-sm font-medium">
+        {label}
+        {required ? <span className="text-red-500"> *</span> : null}
+      </span>
+      {children}
+      {hint ? <span className="text-xs text-muted">{hint}</span> : null}
+    </label>
+  );
+}
