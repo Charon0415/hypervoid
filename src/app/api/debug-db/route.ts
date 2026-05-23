@@ -1,4 +1,8 @@
 import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
+import { eq } from "drizzle-orm";
+import * as schema from "@/db/schema";
+import { getViewCount } from "@/db/posts-stats";
 
 export const dynamic = "force-dynamic";
 
@@ -8,38 +12,45 @@ export async function GET() {
   const envLen = url?.length ?? 0;
   const envStartsWith = url ? url.slice(0, 13) : "";
 
-  let queryStatus: string = "skipped";
-  let viewsTable = "skipped";
-  let likesTable = "skipped";
+  let rawQueryStatus: string = "skipped";
+  let drizzleSelect: string = "skipped";
+  let drizzleViewCountResult: unknown = "skipped";
 
   if (url) {
     try {
       const sql = neon(url);
       const r = await sql`SELECT 1 as ok`;
-      queryStatus = r[0]?.ok === 1 ? "ok" : "unexpected: " + JSON.stringify(r);
-      try {
-        const v = await sql`SELECT count FROM post_views LIMIT 1`;
-        viewsTable = `ok (${v.length} rows)`;
-      } catch (e) {
-        viewsTable = `error: ${(e as Error).message}`.slice(0, 200);
-      }
-      try {
-        const l = await sql`SELECT count FROM post_likes LIMIT 1`;
-        likesTable = `ok (${l.length} rows)`;
-      } catch (e) {
-        likesTable = `error: ${(e as Error).message}`.slice(0, 200);
-      }
+      rawQueryStatus = r[0]?.ok === 1 ? "ok" : "unexpected: " + JSON.stringify(r);
     } catch (e) {
-      queryStatus = `error: ${(e as Error).message}`.slice(0, 200);
+      rawQueryStatus = `throw: ${(e as Error).message}`.slice(0, 300);
     }
+
+    try {
+      const sql = neon(url);
+      const db = drizzle({ client: sql, schema });
+      const rows = await db
+        .select({ count: schema.postViews.count })
+        .from(schema.postViews)
+        .where(eq(schema.postViews.slug, "hello-world"))
+        .limit(1);
+      drizzleSelect = `ok rows=${rows.length} value=${JSON.stringify(rows)}`;
+    } catch (e) {
+      drizzleSelect = `throw: ${(e as Error).message}`.slice(0, 300);
+    }
+  }
+
+  try {
+    drizzleViewCountResult = await getViewCount("hello-world");
+  } catch (e) {
+    drizzleViewCountResult = `throw: ${(e as Error).message}`.slice(0, 300);
   }
 
   return Response.json({
     hasEnv,
     envLen,
     envStartsWith,
-    queryStatus,
-    viewsTable,
-    likesTable,
+    rawQueryStatus,
+    drizzleSelect,
+    drizzleViewCountResult,
   });
 }
