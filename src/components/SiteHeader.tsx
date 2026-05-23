@@ -38,6 +38,24 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
+        <Link
+          href="/search"
+          aria-label="搜索"
+          title="搜索文章"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-muted transition hover:border-primary hover:text-primary"
+        >
+          <svg
+            aria-hidden="true"
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path d="M21 21l-4.35-4.35" />
+          </svg>
+        </Link>
         <ThemeToggle />
       </div>
     </header>

@@ -89,3 +89,52 @@ export async function getPostsByTag(tag: string): Promise<Post[]> {
   const posts = await getAllPosts();
   return posts.filter((p) => p.frontmatter.tags.includes(tag));
 }
+
+export type SearchHit = Post & { score: number };
+
+export async function searchPosts(query: string): Promise<SearchHit[]> {
+  const q = query.trim();
+  if (!q) return [];
+  const pattern = `%${q}%`;
+
+  const rows = await getDb()
+    .select({
+      slug: schema.posts.slug,
+      title: schema.posts.title,
+      description: schema.posts.description,
+      content: schema.posts.content,
+      category: schema.posts.category,
+      tags: schema.posts.tags,
+      cover: schema.posts.cover,
+      status: schema.posts.status,
+      publishAt: schema.posts.publishAt,
+      createdAt: schema.posts.createdAt,
+      updatedAt: schema.posts.updatedAt,
+      score: sql<number>`GREATEST(
+        similarity(${schema.posts.title}, ${q}),
+        similarity(coalesce(${schema.posts.description}, ''), ${q}) * 0.6,
+        similarity(${schema.posts.content}, ${q}) * 0.3
+      )`,
+    })
+    .from(schema.posts)
+    .where(
+      and(
+        visibleClause(),
+        sql`(${schema.posts.title} || ' ' || coalesce(${schema.posts.description}, '') || ' ' || ${schema.posts.content}) ILIKE ${pattern}`,
+      ),
+    )
+    .orderBy(
+      sql`GREATEST(
+        similarity(${schema.posts.title}, ${q}),
+        similarity(coalesce(${schema.posts.description}, ''), ${q}) * 0.6,
+        similarity(${schema.posts.content}, ${q}) * 0.3
+      ) DESC NULLS LAST`,
+      desc(schema.posts.publishAt),
+    )
+    .limit(50);
+
+  return rows.map((row) => ({
+    ...toPost(row),
+    score: row.score ?? 0,
+  }));
+}
