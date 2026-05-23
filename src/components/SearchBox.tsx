@@ -2,10 +2,12 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { useT } from "@/components/LocaleProvider";
 
 export function SearchBox({ initial = "" }: { initial?: string }) {
   const router = useRouter();
   const params = useSearchParams();
+  const t = useT();
   const [q, setQ] = useState(initial || params.get("q") || "");
 
   const onSubmit = (e: React.FormEvent) => {
@@ -21,9 +23,9 @@ export function SearchBox({ initial = "" }: { initial?: string }) {
         type="search"
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="搜索文章…"
+        placeholder={t.common.searchPlaceholder}
         className="w-full rounded-md border border-border bg-card px-3 py-1.5 pl-9 text-sm transition focus:border-primary focus:outline-none"
-        aria-label="搜索"
+        aria-label={t.common.search}
       />
       <svg
         aria-hidden="true"

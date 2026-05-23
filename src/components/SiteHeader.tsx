@@ -1,21 +1,25 @@
+"use client";
+
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
-
-const NAV_ITEMS = [
-  { href: "/", label: "首页" },
-  { href: "/posts", label: "文章" },
-  { href: "/anime", label: "番剧" },
-  { href: "/projects", label: "项目" },
-  { href: "/skills", label: "技能" },
-  { href: "/timeline", label: "时间线" },
-  { href: "/albums", label: "相册" },
-  { href: "/diary", label: "日记" },
-  { href: "/guestbook", label: "留言" },
-  { href: "/friends", label: "友链" },
-  { href: "/about", label: "关于" },
-];
+import { LocaleSwitch } from "@/components/LocaleSwitch";
+import { useT } from "@/components/LocaleProvider";
 
 export function SiteHeader() {
+  const t = useT();
+  const navItems = [
+    { href: "/posts", label: t.nav.posts },
+    { href: "/anime", label: t.nav.anime },
+    { href: "/projects", label: t.nav.projects },
+    { href: "/skills", label: t.nav.skills },
+    { href: "/timeline", label: t.nav.timeline },
+    { href: "/albums", label: t.nav.albums },
+    { href: "/diary", label: t.nav.diary },
+    { href: "/guestbook", label: t.nav.guestbook },
+    { href: "/friends", label: t.nav.friends },
+    { href: "/about", label: t.nav.about },
+  ];
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4">
@@ -29,7 +33,7 @@ export function SiteHeader() {
           <span className="hidden sm:inline">Hypervoid</span>
         </Link>
         <nav className="ml-auto flex items-center gap-1 overflow-x-auto text-sm">
-          {NAV_ITEMS.slice(1).map((item) => (
+          {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -41,8 +45,8 @@ export function SiteHeader() {
         </nav>
         <Link
           href="/search"
-          aria-label="搜索"
-          title="搜索文章"
+          aria-label={t.common.search}
+          title={t.common.search}
           className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-muted transition hover:border-primary hover:text-primary"
         >
           <svg
@@ -57,6 +61,7 @@ export function SiteHeader() {
             <path d="M21 21l-4.35-4.35" />
           </svg>
         </Link>
+        <LocaleSwitch />
         <ThemeToggle />
       </div>
     </header>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { recordView } from "@/app/posts/[slug]/actions";
+import { useT } from "@/components/LocaleProvider";
 
 export function ViewCounter({
   slug,
@@ -10,6 +11,7 @@ export function ViewCounter({
   slug: string;
   initialCount: number | null;
 }) {
+  const t = useT();
   const [count, setCount] = useState<number | null>(initialCount);
   const [hasIncremented, setHasIncremented] = useState(false);
 
@@ -24,7 +26,7 @@ export function ViewCounter({
   if (count === null) return null;
 
   return (
-    <span title={`${count} 次浏览`} className="inline-flex items-center gap-1">
+    <span title={`${count} ${t.post.views}`} className="inline-flex items-center gap-1">
       <svg
         aria-hidden="true"
         className="h-3.5 w-3.5"

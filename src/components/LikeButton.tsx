@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { recordLike, unrecordLike } from "@/app/posts/[slug]/actions";
+import { useT } from "@/components/LocaleProvider";
 
 const STORAGE_PREFIX = "hypervoid:liked:";
 
@@ -15,6 +16,7 @@ export function LikeButton({
   const [count, setCount] = useState<number | null>(initialCount);
   const [liked, setLiked] = useState(false);
   const [pending, startTransition] = useTransition();
+  const t = useT();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -51,8 +53,8 @@ export function LikeButton({
       onClick={onToggle}
       disabled={pending}
       aria-pressed={liked}
-      aria-label={liked ? "取消点赞" : "点赞"}
-      title={liked ? "再点一下取消" : "点赞这篇文章"}
+      aria-label={liked ? t.post.unlike : t.post.like}
+      title={liked ? t.post.unlike : t.post.like}
       className={`group inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm transition ${
         liked
           ? "border-primary bg-primary/10 text-primary"
