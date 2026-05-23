@@ -114,3 +114,33 @@ body {
 .prose .katex {
   font-size: 1.05em;
 }
+
+/* Hypervoid hero — cosmic gradient + subtle stars */
+.hypervoid-hero {
+  background:
+    radial-gradient(
+      ellipse at 80% 0%,
+      color-mix(in srgb, var(--primary) 18%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 0% 100%,
+      color-mix(in srgb, var(--primary) 10%, transparent),
+      transparent 60%
+    ),
+    var(--card);
+}
+.hypervoid-stars {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 12% 20%, var(--foreground) 50%, transparent 51%),
+    radial-gradient(1px 1px at 38% 75%, var(--foreground) 50%, transparent 51%),
+    radial-gradient(1px 1px at 64% 30%, var(--foreground) 50%, transparent 51%),
+    radial-gradient(1px 1px at 82% 60%, var(--foreground) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 22% 50%, var(--primary) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 70% 85%, var(--primary) 50%, transparent 51%),
+    radial-gradient(0.8px 0.8px at 50% 12%, var(--foreground) 50%, transparent 51%);
+  opacity: 0.35;
+  pointer-events: none;
+}
