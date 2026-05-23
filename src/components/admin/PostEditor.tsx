@@ -60,7 +60,7 @@ export function postRowToInitial(row: {
 function slugify(text: string): string {
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9一-龥\s-]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
@@ -199,7 +199,11 @@ export function PostEditor({
         <Field
           label="Slug (URL 路径)"
           required
-          hint={mode === "edit" ? "已发布后不建议修改" : "小写字母 + 数字 + 连字符"}
+          hint={
+            mode === "edit"
+              ? "已发布后不建议修改"
+              : "纯 ASCII：小写字母、数字、短横线。例：hello-world、why-nextjs"
+          }
         >
           <input
             name="slug"
@@ -207,7 +211,9 @@ export function PostEditor({
             required
             readOnly={mode === "edit"}
             value={state.slug}
-            onChange={(e) => update("slug", e.target.value)}
+            onChange={(e) =>
+              update("slug", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))
+            }
             className={`${inputClass} ${mode === "edit" ? "cursor-not-allowed bg-muted/10 text-muted" : ""}`}
             pattern="[a-z0-9][a-z0-9-]*"
           />
