@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LocaleSwitch } from "@/components/LocaleSwitch";
 import { ThemeColorPicker } from "@/components/ThemeColorPicker";
+import { MobileNav } from "@/components/MobileNav";
 import { useT } from "@/components/LocaleProvider";
 
 export function SiteHeader() {
@@ -23,7 +24,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4">
+      <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 sm:gap-3">
         <Link
           href="/"
           className="flex items-center gap-2 font-bold tracking-tight"
@@ -33,7 +34,7 @@ export function SiteHeader() {
           </span>
           <span className="hidden sm:inline">Hypervoid</span>
         </Link>
-        <nav className="ml-auto flex items-center gap-1 overflow-x-auto text-sm">
+        <nav className="ml-auto hidden items-center gap-1 overflow-x-auto text-sm md:flex">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -44,27 +45,32 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <Link
-          href="/search"
-          aria-label={t.common.search}
-          title={t.common.search}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-muted transition hover:border-primary hover:text-primary"
-        >
-          <svg
-            aria-hidden="true"
-            className="h-4 w-4"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
+        <div className="ml-auto flex items-center gap-1.5 md:ml-0 md:gap-2">
+          <Link
+            href="/search"
+            aria-label={t.common.search}
+            title={t.common.search}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-muted transition hover:border-primary hover:text-primary"
           >
-            <circle cx="11" cy="11" r="7" />
-            <path d="M21 21l-4.35-4.35" />
-          </svg>
-        </Link>
-        <LocaleSwitch />
-        <ThemeColorPicker />
-        <ThemeToggle />
+            <svg
+              aria-hidden="true"
+              className="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.35-4.35" />
+            </svg>
+          </Link>
+          <div className="hidden sm:flex sm:items-center sm:gap-1.5 md:gap-2">
+            <LocaleSwitch />
+            <ThemeColorPicker />
+          </div>
+          <ThemeToggle />
+          <MobileNav />
+        </div>
       </div>
     </header>
   );

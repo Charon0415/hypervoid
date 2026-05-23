@@ -1,19 +1,20 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTheme } from "next-themes";
 
-const STAR_COUNT = 80;
-const SPEED = 0.06;
-
-type Star = {
+type Particle = {
   x: number;
   y: number;
   z: number;
   size: number;
+  vx: number;
+  vy: number;
 };
 
 export function Starfield() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -31,15 +32,23 @@ export function Starfield() {
       height = canvas.clientHeight;
       canvas.width = width * dpr;
       canvas.height = height * dpr;
-      ctx?.scale(dpr, dpr);
+      ctx?.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     resize();
 
-    const stars: Star[] = Array.from({ length: STAR_COUNT }, () => ({
+    const isDark = resolvedTheme === "dark";
+
+    const config = isDark
+      ? { count: 90, baseSpeed: 0.06, sizeMin: 0.4, sizeMax: 1.6, baseOpacity: 0.22, color: "255, 255, 255" }
+      : { count: 32, baseSpeed: 0.02, sizeMin: 1.2, sizeMax: 3.2, baseOpacity: 0.12, color: "99, 102, 241" };
+
+    const particles: Particle[] = Array.from({ length: config.count }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      z: Math.random() * 0.6 + 0.4,
-      size: Math.random() * 1.2 + 0.4,
+      z: Math.random() * 0.7 + 0.3,
+      size: Math.random() * (config.sizeMax - config.sizeMin) + config.sizeMin,
+      vx: (Math.random() - 0.5) * 0.1,
+      vy: config.baseSpeed * (Math.random() * 0.5 + 0.5),
     }));
 
     let mounted = true;
@@ -48,18 +57,26 @@ export function Starfield() {
     function draw() {
       if (!mounted || !ctx) return;
       ctx.clearRect(0, 0, width, height);
-      const isDark = document.documentElement.classList.contains("dark");
-      const color = isDark ? "255, 255, 255" : "100, 100, 120";
-      for (const s of stars) {
-        s.y += SPEED * s.z;
-        if (s.y > height) {
-          s.y = -2;
-          s.x = Math.random() * width;
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy * p.z;
+        if (p.y > height + 4) {
+          p.y = -4;
+          p.x = Math.random() * width;
         }
+        if (p.x < -4) p.x = width + 4;
+        else if (p.x > width + 4) p.x = -4;
+
         ctx.beginPath();
-        ctx.arc(s.x, s.y, s.size * s.z, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${color}, ${0.18 * s.z + 0.05})`;
+        ctx.arc(p.x, p.y, p.size * p.z, 0, Math.PI * 2);
+        const alpha = config.baseOpacity * p.z + 0.05;
+        ctx.fillStyle = `rgba(${config.color}, ${alpha})`;
+        if (!isDark) {
+          ctx.shadowColor = `rgba(${config.color}, ${alpha * 0.6})`;
+          ctx.shadowBlur = 10;
+        }
         ctx.fill();
+        ctx.shadowBlur = 0;
       }
       raf = requestAnimationFrame(draw);
     }
@@ -73,7 +90,7 @@ export function Starfield() {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", onResize);
     };
-  }, []);
+  }, [resolvedTheme]);
 
   return (
     <canvas
