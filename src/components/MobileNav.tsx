@@ -80,7 +80,10 @@ export function MobileNav() {
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute right-0 top-0 h-screen w-72 max-w-[85vw] overflow-y-auto bg-card text-foreground shadow-2xl ring-1 ring-border">
+          <div
+            className="absolute right-0 top-0 h-screen w-72 max-w-[85vw] overflow-y-auto bg-card text-foreground shadow-2xl ring-1 ring-border"
+            style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom, 0px))" }}
+          >
             <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-card px-5 py-4">
               <span className="font-bold tracking-tight">Hypervoid</span>
               <button

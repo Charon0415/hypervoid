@@ -90,7 +90,7 @@ export function AnimeDetailModal({
           type="button"
           onClick={onClose}
           aria-label="关闭"
-          className="absolute right-3 top-3 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/80 text-muted backdrop-blur transition hover:bg-background hover:text-foreground"
+          className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-background/80 text-muted backdrop-blur transition hover:bg-background hover:text-foreground touch-manipulation"
         >
           <svg
             aria-hidden

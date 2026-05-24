@@ -50,7 +50,7 @@ export function ReadingMode() {
         onClick={() => setOpen((v) => !v)}
         aria-label="阅读模式"
         title="阅读模式"
-        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted transition hover:border-primary/40 hover:text-primary"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-muted transition hover:border-primary/40 hover:text-primary touch-manipulation"
       >
         <svg
           aria-hidden
