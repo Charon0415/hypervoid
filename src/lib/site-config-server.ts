@@ -21,7 +21,10 @@ export type OverridableFields =
   | "socials.bilibili"
   | "socials.gitee"
   | "socials.codeberg"
-  | "socials.steam";
+  | "socials.steam"
+  | "announcementMessage"
+  | "announcementLink"
+  | "announcementLinkText";
 
 const DEFAULT_MAP: Record<OverridableFields, string> = {
   name: siteConfig.name,
@@ -41,6 +44,9 @@ const DEFAULT_MAP: Record<OverridableFields, string> = {
   "socials.gitee": siteConfig.socials.find((s) => s.icon === "gitee")?.url ?? "",
   "socials.codeberg": siteConfig.socials.find((s) => s.icon === "codeberg")?.url ?? "",
   "socials.steam": siteConfig.socials.find((s) => s.icon === "steam")?.url ?? "",
+  announcementMessage: "",
+  announcementLink: "",
+  announcementLinkText: "",
 };
 
 const LABELS: Record<OverridableFields, string> = {
@@ -61,6 +67,9 @@ const LABELS: Record<OverridableFields, string> = {
   "socials.gitee": "Gitee 链接",
   "socials.codeberg": "Codeberg 链接",
   "socials.steam": "Steam 链接",
+  announcementMessage: "公告文本（留空则不显示）",
+  announcementLink: "公告链接",
+  announcementLinkText: "链接按钮文字",
 };
 
 export const OVERRIDABLE_FIELDS = Object.entries(LABELS).map(

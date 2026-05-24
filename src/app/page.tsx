@@ -25,7 +25,7 @@ function pickByDay<T>(arr: T[]): T | null {
 
 export default async function Home() {
   const all = await getAllPosts();
-  const recent = all.slice(0, 4);
+  const recent = all.slice(0, 6);
   const dailyPick = pickByDay(all);
 
   return (
@@ -106,7 +106,7 @@ export default async function Home() {
           )}
         </section>
 
-        <section>
+        <section className="lg:mt-auto">
           {isEmailConfigured() ? <SubscribeForm /> : <RssSubscribeCard />}
         </section>
       </div>
