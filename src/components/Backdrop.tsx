@@ -182,18 +182,15 @@ function AcgCarousel({ wallpapers }: { wallpapers: string[] }) {
 export function Backdrop() {
   const { background, displayMode } = useSettings();
 
-  if (displayMode === "simple") return null;
-
-  const wrapperClass =
-    displayMode === "banner"
-      ? "pointer-events-none fixed inset-x-0 top-0 -z-10 h-[44vh] overflow-hidden"
-      : "pointer-events-none fixed inset-0 -z-10 overflow-hidden";
+  // banner mode handles visual backdrops via <BannerStrip/> in the layout;
+  // simple mode hides everything; only fullscreen uses this fixed backdrop.
+  if (displayMode !== "fullscreen") return null;
 
   if (background === "plain") return null;
 
   if (background === "cosmic") {
     return (
-      <div className={wrapperClass}>
+      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <CanvasParticles density="normal" />
       </div>
     );
@@ -201,7 +198,7 @@ export function Backdrop() {
 
   if (background === "particles") {
     return (
-      <div className={wrapperClass}>
+      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <CanvasParticles density="dense" />
       </div>
     );
@@ -209,7 +206,7 @@ export function Backdrop() {
 
   if (background === "acg") {
     return (
-      <div className={wrapperClass}>
+      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <AcgCarousel wallpapers={siteConfig.acgWallpapers} />
       </div>
     );

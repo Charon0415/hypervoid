@@ -8,6 +8,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { UmamiScript } from "@/components/UmamiScript";
 import { Backdrop } from "@/components/Backdrop";
+import { BannerStrip } from "@/components/BannerStrip";
 import { BackToTop } from "@/components/BackToTop";
 import { SettingsProvider } from "@/components/SettingsProvider";
 import { siteConfig } from "@/lib/site-config";
@@ -70,6 +71,7 @@ export default function RootLayout({
           <Backdrop />
           <Providers>
             <SiteHeader />
+            <BannerStrip />
             <main className="page-fade mx-auto w-full max-w-6xl flex-1 px-4 py-8">
               {children}
             </main>
