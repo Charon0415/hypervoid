@@ -17,9 +17,10 @@ export default function AboutPage() {
       </blockquote>
 
       <p>
-        这里是 <strong>Hypervoid</strong>——我自己造的词，
-        <em>hyper</em>（超）+ <em>void</em>（虚空），意思接近「高维虚空 / 高维空白」。
-        我在这片虚空里给自己留了块坐标，写写画画、记录痕迹的地方。
+        <strong>Hypervoid</strong> 由{" "}
+        <em>hyper</em>（高维）+ <em>void</em>（虚空）合成而来——
+        一处用以长期记录、积累、整理的私人空间。
+        在这里把碎片化的想法、技术笔记、阅读与影像，慢慢沉淀下来。
       </p>
 
       <h2>这里写些什么</h2>

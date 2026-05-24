@@ -41,9 +41,9 @@ export default async function Home() {
               The world is big, you have to go and see.
             </p>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted sm:mt-5 sm:text-base md:text-lg">
-              这里是 Hypervoid——hyper + void，自造词，意思是「高维虚空」。
-              一颗游荡者留下的坐标：写技术、玩游戏、追番剧、记录折腾——
-              能记录的都记录在这。
+              Hypervoid 取自 <em className="text-foreground/80">hyper × void</em>，「高维虚空」——
+              一处用以长期沉淀技术探索、阅读、影像与生活痕迹的私人坐标系。
+              文章、追番、游戏与每一行折腾，都收纳于此。
             </p>
             <div className="mt-4 flex flex-wrap gap-2 sm:mt-6 sm:gap-3">
               <Link

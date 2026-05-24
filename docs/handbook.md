@@ -27,7 +27,7 @@
 
 ### 1.1 这是什么
 
-**Hypervoid** 是一个完整的个人博客系统，从空目录手搓出来。它不只是"渲染 Markdown 的静态站"，更接近一个**带后台的内容管理系统 + 数据驱动的个人主页**：
+**Hypervoid**（取自 *hyper* × *void*「高维虚空」）是一个完整的个人博客系统，从空目录手搓出来。它不只是"渲染 Markdown 的静态站"，更接近一个**带后台的内容管理系统 + 数据驱动的个人主页**：
 
 - **文章存数据库**，不在仓库里。无需 redeploy 即可发布
 - **后台 `/admin`** 是浏览器内的所见即所得 MDX 编辑器
@@ -363,7 +363,7 @@ export const siteConfig = {
     name: "Charon",
     handle: "HyperCharon",
     bio: "The world is big, you have to go and see.",
-    avatar: "https://github.com/HyperCharon.png",
+    avatar: "/avatar.jpg",  // 默认本地 public/avatar.jpg；GitHub 头像在国内偶发不可达，已弃用
     githubUsername: "HyperCharon",
     githubUrl: "https://github.com/HyperCharon",
   },

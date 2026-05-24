@@ -10,7 +10,7 @@ export const siteConfig = {
     name: "Charon",
     handle: "HyperCharon",
     bio: "The world is big, you have to go and see.",
-    avatar: "https://github.com/HyperCharon.png",
+    avatar: "/avatar.jpg",
     githubUsername: "HyperCharon",
     githubUrl: "https://github.com/HyperCharon",
   },
