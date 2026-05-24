@@ -28,7 +28,7 @@ html {
   --card: #ffffff;
   --muted: #71717a;
   --border: #e4e4e7;
-  --primary: #3b82c4;
+  --primary: #1d4ed8;
   --primary-foreground: #ffffff;
 }
 
@@ -38,8 +38,8 @@ html {
   --card: #18181b;
   --muted: #a1a1aa;
   --border: #27272a;
-  --primary: #609cdb;
-  --primary-foreground: #09090b;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
 }
 
 @theme inline {
