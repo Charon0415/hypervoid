@@ -23,6 +23,7 @@ import { ReadingProgress } from "@/components/ReadingProgress";
 import { ReadingMode } from "@/components/ReadingMode";
 import { ShareButtons } from "@/components/ShareButtons";
 import { siteConfig } from "@/lib/site-config";
+import { auth } from "@/auth";
 import { getLikeCount, getViewCount } from "@/db/posts-stats";
 import { isAiConfigured } from "@/lib/ai";
 
@@ -54,11 +55,19 @@ export default async function PostPage(props: { params: Promise<Params> }) {
 
   const { frontmatter, content } = post;
   const toc = extractTOC(content);
-  const [viewCount, likeCount, adjacent] = await Promise.all([
+  const [viewCount, likeCount, adjacent, session] = await Promise.all([
     getViewCount(slug),
     getLikeCount(slug),
     getAdjacentPosts(slug),
+    auth(),
   ]);
+  const isAdmin =
+    (session?.user as { isAdmin?: boolean } | undefined)?.isAdmin === true;
+  const giscusRepo = process.env.NEXT_PUBLIC_GISCUS_REPO?.trim();
+  const moderateUrl =
+    isAdmin && giscusRepo
+      ? `https://github.com/${giscusRepo}/discussions?discussions_q=${encodeURIComponent(`in:title /posts/${slug}`)}`
+      : null;
 
   return (
     <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_220px]">
@@ -201,7 +210,32 @@ export default async function PostPage(props: { params: Promise<Params> }) {
           </section>
         ) : null}
         <section className="mt-16 border-t border-border pt-8">
-          <h2 className="mb-6 text-xl font-semibold tracking-tight">评论</h2>
+          <div className="mb-6 flex items-baseline justify-between gap-3">
+            <h2 className="text-xl font-semibold tracking-tight">评论</h2>
+            {moderateUrl ? (
+              <a
+                href={moderateUrl}
+                target="_blank"
+                rel="noreferrer noopener"
+                title="GitHub Discussions 是评论真实存储地。点这里跳到对应 discussion 删评论"
+                className="group inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] text-muted transition hover:border-primary/40 hover:text-primary"
+              >
+                🛡️ 在 GitHub 管理
+                <svg
+                  aria-hidden
+                  className="h-3 w-3 transition group-hover:translate-x-0.5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M7 17L17 7M17 7H8M17 7v9" />
+                </svg>
+              </a>
+            ) : null}
+          </div>
           <Comments />
         </section>
       </article>
