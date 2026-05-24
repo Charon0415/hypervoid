@@ -31,7 +31,7 @@ export const siteConfig = {
    * 留空时「ACG 轮播」背景会回退到一段提示。
    */
   acgWallpapers: [
-    // "/wallpapers/01.jpg",
+     "/wallpapers/01.webp",
     // "/wallpapers/02.jpg",
     // "/wallpapers/03.jpg",
   ] as string[],
