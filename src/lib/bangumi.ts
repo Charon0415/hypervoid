@@ -1,4 +1,5 @@
 import "server-only";
+import { getSiteOverride } from "@/lib/site-config-server";
 import { siteConfig } from "@/lib/site-config";
 import {
   STATUS_TO_TYPE,
@@ -48,7 +49,7 @@ export async function fetchBangumiCollection(
   status: BangumiStatus,
   { limit = 50, offset = 0 }: { limit?: number; offset?: number } = {},
 ): Promise<{ items: BangumiItem[]; total: number }> {
-  const userId = siteConfig.bangumiUserId;
+  const userId = await getSiteOverride("bangumiUserId");
   if (!userId) return { items: [], total: 0 };
 
   const subjectType = SUBJECT_KIND_TO_TYPE[kind];

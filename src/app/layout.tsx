@@ -12,6 +12,7 @@ import { BannerStrip } from "@/components/BannerStrip";
 import { BackToTop } from "@/components/BackToTop";
 import { SettingsProvider } from "@/components/SettingsProvider";
 import { siteConfig } from "@/lib/site-config";
+import { getSiteOverride } from "@/lib/site-config-server";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,37 +24,44 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url),
-  title: {
-    default: siteConfig.title,
-    template: `%s · ${siteConfig.name}`,
-  },
-  description: siteConfig.description,
-  authors: [{ name: siteConfig.author.name, url: siteConfig.author.githubUrl }],
-  creator: siteConfig.author.name,
-  openGraph: {
-    title: siteConfig.title,
-    description: siteConfig.description,
-    url: siteConfig.url,
-    siteName: siteConfig.name,
-    type: "website",
-    locale: siteConfig.locale,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: siteConfig.title,
-    description: siteConfig.description,
-  },
-  alternates: {
-    canonical: "/",
-    types: {
-      "application/rss+xml": [
-        { url: "/rss.xml", title: siteConfig.rss.title },
-      ],
+export async function generateMetadata(): Promise<Metadata> {
+  const [description, authorName, authorUrl] = await Promise.all([
+    getSiteOverride("description"),
+    getSiteOverride("author.name"),
+    getSiteOverride("author.githubUrl"),
+  ]);
+  return {
+    metadataBase: new URL(siteConfig.url),
+    title: {
+      default: siteConfig.title,
+      template: `%s · ${siteConfig.name}`,
     },
-  },
-};
+    description,
+    authors: [{ name: authorName, url: authorUrl }],
+    creator: authorName,
+    openGraph: {
+      title: siteConfig.title,
+      description,
+      url: siteConfig.url,
+      siteName: siteConfig.name,
+      type: "website",
+      locale: siteConfig.locale,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: siteConfig.title,
+      description,
+    },
+    alternates: {
+      canonical: "/",
+      types: {
+        "application/rss+xml": [
+          { url: "/rss.xml", title: siteConfig.rss.title },
+        ],
+      },
+    },
+  };
+}
 
 export default function RootLayout({
   children,
