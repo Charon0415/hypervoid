@@ -72,6 +72,30 @@ export function BannerStrip() {
     );
   }
 
+  if (background === "medieval") {
+    return (
+      <div className={stripClass}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/wallpapers/2.webp"
+          alt=""
+          aria-hidden
+          loading="eager"
+          fetchPriority="high"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(40,28,12,0.2),rgba(20,12,4,0.45))] mix-blend-multiply"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-b from-background/0 via-transparent to-background"
+        />
+      </div>
+    );
+  }
+
   return null;
 }
 

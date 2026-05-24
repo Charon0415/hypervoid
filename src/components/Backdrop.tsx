@@ -212,6 +212,30 @@ export function Backdrop() {
     );
   }
 
+  if (background === "medieval") {
+    return (
+      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/wallpapers/2.webp"
+          alt=""
+          aria-hidden
+          loading="eager"
+          fetchPriority="high"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(40,28,12,0.25),rgba(20,12,4,0.55))] mix-blend-multiply"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-b from-background/25 via-background/55 to-background/85"
+        />
+      </div>
+    );
+  }
+
   // paper / waves: pure CSS background, body::before handles the look
   return null;
 }

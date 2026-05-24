@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LocaleSwitch } from "@/components/LocaleSwitch";
-import { SiteSettings } from "@/components/SiteSettings";
 import { SocialIcon } from "@/components/SocialIcon";
 import { useT } from "@/components/LocaleProvider";
 import { siteConfig } from "@/lib/site-config";
@@ -145,14 +143,6 @@ export function MobileNav() {
                 </div>
               </div>
             </nav>
-
-            <div
-              className="mx-3 mb-3 mt-2 flex items-center justify-end gap-2 border-t border-border pt-3"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <LocaleSwitch />
-              <SiteSettings />
-            </div>
           </div>
         </div>
       ) : null}

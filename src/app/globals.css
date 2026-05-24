@@ -8,6 +8,19 @@
 html {
   scroll-padding-top: 4rem;
 }
+
+/* Global font-size — root rem unit. "large" bumps the base ~9.4% so the
+   whole rem-driven layout breathes without breaking line-lengths. */
+html[data-font-size="large"] {
+  font-size: 17.5px;
+}
+
+/* When the global is already "large", relax prose line-height a touch so
+   longer text columns don't feel cramped. Doesn't double-grow font-size —
+   reading-mode "large" still owns the article-only size bump. */
+html[data-font-size="large"] .prose {
+  line-height: 1.8;
+}
 @media (max-width: 768px) {
   input,
   select,
@@ -114,6 +127,39 @@ body::before {
 /* Plain — no body decoration; canvas particles also skipped by <Backdrop /> */
 html[data-bg="plain"] body::before {
   display: none;
+}
+
+/* Medieval — the <Backdrop /> renders the image; body::before adds a
+   subtle parchment-ish warm vignette in light mode and an amber haze in
+   dark mode to glue the surface chrome into the theme. */
+html[data-bg="medieval"] body::before {
+  background-image:
+    radial-gradient(
+      ellipse at top,
+      color-mix(in srgb, #6b4a1f 12%, transparent),
+      transparent 65%
+    ),
+    radial-gradient(
+      ellipse at bottom,
+      color-mix(in srgb, #2a1a08 14%, transparent),
+      transparent 70%
+    );
+  background-size: auto;
+  opacity: 0.55;
+}
+.dark html[data-bg="medieval"] body::before {
+  background-image:
+    radial-gradient(
+      ellipse at top,
+      color-mix(in srgb, #a87a3a 14%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at bottom,
+      color-mix(in srgb, #1c120a 50%, transparent),
+      transparent 70%
+    );
+  opacity: 0.7;
 }
 
 /* Paper — soft cross-hatch grid lines */
@@ -366,6 +412,23 @@ html[data-reading="large"] article .prose {
     radial-gradient(0.8px 0.8px at 50% 12%, var(--foreground) 50%, transparent 51%);
   opacity: 0.35;
   pointer-events: none;
+}
+
+/* Mobile bottom-sheet entrance for the SiteSettings panel */
+@keyframes sheetUp {
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [class*="sheetUp"] {
+    animation: none !important;
+  }
 }
 
 /* Page fade-in on route change */
