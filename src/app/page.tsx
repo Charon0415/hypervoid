@@ -70,8 +70,6 @@ export default async function Home() {
           </div>
         </section>
 
-        <SiteStats />
-
         <PostActivityHeatmap />
 
         <section>
@@ -107,6 +105,7 @@ export default async function Home() {
       <aside className="lg:order-2">
         <div className="flex flex-col gap-6 lg:sticky lg:top-20">
           <ProfileCard />
+          <SiteStats />
           <PopularPosts />
           <TagCloud />
           <RecentGuestbook />

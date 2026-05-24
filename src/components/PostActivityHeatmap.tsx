@@ -15,6 +15,12 @@ const MONTH_LABEL_ZH = [
   "7月", "8月", "9月", "10月", "11月", "12月",
 ];
 
+const DAY_LABELS: Record<number, string> = {
+  1: "一",
+  3: "三",
+  5: "五",
+};
+
 export async function PostActivityHeatmap() {
   const days = await getPostHeatmap(WEEKS);
 
@@ -49,22 +55,31 @@ export async function PostActivityHeatmap() {
 
       <div className="overflow-x-auto">
         <div className="inline-flex flex-col gap-1.5">
-          <div className="flex gap-1 pl-7">
+          <div className="flex gap-1 pl-6 sm:pl-7">
             {monthLabels.map((label, i) => (
               <div
                 key={i}
-                className="w-3 text-[10px] leading-none text-muted sm:w-3.5"
+                className="relative h-3 w-3 sm:h-3.5 sm:w-3.5"
               >
-                {label}
+                {label ? (
+                  <span className="absolute left-0 top-0 whitespace-nowrap text-[10px] leading-none text-muted">
+                    {label}
+                  </span>
+                ) : null}
               </div>
             ))}
           </div>
 
           <div className="flex gap-1">
-            <div className="flex flex-col justify-between py-0.5 pr-1 text-[10px] leading-none text-muted">
-              <span>一</span>
-              <span>三</span>
-              <span>五</span>
+            <div className="flex flex-col gap-1 pr-1.5 text-[10px] leading-none text-muted">
+              {[0, 1, 2, 3, 4, 5, 6].map((row) => (
+                <div
+                  key={row}
+                  className="flex h-3 items-center justify-end sm:h-3.5"
+                >
+                  {DAY_LABELS[row] ?? ""}
+                </div>
+              ))}
             </div>
 
             {weeks.map((week, wi) => (
