@@ -19,6 +19,7 @@ import { ViewCounter } from "@/components/ViewCounter";
 import { LikeButton } from "@/components/LikeButton";
 import { AskAI } from "@/components/AskAI";
 import { PostNav } from "@/components/PostNav";
+import { ReadingProgress } from "@/components/ReadingProgress";
 import { getLikeCount, getViewCount } from "@/db/posts-stats";
 import { isAiConfigured } from "@/lib/ai";
 
@@ -58,6 +59,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
 
   return (
     <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_220px]">
+      <ReadingProgress />
       <article className="mx-auto w-full max-w-3xl">
         <Link
           href="/posts"
