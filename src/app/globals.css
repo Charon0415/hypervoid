@@ -41,9 +41,20 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-/* Light-mode subtle dot grid in the body background — daylight motif
-   contrasting the dark mode's atmospheric gradient (canvas particles
-   drift on top via <Starfield />). */
+/* Font choice — see SettingsProvider */
+html[data-font="serif"] body {
+  font-family: ui-serif, Georgia, "Iowan Old Style", "Apple Garamond",
+    "Palatino Linotype", "Times New Roman", "Source Han Serif SC",
+    "Source Han Serif CN", "Noto Serif SC", "Songti SC", "STZhongsong", serif;
+}
+html[data-font="handwriting"] body {
+  font-family: "LXGW WenKai", "LXGW WenKai GB", "Kaiti SC", "STKaiti", "KaiTi",
+    "Hiragino Maru Gothic Pro", "MingLiU", cursive;
+}
+
+/* Default cosmic backdrop — light-mode dot grid + dark-mode atmospheric
+   gradient. Applies for default and `data-bg="cosmic"` / `data-bg="particles"`
+   (the canvas particles in <Backdrop /> ride on top). */
 body::before {
   content: "";
   position: fixed;
@@ -79,6 +90,96 @@ body::before {
     );
   background-size: 100% 100%, 100% 100%;
   opacity: 1;
+}
+
+/* Plain — no body decoration; canvas particles also skipped by <Backdrop /> */
+html[data-bg="plain"] body::before {
+  display: none;
+}
+
+/* Paper — soft cross-hatch grid lines */
+html[data-bg="paper"] body::before {
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--foreground) 4%, transparent) 0 1px,
+      transparent 1px 32px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--foreground) 4%, transparent) 0 1px,
+      transparent 1px 32px
+    );
+  background-size: auto;
+  opacity: 0.6;
+}
+.dark html[data-bg="paper"] body::before {
+  opacity: 0.35;
+}
+
+/* Waves — slow drifting radial gradients */
+html[data-bg="waves"] body::before {
+  background-image:
+    radial-gradient(
+      ellipse 70% 50% at 20% 30%,
+      color-mix(in srgb, var(--primary) 16%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 60% 50% at 80% 70%,
+      color-mix(in srgb, var(--primary) 12%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 40% 40% at 50% 50%,
+      color-mix(in srgb, var(--foreground) 4%, transparent),
+      transparent 70%
+    );
+  background-size: auto;
+  opacity: 1;
+  animation: wavesShift 24s ease-in-out infinite alternate;
+}
+@keyframes wavesShift {
+  0% {
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+  }
+  100% {
+    background-position: 25% 15%, 75% 85%, 55% 45%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-bg="waves"] body::before {
+    animation: none;
+  }
+}
+
+/* Reading mode — scoped to <article> on article pages. Overrides CSS vars
+   locally so prose, code, borders all retint together. */
+html[data-reading="sepia"] article,
+html[data-reading="large"] article {
+  --background: #f5edd6;
+  --foreground: #5b4636;
+  --card: #ebe0c0;
+  --border: #d6c089;
+  --muted: #8a7a5c;
+  background: var(--background);
+  color: var(--foreground);
+  padding: 1.25rem 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  transition: background 200ms, color 200ms;
+}
+.dark html[data-reading="sepia"] article,
+.dark html[data-reading="large"] article {
+  --background: #2b2520;
+  --foreground: #e3d3b8;
+  --card: #3a322a;
+  --border: #5b4a3b;
+  --muted: #9c8a72;
+}
+html[data-reading="large"] article .prose {
+  font-size: 1.125rem;
+  line-height: 1.85;
 }
 
 .prose {

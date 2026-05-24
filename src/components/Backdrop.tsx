@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
+import { useSettings } from "@/components/SettingsProvider";
 
 type Particle = {
   x: number;
@@ -12,11 +13,13 @@ type Particle = {
   vy: number;
 };
 
-export function Starfield() {
+export function Backdrop() {
+  const { background } = useSettings();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const { resolvedTheme } = useTheme();
 
   useEffect(() => {
+    if (background !== "cosmic" && background !== "particles") return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -38,9 +41,33 @@ export function Starfield() {
 
     const isDark = resolvedTheme === "dark";
 
-    const config = isDark
-      ? { count: 90, baseSpeed: 0.06, sizeMin: 0.4, sizeMax: 1.6, baseOpacity: 0.22, color: "255, 255, 255" }
-      : { count: 32, baseSpeed: 0.02, sizeMin: 1.2, sizeMax: 3.2, baseOpacity: 0.12, color: "99, 102, 241" };
+    const baseConfig = isDark
+      ? {
+          count: 90,
+          baseSpeed: 0.06,
+          sizeMin: 0.4,
+          sizeMax: 1.6,
+          baseOpacity: 0.22,
+          color: "255, 255, 255",
+        }
+      : {
+          count: 32,
+          baseSpeed: 0.02,
+          sizeMin: 1.2,
+          sizeMax: 3.2,
+          baseOpacity: 0.12,
+          color: "99, 102, 241",
+        };
+
+    const config =
+      background === "particles"
+        ? {
+            ...baseConfig,
+            count: Math.round(baseConfig.count * 1.8),
+            baseSpeed: baseConfig.baseSpeed * 0.55,
+            baseOpacity: baseConfig.baseOpacity * 0.8,
+          }
+        : baseConfig;
 
     const particles: Particle[] = Array.from({ length: config.count }, () => ({
       x: Math.random() * width,
@@ -90,13 +117,20 @@ export function Starfield() {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", onResize);
     };
-  }, [resolvedTheme]);
+  }, [resolvedTheme, background]);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      aria-hidden="true"
-      className="pointer-events-none fixed inset-0 -z-10 h-full w-full"
-    />
-  );
+  if (background === "plain") return null;
+
+  if (background === "cosmic" || background === "particles") {
+    return (
+      <canvas
+        ref={canvasRef}
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-10 h-full w-full"
+      />
+    );
+  }
+
+  // paper / waves: pure CSS, body class drives the look (see globals.css)
+  return null;
 }

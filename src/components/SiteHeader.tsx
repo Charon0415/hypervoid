@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LocaleSwitch } from "@/components/LocaleSwitch";
-import { ThemeColorPicker } from "@/components/ThemeColorPicker";
+import { SiteSettings } from "@/components/SiteSettings";
 import { MobileNav } from "@/components/MobileNav";
 import { NavGroups } from "@/components/NavGroups";
 import { useT } from "@/components/LocaleProvider";
@@ -69,7 +69,7 @@ export function SiteHeader() {
           </Link>
           <div className="hidden sm:flex sm:items-center sm:gap-1.5 md:gap-2">
             <LocaleSwitch />
-            <ThemeColorPicker />
+            <SiteSettings />
           </div>
           <ThemeToggle />
           <MobileNav />

@@ -20,6 +20,7 @@ import { LikeButton } from "@/components/LikeButton";
 import { AskAI } from "@/components/AskAI";
 import { PostNav } from "@/components/PostNav";
 import { ReadingProgress } from "@/components/ReadingProgress";
+import { ReadingMode } from "@/components/ReadingMode";
 import { ShareButtons } from "@/components/ShareButtons";
 import { siteConfig } from "@/lib/site-config";
 import { getLikeCount, getViewCount } from "@/db/posts-stats";
@@ -83,10 +84,13 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             </svg>
             返回文章列表
           </Link>
-          <ShareButtons
-            title={frontmatter.title}
-            url={`${siteConfig.url}/posts/${slug}`}
-          />
+          <div className="flex items-center gap-1">
+            <ReadingMode />
+            <ShareButtons
+              title={frontmatter.title}
+              url={`${siteConfig.url}/posts/${slug}`}
+            />
+          </div>
         </div>
         <header className="mt-4 border-b border-border pb-6">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
