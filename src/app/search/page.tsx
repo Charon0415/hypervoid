@@ -23,12 +23,25 @@ export default async function SearchPage(props: {
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-3">
-        <div className="flex items-baseline gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/"
-            className="text-sm text-muted hover:text-primary"
+            className="group inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium text-foreground/80 transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
           >
-            ← 首页
+            <svg
+              aria-hidden
+              className="h-3.5 w-3.5 transition group-hover:-translate-x-0.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19 12H5" />
+              <path d="M12 19l-7-7 7-7" />
+            </svg>
+            首页
           </Link>
           <h1 className="text-3xl font-bold tracking-tight">搜索</h1>
         </div>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { listVisibleMessages } from "@/db/guestbook";
+import { formatDateCN } from "@/lib/datetime";
 
 function truncate(s: string, max: number): string {
   if (s.length <= max) return s;
@@ -12,7 +13,7 @@ function relativeTime(date: Date): string {
   if (diff < 3600) return `${Math.floor(diff / 60)} 分钟前`;
   if (diff < 86400) return `${Math.floor(diff / 3600)} 小时前`;
   if (diff < 86400 * 30) return `${Math.floor(diff / 86400)} 天前`;
-  return date.toISOString().slice(0, 10);
+  return formatDateCN(date);
 }
 
 export async function RecentGuestbook() {

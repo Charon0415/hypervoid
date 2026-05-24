@@ -3,6 +3,7 @@ import "server-only";
 import { and, desc, eq, lte, or, sql } from "drizzle-orm";
 import { getDb, schema } from "@/db/client";
 import { estimateReadingTime } from "@/lib/reading-time";
+import { formatDateCN } from "@/lib/datetime";
 
 export type PostFrontmatter = {
   title: string;
@@ -42,7 +43,7 @@ function toPost(row: typeof schema.posts.$inferSelect): Post {
     frontmatter: {
       title: row.title,
       description: row.description,
-      date: dateSource.toISOString().slice(0, 10),
+      date: formatDateCN(dateSource),
       tags: row.tags ?? [],
       category: row.category,
       cover: row.cover,

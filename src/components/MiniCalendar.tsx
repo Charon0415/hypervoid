@@ -1,13 +1,12 @@
 import { getMonthCalendar } from "@/lib/stats";
+import { formatDateCN } from "@/lib/datetime";
 
 const DAY_HEADER = ["日", "一", "二", "三", "四", "五", "六"];
 
 export async function MiniCalendar() {
-  const now = new Date();
-  const cal = await getMonthCalendar(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-  );
+  const todayStr = formatDateCN(new Date());
+  const [year, month] = todayStr.split("-").map(Number);
+  const cal = await getMonthCalendar(year, month - 1);
 
   return (
     <aside className="rounded-3xl border border-border bg-card p-5">

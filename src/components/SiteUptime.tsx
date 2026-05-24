@@ -1,10 +1,5 @@
 import { siteConfig } from "@/lib/site-config";
-
-function daysSince(iso: string): number {
-  const start = new Date(`${iso}T00:00:00Z`).getTime();
-  const today = Date.now();
-  return Math.max(0, Math.floor((today - start) / 86_400_000));
-}
+import { daysSinceCN } from "@/lib/datetime";
 
 function formatUptime(days: number): string {
   if (days < 1) return "Day 1";
@@ -16,7 +11,7 @@ function formatUptime(days: number): string {
 }
 
 export function SiteUptime({ className = "" }: { className?: string }) {
-  const days = daysSince(siteConfig.launchedAt);
+  const days = daysSinceCN(siteConfig.launchedAt);
   const launchDisplay = siteConfig.launchedAt.replace(/-/g, ".");
   return (
     <span className={className} title={`Since ${siteConfig.launchedAt}`}>
