@@ -128,3 +128,12 @@ export const photos = pgTable("photos", {
     .notNull()
     .defaultNow(),
 });
+
+/** Runtime overrides for site-config.ts — editable from /admin/settings */
+export const siteOverrides = pgTable("site_overrides", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});

@@ -175,6 +175,11 @@ export default async function AdminHome() {
             title="相册管理"
             desc="创建相册、上传照片、添加说明"
           />
+          <NavTile
+            href="/admin/settings"
+            title="站点设置"
+            desc="在线修改作者名、头像、简介等全局信息"
+          />
         </div>
       </section>
 
