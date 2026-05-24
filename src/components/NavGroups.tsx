@@ -132,7 +132,7 @@ export function NavGroups() {
       className="hidden md:flex md:items-center"
       onMouseLeave={scheduleClose}
     >
-      <div className="flex items-center gap-0.5 rounded-full border border-border bg-card/60 p-1 shadow-sm backdrop-blur">
+      <div className="flex items-center gap-0.5 rounded-full border border-border/70 bg-card/70 p-1 shadow-sm ring-1 ring-black/[0.02] backdrop-blur-md">
         {directLinks.map((link) => {
           const active = isHrefActive(link.href);
           return (
@@ -140,9 +140,9 @@ export function NavGroups() {
               key={link.href}
               href={link.href}
               onMouseEnter={closeNow}
-              className={`rounded-full px-4 py-1.5 text-sm transition ${
+              className={`rounded-full px-4 py-1.5 text-sm font-medium tracking-tight transition ${
                 active
-                  ? "bg-primary/15 text-primary"
+                  ? "bg-primary/15 text-primary shadow-sm"
                   : "text-muted hover:text-foreground"
               }`}
             >
@@ -171,9 +171,9 @@ export function NavGroups() {
                 aria-expanded={isOpen}
                 onClick={() => (isOpen ? closeNow() : openGroup(g.key))}
                 onFocus={() => openGroup(g.key)}
-                className={`relative inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm transition ${
+                className={`relative inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium tracking-tight transition ${
                   isOpen || isActive
-                    ? "bg-primary/15 text-primary"
+                    ? "bg-primary/15 text-primary shadow-sm"
                     : "text-muted hover:text-foreground"
                 }`}
               >

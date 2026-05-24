@@ -19,7 +19,7 @@ export function ThemeToggle() {
       onClick={() => setTheme(next)}
       aria-label={t.common.toggleTheme}
       title={t.common.toggleTheme}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-foreground transition hover:border-primary hover:text-primary touch-manipulation"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/60 bg-card/70 text-foreground backdrop-blur-sm transition hover:border-primary hover:bg-card hover:text-primary touch-manipulation"
     >
       {mounted ? (resolvedTheme === "dark" ? "☾" : "☀") : "⌛"}
     </button>

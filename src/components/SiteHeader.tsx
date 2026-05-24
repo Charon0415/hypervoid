@@ -29,13 +29,13 @@ export function SiteHeader() {
   }, [router]);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur">
+    <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/85 backdrop-blur-md supports-[backdrop-filter]:bg-background/65">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
         <Link
           href="/"
-          className="flex shrink-0 items-center gap-2 font-bold tracking-tight"
+          className="group flex shrink-0 items-center gap-2.5 font-bold tracking-tight"
         >
-          <span aria-hidden className="inline-flex h-7 w-7 items-center justify-center text-primary">
+          <span aria-hidden className="inline-flex h-7 w-7 items-center justify-center text-primary transition-transform group-hover:rotate-12">
             <svg
               viewBox="0 0 64 64"
               className="h-7 w-7"
@@ -78,7 +78,9 @@ export function SiteHeader() {
               <circle cx="32" cy="32" r="5" fill="#ffffff" />
             </svg>
           </span>
-          <span className="hidden sm:inline">Hypervoid</span>
+          <span className="hidden bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-base font-serif tracking-wide text-transparent sm:inline">
+            Hypervoid
+          </span>
         </Link>
 
         <div className="mx-auto">
@@ -90,7 +92,7 @@ export function SiteHeader() {
             href="/search"
             aria-label={t.common.search}
             title={`${t.common.search} (${isMac ? "⌘" : "Ctrl"}+K)`}
-            className="inline-flex h-9 items-center gap-1.5 rounded-md border border-border bg-card px-2 text-muted transition hover:border-primary hover:text-primary"
+            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border/60 bg-card/70 px-2.5 text-muted backdrop-blur-sm transition hover:border-primary hover:bg-card hover:text-primary"
           >
             <svg
               aria-hidden="true"

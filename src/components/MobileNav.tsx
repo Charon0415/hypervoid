@@ -51,7 +51,7 @@ export function MobileNav() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="打开菜单"
-        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-foreground transition hover:border-primary hover:text-primary md:hidden"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/60 bg-card/70 text-foreground backdrop-blur-sm transition hover:border-primary hover:bg-card hover:text-primary md:hidden"
       >
         <svg
           aria-hidden="true"

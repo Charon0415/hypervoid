@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   BACKGROUND_OPTIONS,
   DEFAULT_HUE,
@@ -99,6 +100,8 @@ function BgThumb({ bg }: { bg: BackgroundKey }) {
 
 export function SiteSettings() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const {
     hue,
     background,
@@ -114,17 +117,24 @@ export function SiteSettings() {
     reset,
   } = useSettings();
 
+  useEffect(() => {
+    setMounted(true);
+    const mql = window.matchMedia("(max-width: 767px)");
+    const sync = () => setIsMobile(mql.matches);
+    sync();
+    mql.addEventListener("change", sync);
+    return () => mql.removeEventListener("change", sync);
+  }, []);
+
   // Lock body scroll while the mobile bottom-sheet is open.
   useEffect(() => {
-    if (!open) return;
-    const mql = window.matchMedia("(max-width: 767px)");
-    if (!mql.matches) return;
+    if (!open || !isMobile) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
     };
-  }, [open]);
+  }, [open, isMobile]);
 
   // Keyboard shortcuts: Cmd/Ctrl+, toggles panel; Esc closes it.
   useEffect(() => {
@@ -149,48 +159,32 @@ export function SiteSettings() {
     "border-border text-muted hover:border-primary/40 hover:text-foreground";
   const pillActive = "border-primary bg-primary/10 text-primary";
 
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
+  const panel = open ? (
+    <>
+      {/* Backdrop — dim+blur on mobile, click-catcher on desktop */}
+      <div
+        className="fixed inset-0 z-50 bg-black/45 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none"
+        onClick={() => setOpen(false)}
+        aria-hidden
+      />
+
+      {/* Panel — bottom-sheet on mobile, popover on desktop */}
+      <div
+        role="dialog"
         aria-label="站点设置"
-        aria-expanded={open}
-        title="主题 · 背景 · 字体 (⌘/Ctrl+,)"
-        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card transition hover:border-primary"
+        className="
+          fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto
+          rounded-t-2xl border-t border-x border-border bg-card shadow-2xl
+          animate-[sheetUp_220ms_ease-out]
+          md:absolute md:inset-x-auto md:bottom-auto md:right-0 md:top-11
+          md:w-[19rem] md:max-h-[80vh] md:rounded-xl md:border md:shadow-xl
+          md:animate-none
+        "
+        style={{
+          paddingBottom: "max(1rem, env(safe-area-inset-bottom, 0px))",
+        }}
+        onClick={(e) => e.stopPropagation()}
       >
-        <span
-          className="block h-4 w-4 rounded-full"
-          style={{ background: `hsl(${hue} 70% 60%)` }}
-        />
-      </button>
-
-      {open ? (
-        <>
-          {/* Backdrop — dim+blur on mobile, click-catcher on desktop */}
-          <div
-            className="fixed inset-0 z-30 bg-black/45 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none"
-            onClick={() => setOpen(false)}
-            aria-hidden
-          />
-
-          {/* Panel — bottom-sheet on mobile, popover on desktop */}
-          <div
-            role="dialog"
-            aria-label="站点设置"
-            className="
-              fixed inset-x-0 bottom-0 z-40 max-h-[85vh] overflow-y-auto
-              rounded-t-2xl border-t border-x border-border bg-card shadow-2xl
-              animate-[sheetUp_220ms_ease-out]
-              md:absolute md:inset-x-auto md:bottom-auto md:right-0 md:top-11
-              md:w-[19rem] md:max-h-[80vh] md:rounded-xl md:border md:shadow-xl
-              md:animate-none
-            "
-            style={{
-              paddingBottom: "max(1rem, env(safe-area-inset-bottom, 0px))",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
             {/* Mobile drag-handle hint */}
             <div
               className="mx-auto mt-2 mb-1 h-1 w-9 rounded-full bg-border md:hidden"
@@ -412,7 +406,26 @@ export function SiteSettings() {
             </div>
           </div>
         </>
-      ) : null}
+      ) : null;
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-label="站点设置"
+        aria-expanded={open}
+        title="主题 · 背景 · 字体 (⌘/Ctrl+,)"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/60 bg-card/70 backdrop-blur-sm transition hover:border-primary hover:bg-card"
+      >
+        <span
+          className="block h-4 w-4 rounded-full ring-2 ring-background"
+          style={{ background: `hsl(${hue} 70% 60%)` }}
+        />
+      </button>
+      {mounted && isMobile && panel
+        ? createPortal(panel, document.body)
+        : panel}
     </div>
   );
 }
