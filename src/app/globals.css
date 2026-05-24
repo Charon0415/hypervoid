@@ -201,6 +201,69 @@ html[data-reading="large"] article .prose {
   line-height: 1.85;
 }
 
+/* Print: strip chrome, keep article body — Ctrl/⌘+P 一键变干净纸面 */
+@media print {
+  body::before,
+  header,
+  footer,
+  aside,
+  nav,
+  .page-fade > div > aside,
+  /* in-article extras */
+  article .markdown-alert,
+  article > div:has(button[aria-label="返回顶部"]),
+  /* explicit ids/classes of non-article components */
+  [class*="ReadingProgress"],
+  [class*="BackToTop"],
+  [class*="SiteSettings"],
+  [class*="ShareButtons"],
+  [class*="BookmarkButton"],
+  [class*="ReadingMode"],
+  [class*="AskAI"],
+  [class*="LikeButton"],
+  [class*="SubscribeForm"],
+  [class*="Comments"],
+  [class*="PostNav"],
+  [class*="Backdrop"],
+  iframe {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  article {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    color: black !important;
+  }
+  article .prose {
+    color: black !important;
+    font-size: 11pt !important;
+    line-height: 1.55 !important;
+  }
+  article .prose a {
+    color: #1f3a5f !important;
+    text-decoration: underline;
+  }
+  article .prose a::after {
+    content: " (" attr(href) ")";
+    color: #555;
+    font-size: 9pt;
+  }
+  article .prose pre {
+    border: 1px solid #ccc !important;
+    background: #fafafa !important;
+    page-break-inside: avoid;
+  }
+  article .prose img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+}
+
 .prose {
   --tw-prose-body: var(--foreground);
   --tw-prose-headings: var(--foreground);

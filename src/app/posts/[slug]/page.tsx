@@ -22,6 +22,7 @@ import { PostNav } from "@/components/PostNav";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { ReadingMode } from "@/components/ReadingMode";
 import { ShareButtons } from "@/components/ShareButtons";
+import { BookmarkButton } from "@/components/BookmarkButton";
 import { SeriesBanner } from "@/components/SeriesBanner";
 import { siteConfig } from "@/lib/site-config";
 import { getViewer } from "@/lib/viewer";
@@ -111,6 +112,11 @@ export default async function PostPage(props: { params: Promise<Params> }) {
           </Link>
           <div className="flex items-center gap-1">
             <ReadingMode />
+            <BookmarkButton
+              slug={slug}
+              title={frontmatter.title}
+              description={frontmatter.description}
+            />
             <ShareButtons
               title={frontmatter.title}
               url={`${siteConfig.url}/posts/${slug}`}
