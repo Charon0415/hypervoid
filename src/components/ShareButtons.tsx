@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 type Props = {
   title: string;
@@ -9,8 +9,6 @@ type Props = {
 
 export function ShareButtons({ title, url }: Props) {
   const [copied, setCopied] = useState(false);
-  const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
 
   function copy() {
     if (!navigator.clipboard) return;
@@ -25,59 +23,22 @@ export function ShareButtons({ title, url }: Props) {
       });
   }
 
-  useEffect(() => {
-    if (!open) return;
-    function onDown(e: MouseEvent) {
-      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
-    }
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
-    }
-    document.addEventListener("mousedown", onDown);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onDown);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
-
   const encodedTitle = encodeURIComponent(title);
   const encodedUrl = encodeURIComponent(url);
   const xHref = `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`;
   const weiboHref = `https://service.weibo.com/share/share.php?url=${encodedUrl}&title=${encodedTitle}`;
 
   return (
-    <div ref={rootRef} className="group/share relative inline-flex items-center">
-      <div
-        className={`flex items-center gap-1 pr-2 transition-all duration-200 ${
-          open
-            ? "pointer-events-auto opacity-100"
-            : "pointer-events-none opacity-0 sm:group-hover/share:pointer-events-auto sm:group-hover/share:opacity-100 sm:group-focus-within/share:pointer-events-auto sm:group-focus-within/share:opacity-100"
-        }`}
-      >
-        <ActionButton onClick={copy} label={copied ? "已复制" : "复制链接"}>
-          {copied ? <CheckIcon /> : <LinkIcon />}
-        </ActionButton>
-        <ActionLink href={xHref} label="分享到 X / Twitter">
-          <XIcon />
-        </ActionLink>
-        <ActionLink href={weiboHref} label="分享到微博">
-          <WeiboIcon />
-        </ActionLink>
-      </div>
-      <button
-        type="button"
-        aria-label="分享"
-        aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
-        className={`inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card transition hover:border-primary/40 hover:text-primary ${
-          open
-            ? "border-primary/40 text-primary"
-            : "border-border text-muted"
-        }`}
-      >
-        <ShareIcon />
-      </button>
+    <div className="inline-flex items-center gap-1">
+      <ActionButton onClick={copy} label={copied ? "已复制" : "复制链接"}>
+        {copied ? <CheckIcon /> : <LinkIcon />}
+      </ActionButton>
+      <ActionLink href={xHref} label="分享到 X / Twitter">
+        <XIcon />
+      </ActionLink>
+      <ActionLink href={weiboHref} label="分享到微博">
+        <WeiboIcon />
+      </ActionLink>
     </div>
   );
 }
@@ -127,26 +88,7 @@ function ActionLink({
   );
 }
 
-function ShareIcon() {
-  return (
-    <svg
-      aria-hidden
-      className="h-3.5 w-3.5"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="18" cy="5" r="3" />
-      <circle cx="6" cy="12" r="3" />
-      <circle cx="18" cy="19" r="3" />
-      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-    </svg>
-  );
-}
+
 
 function LinkIcon() {
   return (
