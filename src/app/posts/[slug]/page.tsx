@@ -9,7 +9,7 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeKatex from "rehype-katex";
 import rehypeShiki from "@shikijs/rehype";
-import { getAllPostSlugs, getPostBySlug } from "@/lib/posts";
+import { getAllPostSlugs, getAdjacentPosts, getPostBySlug } from "@/lib/posts";
 import { mdxComponents } from "@/lib/mdx-components";
 import { extractTOC } from "@/lib/toc";
 import { transformerCodeMeta } from "@/lib/shiki-meta";
@@ -18,6 +18,7 @@ import { Comments } from "@/components/Comments";
 import { ViewCounter } from "@/components/ViewCounter";
 import { LikeButton } from "@/components/LikeButton";
 import { AskAI } from "@/components/AskAI";
+import { PostNav } from "@/components/PostNav";
 import { getLikeCount, getViewCount } from "@/db/posts-stats";
 import { isAiConfigured } from "@/lib/ai";
 
@@ -49,9 +50,10 @@ export default async function PostPage(props: { params: Promise<Params> }) {
 
   const { frontmatter, content } = post;
   const toc = extractTOC(content);
-  const [viewCount, likeCount] = await Promise.all([
+  const [viewCount, likeCount, adjacent] = await Promise.all([
     getViewCount(slug),
     getLikeCount(slug),
+    getAdjacentPosts(slug),
   ]);
 
   return (
@@ -165,6 +167,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             <LikeButton slug={slug} initialCount={likeCount} />
           </div>
         ) : null}
+        <PostNav prev={adjacent.prev} next={adjacent.next} />
         {isAiConfigured() ? (
           <section className="mt-12">
             <AskAI slug={slug} />

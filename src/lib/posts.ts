@@ -108,6 +108,25 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
   return rows[0] ? toPost(rows[0]) : null;
 }
 
+export type AdjacentPost = { slug: string; title: string };
+
+export async function getAdjacentPosts(slug: string): Promise<{
+  prev: AdjacentPost | null;
+  next: AdjacentPost | null;
+}> {
+  const rows = await getDb()
+    .select({ slug: schema.posts.slug, title: schema.posts.title })
+    .from(schema.posts)
+    .where(visibleClause())
+    .orderBy(desc(schema.posts.publishAt), desc(schema.posts.createdAt));
+  const i = rows.findIndex((r) => r.slug === slug);
+  if (i < 0) return { prev: null, next: null };
+  return {
+    prev: i > 0 ? rows[i - 1] : null,
+    next: i < rows.length - 1 ? rows[i + 1] : null,
+  };
+}
+
 export async function getAllTags(): Promise<{ tag: string; count: number }[]> {
   const posts = await getAllPosts();
   const counts = new Map<string, number>();
