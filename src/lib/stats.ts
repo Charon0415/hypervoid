@@ -15,6 +15,21 @@ export type HeatmapDay = {
   count: number;
 };
 
+export type MonthCalendarCell = {
+  day: number;
+  date: string;
+  isInMonth: boolean;
+  isToday: boolean;
+  hasPost: boolean;
+};
+
+export type MonthCalendar = {
+  year: number;
+  month: number;
+  weeks: MonthCalendarCell[][];
+  totalPosts: number;
+};
+
 const SITE_START = new Date("2026-05-23T00:00:00Z");
 
 export async function getSiteStats(): Promise<SiteStats> {
@@ -81,4 +96,56 @@ export async function getPostHeatmap(weeks = 16): Promise<HeatmapDay[]> {
     days.push({ date: key, count: map.get(key) ?? 0 });
   }
   return days;
+}
+
+export async function getMonthCalendar(
+  year: number,
+  month: number,
+): Promise<MonthCalendar> {
+  const db = getDb();
+
+  const firstOfMonth = new Date(Date.UTC(year, month, 1));
+  const firstOfNextMonth = new Date(Date.UTC(year, month + 1, 1));
+
+  const rows = await db
+    .select({
+      day: sql<string>`TO_CHAR(date_trunc('day', COALESCE(publish_at, created_at)), 'YYYY-MM-DD')`,
+    })
+    .from(schema.posts)
+    .where(
+      sql`(status = 'published' OR (status = 'scheduled' AND publish_at <= NOW()))
+          AND COALESCE(publish_at, created_at) >= ${firstOfMonth.toISOString()}
+          AND COALESCE(publish_at, created_at) < ${firstOfNextMonth.toISOString()}`,
+    );
+
+  const postDays = new Set(rows.map((r) => r.day));
+
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  const todayKey = today.toISOString().slice(0, 10);
+
+  const startSunday = new Date(firstOfMonth);
+  startSunday.setUTCDate(firstOfMonth.getUTCDate() - firstOfMonth.getUTCDay());
+
+  const weeks: MonthCalendarCell[][] = [];
+  for (let w = 0; w < 6; w++) {
+    const week: MonthCalendarCell[] = [];
+    for (let d = 0; d < 7; d++) {
+      const cell = new Date(startSunday);
+      cell.setUTCDate(startSunday.getUTCDate() + w * 7 + d);
+      const cellKey = cell.toISOString().slice(0, 10);
+      const isInMonth =
+        cell.getUTCMonth() === month && cell.getUTCFullYear() === year;
+      week.push({
+        day: cell.getUTCDate(),
+        date: cellKey,
+        isInMonth,
+        isToday: cellKey === todayKey,
+        hasPost: isInMonth && postDays.has(cellKey),
+      });
+    }
+    weeks.push(week);
+  }
+
+  return { year, month, weeks, totalPosts: postDays.size };
 }

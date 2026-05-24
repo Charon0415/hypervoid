@@ -3,6 +3,7 @@ import { PostCard } from "@/components/PostCard";
 import { SubscribeForm } from "@/components/SubscribeForm";
 import { SiteStats } from "@/components/SiteStats";
 import { ProfileCard } from "@/components/ProfileCard";
+import { MiniCalendar } from "@/components/MiniCalendar";
 import { PostActivityHeatmap } from "@/components/PostActivityHeatmap";
 import { PopularPosts } from "@/components/PopularPosts";
 import { TagCloud } from "@/components/TagCloud";
@@ -119,6 +120,7 @@ export default async function Home() {
         <div className="flex flex-col gap-6 lg:sticky lg:top-20">
           <ProfileCard />
           <SiteStats />
+          <MiniCalendar />
           <PopularPosts />
           <TagCloud />
           <RecentGuestbook />
