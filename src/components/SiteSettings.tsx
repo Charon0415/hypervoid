@@ -59,7 +59,7 @@ export function SiteSettings() {
                     onClick={() => setHue(p.hue)}
                     aria-label={p.name}
                     title={`${p.name} (${p.hue}°)`}
-                    className={`h-6 w-6 rounded-full border-2 transition ${
+                    className={`h-7 w-7 rounded-full border-2 transition ${
                       hue === p.hue
                         ? "border-foreground"
                         : "border-transparent hover:border-border"

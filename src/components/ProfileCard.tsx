@@ -1,4 +1,5 @@
 import { SocialIcon } from "@/components/SocialIcon";
+import { Avatar } from "@/components/Avatar";
 import { siteConfig } from "@/lib/site-config";
 
 export function ProfileCard() {
@@ -10,13 +11,11 @@ export function ProfileCard() {
           aria-hidden
           className="absolute -inset-2 rounded-full bg-primary/15 blur-xl"
         />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Avatar
           src={author.avatar}
           alt={`${author.name} avatar`}
-          width={96}
-          height={96}
-          className="relative h-24 w-24 rounded-full border-2 border-border object-cover"
+          name={author.name}
+          className="relative h-24 w-24 rounded-full border-2 border-border"
         />
       </div>
       <h2 className="mt-4 text-xl font-bold tracking-tight">{author.name}</h2>

@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LocaleSwitch } from "@/components/LocaleSwitch";
+import { SiteSettings } from "@/components/SiteSettings";
 import { useT } from "@/components/LocaleProvider";
 
 export function MobileNav() {
@@ -66,20 +68,24 @@ export function MobileNav() {
       </button>
 
       {open ? (
-        <div className="fixed inset-0 z-50 md:hidden" aria-modal="true" role="dialog">
+        <div
+          className="fixed inset-0 z-50 md:hidden"
+          aria-modal="true"
+          role="dialog"
+        >
           <div
-            className="absolute inset-0 bg-background/80 backdrop-blur"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute right-0 top-0 h-full w-72 max-w-[80vw] border-l border-border bg-card p-6 shadow-xl">
-            <div className="flex items-center justify-between">
+          <div className="absolute right-0 top-0 flex h-full w-72 max-w-[85vw] flex-col bg-card text-foreground shadow-2xl ring-1 ring-border">
+            <div className="flex items-center justify-between border-b border-border px-5 py-4">
               <span className="font-bold tracking-tight">Hypervoid</span>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="关闭菜单"
-                className="rounded-md p-1 text-muted hover:bg-background hover:text-foreground"
+                className="rounded-md p-1.5 text-muted transition hover:bg-background hover:text-foreground"
               >
                 <svg
                   className="h-5 w-5"
@@ -87,27 +93,40 @@ export function MobileNav() {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
                   <line x1="6" y1="6" x2="18" y2="18" />
                   <line x1="6" y1="18" x2="18" y2="6" />
                 </svg>
               </button>
             </div>
-            <nav className="mt-6 flex flex-col gap-1">
-              {items.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`rounded-md px-3 py-2 text-sm transition hover:bg-background ${
-                    pathname === item.href
-                      ? "bg-primary/10 font-medium text-primary"
-                      : "text-muted hover:text-foreground"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
+
+            <nav className="flex-1 overflow-y-auto px-3 py-3">
+              <div className="flex flex-col gap-0.5">
+                {items.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`rounded-md px-3 py-2.5 text-sm transition ${
+                      pathname === item.href
+                        ? "bg-primary/10 font-medium text-primary"
+                        : "text-foreground/85 hover:bg-background hover:text-foreground"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
             </nav>
+
+            <div
+              className="flex items-center justify-end gap-2 border-t border-border px-4 py-3"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <LocaleSwitch />
+              <SiteSettings />
+            </div>
           </div>
         </div>
       ) : null}

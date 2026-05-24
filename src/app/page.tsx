@@ -132,9 +132,13 @@ export default async function Home() {
         <div className="flex flex-col gap-6 lg:sticky lg:top-20">
           <ProfileCard />
           <SiteStats />
-          <MiniCalendar />
+          <div className="hidden md:contents">
+            <MiniCalendar />
+          </div>
           <PopularPosts />
-          <TagCloud />
+          <div className="hidden md:contents">
+            <TagCloud />
+          </div>
           <RecentGuestbook />
         </div>
       </aside>
