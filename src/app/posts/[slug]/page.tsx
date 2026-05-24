@@ -43,9 +43,26 @@ export async function generateMetadata(
   const { slug } = await props.params;
   const post = await getPostBySlug(slug);
   if (!post) return {};
+  const description =
+    post.frontmatter.description ?? post.frontmatter.summary ?? undefined;
+  const canonical = `/posts/${slug}`;
   return {
     title: post.frontmatter.title,
-    description: post.frontmatter.description ?? undefined,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title: post.frontmatter.title,
+      description,
+      type: "article",
+      url: canonical,
+      publishedTime: post.frontmatter.date,
+      tags: post.frontmatter.tags,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.frontmatter.title,
+      description,
+    },
   };
 }
 
