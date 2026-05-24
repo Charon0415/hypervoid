@@ -20,6 +20,8 @@ import { LikeButton } from "@/components/LikeButton";
 import { AskAI } from "@/components/AskAI";
 import { PostNav } from "@/components/PostNav";
 import { ReadingProgress } from "@/components/ReadingProgress";
+import { ShareButtons } from "@/components/ShareButtons";
+import { siteConfig } from "@/lib/site-config";
 import { getLikeCount, getViewCount } from "@/db/posts-stats";
 import { isAiConfigured } from "@/lib/ai";
 
@@ -61,12 +63,18 @@ export default async function PostPage(props: { params: Promise<Params> }) {
     <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_220px]">
       <ReadingProgress />
       <article className="mx-auto w-full max-w-3xl">
-        <Link
-          href="/posts"
-          className="text-sm text-muted hover:text-primary"
-        >
-          ← 返回文章列表
-        </Link>
+        <div className="flex items-center justify-between gap-3">
+          <Link
+            href="/posts"
+            className="text-sm text-muted hover:text-primary"
+          >
+            ← 返回文章列表
+          </Link>
+          <ShareButtons
+            title={frontmatter.title}
+            url={`${siteConfig.url}/posts/${slug}`}
+          />
+        </div>
         <header className="mt-4 border-b border-border pb-6">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
             {frontmatter.title}
