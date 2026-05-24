@@ -22,6 +22,7 @@ import { PostNav } from "@/components/PostNav";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { ReadingMode } from "@/components/ReadingMode";
 import { ShareButtons } from "@/components/ShareButtons";
+import { SeriesBanner } from "@/components/SeriesBanner";
 import { siteConfig } from "@/lib/site-config";
 import { getViewer } from "@/lib/viewer";
 import { getLikeCount, getViewCount } from "@/db/posts-stats";
@@ -152,6 +153,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             </p>
           ) : null}
         </header>
+        <SeriesBanner post={post} />
         {frontmatter.summary ? (
           <aside className="mt-8 rounded-md border-l-4 border-primary bg-primary/5 p-4">
             <p className="mb-1 text-xs uppercase tracking-wider text-primary">

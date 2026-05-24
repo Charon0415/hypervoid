@@ -63,6 +63,12 @@ function parseFormToInput(formData: FormData): {
   const description = String(formData.get("description") ?? "").trim();
   const category = String(formData.get("category") ?? "").trim();
   const cover = String(formData.get("cover") ?? "").trim();
+  const series = String(formData.get("series") ?? "").trim();
+  const seriesOrderRaw = String(formData.get("seriesOrder") ?? "").trim();
+  const seriesOrder =
+    series && seriesOrderRaw && !Number.isNaN(Number(seriesOrderRaw))
+      ? Number(seriesOrderRaw)
+      : null;
 
   return {
     slug,
@@ -76,6 +82,8 @@ function parseFormToInput(formData: FormData): {
       pinned,
       status,
       visibility,
+      series: series || null,
+      seriesOrder,
       publishAt,
     },
   };

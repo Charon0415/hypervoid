@@ -32,6 +32,8 @@ export const posts = pgTable("posts", {
   pinned: boolean("pinned").notNull().default(false),
   status: postStatus("status").notNull().default("draft"),
   visibility: postVisibility("visibility").notNull().default("public"),
+  series: text("series"),
+  seriesOrder: integer("series_order"),
   publishAt: timestamp("publish_at", { withTimezone: true }),
   notifiedAt: timestamp("notified_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })

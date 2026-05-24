@@ -14,6 +14,8 @@ export type PostEditorInitial = {
   pinned: boolean;
   status: "draft" | "scheduled" | "published";
   visibility: "public" | "private";
+  series: string;
+  seriesOrder: string;
   publishAt: string;
 };
 
@@ -28,6 +30,8 @@ const EMPTY: PostEditorInitial = {
   pinned: false,
   status: "draft",
   visibility: "public",
+  series: "",
+  seriesOrder: "",
   publishAt: "",
 };
 
@@ -319,6 +323,33 @@ export function PostEditor({
             </label>
           </Field>
         )}
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-[1fr_120px]">
+        <Field
+          label="所属系列 (可选)"
+          hint="同名文章会自动归入同一系列，留空表示不属于任何系列"
+        >
+          <input
+            name="series"
+            type="text"
+            placeholder="例如：Hypervoid 搭建笔记"
+            value={state.series}
+            onChange={(e) => update("series", e.target.value)}
+            className={inputClass}
+          />
+        </Field>
+        <Field label="系列内序号" hint="第几篇">
+          <input
+            name="seriesOrder"
+            type="number"
+            min={1}
+            value={state.seriesOrder}
+            onChange={(e) => update("seriesOrder", e.target.value)}
+            disabled={!state.series.trim()}
+            className={`${inputClass} ${!state.series.trim() ? "cursor-not-allowed opacity-50" : ""}`}
+          />
+        </Field>
       </div>
 
       <Field label="正文 (MDX)" required>

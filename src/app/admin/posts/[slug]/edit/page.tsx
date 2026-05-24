@@ -34,6 +34,10 @@ function postRowToInitial(row: AdminPost): PostEditorInitial {
     pinned: row.pinned,
     status: row.status,
     visibility: row.visibility,
+    series: row.series ?? "",
+    seriesOrder: row.seriesOrder !== null && row.seriesOrder !== undefined
+      ? String(row.seriesOrder)
+      : "",
     publishAt: toLocalInputValue(row.publishAt),
   };
 }

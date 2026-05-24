@@ -17,6 +17,8 @@ export type PostFrontmatter = {
   readingMinutes: number;
   draft?: boolean;
   visibility: "public" | "private";
+  series?: string | null;
+  seriesOrder?: number | null;
 };
 
 export type Post = {
@@ -66,6 +68,8 @@ function toPost(row: typeof schema.posts.$inferSelect): Post {
       readingMinutes: minutes,
       draft: row.status === "draft",
       visibility: row.visibility,
+      series: row.series,
+      seriesOrder: row.seriesOrder,
     },
   };
 }
@@ -208,4 +212,47 @@ export async function searchPosts(
     const post = toPost(row);
     return { ...post, score: 0 };
   });
+}
+
+export type SeriesSummary = {
+  name: string;
+  count: number;
+  latestDate: string;
+};
+
+export async function getAllSeries(
+  opts: ViewerOpts = {},
+): Promise<SeriesSummary[]> {
+  const posts = await getAllPosts(opts);
+  const grouped = new Map<string, { count: number; latest: string }>();
+  for (const p of posts) {
+    const s = p.frontmatter.series;
+    if (!s) continue;
+    const entry = grouped.get(s);
+    const date = p.frontmatter.date;
+    if (entry) {
+      entry.count += 1;
+      if (date > entry.latest) entry.latest = date;
+    } else {
+      grouped.set(s, { count: 1, latest: date });
+    }
+  }
+  return [...grouped.entries()]
+    .map(([name, v]) => ({ name, count: v.count, latestDate: v.latest }))
+    .sort((a, b) => (b.latestDate > a.latestDate ? 1 : -1));
+}
+
+export async function getPostsBySeries(
+  name: string,
+  opts: ViewerOpts = {},
+): Promise<Post[]> {
+  const all = await getAllPosts(opts);
+  return all
+    .filter((p) => p.frontmatter.series === name)
+    .sort((a, b) => {
+      const ao = a.frontmatter.seriesOrder ?? Number.MAX_SAFE_INTEGER;
+      const bo = b.frontmatter.seriesOrder ?? Number.MAX_SAFE_INTEGER;
+      if (ao !== bo) return ao - bo;
+      return a.frontmatter.date.localeCompare(b.frontmatter.date);
+    });
 }
