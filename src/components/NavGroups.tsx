@@ -38,6 +38,7 @@ export function NavGroups() {
       label: t.nav.groupLife,
       items: [
         { href: "/anime", label: t.nav.anime, icon: "🎬" },
+        { href: "/games", label: t.nav.games, icon: "🎮" },
         { href: "/albums", label: t.nav.albums, icon: "🖼️" },
         { href: "/diary", label: t.nav.diary, icon: "📔" },
       ],
