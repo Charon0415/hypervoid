@@ -8,12 +8,22 @@ import { PostActivityHeatmap } from "@/components/PostActivityHeatmap";
 import { PopularPosts } from "@/components/PopularPosts";
 import { TagCloud } from "@/components/TagCloud";
 import { RecentGuestbook } from "@/components/RecentGuestbook";
+import { Greeting } from "@/components/Greeting";
+import { DailyPick } from "@/components/DailyPick";
 import { getAllPosts } from "@/lib/posts";
 
 export const revalidate = 60;
 
+function pickByDay<T>(arr: T[]): T | null {
+  if (arr.length === 0) return null;
+  const day = Math.floor(Date.now() / 86_400_000);
+  return arr[day % arr.length];
+}
+
 export default async function Home() {
-  const recent = (await getAllPosts()).slice(0, 4);
+  const all = await getAllPosts();
+  const recent = all.slice(0, 4);
+  const dailyPick = pickByDay(all);
 
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-10">
@@ -25,7 +35,7 @@ export default async function Home() {
               Hypervoid · 超虚空
             </p>
             <h1 className="mt-2 text-3xl font-bold tracking-tight sm:mt-3 sm:text-4xl md:text-5xl">
-              你好，我是 Charon。
+              <Greeting name="Charon" />
             </h1>
             <p className="mt-2 font-mono text-xs italic text-muted sm:mt-3 sm:text-sm md:text-base">
               The world is big, you have to go and see.
@@ -70,6 +80,8 @@ export default async function Home() {
             </div>
           </div>
         </section>
+
+        {dailyPick ? <DailyPick post={dailyPick} /> : null}
 
         <PostActivityHeatmap />
 
