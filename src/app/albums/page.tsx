@@ -4,7 +4,7 @@ import { listAlbums } from "@/db/albums";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = { title: "相册" };
+export const metadata: Metadata = { title: "相册", description: "Charon 拍摄的照片与影像记录" };
 
 export default async function AlbumsPage() {
   const albums = await listAlbums();

@@ -167,9 +167,8 @@ For day-to-day operation — how to write a post, customize the theme, manage DN
 - [x] **v0.3** — Giscus comments · view counter · like button
 - [x] **v0.4** — admin panel · MDX editor · draft & scheduled publishing · image upload
 - [x] **v0.5** — newsletter (Resend) · analytics (Umami Cloud) · full-text search (pg_trgm)
-- [x] **v1.0** — i18n · guestbook · friends · albums · AI summary & Q&A (Claude Haiku 4.5)
-- [x] **Phase 7-10 polish** — GFM alerts · KaTeX · pinned posts · sidebar widgets · code-block decoration · prev/next nav · reading progress · share · ⌘K · back-to-top · custom domain · settings panel (6 palettes / 6 backgrounds / 3 display modes / 3 fonts) · reading mode · Bangumi anime+movies+books · Steam library · article series · cosmic 404 · visibility (public/private) · admin dashboard · AI tag suggestions · AI auto-summary on save · search filters · per-article OG · "✓ 已读" + bookmarks + print-friendly CSS
-- [ ] **Future** — article-level i18n (`posts.locale`) · Resend custom domain · ACG carousel wallpapers (drop into `public/wallpapers/`) · donate channel QR codes (drop into `public/donate/` + flip `siteConfig.donate.enabled`)
+- [x] **v1.0** — i18n · guestbook · friends · albums · AI summary & Q&A · live site-settings editor · 70+ features shipped
+- [ ] **v1.x** — article-level i18n · Resend custom domain · ACG wallpapers activation · donate QR codes
 
 ## ✦ License
 

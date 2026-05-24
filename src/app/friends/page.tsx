@@ -3,7 +3,7 @@ import { listFriends } from "@/db/friends";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = { title: "友链" };
+export const metadata: Metadata = { title: "友链", description: "Charon 的朋友们——串门的博客与站点" };
 
 export default async function FriendsPage() {
   const friends = await listFriends();

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "关于" };
+export const metadata: Metadata = { title: "关于", description: "关于 Charon 和 Hypervoid — 一处用以长期沉淀技术、阅读、影像与生活痕迹的私人坐标。" };
 
 export default function AboutPage() {
   return (
