@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Post } from "@/lib/posts";
+import { ReadBadge } from "@/components/ReadBadge";
 
 export function PostCard({ post }: { post: Post }) {
   const { slug, frontmatter } = post;
@@ -27,6 +28,7 @@ export function PostCard({ post }: { post: Post }) {
           <h3 className="line-clamp-2 text-base font-semibold leading-snug tracking-tight transition group-hover:text-primary sm:text-lg">
             {frontmatter.title}
           </h3>
+          <ReadBadge slug={slug} />
         </div>
 
         {frontmatter.description ? (

@@ -24,6 +24,7 @@ import { ReadingMode } from "@/components/ReadingMode";
 import { ShareButtons } from "@/components/ShareButtons";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { SeriesBanner } from "@/components/SeriesBanner";
+import { ReadTracker } from "@/components/ReadTracker";
 import { siteConfig } from "@/lib/site-config";
 import { getViewer } from "@/lib/viewer";
 import { getLikeCount, getViewCount } from "@/db/posts-stats";
@@ -89,6 +90,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
   return (
     <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_220px]">
       <ReadingProgress />
+      <ReadTracker slug={slug} />
       <article className="mx-auto w-full max-w-3xl">
         <div className="flex items-center justify-between gap-3">
           <Link
