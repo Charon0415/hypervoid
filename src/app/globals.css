@@ -3,6 +3,19 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Mobile a11y: hash anchors should land below the sticky header, and iOS
+   should not zoom into form fields on focus (font-size < 16px triggers it). */
+html {
+  scroll-padding-top: 4rem;
+}
+@media (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
 :root {
   --background: #fafafa;
   --foreground: #18181b;
