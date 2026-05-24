@@ -7,6 +7,7 @@ import { useT } from "@/components/LocaleProvider";
 
 type NavItem = { href: string; label: string; icon: string };
 type NavGroup = { key: string; label: string; items: NavItem[] };
+type DirectLink = { href: string; label: string };
 
 const CLOSE_DELAY = 160;
 
@@ -17,12 +18,16 @@ export function NavGroups() {
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
+  const directLinks: DirectLink[] = [
+    { href: "/posts", label: t.nav.posts },
+    { href: "/archive", label: t.nav.archive },
+  ];
+
   const groups: NavGroup[] = [
     {
       key: "create",
       label: t.nav.groupCreate,
       items: [
-        { href: "/posts", label: t.nav.posts, icon: "📄" },
         { href: "/projects", label: t.nav.projects, icon: "📦" },
         { href: "/skills", label: t.nav.skills, icon: "🎯" },
         { href: "/timeline", label: t.nav.timeline, icon: "🕒" },
@@ -87,10 +92,11 @@ export function NavGroups() {
     setOpenKey(null);
   }, [pathname]);
 
+  function isHrefActive(href: string) {
+    return pathname === href || pathname.startsWith(href + "/");
+  }
   function isGroupActive(g: NavGroup) {
-    return g.items.some(
-      (it) => pathname === it.href || pathname.startsWith(it.href + "/"),
-    );
+    return g.items.some((it) => isHrefActive(it.href));
   }
 
   return (
@@ -100,6 +106,29 @@ export function NavGroups() {
       onMouseLeave={scheduleClose}
     >
       <div className="flex items-center gap-0.5 rounded-full border border-border bg-card/60 p-1 shadow-sm backdrop-blur">
+        {directLinks.map((link) => {
+          const active = isHrefActive(link.href);
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              onMouseEnter={closeNow}
+              className={`rounded-full px-4 py-1.5 text-sm transition ${
+                active
+                  ? "bg-primary/15 text-primary"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              {link.label}
+            </Link>
+          );
+        })}
+
+        <span
+          aria-hidden
+          className="mx-1 h-4 w-px shrink-0 bg-border"
+        />
+
         {groups.map((g) => {
           const isOpen = openKey === g.key;
           const isActive = isGroupActive(g);
@@ -115,13 +144,25 @@ export function NavGroups() {
                 aria-expanded={isOpen}
                 onClick={() => (isOpen ? closeNow() : openGroup(g.key))}
                 onFocus={() => openGroup(g.key)}
-                className={`relative rounded-full px-4 py-1.5 text-sm transition ${
+                className={`relative inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm transition ${
                   isOpen || isActive
                     ? "bg-primary/15 text-primary"
                     : "text-muted hover:text-foreground"
                 }`}
               >
                 {g.label}
+                <svg
+                  aria-hidden
+                  className={`h-3 w-3 transition ${isOpen ? "rotate-180" : ""}`}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
               </button>
 
               {isOpen ? (
@@ -131,9 +172,7 @@ export function NavGroups() {
                 >
                   <div className="min-w-[12rem] rounded-2xl border border-border bg-card p-1.5 shadow-xl ring-1 ring-black/5">
                     {g.items.map((item) => {
-                      const itemActive =
-                        pathname === item.href ||
-                        pathname.startsWith(item.href + "/");
+                      const itemActive = isHrefActive(item.href);
                       return (
                         <Link
                           key={item.href}

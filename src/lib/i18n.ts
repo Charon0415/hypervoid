@@ -20,6 +20,7 @@ export type Messages = {
     guestbook: string;
     friends: string;
     about: string;
+    archive: string;
     groupCreate: string;
     groupLife: string;
     groupInteract: string;
@@ -77,6 +78,7 @@ export const MESSAGES: Record<Locale, Messages> = {
       guestbook: "留言",
       friends: "友链",
       about: "关于",
+      archive: "归档",
       groupCreate: "创作",
       groupLife: "生活",
       groupInteract: "交互",
@@ -86,7 +88,7 @@ export const MESSAGES: Record<Locale, Messages> = {
       searchPlaceholder: "搜索文章…",
       toggleTheme: "切换主题",
       toggleLocale: "切换语言",
-      readAll: "全部 →",
+      readAll: "全部",
       backToPosts: "← 返回文章列表",
       backHome: "← 首页",
       loading: "加载中…",
@@ -111,7 +113,7 @@ export const MESSAGES: Record<Locale, Messages> = {
       aiThinking: "思考中…",
       aiAnswer: "AI 回答",
     },
-    home: { latest: "最新文章", seeAll: "全部 →" },
+    home: { latest: "最新文章", seeAll: "全部" },
     subscribe: {
       title: "订阅更新",
       description: "新文章发布时通过邮件通知你，不发别的。随时退订。",
@@ -131,6 +133,7 @@ export const MESSAGES: Record<Locale, Messages> = {
       guestbook: "Guestbook",
       friends: "Friends",
       about: "About",
+      archive: "Archive",
       groupCreate: "Create",
       groupLife: "Life",
       groupInteract: "Connect",
@@ -140,7 +143,7 @@ export const MESSAGES: Record<Locale, Messages> = {
       searchPlaceholder: "Search posts…",
       toggleTheme: "Toggle theme",
       toggleLocale: "Switch language",
-      readAll: "See all →",
+      readAll: "See all",
       backToPosts: "← Back to posts",
       backHome: "← Home",
       loading: "Loading…",
@@ -165,7 +168,7 @@ export const MESSAGES: Record<Locale, Messages> = {
       aiThinking: "Thinking…",
       aiAnswer: "AI answer",
     },
-    home: { latest: "Latest posts", seeAll: "See all →" },
+    home: { latest: "Latest posts", seeAll: "See all" },
     subscribe: {
       title: "Subscribe",
       description:
