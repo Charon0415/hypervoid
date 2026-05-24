@@ -142,7 +142,7 @@ export function NavGroups() {
       className="hidden md:flex md:items-center"
       onMouseLeave={scheduleClose}
     >
-      <div className="flex items-center gap-0.5 rounded-full border border-border/70 bg-card/70 p-1 shadow-sm ring-1 ring-black/[0.02] backdrop-blur-md">
+      <div className="flex flex-nowrap items-center gap-0.5 overflow-visible rounded-full border border-border/70 bg-card/70 p-1 shadow-sm ring-1 ring-black/[0.02] backdrop-blur-md">
         {directLinks.map((link) => {
           const active = isHrefActive(link.href);
           return (
@@ -150,7 +150,7 @@ export function NavGroups() {
               key={link.href}
               href={link.href}
               onMouseEnter={closeNow}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium tracking-tight transition ${
+              className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium tracking-tight transition ${
                 active
                   ? "bg-primary/15 text-primary shadow-sm"
                   : "text-muted hover:text-foreground"
@@ -172,7 +172,7 @@ export function NavGroups() {
           return (
             <div
               key={g.key}
-              className="relative"
+              className="relative shrink-0"
               onMouseEnter={() => openGroup(g.key)}
             >
               <button
@@ -181,7 +181,7 @@ export function NavGroups() {
                 aria-expanded={isOpen}
                 onClick={() => (isOpen ? closeNow() : openGroup(g.key))}
                 onFocus={() => openGroup(g.key)}
-                className={`relative inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium tracking-tight transition ${
+                className={`relative inline-flex items-center gap-1 rounded-full px-2.5 py-1.5 text-sm font-medium tracking-tight transition ${
                   isOpen || isActive
                     ? "bg-primary/15 text-primary shadow-sm"
                     : "text-muted hover:text-foreground"
@@ -207,10 +207,10 @@ export function NavGroups() {
                   role="menu"
                   className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-2"
                 >
-                  <div className="min-w-[13rem] rounded-2xl border border-border bg-card p-1.5 shadow-xl ring-1 ring-black/5">
+                  <div className="w-max min-w-[14rem] max-w-[18rem] rounded-2xl border border-border bg-card p-1.5 shadow-xl ring-1 ring-black/5">
                     {g.items.map((item) => {
                       const itemActive = !item.external && isHrefActive(item.href);
-                      const className = `flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm whitespace-nowrap transition ${
+                      const className = `flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition ${
                         itemActive
                           ? "bg-primary/10 text-primary"
                           : "text-foreground/80 hover:bg-background hover:text-foreground"
@@ -229,10 +229,10 @@ export function NavGroups() {
                             <span aria-hidden className="shrink-0 text-base leading-none">
                               {item.icon}
                             </span>
-                            <span className="min-w-0 truncate">{item.label}</span>
+                            <span className="whitespace-nowrap">{item.label}</span>
                             <svg
                               aria-hidden
-                              className="h-3 w-3 shrink-0 opacity-60"
+                              className="ml-auto h-3 w-3 shrink-0 opacity-60"
                               viewBox="0 0 24 24"
                               fill="none"
                               stroke="currentColor"
@@ -254,7 +254,7 @@ export function NavGroups() {
                           <span aria-hidden className="shrink-0 text-base leading-none">
                             {item.icon}
                           </span>
-                          <span className="min-w-0 truncate">{item.label}</span>
+                          <span>{item.label}</span>
                         </Link>
                       );
                     })}
