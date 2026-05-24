@@ -5,47 +5,30 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { LocaleSwitch } from "@/components/LocaleSwitch";
 import { ThemeColorPicker } from "@/components/ThemeColorPicker";
 import { MobileNav } from "@/components/MobileNav";
+import { NavGroups } from "@/components/NavGroups";
 import { useT } from "@/components/LocaleProvider";
 
 export function SiteHeader() {
   const t = useT();
-  const navItems = [
-    { href: "/posts", label: t.nav.posts },
-    { href: "/anime", label: t.nav.anime },
-    { href: "/projects", label: t.nav.projects },
-    { href: "/skills", label: t.nav.skills },
-    { href: "/timeline", label: t.nav.timeline },
-    { href: "/albums", label: t.nav.albums },
-    { href: "/diary", label: t.nav.diary },
-    { href: "/guestbook", label: t.nav.guestbook },
-    { href: "/friends", label: t.nav.friends },
-    { href: "/about", label: t.nav.about },
-  ];
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 sm:gap-3">
+      <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
         <Link
           href="/"
-          className="flex items-center gap-2 font-bold tracking-tight"
+          className="flex shrink-0 items-center gap-2 font-bold tracking-tight"
         >
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm">
             H
           </span>
           <span className="hidden sm:inline">Hypervoid</span>
         </Link>
-        <nav className="ml-auto hidden items-center gap-1 overflow-x-auto text-sm md:flex">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded px-2.5 py-1.5 text-muted transition hover:bg-card hover:text-foreground"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="ml-auto flex items-center gap-1.5 md:ml-0 md:gap-2">
+
+        <div className="mx-auto">
+          <NavGroups />
+        </div>
+
+        <div className="flex shrink-0 items-center gap-1.5 md:gap-2">
           <Link
             href="/search"
             aria-label={t.common.search}

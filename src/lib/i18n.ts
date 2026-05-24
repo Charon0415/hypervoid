@@ -20,6 +20,9 @@ export type Messages = {
     guestbook: string;
     friends: string;
     about: string;
+    groupCreate: string;
+    groupLife: string;
+    groupInteract: string;
   };
   common: {
     search: string;
@@ -74,6 +77,9 @@ export const MESSAGES: Record<Locale, Messages> = {
       guestbook: "留言",
       friends: "友链",
       about: "关于",
+      groupCreate: "创作",
+      groupLife: "生活",
+      groupInteract: "交互",
     },
     common: {
       search: "搜索",
@@ -125,6 +131,9 @@ export const MESSAGES: Record<Locale, Messages> = {
       guestbook: "Guestbook",
       friends: "Friends",
       about: "About",
+      groupCreate: "Create",
+      groupLife: "Life",
+      groupInteract: "Connect",
     },
     common: {
       search: "Search",
