@@ -20,7 +20,7 @@ export async function RecentGuestbook() {
   if (!messages.length) return null;
 
   return (
-    <aside className="rounded-2xl border border-border bg-card p-5">
+    <aside className="rounded-3xl border border-border bg-card p-5">
       <div className="flex items-baseline justify-between">
         <h3 className="text-sm font-semibold tracking-tight text-foreground/80">
           近期留言

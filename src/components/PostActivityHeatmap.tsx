@@ -39,7 +39,7 @@ export async function PostActivityHeatmap() {
   });
 
   return (
-    <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
+    <section className="rounded-3xl border border-border bg-card p-5 sm:p-6">
       <header className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="text-base font-semibold tracking-tight">发文热力图</h2>
         <p className="text-xs text-muted">

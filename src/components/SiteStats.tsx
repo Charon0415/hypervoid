@@ -11,7 +11,7 @@ export async function SiteStats() {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-4 rounded-xl border border-border bg-card p-6 sm:grid-cols-4">
+    <div className="grid grid-cols-2 gap-4 rounded-3xl border border-border bg-card p-6 sm:grid-cols-4">
       {items.map((item) => (
         <div key={item.label} className="text-center">
           <p className="font-mono text-2xl font-bold tracking-tight text-primary sm:text-3xl">

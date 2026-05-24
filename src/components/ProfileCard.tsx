@@ -4,7 +4,7 @@ import { siteConfig } from "@/lib/site-config";
 export function ProfileCard() {
   const { author, socials } = siteConfig;
   return (
-    <aside className="rounded-2xl border border-border bg-card p-6 text-center">
+    <aside className="rounded-3xl border border-border bg-card p-6 text-center">
       <div className="relative mx-auto h-24 w-24">
         <div
           aria-hidden
@@ -32,7 +32,7 @@ export function ProfileCard() {
             rel="noreferrer noopener"
             title={s.name}
             aria-label={s.name}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted transition hover:border-primary hover:text-primary"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted transition hover:border-primary hover:bg-primary/10 hover:text-primary"
           >
             <SocialIcon name={s.icon} className="h-4 w-4" />
           </a>

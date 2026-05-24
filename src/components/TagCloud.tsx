@@ -17,25 +17,21 @@ export async function TagCloud() {
   const max = Math.max(...counts);
 
   return (
-    <aside className="rounded-2xl border border-border bg-card p-5">
+    <aside className="rounded-3xl border border-border bg-card p-5">
       <h3 className="text-sm font-semibold tracking-tight text-foreground/80">
         标签云
       </h3>
-      <div className="mt-3 flex flex-wrap gap-x-2 gap-y-1.5">
+      <div className="mt-3 flex flex-wrap gap-1.5">
         {tags.map((t) => {
           const s = scale(t.count, min, max);
-          const fontSize = 0.78 + s * 0.5;
-          const opacity = 0.55 + s * 0.45;
+          const fontSize = 0.72 + s * 0.35;
           return (
             <Link
               key={t.tag}
               href={`/tags/${encodeURIComponent(t.tag)}`}
               title={`${t.tag} · ${t.count} 篇`}
-              className="leading-tight text-muted transition hover:text-primary"
-              style={{
-                fontSize: `${fontSize}rem`,
-                opacity,
-              }}
+              className="inline-flex items-center rounded-full border border-primary/15 bg-primary/5 px-2.5 py-0.5 font-medium text-primary/80 transition hover:border-primary/40 hover:bg-primary/15 hover:text-primary"
+              style={{ fontSize: `${fontSize}rem` }}
             >
               #{t.tag}
             </Link>

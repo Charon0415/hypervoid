@@ -23,10 +23,10 @@ export default async function TagsIndex() {
             <Link
               key={tag}
               href={`/tags/${encodeURIComponent(tag)}`}
-              className="group inline-flex items-baseline gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm transition hover:border-primary hover:text-primary"
+              className="group inline-flex items-baseline gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1.5 text-sm font-medium text-primary transition hover:border-primary/50 hover:bg-primary/15"
             >
               <span>#{tag}</span>
-              <span className="text-xs text-muted group-hover:text-primary">
+              <span className="rounded-full bg-primary/20 px-1.5 text-[10px] text-primary">
                 {count}
               </span>
             </Link>
