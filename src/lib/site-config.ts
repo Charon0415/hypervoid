@@ -4,6 +4,7 @@ export const siteConfig = {
   description: "分享技术、记录生活、收集兴趣。Charon 的个人博客。",
   url: "https://hypervoid.top",
   launchedAt: "2026-05-23",
+  bangumiUserId: "1189551",
   locale: "zh_CN",
   author: {
     name: "Charon",
