@@ -1,5 +1,6 @@
 import { getPostBySlug } from "@/lib/posts";
 import { isAiConfigured, streamAnswer } from "@/lib/ai";
+import { getViewer } from "@/lib/viewer";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -29,7 +30,8 @@ export async function POST(
     return Response.json({ error: "问题最多 500 字" }, { status: 400 });
   }
 
-  const post = await getPostBySlug(slug);
+  const viewer = await getViewer();
+  const post = await getPostBySlug(slug, { isAdmin: viewer.isAdmin });
   if (!post) {
     return Response.json({ error: "文章不存在" }, { status: 404 });
   }

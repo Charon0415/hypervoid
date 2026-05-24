@@ -13,6 +13,7 @@ export type PostEditorInitial = {
   cover: string;
   pinned: boolean;
   status: "draft" | "scheduled" | "published";
+  visibility: "public" | "private";
   publishAt: string;
 };
 
@@ -26,6 +27,7 @@ const EMPTY: PostEditorInitial = {
   cover: "",
   pinned: false,
   status: "draft",
+  visibility: "public",
   publishAt: "",
 };
 
@@ -270,6 +272,28 @@ export function PostEditor({
             <option value="published">立即发布</option>
           </select>
         </Field>
+        <Field
+          label="可见性"
+          hint="私密文章只有管理员能在线上看到，公开文章对所有访客可见"
+        >
+          <select
+            name="visibility"
+            value={state.visibility}
+            onChange={(e) =>
+              update(
+                "visibility",
+                e.target.value as PostEditorInitial["visibility"],
+              )
+            }
+            className={inputClass}
+          >
+            <option value="public">🌐 公开</option>
+            <option value="private">🔒 私密（仅管理员可见）</option>
+          </select>
+        </Field>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
         {state.status === "scheduled" ? (
           <Field label="定时发布时间" required>
             <input

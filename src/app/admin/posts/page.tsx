@@ -85,7 +85,14 @@ export default async function AdminPostsList() {
                     key={post.slug}
                     className="border-t border-border bg-background"
                   >
-                    <td className="px-4 py-3 font-medium">{post.title}</td>
+                    <td className="px-4 py-3 font-medium">
+                      {post.visibility === "private" ? (
+                        <span title="私密" className="mr-1">
+                          🔒
+                        </span>
+                      ) : null}
+                      {post.title}
+                    </td>
                     <td className="px-4 py-3 font-mono text-xs text-muted">
                       {post.slug}
                     </td>

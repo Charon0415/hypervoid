@@ -29,12 +29,19 @@ function parseStatus(value: string): AdminPostInput["status"] {
   return "draft";
 }
 
+function parseVisibility(value: string): AdminPostInput["visibility"] {
+  return value === "private" ? "private" : "public";
+}
+
 function parseFormToInput(formData: FormData): {
   slug: string;
   input: Omit<AdminPostInput, "slug">;
 } {
   const slug = String(formData.get("slug") ?? "").trim();
   const status = parseStatus(String(formData.get("status") ?? "draft"));
+  const visibility = parseVisibility(
+    String(formData.get("visibility") ?? "public"),
+  );
   const publishAtStr = String(formData.get("publishAt") ?? "").trim();
   const tagsStr = String(formData.get("tags") ?? "").trim();
   const tags = tagsStr
@@ -68,6 +75,7 @@ function parseFormToInput(formData: FormData): {
       cover: cover || null,
       pinned,
       status,
+      visibility,
       publishAt,
     },
   };

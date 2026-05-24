@@ -52,6 +52,7 @@ async function main() {
         category: CATEGORY,
         tags: TAGS,
         status: "published",
+        visibility: "private",
         publishAt: now,
         updatedAt: now,
       })
@@ -66,6 +67,7 @@ async function main() {
       category: CATEGORY,
       tags: TAGS,
       status: "published",
+      visibility: "private",
       publishAt: now,
       createdAt: now,
       updatedAt: now,
@@ -73,7 +75,7 @@ async function main() {
     console.log(`[insert] ${SLUG}`);
   }
 
-  console.log(`\nDone. Available at /posts/${SLUG}`);
+  console.log(`\nDone (private). Available at /posts/${SLUG} for admin only.`);
 }
 
 main().catch((e) => {

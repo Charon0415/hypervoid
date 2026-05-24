@@ -23,7 +23,7 @@ import { ReadingProgress } from "@/components/ReadingProgress";
 import { ReadingMode } from "@/components/ReadingMode";
 import { ShareButtons } from "@/components/ShareButtons";
 import { siteConfig } from "@/lib/site-config";
-import { auth } from "@/auth";
+import { getViewer } from "@/lib/viewer";
 import { getLikeCount, getViewCount } from "@/db/posts-stats";
 import { isAiConfigured } from "@/lib/ai";
 
@@ -50,22 +50,20 @@ export async function generateMetadata(
 
 export default async function PostPage(props: { params: Promise<Params> }) {
   const { slug } = await props.params;
-  const post = await getPostBySlug(slug);
+  const viewer = await getViewer();
+  const post = await getPostBySlug(slug, { isAdmin: viewer.isAdmin });
   if (!post) notFound();
 
   const { frontmatter, content } = post;
   const toc = extractTOC(content);
-  const [viewCount, likeCount, adjacent, session] = await Promise.all([
+  const [viewCount, likeCount, adjacent] = await Promise.all([
     getViewCount(slug),
     getLikeCount(slug),
-    getAdjacentPosts(slug),
-    auth(),
+    getAdjacentPosts(slug, { isAdmin: viewer.isAdmin }),
   ]);
-  const isAdmin =
-    (session?.user as { isAdmin?: boolean } | undefined)?.isAdmin === true;
   const giscusRepo = process.env.NEXT_PUBLIC_GISCUS_REPO?.trim();
   const moderateUrl =
-    isAdmin && giscusRepo
+    viewer.isAdmin && giscusRepo
       ? `https://github.com/${giscusRepo}/discussions?discussions_q=${encodeURIComponent(`in:title /posts/${slug}`)}`
       : null;
 
@@ -106,6 +104,11 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             {frontmatter.title}
           </h1>
           <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted">
+            {frontmatter.visibility === "private" ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-2 py-0.5 text-xs font-medium text-amber-600 dark:text-amber-400">
+                🔒 私密
+              </span>
+            ) : null}
             {frontmatter.pinned ? (
               <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
                 📌 置顶

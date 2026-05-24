@@ -54,13 +54,16 @@ function dayOfWeekCN(d: Date): number {
   return WEEKDAY_INDEX[wd] ?? 0;
 }
 
-export async function getSiteStats(): Promise<SiteStats> {
+export async function getSiteStats(opts: { isAdmin?: boolean } = {}): Promise<SiteStats> {
   const db = getDb();
+  const visClause = opts.isAdmin
+    ? sql``
+    : sql`AND visibility = 'public'`;
 
   const [postsRow] = await db
     .select({ count: sql<number>`COUNT(*)::int` })
     .from(schema.posts)
-    .where(sql`status = 'published' OR (status = 'scheduled' AND publish_at <= NOW())`);
+    .where(sql`(status = 'published' OR (status = 'scheduled' AND publish_at <= NOW())) ${visClause}`);
 
   const [viewsRow] = await db
     .select({ sum: sql<number>`COALESCE(SUM(count), 0)::int` })
@@ -83,8 +86,14 @@ export async function getSiteStats(): Promise<SiteStats> {
   };
 }
 
-export async function getPostHeatmap(weeks = 16): Promise<HeatmapDay[]> {
+export async function getPostHeatmap(
+  weeks = 16,
+  opts: { isAdmin?: boolean } = {},
+): Promise<HeatmapDay[]> {
   const db = getDb();
+  const visClause = opts.isAdmin
+    ? sql``
+    : sql`AND visibility = 'public'`;
 
   const rows = await db
     .select({
@@ -97,6 +106,7 @@ export async function getPostHeatmap(weeks = 16): Promise<HeatmapDay[]> {
     .from(schema.posts)
     .where(
       sql`(status = 'published' OR (status = 'scheduled' AND publish_at <= NOW()))
+          ${visClause}
           AND COALESCE(publish_at, created_at) >= NOW() - INTERVAL '${sql.raw(String(weeks + 1))} weeks'`,
     )
     .groupBy(
@@ -123,8 +133,12 @@ export async function getPostHeatmap(weeks = 16): Promise<HeatmapDay[]> {
 export async function getMonthCalendar(
   year: number,
   month: number,
+  opts: { isAdmin?: boolean } = {},
 ): Promise<MonthCalendar> {
   const db = getDb();
+  const visClause = opts.isAdmin
+    ? sql``
+    : sql`AND visibility = 'public'`;
 
   const firstOfMonthMs = new Date(
     `${year}-${String(month + 1).padStart(2, "0")}-01T00:00:00+08:00`,
@@ -143,6 +157,7 @@ export async function getMonthCalendar(
     .from(schema.posts)
     .where(
       sql`(status = 'published' OR (status = 'scheduled' AND publish_at <= NOW()))
+          ${visClause}
           AND COALESCE(publish_at, created_at) >= ${new Date(firstOfMonthMs).toISOString()}
           AND COALESCE(publish_at, created_at) < ${new Date(firstOfNextMonthMs).toISOString()}`,
     );

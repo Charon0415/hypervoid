@@ -33,6 +33,7 @@ function postRowToInitial(row: AdminPost): PostEditorInitial {
     cover: row.cover ?? "",
     pinned: row.pinned,
     status: row.status,
+    visibility: row.visibility,
     publishAt: toLocalInputValue(row.publishAt),
   };
 }

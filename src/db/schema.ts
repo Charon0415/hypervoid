@@ -15,6 +15,11 @@ export const postStatus = pgEnum("post_status", [
   "published",
 ]);
 
+export const postVisibility = pgEnum("post_visibility", [
+  "public",
+  "private",
+]);
+
 export const posts = pgTable("posts", {
   slug: text("slug").primaryKey(),
   title: text("title").notNull(),
@@ -26,6 +31,7 @@ export const posts = pgTable("posts", {
   summary: text("summary"),
   pinned: boolean("pinned").notNull().default(false),
   status: postStatus("status").notNull().default("draft"),
+  visibility: postVisibility("visibility").notNull().default("public"),
   publishAt: timestamp("publish_at", { withTimezone: true }),
   notifiedAt: timestamp("notified_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })

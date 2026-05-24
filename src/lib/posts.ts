@@ -16,6 +16,7 @@ export type PostFrontmatter = {
   pinned?: boolean;
   readingMinutes: number;
   draft?: boolean;
+  visibility: "public" | "private";
 };
 
 export type Post = {
@@ -24,7 +25,14 @@ export type Post = {
   content: string;
 };
 
-function visibleClause() {
+export type ViewerOpts = { isAdmin?: boolean };
+
+function visibilityClause(isAdmin: boolean) {
+  if (isAdmin) return undefined;
+  return eq(schema.posts.visibility, "public");
+}
+
+function publishedClause() {
   return or(
     eq(schema.posts.status, "published"),
     and(
@@ -32,6 +40,12 @@ function visibleClause() {
       lte(schema.posts.publishAt, sql`NOW()`),
     ),
   );
+}
+
+function visibleClause(isAdmin: boolean) {
+  const vc = visibilityClause(isAdmin);
+  const pc = publishedClause();
+  return vc ? and(vc, pc) : pc;
 }
 
 function toPost(row: typeof schema.posts.$inferSelect): Post {
@@ -51,23 +65,24 @@ function toPost(row: typeof schema.posts.$inferSelect): Post {
       pinned: row.pinned,
       readingMinutes: minutes,
       draft: row.status === "draft",
+      visibility: row.visibility,
     },
   };
 }
 
-export async function getAllPostSlugs(): Promise<string[]> {
+export async function getAllPostSlugs(opts: ViewerOpts = {}): Promise<string[]> {
   const rows = await getDb()
     .select({ slug: schema.posts.slug })
     .from(schema.posts)
-    .where(visibleClause());
+    .where(visibleClause(opts.isAdmin === true));
   return rows.map((r) => r.slug);
 }
 
-export async function getAllPosts(): Promise<Post[]> {
+export async function getAllPosts(opts: ViewerOpts = {}): Promise<Post[]> {
   const rows = await getDb()
     .select()
     .from(schema.posts)
-    .where(visibleClause())
+    .where(visibleClause(opts.isAdmin === true))
     .orderBy(
       desc(schema.posts.pinned),
       desc(schema.posts.publishAt),
@@ -82,7 +97,10 @@ export type PopularPost = {
   views: number;
 };
 
-export async function getPopularPosts(limit = 5): Promise<PopularPost[]> {
+export async function getPopularPosts(
+  limit = 5,
+  opts: ViewerOpts = {},
+): Promise<PopularPost[]> {
   const rows = await getDb()
     .select({
       slug: schema.posts.slug,
@@ -91,7 +109,7 @@ export async function getPopularPosts(limit = 5): Promise<PopularPost[]> {
     })
     .from(schema.posts)
     .leftJoin(schema.postViews, eq(schema.posts.slug, schema.postViews.slug))
-    .where(visibleClause())
+    .where(visibleClause(opts.isAdmin === true))
     .orderBy(
       desc(sql`COALESCE(${schema.postViews.count}, 0)`),
       desc(schema.posts.publishAt),
@@ -100,25 +118,31 @@ export async function getPopularPosts(limit = 5): Promise<PopularPost[]> {
   return rows;
 }
 
-export async function getPostBySlug(slug: string): Promise<Post | null> {
+export async function getPostBySlug(
+  slug: string,
+  opts: ViewerOpts = {},
+): Promise<Post | null> {
   const rows = await getDb()
     .select()
     .from(schema.posts)
-    .where(and(eq(schema.posts.slug, slug), visibleClause()))
+    .where(and(eq(schema.posts.slug, slug), visibleClause(opts.isAdmin === true)))
     .limit(1);
   return rows[0] ? toPost(rows[0]) : null;
 }
 
 export type AdjacentPost = { slug: string; title: string };
 
-export async function getAdjacentPosts(slug: string): Promise<{
+export async function getAdjacentPosts(
+  slug: string,
+  opts: ViewerOpts = {},
+): Promise<{
   prev: AdjacentPost | null;
   next: AdjacentPost | null;
 }> {
   const rows = await getDb()
     .select({ slug: schema.posts.slug, title: schema.posts.title })
     .from(schema.posts)
-    .where(visibleClause())
+    .where(visibleClause(opts.isAdmin === true))
     .orderBy(desc(schema.posts.publishAt), desc(schema.posts.createdAt));
   const i = rows.findIndex((r) => r.slug === slug);
   if (i < 0) return { prev: null, next: null };
@@ -128,8 +152,10 @@ export async function getAdjacentPosts(slug: string): Promise<{
   };
 }
 
-export async function getAllTags(): Promise<{ tag: string; count: number }[]> {
-  const posts = await getAllPosts();
+export async function getAllTags(
+  opts: ViewerOpts = {},
+): Promise<{ tag: string; count: number }[]> {
+  const posts = await getAllPosts(opts);
   const counts = new Map<string, number>();
   for (const post of posts) {
     for (const tag of post.frontmatter.tags) {
@@ -141,44 +167,30 @@ export async function getAllTags(): Promise<{ tag: string; count: number }[]> {
     .sort((a, b) => b.count - a.count);
 }
 
-export async function getPostsByTag(tag: string): Promise<Post[]> {
-  const posts = await getAllPosts();
+export async function getPostsByTag(
+  tag: string,
+  opts: ViewerOpts = {},
+): Promise<Post[]> {
+  const posts = await getAllPosts(opts);
   return posts.filter((p) => p.frontmatter.tags.includes(tag));
 }
 
 export type SearchHit = Post & { score: number };
 
-export async function searchPosts(query: string): Promise<SearchHit[]> {
+export async function searchPosts(
+  query: string,
+  opts: ViewerOpts = {},
+): Promise<SearchHit[]> {
   const q = query.trim();
   if (!q) return [];
   const pattern = `%${q}%`;
 
   const rows = await getDb()
-    .select({
-      slug: schema.posts.slug,
-      title: schema.posts.title,
-      description: schema.posts.description,
-      content: schema.posts.content,
-      category: schema.posts.category,
-      tags: schema.posts.tags,
-      cover: schema.posts.cover,
-      summary: schema.posts.summary,
-      pinned: schema.posts.pinned,
-      status: schema.posts.status,
-      publishAt: schema.posts.publishAt,
-      notifiedAt: schema.posts.notifiedAt,
-      createdAt: schema.posts.createdAt,
-      updatedAt: schema.posts.updatedAt,
-      score: sql<number>`GREATEST(
-        similarity(${schema.posts.title}, ${q}),
-        similarity(coalesce(${schema.posts.description}, ''), ${q}) * 0.6,
-        similarity(${schema.posts.content}, ${q}) * 0.3
-      )`,
-    })
+    .select()
     .from(schema.posts)
     .where(
       and(
-        visibleClause(),
+        visibleClause(opts.isAdmin === true),
         sql`(${schema.posts.title} || ' ' || coalesce(${schema.posts.description}, '') || ' ' || ${schema.posts.content}) ILIKE ${pattern}`,
       ),
     )
@@ -192,8 +204,8 @@ export async function searchPosts(query: string): Promise<SearchHit[]> {
     )
     .limit(50);
 
-  return rows.map((row) => ({
-    ...toPost(row),
-    score: row.score ?? 0,
-  }));
+  return rows.map((row) => {
+    const post = toPost(row);
+    return { ...post, score: 0 };
+  });
 }

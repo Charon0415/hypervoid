@@ -14,6 +14,7 @@ export type AdminPostInput = {
   cover?: string | null;
   pinned: boolean;
   status: "draft" | "scheduled" | "published";
+  visibility: "public" | "private";
   publishAt: Date | null;
 };
 
@@ -49,6 +50,7 @@ export async function createPost(input: AdminPostInput): Promise<void> {
       cover: input.cover ?? null,
       pinned: input.pinned,
       status: input.status,
+      visibility: input.visibility,
       publishAt: input.publishAt,
       createdAt: now,
       updatedAt: now,
@@ -70,6 +72,7 @@ export async function updatePost(
       cover: input.cover ?? null,
       pinned: input.pinned,
       status: input.status,
+      visibility: input.visibility,
       publishAt: input.publishAt,
       updatedAt: new Date(),
     })
