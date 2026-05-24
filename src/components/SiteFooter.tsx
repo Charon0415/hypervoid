@@ -10,7 +10,7 @@ export function SiteFooter() {
           © {year} Hypervoid · <span className="italic">One &amp; Only</span>
         </p>
         <p className="flex flex-wrap items-center gap-3">
-          <SiteUptime className="font-mono text-xs" />
+          <SiteUptime className="hidden font-mono text-xs sm:inline" />
           <span aria-hidden>·</span>
           <a
             href="https://github.com/HyperCharon"
