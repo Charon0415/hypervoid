@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { auth } from "@/auth";
 import {
   clearSummary,
@@ -19,6 +20,36 @@ async function requireAuth() {
   const session = await auth();
   if (!session?.user) {
     throw new Error("Unauthorized");
+  }
+}
+
+/**
+ * Fire-and-forget AI summary generation for a freshly written/edited post.
+ * Only runs when:
+ *   - AI is configured (ANTHROPIC_API_KEY set)
+ *   - The post is published
+ *   - The post currently has no summary (preserves manual overrides)
+ *   - Content is long enough to make summarization meaningful
+ * Errors are swallowed — the editor never blocks waiting for this.
+ */
+async function autoSummarize(
+  slug: string,
+  title: string,
+  content: string,
+  status: AdminPostInput["status"],
+  hasExistingSummary: boolean,
+): Promise<void> {
+  if (status !== "published") return;
+  if (hasExistingSummary) return;
+  if (!isAiConfigured()) return;
+  if (content.trim().length < 200) return;
+  try {
+    const summary = await summarizePost({ title, content });
+    await setSummary(slug, summary);
+    revalidatePath(`/posts/${slug}`);
+    revalidatePath(`/admin/posts/${slug}/edit`);
+  } catch (e) {
+    console.error("[auto-summary]", slug, e);
   }
 }
 
@@ -107,6 +138,7 @@ export async function createPostAction(formData: FormData) {
   revalidatePath("/tags");
   revalidatePath("/");
   revalidatePath(`/posts/${slug}`);
+  after(() => autoSummarize(slug, input.title, input.content, input.status, false));
   redirect(`/admin/posts/${slug}/edit`);
 }
 
@@ -114,12 +146,18 @@ export async function updatePostAction(originalSlug: string, formData: FormData)
   await requireAuth();
   const { input } = parseFormToInput(formData);
 
+  const existing = await getPostForEditing(originalSlug);
+  const hadSummary = !!existing?.summary;
+
   await updatePost(originalSlug, input);
   revalidatePath("/posts");
   revalidatePath("/tags");
   revalidatePath("/");
   revalidatePath(`/posts/${originalSlug}`);
   revalidatePath(`/admin/posts/${originalSlug}/edit`);
+  after(() =>
+    autoSummarize(originalSlug, input.title, input.content, input.status, hadSummary),
+  );
 }
 
 export async function deletePostAction(slug: string) {
