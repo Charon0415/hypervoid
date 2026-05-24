@@ -21,7 +21,7 @@ export type FontKey = "geist" | "serif" | "handwriting";
 
 export type DisplayMode = "fullscreen" | "banner" | "simple";
 
-export const DEFAULT_HUE = 240;
+export const DEFAULT_HUE = 210;
 export const DEFAULT_BACKGROUND: BackgroundKey = "cosmic";
 export const DEFAULT_FONT: FontKey = "geist";
 export const DEFAULT_DISPLAY_MODE: DisplayMode = "fullscreen";
@@ -29,7 +29,7 @@ export const DEFAULT_DISPLAY_MODE: DisplayMode = "fullscreen";
 export const HUE_PRESETS: { name: string; hue: number }[] = [
   { name: "Indigo", hue: 240 },
   { name: "Sakura", hue: 340 },
-  { name: "Ocean", hue: 200 },
+  { name: "Ocean", hue: 210 },
   { name: "Forest", hue: 140 },
   { name: "Amber", hue: 35 },
   { name: "Violet", hue: 280 },

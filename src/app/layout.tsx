@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "katex/dist/katex.min.css";
@@ -17,12 +17,23 @@ import { getSiteOverride } from "@/lib/site-config-server";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
+    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+  ],
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const [description, authorName, authorUrl] = await Promise.all([
@@ -74,6 +85,12 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <link rel="preconnect" href="https://github.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://lain.bgm.tv" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://media.steampowered.com" crossOrigin="anonymous" />
+      </head>
       <body className="min-h-full flex flex-col">
         <SettingsProvider>
           <Backdrop />
