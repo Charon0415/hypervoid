@@ -29,6 +29,8 @@ export function MobileNav() {
     { href: "/", label: t.nav.home },
     { href: "/posts", label: t.nav.posts },
     { href: "/anime", label: t.nav.anime },
+    { href: "/movies", label: t.nav.movies },
+    { href: "/books", label: t.nav.books },
     { href: "/games", label: t.nav.games },
     { href: "/projects", label: t.nav.projects },
     { href: "/skills", label: t.nav.skills },

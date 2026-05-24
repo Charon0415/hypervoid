@@ -1,6 +1,6 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { AlbumForm } from "@/components/admin/AlbumForm";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { createAlbumAction } from "@/app/admin/albums/actions";
 
 export const metadata: Metadata = {
@@ -11,13 +11,8 @@ export const metadata: Metadata = {
 export default function NewAlbumPage() {
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-baseline gap-3">
-        <Link
-          href="/admin/albums"
-          className="text-sm text-muted hover:text-primary"
-        >
-          ← 相册列表
-        </Link>
+      <header className="flex items-center gap-3">
+        <AdminBackLink href="/admin/albums" label="相册列表" />
         <h1 className="text-2xl font-bold tracking-tight">新建相册</h1>
       </header>
       <AlbumForm mode="new" onSubmit={createAlbumAction} />

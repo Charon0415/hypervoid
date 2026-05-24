@@ -13,6 +13,8 @@ export type Messages = {
     posts: string;
     anime: string;
     games: string;
+    books: string;
+    movies: string;
     projects: string;
     skills: string;
     timeline: string;
@@ -72,6 +74,8 @@ export const MESSAGES: Record<Locale, Messages> = {
       posts: "文章",
       anime: "番剧",
       games: "游戏",
+      books: "书籍",
+      movies: "影视",
       projects: "项目",
       skills: "技能",
       timeline: "时间线",
@@ -128,6 +132,8 @@ export const MESSAGES: Record<Locale, Messages> = {
       posts: "Posts",
       anime: "Anime",
       games: "Games",
+      books: "Books",
+      movies: "Films",
       projects: "Projects",
       skills: "Skills",
       timeline: "Timeline",

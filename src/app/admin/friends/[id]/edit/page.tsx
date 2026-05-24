@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import {
   FriendEditor,
   type FriendEditorInitial,
 } from "@/components/admin/FriendEditor";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { getFriend, type Friend } from "@/db/friends";
 import {
   deleteFriendAction,
@@ -40,13 +40,8 @@ export default async function EditFriendPage(props: {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-baseline gap-3">
-        <Link
-          href="/admin/friends"
-          className="text-sm text-muted hover:text-primary"
-        >
-          ← 友链列表
-        </Link>
+      <header className="flex items-center gap-3">
+        <AdminBackLink href="/admin/friends" label="友链列表" />
         <h1 className="text-2xl font-bold tracking-tight">编辑友链</h1>
       </header>
       <FriendEditor

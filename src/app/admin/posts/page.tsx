@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { listAllPosts } from "@/db/admin-posts";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
 
 export const metadata: Metadata = {
   title: "文章管理",
@@ -36,14 +37,9 @@ export default async function AdminPostsList() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-center justify-between">
-        <div className="flex items-baseline gap-3">
-          <Link
-            href="/admin"
-            className="text-sm text-muted hover:text-primary"
-          >
-            ← 后台
-          </Link>
+      <header className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <AdminBackLink href="/admin" label="后台" />
           <h1 className="text-2xl font-bold tracking-tight">文章管理</h1>
           <span className="text-sm text-muted">共 {posts.length} 篇</span>
         </div>

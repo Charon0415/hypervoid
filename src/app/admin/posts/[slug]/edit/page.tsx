@@ -7,6 +7,7 @@ import {
 } from "@/components/admin/PostEditor";
 import { BroadcastButton } from "@/components/admin/BroadcastButton";
 import { SummaryPanel } from "@/components/admin/SummaryPanel";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { getPostForEditing, type AdminPost } from "@/db/admin-posts";
 import {
   deletePostAction,
@@ -68,21 +69,16 @@ export default async function EditPostPage(props: {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-baseline justify-between gap-3">
-        <div className="flex items-baseline gap-3">
-          <Link
-            href="/admin/posts"
-            className="text-sm text-muted hover:text-primary"
-          >
-            ← 文章列表
-          </Link>
+      <header className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <AdminBackLink href="/admin/posts" label="文章列表" />
           <h1 className="text-2xl font-bold tracking-tight">编辑文章</h1>
         </div>
         <Link
           href={`/posts/${slug}`}
           target="_blank"
           rel="noreferrer noopener"
-          className="text-sm text-muted hover:text-primary"
+          className="inline-flex items-center gap-1 text-xs text-muted hover:text-primary"
         >
           线上预览 ↗
         </Link>

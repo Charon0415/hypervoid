@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { BangumiAnime, BangumiStatus } from "@/lib/bangumi-types";
+import type { BangumiItem, BangumiStatus } from "@/lib/bangumi-types";
 import { STATUS_LABEL } from "@/lib/bangumi-types";
 import { AnimeDetailModal } from "@/components/AnimeDetailModal";
 
@@ -29,12 +29,7 @@ const STATUS_ORDER: ("all" | BangumiStatus)[] = [
   "dropped",
 ];
 
-const STATUS_DISPLAY: Record<"all" | BangumiStatus, string> = {
-  all: "全部",
-  ...STATUS_LABEL,
-};
-
-function sortItems(items: BangumiAnime[], by: SortKey): BangumiAnime[] {
+function sortItems(items: BangumiItem[], by: SortKey): BangumiItem[] {
   const arr = [...items];
   arr.sort((a, b) => {
     switch (by) {
@@ -54,17 +49,30 @@ function sortItems(items: BangumiAnime[], by: SortKey): BangumiAnime[] {
   return arr;
 }
 
-export function AnimeBrowser({ items }: { items: BangumiAnime[] }) {
+export function AnimeBrowser({
+  items,
+  statusLabels = STATUS_LABEL,
+  searchPlaceholder = "🔍 按名称过滤（中文 / 原名）…",
+}: {
+  items: BangumiItem[];
+  statusLabels?: Record<BangumiStatus, string>;
+  searchPlaceholder?: string;
+}) {
   const [status, setStatus] = useState<"all" | BangumiStatus>("all");
   const [sort, setSort] = useState<SortKey>("updated");
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<BangumiAnime | null>(null);
+  const [selected, setSelected] = useState<BangumiItem | null>(null);
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: items.length };
     for (const it of items) c[it.status] = (c[it.status] ?? 0) + 1;
     return c;
   }, [items]);
+
+  const displayLabel = useMemo<Record<"all" | BangumiStatus, string>>(
+    () => ({ all: "全部", ...statusLabels }),
+    [statusLabels],
+  );
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -107,7 +115,7 @@ export function AnimeBrowser({ items }: { items: BangumiAnime[] }) {
                     : "border-border bg-card text-muted hover:border-primary/40 hover:text-foreground"
                 }`}
               >
-                {STATUS_DISPLAY[s]}
+                {displayLabel[s]}
                 <span
                   className={`rounded-full px-1.5 text-[10px] tabular-nums ${
                     active ? "bg-primary/20" : "bg-background"
@@ -165,13 +173,13 @@ export function AnimeBrowser({ items }: { items: BangumiAnime[] }) {
         type="search"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="🔍 按名称过滤（中文 / 原名）…"
+        placeholder={searchPlaceholder}
         className="w-full rounded-md border border-border bg-card px-3 py-1.5 text-sm transition focus:border-primary focus:outline-none"
       />
 
       {filtered.length === 0 ? (
         <p className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted">
-          没有匹配的番剧。
+          没有匹配的条目。
         </p>
       ) : (
         <div className="grid gap-3 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
@@ -179,6 +187,7 @@ export function AnimeBrowser({ items }: { items: BangumiAnime[] }) {
             <AnimeCard
               key={`${item.status}-${item.id}`}
               item={item}
+              statusLabel={statusLabels[item.status]}
               onClick={() => setSelected(item)}
             />
           ))}
@@ -197,9 +206,11 @@ export function AnimeBrowser({ items }: { items: BangumiAnime[] }) {
 
 function AnimeCard({
   item,
+  statusLabel,
   onClick,
 }: {
-  item: BangumiAnime;
+  item: BangumiItem;
+  statusLabel: string;
   onClick: () => void;
 }) {
   const title = item.nameCn || item.name;
@@ -230,7 +241,7 @@ function AnimeCard({
           </span>
         ) : null}
         <span className="absolute left-1.5 top-1.5 inline-flex items-center gap-0.5 rounded-md bg-black/65 px-1.5 py-0.5 text-[9px] text-white backdrop-blur">
-          {STATUS_LABEL[item.status]}
+          {statusLabel}
         </span>
       </div>
       <div className="flex flex-col px-2 pb-2">

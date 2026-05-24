@@ -6,6 +6,7 @@ import {
   type AlbumFormInitial,
 } from "@/components/admin/AlbumForm";
 import { PhotoManager } from "@/components/admin/PhotoManager";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { getAlbum, listPhotosInAlbum, type Album } from "@/db/albums";
 import {
   deleteAlbumAction,
@@ -42,13 +43,8 @@ export default async function EditAlbumPage(props: {
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="flex items-baseline gap-3">
-        <Link
-          href="/admin/albums"
-          className="text-sm text-muted hover:text-primary"
-        >
-          ← 相册列表
-        </Link>
+      <header className="flex items-center gap-3">
+        <AdminBackLink href="/admin/albums" label="相册列表" />
         <h1 className="text-2xl font-bold tracking-tight">编辑相册</h1>
       </header>
       <AlbumForm

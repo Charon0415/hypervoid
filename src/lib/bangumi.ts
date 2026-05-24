@@ -2,12 +2,25 @@ import "server-only";
 import { siteConfig } from "@/lib/site-config";
 import {
   STATUS_TO_TYPE,
+  SUBJECT_KIND_TO_TYPE,
   type BangumiAnime,
+  type BangumiItem,
   type BangumiStatus,
+  type BangumiSubjectKind,
 } from "@/lib/bangumi-types";
 
-export type { BangumiAnime, BangumiStatus } from "@/lib/bangumi-types";
-export { STATUS_LABEL, STATUS_TO_TYPE } from "@/lib/bangumi-types";
+export type {
+  BangumiAnime,
+  BangumiItem,
+  BangumiStatus,
+  BangumiSubjectKind,
+} from "@/lib/bangumi-types";
+export {
+  STATUS_LABEL,
+  STATUS_LABEL_BOOK,
+  STATUS_TO_TYPE,
+  SUBJECT_KIND_TO_TYPE,
+} from "@/lib/bangumi-types";
 
 type RawCollection = {
   data: Array<{
@@ -30,26 +43,27 @@ type RawCollection = {
 
 const UA = `HyperCharon/hypervoid (+${siteConfig.url})`;
 
-export async function fetchBangumiAnime(
+export async function fetchBangumiCollection(
+  kind: BangumiSubjectKind,
   status: BangumiStatus,
   { limit = 50, offset = 0 }: { limit?: number; offset?: number } = {},
-): Promise<{ items: BangumiAnime[]; total: number }> {
+): Promise<{ items: BangumiItem[]; total: number }> {
   const userId = siteConfig.bangumiUserId;
   if (!userId) return { items: [], total: 0 };
 
+  const subjectType = SUBJECT_KIND_TO_TYPE[kind];
   const type = STATUS_TO_TYPE[status];
-  const url = `https://api.bgm.tv/v0/users/${userId}/collections?subject_type=2&type=${type}&limit=${limit}&offset=${offset}`;
+  const url = `https://api.bgm.tv/v0/users/${userId}/collections?subject_type=${subjectType}&type=${type}&limit=${limit}&offset=${offset}`;
 
   try {
     const res = await fetch(url, {
-      headers: {
-        "User-Agent": UA,
-        Accept: "application/json",
-      },
+      headers: { "User-Agent": UA, Accept: "application/json" },
       next: { revalidate: 3600 },
     });
     if (!res.ok) {
-      console.error(`[bangumi] ${status} fetch failed: ${res.status}`);
+      console.error(
+        `[bangumi] ${kind}/${status} fetch failed: ${res.status}`,
+      );
       return { items: [], total: 0 };
     }
     const json = (await res.json()) as RawCollection;
@@ -58,6 +72,7 @@ export async function fetchBangumiAnime(
       items: json.data.map((row) => ({
         id: row.subject.id,
         status,
+        kind,
         name: row.subject.name,
         nameCn: row.subject.name_cn || null,
         date: row.subject.date || null,
@@ -81,19 +96,31 @@ export async function fetchBangumiAnime(
   }
 }
 
-export async function fetchAllAnime(): Promise<{
-  watching: { items: BangumiAnime[]; total: number };
-  done: { items: BangumiAnime[]; total: number };
-  wish: { items: BangumiAnime[]; total: number };
-  onhold: { items: BangumiAnime[]; total: number };
-  dropped: { items: BangumiAnime[]; total: number };
+/** Backwards-compatible anime-only wrapper. */
+export async function fetchBangumiAnime(
+  status: BangumiStatus,
+  opts: { limit?: number; offset?: number } = {},
+): Promise<{ items: BangumiAnime[]; total: number }> {
+  return fetchBangumiCollection("anime", status, opts);
+}
+
+export async function fetchAllForKind(kind: BangumiSubjectKind): Promise<{
+  watching: { items: BangumiItem[]; total: number };
+  done: { items: BangumiItem[]; total: number };
+  wish: { items: BangumiItem[]; total: number };
+  onhold: { items: BangumiItem[]; total: number };
+  dropped: { items: BangumiItem[]; total: number };
 }> {
   const [watching, done, wish, onhold, dropped] = await Promise.all([
-    fetchBangumiAnime("watching", { limit: 50 }),
-    fetchBangumiAnime("done", { limit: 100 }),
-    fetchBangumiAnime("wish", { limit: 50 }),
-    fetchBangumiAnime("onhold", { limit: 30 }),
-    fetchBangumiAnime("dropped", { limit: 30 }),
+    fetchBangumiCollection(kind, "watching", { limit: 50 }),
+    fetchBangumiCollection(kind, "done", { limit: 100 }),
+    fetchBangumiCollection(kind, "wish", { limit: 50 }),
+    fetchBangumiCollection(kind, "onhold", { limit: 30 }),
+    fetchBangumiCollection(kind, "dropped", { limit: 30 }),
   ]);
   return { watching, done, wish, onhold, dropped };
+}
+
+export async function fetchAllAnime() {
+  return fetchAllForKind("anime");
 }

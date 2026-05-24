@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { listFriends } from "@/db/friends";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
 
 export const dynamic = "force-dynamic";
 
@@ -14,14 +15,9 @@ export default async function AdminFriendsList() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-center justify-between">
-        <div className="flex items-baseline gap-3">
-          <Link
-            href="/admin"
-            className="text-sm text-muted hover:text-primary"
-          >
-            ← 后台
-          </Link>
+      <header className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <AdminBackLink href="/admin" label="后台" />
           <h1 className="text-2xl font-bold tracking-tight">友链管理</h1>
           <span className="text-sm text-muted">共 {friends.length} 个</span>
         </div>
