@@ -32,13 +32,13 @@ export async function AnnouncementWidget() {
     "";
 
   return (
-    <div className="rounded-2xl border border-primary/20 bg-primary/[0.04] p-4">
+    <div className="rounded-3xl border border-border bg-card p-5">
       <p className="text-xs uppercase tracking-wider text-muted">✦ 公告</p>
       <p className="mt-1.5 text-sm leading-relaxed">{message}</p>
       {linkHref ? (
         <Link
           href={linkHref}
-          className="mt-2 inline-block text-xs font-medium text-primary hover:underline"
+          className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary transition hover:-translate-y-0.5"
         >
           {linkText || "了解更多"} →
         </Link>
