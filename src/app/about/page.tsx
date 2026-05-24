@@ -18,7 +18,7 @@ export default function AboutPage() {
 
       <p>
         这里是 <strong>Hypervoid</strong>——我自己造的词，
-        <em>hyper</em>（超）+ <em>void</em>（虚空），意思接近「超虚空 / 高维空白」。
+        <em>hyper</em>（超）+ <em>void</em>（虚空），意思接近「高维虚空 / 高维空白」。
         我在这片虚空里给自己留了块坐标，写写画画、记录痕迹的地方。
       </p>
 

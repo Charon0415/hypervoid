@@ -109,7 +109,7 @@ export function AnimeBrowser({
                 type="button"
                 onClick={() => setStatus(s)}
                 aria-pressed={active}
-                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition ${
+                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                   active
                     ? "border-primary bg-primary/10 text-primary"
                     : "border-border bg-card text-muted hover:border-primary/40 hover:text-foreground"
@@ -132,7 +132,7 @@ export function AnimeBrowser({
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
             aria-label="排序"
-            className="rounded-md border border-border bg-card px-2 py-1 text-xs transition focus:border-primary focus:outline-none"
+            className="rounded-md border border-border bg-card px-2 py-1.5 text-xs transition focus:border-primary focus:outline-none"
           >
             {SORT_OPTIONS.map((o) => (
               <option key={o.key} value={o.key}>
@@ -145,7 +145,7 @@ export function AnimeBrowser({
             onClick={pickRandom}
             disabled={filtered.length === 0}
             title="随机抽一部"
-            className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2 py-1 text-xs transition hover:border-primary/40 hover:text-primary disabled:opacity-50"
+            className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2 py-1.5 text-xs transition hover:border-primary/40 hover:text-primary disabled:opacity-50"
           >
             <svg
               aria-hidden

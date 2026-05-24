@@ -43,7 +43,7 @@ export function ColumnToggleButton({
         onClick={() => onChange(false)}
         aria-label="单列"
         aria-pressed={!twoCol}
-        className={`grid h-7 w-7 place-items-center rounded-full transition ${
+        className={`grid h-8 w-8 place-items-center rounded-full transition ${
           !twoCol
             ? "bg-primary text-primary-foreground"
             : "text-muted hover:bg-primary/10 hover:text-foreground"
@@ -69,7 +69,7 @@ export function ColumnToggleButton({
         onClick={() => onChange(true)}
         aria-label="双列"
         aria-pressed={twoCol}
-        className={`grid h-7 w-7 place-items-center rounded-full transition ${
+        className={`grid h-8 w-8 place-items-center rounded-full transition ${
           twoCol
             ? "bg-primary text-primary-foreground"
             : "text-muted hover:bg-primary/10 hover:text-foreground"

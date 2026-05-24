@@ -28,27 +28,27 @@ export default async function Home() {
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-10">
       <div className="flex flex-col gap-10 lg:order-1">
-        <section className="hypervoid-hero relative overflow-hidden rounded-3xl border border-border bg-card p-6 sm:p-10 md:p-12">
+        <section className="hypervoid-hero relative overflow-hidden rounded-3xl border border-border bg-card p-5 sm:p-10 md:p-12">
           <div aria-hidden className="hypervoid-stars" />
           <div className="relative">
-            <p className="text-xs uppercase tracking-widest text-primary sm:text-sm">
-              Hypervoid · 超虚空
+            <p className="text-[11px] uppercase tracking-widest text-primary sm:text-sm">
+              Hypervoid · 高维虚空
             </p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight sm:mt-3 sm:text-4xl md:text-5xl">
+            <h1 className="mt-2 text-[26px] font-bold leading-tight tracking-tight sm:mt-3 sm:text-4xl md:text-5xl">
               <Greeting name="Charon" />
             </h1>
             <p className="mt-2 font-mono text-xs italic text-muted sm:mt-3 sm:text-sm md:text-base">
               The world is big, you have to go and see.
             </p>
-            <p className="mt-4 max-w-2xl text-sm text-muted sm:mt-5 sm:text-base md:text-lg">
-              这里是 Hypervoid——hyper + void，自造词，意思是「超虚空」。
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted sm:mt-5 sm:text-base md:text-lg">
+              这里是 Hypervoid——hyper + void，自造词，意思是「高维虚空」。
               一颗游荡者留下的坐标：写技术、玩游戏、追番剧、记录折腾——
               能记录的都记录在这。
             </p>
-            <div className="mt-5 flex flex-wrap gap-2 sm:mt-6 sm:gap-3">
+            <div className="mt-4 flex flex-wrap gap-2 sm:mt-6 sm:gap-3">
               <Link
                 href="/posts"
-                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:shadow-md hover:-translate-y-0.5"
+                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition hover:shadow-md hover:-translate-y-0.5 sm:px-5 sm:py-2.5"
               >
                 阅读文章
                 <svg
@@ -67,13 +67,13 @@ export default async function Home() {
               </Link>
               <Link
                 href="/about"
-                className="inline-flex items-center rounded-full border border-border bg-background px-5 py-2.5 text-sm font-medium transition hover:border-primary hover:text-primary"
+                className="inline-flex items-center rounded-full border border-border bg-background px-4 py-2 text-sm font-medium transition hover:border-primary hover:text-primary sm:px-5 sm:py-2.5"
               >
                 关于我
               </Link>
               <Link
                 href="/archive"
-                className="inline-flex items-center rounded-full border border-border bg-background px-5 py-2.5 text-sm font-medium transition hover:border-primary hover:text-primary"
+                className="inline-flex items-center rounded-full border border-border bg-background px-4 py-2 text-sm font-medium transition hover:border-primary hover:text-primary sm:px-5 sm:py-2.5"
               >
                 归档
               </Link>
