@@ -15,10 +15,13 @@ html {
   }
 }
 
-/* Global font-size — root rem unit. "large" bumps the base ~9.4% so the
-   whole rem-driven layout breathes without breaking line-lengths. */
-html[data-font-size="large"] {
+/* Global font-size — root rem unit. Default is 17.5px for comfortable
+   reading; "large" pushes it ~11% further to 19.5px. */
+html {
   font-size: 17.5px;
+}
+html[data-font-size="large"] {
+  font-size: 19.5px;
 }
 
 /* When the global is already "large", relax prose line-height a touch so

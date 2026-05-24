@@ -16,11 +16,20 @@ async function getAnnouncement(key: string): Promise<string> {
 }
 
 export async function AnnouncementWidget() {
-  const message = await getAnnouncement("announcementMessage");
+  const message =
+    (await getAnnouncement("announcementMessage")) ||
+    process.env.ANNOUNCEMENT_MESSAGE ||
+    "";
   if (!message) return null;
 
-  const linkHref = await getAnnouncement("announcementLink");
-  const linkText = await getAnnouncement("announcementLinkText");
+  const linkHref =
+    (await getAnnouncement("announcementLink")) ||
+    process.env.ANNOUNCEMENT_LINK ||
+    "";
+  const linkText =
+    (await getAnnouncement("announcementLinkText")) ||
+    process.env.ANNOUNCEMENT_LINK_TEXT ||
+    "";
 
   return (
     <div className="rounded-2xl border border-primary/20 bg-primary/[0.04] p-4">

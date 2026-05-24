@@ -207,10 +207,10 @@ export function NavGroups() {
                   role="menu"
                   className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-2"
                 >
-                  <div className="min-w-[12rem] rounded-2xl border border-border bg-card p-1.5 shadow-xl ring-1 ring-black/5">
+                  <div className="min-w-[13rem] rounded-2xl border border-border bg-card p-1.5 shadow-xl ring-1 ring-black/5">
                     {g.items.map((item) => {
                       const itemActive = !item.external && isHrefActive(item.href);
-                      const className = `flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition ${
+                      const className = `flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm whitespace-nowrap transition ${
                         itemActive
                           ? "bg-primary/10 text-primary"
                           : "text-foreground/80 hover:bg-background hover:text-foreground"
@@ -226,13 +226,13 @@ export function NavGroups() {
                             onClick={closeNow}
                             className={className}
                           >
-                            <span aria-hidden className="text-base leading-none">
+                            <span aria-hidden className="shrink-0 text-base leading-none">
                               {item.icon}
                             </span>
-                            <span className="flex-1">{item.label}</span>
+                            <span className="min-w-0 truncate">{item.label}</span>
                             <svg
                               aria-hidden
-                              className="h-3 w-3 opacity-60"
+                              className="h-3 w-3 shrink-0 opacity-60"
                               viewBox="0 0 24 24"
                               fill="none"
                               stroke="currentColor"
@@ -251,10 +251,10 @@ export function NavGroups() {
                           onClick={closeNow}
                           className={className}
                         >
-                          <span aria-hidden className="text-base leading-none">
+                          <span aria-hidden className="shrink-0 text-base leading-none">
                             {item.icon}
                           </span>
-                          <span>{item.label}</span>
+                          <span className="min-w-0 truncate">{item.label}</span>
                         </Link>
                       );
                     })}

@@ -56,8 +56,8 @@ export const FONT_OPTIONS: { key: FontKey; label: string }[] = [
 ];
 
 export const FONT_SIZE_OPTIONS: { key: FontSizeKey; label: string; hint: string }[] = [
-  { key: "normal", label: "标准", hint: "16px 基准（默认）" },
-  { key: "large", label: "舒适", hint: "17.5px 基准，正文更易读" },
+  { key: "normal", label: "标准", hint: "17.5px 基准（默认）" },
+  { key: "large", label: "舒适", hint: "19.5px 基准，正文更宽敞" },
 ];
 
 export const DISPLAY_MODE_OPTIONS: { key: DisplayMode; label: string; hint: string }[] = [

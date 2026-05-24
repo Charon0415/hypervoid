@@ -16,11 +16,21 @@ async function getAnnouncementOverride(key: string): Promise<string> {
 }
 
 export async function AnnouncementWrapper() {
-  const message = await getAnnouncementOverride("announcementMessage");
+  // DB overrides take priority; fall back to env vars for quick setup.
+  const message =
+    (await getAnnouncementOverride("announcementMessage")) ||
+    process.env.ANNOUNCEMENT_MESSAGE ||
+    "";
   if (!message) return null;
 
-  const linkHref = await getAnnouncementOverride("announcementLink");
-  const linkText = await getAnnouncementOverride("announcementLinkText");
+  const linkHref =
+    (await getAnnouncementOverride("announcementLink")) ||
+    process.env.ANNOUNCEMENT_LINK ||
+    "";
+  const linkText =
+    (await getAnnouncementOverride("announcementLinkText")) ||
+    process.env.ANNOUNCEMENT_LINK_TEXT ||
+    "";
 
   return (
     <AnnouncementBar

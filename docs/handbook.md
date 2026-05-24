@@ -2,7 +2,7 @@
 
 > 这是你将来独立维护 Hypervoid 的工具书。覆盖**日常运营**、**站点定制**、**部署运维**、**故障排查**、**扩展开发**——遇到任何"这该怎么做"的问题，先查这里。
 
-**最近更新：** 2026-05-24（v1.0 完工 · 全天 70+ commits）
+**最近更新：** 2026-05-25（v1.1 —— 阅读增强、转场动画、PWA、无障碍、公告栏、精选导航、骨架屏/错误边界、字体字号全局调优）
 **对应站点：** https://hypervoid.top
 
 ---
@@ -40,12 +40,21 @@
 - **统计分析** 用 Umami Cloud，无 Cookie 合规
 - **追番 / 阅读 / 影视** 接入 Bangumi (bgm.tv) API，自动同步
 - **游戏库** 接入 Steam Web API，公开 profile 同步
-- **站点设置面板**：6 预设调色板、6 种背景（含 ACG 轮播）、3 种显示模式、3 种字体
-- **阅读模式**：文章页可切 sepia / sepia+大号，仅 `<article>` 内染色
+- **站点设置面板**：6 预设调色板、7 种背景（含 ACG 轮播 + 中世纪壁纸）、3 种显示模式、3 种字体 + 2 档字号（标准 17.5px / 舒适 19.5px）、5 套一键主题预设
+- **阅读模式**：文章页可切 sepia / sepia+大号，仅 `<article>` 内染色，全局字号和文章字号互不叠加
+- **转场动画**：Next.js View Transitions API 全站 crossfade，导航栏固定不动
+- **PWA**：可安装到主屏幕 + Service Worker 离线缓存
+- **无障碍**：跳转内容链接 (⌘Tab)、全局 focus-visible 轮廓、语义化地标
+- **骨架屏**：首页/文章/搜索路由都有 `loading.tsx` 流式骨架屏
+- **错误边界**：根级别 + 文章级别 `error.tsx`，提供重试+返回+随机一篇
+- **相关文章**：文章底部基于标签交集的 3 篇推荐
+- **系列进度**：系列详情页显示已读/未读 + 进度条
+- **精选导航**：导航栏「精选」组（置顶文章/系列/标签/随机一篇）
+- **公告系统**：全站公告栏（可关闭）+ 侧边栏公告卡片，支持 DB 或环境变量配置
 - **赞赏 / 打赏**：完整脚手架就位，受 `siteConfig.donate.enabled` 单开关控制
 - **读者侧本地功能**：书签 (`/bookmarks`)、「✓ 已读」标识、打印友好（⌘P）
 - **每文独立 OG 图** + **PWA manifest** + **apple-touch icon**
-- **多页面** 包括相册、友链、留言、归档、番剧、影视、书籍、游戏、技能、时间线、日记、系列
+- **多页面** 包括相册、友链、留言、归档、番剧、影视、书籍、游戏、技能、时间线、日记、系列、置顶
 
 ### 1.2 技术栈
 
@@ -167,6 +176,9 @@ ANTHROPIC_API_KEY=sk-ant-xxxxx    # 没有 → AI 摘要和 Q&A 不可用
 ```bash
 CRON_SECRET=                      # 如果设置了，定时任务路由要求 Bearer 认证
 NEXT_PUBLIC_UMAMI_SCRIPT_URL=     # 自建 Umami 时填，云端默认硬编码
+ANNOUNCEMENT_MESSAGE=             # 全站公告文本（不填则无公告栏）
+ANNOUNCEMENT_LINK=                # 公告"了解更多"的跳转链接
+ANNOUNCEMENT_LINK_TEXT=           # 链接按钮上的文字
 ```
 
 ### 2.4 常用命令
@@ -384,11 +396,11 @@ export const siteConfig = {
 
 改完 `pnpm build` 看一下，没问题就提交。
 
-### 4.2 站点设置面板（主题 / 背景 / 显示模式 / 字体）
+### 4.2 站点设置面板（主题 / 背景 / 显示模式 / 字体 / 字号 / 预设）
 
-入口在导航栏右侧的**彩色圆点按钮**，点开是统一的设置面板。所有设置存 localStorage（key 前缀 `hypervoid:`），全局生效。
+入口在导航栏右侧的**彩色圆点按钮**，点开是统一的设置面板。**桌面端浮层弹出，移动端从底部上滑**（用 Portal 脱离 header 包含块）。所有设置存 localStorage（key 前缀 `hypervoid:`），全局生效。快捷键 **⌘/Ctrl+,** 打开面板、**Esc** 关闭。
 
-**架构** —— `src/components/SettingsProvider.tsx` 是 Context，挂在根 layout，管理四个全局状态：
+**架构** —— `src/components/SettingsProvider.tsx` 是 Context，挂在根 layout，管理六个全局状态：
 
 | 状态 | localStorage key | 应用方式 |
 |---|---|---|
@@ -396,27 +408,44 @@ export const siteConfig = {
 | `background` | `hypervoid:bg` | `<html data-bg="...">` 属性 |
 | `displayMode` | `hypervoid:display` | `<html data-display="...">` 属性 |
 | `font` | `hypervoid:font` | `<html data-font="...">` 属性 |
+| `fontSize` | `hypervoid:font-size` | `<html data-font-size="...">` 属性 |
+
+**一键主题预设** —— 面板顶部 5 个快捷按钮，一次切换 hue+bg+font+fontSize 全部到位：
+
+| 预设 | 色相 | 背景 | 字体 | 字号 |
+|---|---|---|---|---|
+| 中世纪 | Amber 35° | medieval 壁纸 | Serif | 舒适 |
+| 宇宙 | Indigo 240° | cosmic | Serif | 标准 |
+| ACG | Sakura 340° | ACG 轮播 | 手写 | 标准 |
+| 纸质 | Amber 35° | paper | Serif | 舒适 |
+| 极简 | 默认蓝 215° | plain | Geist | 标准 |
+
+预设定义在 `SettingsProvider.tsx` 的 `THEME_PRESETS` 数组。要改预设：直接编辑数组。
 
 **预设调色板** —— 6 个（Indigo 默认 / Sakura / Ocean / Forest / Amber / Violet），存在 `HUE_PRESETS` 数组。加新预设：在 `SettingsProvider.tsx` 的 `HUE_PRESETS` 加一行 `{ name: 'Custom', hue: 123 }`。
 
-**背景** —— 6 种（cosmic 默认 / particles / acg / paper / waves / plain），在 `Backdrop.tsx`（canvas/img 类）+ `globals.css`（纯 CSS 类）共同实现：
+**背景** —— 7 种（cosmic 默认 / particles / acg / medieval / paper / waves / plain），在 `Backdrop.tsx`（canvas/img 类）+ `BannerStrip.tsx`（横幅模式）+ `globals.css`（纯 CSS 类）共同实现：
 - `cosmic` / `particles` —— canvas 粒子，根据深浅色切换数量和颜色
 - `acg` —— **ACG 轮播壁纸**：读 `siteConfig.acgWallpapers`，9 秒淡入淡出循环。把横向高清图丢进 `public/wallpapers/` 然后在 site-config 数组登记路径。留空显示提示
+- `medieval` —— **中世纪壁纸**（`/wallpapers/2.webp`，252KB），覆盖暖色羊皮纸渐层 + 渐变淡出到正文背景色。全屏和横幅两种模式都支持
 - `plain` —— 啥都不渲染
 - `paper` —— CSS 双向 1px 栅格 + 透明度
 - `waves` —— 三层径向渐变 + `wavesShift` 24s 动画
 
 加新背景：
 1. `BACKGROUND_OPTIONS` 里加一项 + `BackgroundKey` 类型加一个 union member
-2. 如果是 canvas/img 类：在 `Backdrop.tsx` 加分支
+2. 如果是 canvas/img 类：在 `Backdrop.tsx` 和 `BannerStrip.tsx` 都加分
 3. 如果是 CSS 类：在 `globals.css` 加 `html[data-bg="新值"] body::before { ... }` 规则
+4. 在 `SiteSettings.tsx` 的 `<BgThumb>` 组件加迷你预览
 
 **显示模式** —— 3 种（fullscreen 默认 / banner / simple），影响所有背景的渲染范围：
 - `fullscreen` —— 背景铺满整个视口（原有行为）
 - `banner` —— 背景缩到顶部 44vh 横幅区域（适合 ACG 壁纸场景，不让壁纸压住正文）
 - `simple` —— 完全隐藏背景（包括 canvas 和 CSS 装饰），只剩主题色
 
-**字体** —— 3 种（Geist 默认 / Serif / Handwriting），通过 `html[data-font="..."] body { font-family: ... }` 改变。**没下载额外资源**，只用系统字体回落链。
+**字体** —— 3 种（Serif 默认 / Geist / 手写），通过 `html[data-font="..."] body { font-family: ... }` 改变。**没下载额外资源**，只用系统字体回落链。默认字体 2026-05-25 从手写改为 Serif。
+
+**字号** —— 2 档（标准 17.5px 默认 / 舒适 19.5px），通过 root `font-size` 改变。整个 rem 体系自然缩放，不会和阅读模式叠加放大。
 
 **重置全部** —— 面板右上「重置全部」按钮一键清掉 localStorage 的所有 key，恢复默认。
 
@@ -428,33 +457,35 @@ export const siteConfig = {
 
 ### 4.4 导航菜单
 
-**桌面端** —— `src/components/NavGroups.tsx` 控制顶部胶囊式分组导航。要加/删菜单项：
+**桌面端** —— `src/components/NavGroups.tsx` 控制顶部胶囊式分组导航。当前分组：
 
-```ts
-// 简化展示——具体结构看文件
-const groups = [
-  { label: "创作", items: [...] },
-  { label: "生活", items: [...] },
-  { label: "交互", items: [...] },
-];
-```
+| 组 | key | 内容 |
+|---|---|---|
+| 直链 | — | 文章、归档 |
+| 创作 | `create` | 项目、技能、时间线 |
+| 生活 | `life` | 追番、影视、书籍、游戏、相册、日记 |
+| 交互 | `interact` | 留言板、友链、关于 |
+| 精选 | `featured` | 置顶文章、系列、标签、随机一篇 |
+| 链接 | `links` | GitHub / Bilibili / Gitee / Codeberg 等社交链接 |
 
-**移动端** —— `src/components/MobileNav.tsx` 是抽屉式菜单，要保持和桌面端的菜单项一致。
+要加/删菜单项：编辑 `NavGroups.tsx` 的 `groups` 数组。
 
-**i18n** —— 导航文字走 `src/lib/i18n.ts`，加新菜单时也要同步加翻译。
+**移动端** —— `src/components/MobileNav.tsx` 是抽屉式菜单，**桌面端的 LocaleSwitch 和 SiteSettings 在所有断点都直接显示在 header 右侧**（`md:hidden` 去掉了），不再隐藏在移动端抽屉底部。
+
+**i18n** —— 导航文字走 `src/lib/i18n.ts`，加新菜单时也要同步加翻译。当前翻译的组 key 为 `groupCreate` / `groupLife` / `groupInteract` / `groupFeatured` / `groupLinks`。
 
 ### 4.5 侧边栏 widgets
 
 主页右侧侧边栏在 `src/app/page.tsx` 里组装，包含：
 
 - `<ProfileCard />` —— 头像 + 简介 + 社交图标
-- `<MiniCalendar />` —— 当月日历，文章发布日期高亮
-- `<PostActivityHeatmap />` —— 365 天活动热力图
-- `<PopularPosts />` —— 浏览量 TOP 5
-- `<TagCloud />` —— 标签云
-- `<RecentGuestbook />` —— 最近 3 条留言
 - `<SiteStats />` —— 文章数 / 标签数 / 总浏览
-- `<SubscribeForm />` —— 邮件订阅入口
+- `<AnnouncementWidget />` —— 公告卡片（有内容时显示）
+- `<MiniCalendar />` —— 当月日历，文章发布日期高亮（桌面端显示）
+- `<PopularPosts />` —— 浏览量 TOP 5
+- `<TagCloud />` —— 标签云（桌面端显示）
+- `<RecentGuestbook />` —— 最近 3 条留言
+- `<SubscribeForm />`（或 `<RssSubscribeCard />` —— 邮件未配置时显示 RSS 订阅卡）—— 邮件订阅入口
 
 要加 widget：写组件 → 在 `page.tsx` 侧边栏区域插入即可。要删：删掉那一行 import + 组件渲染。顺序就是显示顺序。
 
@@ -476,7 +507,7 @@ const groups = [
 |---|---|
 | **默认** | 跟随站点主题 |
 | **护眼 (Sepia)** | 暖黄纸质背景，文字深棕。深色模式下变暗棕底浅色文字 |
-| **护眼 · 大号** | sepia + 字体放大到 1.125rem，行高 1.85 |
+| **护眼 · 大号** | sepia + 文章内字体放大到 1.125rem，行高 1.85 |
 
 实现在 `src/components/ReadingMode.tsx`。CSS 变量**局部作用域**到 `<article>` 元素：
 
@@ -489,6 +520,8 @@ const groups = [
 ```
 
 只覆盖文章卡片内的颜色，header / sidebar / footer 不受影响。状态存在 `localStorage["hypervoid:reading-mode"]`。
+
+**与全局字号的交互**：阅读模式 "大号" 只改 `article .prose` 的 `font-size`，全局字号改的是 root `font-size`（rem），两者**互不叠加放大**——不会出现 "全局大 + 阅读大 = 双重放大" 的问题。当全局字号 = 舒适时，`html[data-font-size="large"] .prose { line-height: 1.8 }` 会略微放宽行高，让长段落不显拥挤。
 
 ### 4.9 网站图标
 
@@ -987,6 +1020,9 @@ git push              # 触发新部署
 | 变量名 | 必填 | 用途 | 改了要重部署吗 |
 |---|---|---|---|
 | `ADMIN_GITHUB_LOGIN` | ✓ | 后台允许的唯一 GitHub 用户名 | 否（运行时读） |
+| `ANNOUNCEMENT_LINK` | 可选 | 全站公告"了解更多"链接 | 否 |
+| `ANNOUNCEMENT_LINK_TEXT` | 可选 | 公告链接按钮文字 | 否 |
+| `ANNOUNCEMENT_MESSAGE` | 可选 | 全站公告文本（不填则无公告栏） | 否 |
 | `ANTHROPIC_API_KEY` | 建议 | AI 摘要 / Q&A | 否 |
 | `AUTH_GITHUB_ID` | ✓ | GitHub OAuth Client ID | 否 |
 | `AUTH_GITHUB_SECRET` | ✓ | GitHub OAuth Client Secret | 否 |
@@ -1040,7 +1076,7 @@ pg_dump "$DATABASE_URL" > backup-$(date +%Y%m%d).sql
 | 导航菜单（桌面+移动） | `src/components/NavGroups.tsx` + `src/components/MobileNav.tsx` |
 | 中英文翻译 | `src/lib/i18n.ts` |
 | 主题色板（基础色 light/dark） | `src/app/globals.css` 的 `:root` / `.dark` 块 |
-| 站点设置面板（调色板 / 背景 / 字体） | `src/components/SettingsProvider.tsx` + `SiteSettings.tsx` + `Backdrop.tsx` |
+| 站点设置面板（调色板 / 背景 / 字体 / 字号 / 预设） | `src/components/SettingsProvider.tsx` + `SiteSettings.tsx` + `Backdrop.tsx` + `BannerStrip.tsx` |
 | 阅读模式样式 | `src/app/globals.css` 的 `[data-reading]` 规则 + `src/components/ReadingMode.tsx` |
 | 网站图标 favicon | `src/app/icon.svg` |
 | About 页内容 | `src/app/about/page.tsx` |
@@ -1053,8 +1089,15 @@ pg_dump "$DATABASE_URL" > backup-$(date +%Y%m%d).sql
 | 邮件模板 | `src/lib/newsletter.ts` + `src/app/api/subscribe/route.ts` |
 | Cron 任务 | `src/app/api/cron/publish-scheduled/route.ts` + `vercel.json` |
 | Bangumi 集成 | `src/lib/bangumi.ts` + `src/app/api/bangumi/subject/[id]/route.ts` + `src/components/AnimeGrid.tsx` + `AnimeDetailModal.tsx` |
-| 文章页阅读体验组件 | `ReadingProgress.tsx` · `ReadingMode.tsx` · `ShareButtons.tsx` · `PostNav.tsx` |
+| 文章页阅读体验组件 | `ReadingProgress.tsx` · `ReadingMode.tsx` · `ShareButtons.tsx` · `PostNav.tsx` · `RelatedPosts.tsx` |
 | 列表布局工具 | `src/components/ColumnLayout.tsx` (hook + 切换按钮) · `PostsGrid.tsx` · `ArchiveLayout.tsx` |
+| 公告系统 | `AnnouncementWrapper.tsx` · `AnnouncementWidget.tsx` · `AnnouncementBar.tsx` |
+| 系列进度 | `SeriesPostList.tsx` (读已读 localStorage) |
+| 骨架屏 / 错误边界 | `Skeleton.tsx` · `src/app/error.tsx` · `src/app/*/loading.tsx` · `src/app/posts/[slug]/error.tsx` |
+| 字体系统 | `SettingsProvider.tsx` (Default 改 Serif) · `globals.css` (root font-size 17.5px) |
+| 精选导航 + 置顶 | `NavGroups.tsx` (featured 组) · `src/app/pinned/page.tsx` |
+| 图片优化 | `ZoomableImage.tsx` · `PostCard.tsx` (lazy + async 解码) |
+| View Transitions | `next.config.ts` (experimental.viewTransition) · `globals.css` (via-blur + header 锚定) |
 
 ### D. 常用外部链接
 
