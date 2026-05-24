@@ -136,7 +136,12 @@ export async function getPostBySlug(
   return rows[0] ? toPost(rows[0]) : null;
 }
 
-export type AdjacentPost = { slug: string; title: string };
+export type AdjacentPost = {
+  slug: string;
+  title: string;
+  cover: string | null;
+  readingMinutes: number;
+};
 
 export async function getAdjacentPosts(
   slug: string,
@@ -146,15 +151,26 @@ export async function getAdjacentPosts(
   next: AdjacentPost | null;
 }> {
   const rows = await getDb()
-    .select({ slug: schema.posts.slug, title: schema.posts.title })
+    .select({
+      slug: schema.posts.slug,
+      title: schema.posts.title,
+      cover: schema.posts.cover,
+      content: schema.posts.content,
+    })
     .from(schema.posts)
     .where(visibleClause(opts.isAdmin === true))
     .orderBy(desc(schema.posts.publishAt), desc(schema.posts.createdAt));
   const i = rows.findIndex((r) => r.slug === slug);
   if (i < 0) return { prev: null, next: null };
+  const toAdjacent = (r: (typeof rows)[number]): AdjacentPost => ({
+    slug: r.slug,
+    title: r.title,
+    cover: r.cover,
+    readingMinutes: estimateReadingTime(r.content).minutes,
+  });
   return {
-    prev: i > 0 ? rows[i - 1] : null,
-    next: i < rows.length - 1 ? rows[i + 1] : null,
+    prev: i > 0 ? toAdjacent(rows[i - 1]) : null,
+    next: i < rows.length - 1 ? toAdjacent(rows[i + 1]) : null,
   };
 }
 

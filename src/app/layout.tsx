@@ -12,6 +12,7 @@ import { BannerStrip } from "@/components/BannerStrip";
 import { BackToTop } from "@/components/BackToTop";
 import { SettingsProvider } from "@/components/SettingsProvider";
 import { siteConfig } from "@/lib/site-config";
+import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { getSiteOverride } from "@/lib/site-config-server";
 
 const geistSans = Geist({
@@ -94,12 +95,18 @@ export default function RootLayout({
         <link rel="preconnect" href="https://media.steampowered.com" crossOrigin="anonymous" />
       </head>
       <body className="min-h-full flex flex-col">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded-full focus:bg-primary focus:px-5 focus:py-2.5 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-lg focus:outline-none"
+        >
+          跳到内容
+        </a>
         <SettingsProvider>
           <Backdrop />
           <Providers>
             <SiteHeader />
             <BannerStrip />
-            <main className="page-fade mx-auto w-full max-w-6xl flex-1 px-4 py-8">
+            <main id="main-content" tabIndex={-1} className="page-fade mx-auto w-full max-w-6xl flex-1 px-4 py-8">
               {children}
             </main>
             <SiteFooter />
@@ -107,6 +114,7 @@ export default function RootLayout({
           <BackToTop />
         </SettingsProvider>
         <UmamiScript />
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

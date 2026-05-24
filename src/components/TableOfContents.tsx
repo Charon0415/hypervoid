@@ -47,10 +47,10 @@ export function TableOfContents({ items }: { items: TOCItem[] }) {
               <a
                 href={`#${item.id}`}
                 style={{ paddingLeft: indent + 12 }}
-                className={`block border-l-2 py-1 pr-2 transition ${
+                className={`block rounded-r border-l-2 py-1 pr-2 transition ${
                   isActive
-                    ? "-ml-px border-primary text-primary"
-                    : "border-transparent text-muted hover:text-foreground"
+                    ? "-ml-px border-primary bg-primary/5 font-medium text-primary"
+                    : "border-transparent text-muted hover:bg-card hover:text-foreground"
                 }`}
               >
                 {item.text}

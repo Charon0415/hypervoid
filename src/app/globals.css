@@ -7,6 +7,12 @@
    should not zoom into form fields on focus (font-size < 16px triggers it). */
 html {
   scroll-padding-top: 4rem;
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 /* Global font-size — root rem unit. "large" bumps the base ~9.4% so the
@@ -33,6 +39,13 @@ html[data-font-size="large"] .prose {
   [role="button"] {
     -webkit-tap-highlight-color: color-mix(in srgb, var(--primary) 18%, transparent);
   }
+}
+/* Global focus ring for keyboard navigation. Override per-element
+   with focus:ring-0 where a custom ring is managed via Tailwind. */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 :root {
@@ -431,7 +444,9 @@ html[data-reading="large"] article .prose {
   }
 }
 
-/* Page fade-in on route change */
+/* Page fade-in on route change — kept as complement to native View Transitions.
+   When view transitions are active, this animation plays alongside the crossfade
+   for a more polished entrance. */
 @keyframes pageFade {
   from {
     opacity: 0;
@@ -448,5 +463,44 @@ html[data-reading="large"] article .prose {
 @media (prefers-reduced-motion: reduce) {
   .page-fade {
     animation: none;
+  }
+}
+
+/* ── View Transitions ──────────────────────────────────────────────
+   Enabled via experimental.viewTransition in next.config.ts.
+   Next.js wraps navigations in startViewTransition() automatically,
+   which gives a browser-native crossfade between old/new snapshots.
+   CSS pseudo-elements below customize the timing and anchor the
+   sticky header so it doesn't re-render during the transition. */
+
+/* Crossfade: gentle blur-handoff (hides pixel-level interpolation). */
+::view-transition-image-pair(root) {
+  animation-name: via-blur;
+  animation-duration: 320ms;
+}
+@keyframes via-blur {
+  20% { filter: blur(3px); opacity: 0.98; }
+}
+
+/* Header anchoring: the sticky SiteHeader is assigned
+   style={{ viewTransitionName: "site-header" }}, so it doesn't
+   animate out/in during route changes. */
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
   }
 }

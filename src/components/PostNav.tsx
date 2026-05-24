@@ -39,26 +39,55 @@ function NavCard({
   return (
     <Link
       href={`/posts/${post.slug}`}
-      className={`group flex flex-col gap-1.5 rounded-2xl border border-border bg-card p-4 transition hover:border-primary/40 hover:bg-primary/5 hover:shadow-sm sm:p-5 ${
-        isPrev ? "items-start text-left" : "items-end text-right"
+      className={`group flex gap-3 rounded-2xl border border-border bg-card p-3 transition hover:border-primary/40 hover:bg-primary/5 hover:shadow-sm sm:p-4 ${
+        isPrev ? "flex-row" : "flex-row-reverse"
       }`}
     >
-      <span className="inline-flex items-center gap-1 text-xs uppercase tracking-wider text-muted transition group-hover:text-primary">
-        {isPrev ? (
-          <>
-            <ArrowIcon dir="left" />
-            上一篇
-          </>
-        ) : (
-          <>
-            下一篇
-            <ArrowIcon dir="right" />
-          </>
-        )}
-      </span>
-      <p className="line-clamp-2 font-medium tracking-tight transition group-hover:text-primary">
-        {post.title}
-      </p>
+      {post.cover ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={post.cover}
+          alt=""
+          loading="lazy"
+          className="aspect-square h-16 w-16 shrink-0 rounded-xl object-cover sm:h-20 sm:w-20"
+        />
+      ) : (
+        <div
+          aria-hidden
+          className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-2xl transition group-hover:scale-105 sm:h-20 sm:w-20 ${
+            isPrev
+              ? "from-primary/10 to-primary/5"
+              : "from-primary/5 to-primary/10"
+          }`}
+        >
+          <span className="opacity-50">{isPrev ? "‹" : "›"}</span>
+        </div>
+      )}
+      <div
+        className={`flex min-w-0 flex-1 flex-col gap-1.5 ${
+          isPrev ? "items-start text-left" : "items-end text-right"
+        }`}
+      >
+        <span className="inline-flex items-center gap-1 text-xs uppercase tracking-wider text-muted transition group-hover:text-primary">
+          {isPrev ? (
+            <>
+              <ArrowIcon dir="left" />
+              上一篇
+            </>
+          ) : (
+            <>
+              下一篇
+              <ArrowIcon dir="right" />
+            </>
+          )}
+        </span>
+        <p className="line-clamp-2 text-sm font-medium leading-snug tracking-tight transition group-hover:text-primary sm:text-base">
+          {post.title}
+        </p>
+        <span className="font-mono text-[10px] text-muted">
+          {post.readingMinutes} min
+        </span>
+      </div>
     </Link>
   );
 }
