@@ -33,6 +33,7 @@ export async function GET() {
       <link>${url}</link>
       <guid isPermaLink="true">${url}</guid>
       <pubDate>${pubDate}</pubDate>
+      <author>${escapeXml(siteConfig.author.name)} (${escapeXml(siteConfig.author.handle)})</author>
       ${description}${categories}
     </item>`;
     })
