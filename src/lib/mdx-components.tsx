@@ -1,6 +1,7 @@
 import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
 import { ZoomableImage } from "@/components/ZoomableImage";
+import { CodeBlock } from "@/components/CodeBlock";
 
 export const mdxComponents: MDXComponents = {
   a: ({ href, children, ...rest }) => {
@@ -19,4 +20,5 @@ export const mdxComponents: MDXComponents = {
     );
   },
   img: (props) => <ZoomableImage {...props} />,
+  pre: (props) => <CodeBlock {...props} />,
 };

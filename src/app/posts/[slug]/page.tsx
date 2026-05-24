@@ -12,6 +12,7 @@ import rehypeShiki from "@shikijs/rehype";
 import { getAllPostSlugs, getPostBySlug } from "@/lib/posts";
 import { mdxComponents } from "@/lib/mdx-components";
 import { extractTOC } from "@/lib/toc";
+import { transformerCodeMeta } from "@/lib/shiki-meta";
 import { TableOfContents } from "@/components/TableOfContents";
 import { Comments } from "@/components/Comments";
 import { ViewCounter } from "@/components/ViewCounter";
@@ -136,6 +137,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
                     rehypeShiki,
                     {
                       themes: { light: "github-light", dark: "github-dark" },
+                      transformers: [transformerCodeMeta],
                       langs: [
                         "ts",
                         "tsx",
