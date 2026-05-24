@@ -78,8 +78,8 @@ export function MobileNav() {
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute right-0 top-0 flex h-full w-72 max-w-[85vw] flex-col bg-card text-foreground shadow-2xl ring-1 ring-border">
-            <div className="flex items-center justify-between border-b border-border px-5 py-4">
+          <div className="absolute right-0 top-0 h-screen w-72 max-w-[85vw] overflow-y-auto bg-card text-foreground shadow-2xl ring-1 ring-border">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-card px-5 py-4">
               <span className="font-bold tracking-tight">Hypervoid</span>
               <button
                 type="button"
@@ -102,7 +102,7 @@ export function MobileNav() {
               </button>
             </div>
 
-            <nav className="flex-1 overflow-y-auto px-3 py-3">
+            <nav className="px-3 py-3">
               <div className="flex flex-col gap-0.5">
                 {items.map((item) => (
                   <Link
@@ -121,7 +121,7 @@ export function MobileNav() {
             </nav>
 
             <div
-              className="flex items-center justify-end gap-2 border-t border-border px-4 py-3"
+              className="mx-3 mb-3 mt-2 flex items-center justify-end gap-2 border-t border-border pt-3"
               onClick={(e) => e.stopPropagation()}
             >
               <LocaleSwitch />
