@@ -75,7 +75,7 @@ export async function PostActivityHeatmap() {
         {/* Day labels */}
         <div className="mr-0.5 flex shrink-0 flex-col gap-[2px] text-[9px] leading-none text-muted/60">
           {[0, 1, 2, 3, 4, 5, 6].map((row) => (
-            <div key={row} className="flex aspect-square items-center justify-end">
+            <div key={row} className="flex aspect-square items-center justify-end pr-0.5">
               {DAY_ABBR[row] ?? ""}
             </div>
           ))}
