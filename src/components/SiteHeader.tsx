@@ -35,8 +35,48 @@ export function SiteHeader() {
           href="/"
           className="flex shrink-0 items-center gap-2 font-bold tracking-tight"
         >
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm">
-            H
+          <span aria-hidden className="inline-flex h-7 w-7 items-center justify-center text-primary">
+            <svg
+              viewBox="0 0 64 64"
+              className="h-7 w-7"
+              role="img"
+              aria-label="Hypervoid"
+            >
+              <rect width="64" height="64" rx="14" fill="#0b0f1a" />
+              <ellipse
+                cx="32"
+                cy="32"
+                rx="22"
+                ry="8"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                opacity="0.95"
+              />
+              <ellipse
+                cx="32"
+                cy="32"
+                rx="22"
+                ry="8"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                opacity="0.55"
+                transform="rotate(60 32 32)"
+              />
+              <ellipse
+                cx="32"
+                cy="32"
+                rx="22"
+                ry="8"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                opacity="0.35"
+                transform="rotate(-60 32 32)"
+              />
+              <circle cx="32" cy="32" r="5" fill="#ffffff" />
+            </svg>
           </span>
           <span className="hidden sm:inline">Hypervoid</span>
         </Link>
