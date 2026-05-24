@@ -9,7 +9,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <ThemeProvider
       attribute="class"
       defaultTheme="dark"
-      enableSystem={false}
+      enableSystem
       disableTransitionOnChange
     >
       <LocaleProvider>{children}</LocaleProvider>
