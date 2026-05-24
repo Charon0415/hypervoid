@@ -42,18 +42,23 @@ Articles live in **Postgres**, images in **Vercel Blob**, comments in **GitHub D
 - **GFM alerts** (`> [!NOTE]` etc.) + **KaTeX math** + **reading time** (CJK-aware)
 - **Pinned posts** + **prev/next nav** at the bottom of every article
 - **Reading progress bar** at the top of article pages
+- **Reading mode** toggle per article — normal / sepia / sepia+large for long-form sessions
 - **Hover-expand share buttons** (copy link · X · Weibo)
 - **Tags** — index + per-tag filtered list, Chinese tags supported (e.g. `/tags/元信息`)
 - **Sticky TOC** with IntersectionObserver scroll-spy (active section highlighted)
-- **System / light / dark** theme toggle + **hue picker** for primary color
+- **Single / double column toggle** on `/posts`, `/tags/[tag]`, and `/archive` — persisted per-page
+- **Site settings panel** — 6 preset color palettes + free hue slider · 5 backgrounds (cosmic / particles / plain / paper / waves) · 3 font families (Geist / Serif / Handwriting) — all localStorage-persisted
+- **System / light / dark** theme toggle
+- **Cosmic-orbit favicon** (custom SVG)
 - **RSS 2.0** feed + `sitemap.xml` + dynamic OG image
 - **Comments** via [Giscus](https://giscus.app) (`mapping="pathname"` so domain change keeps history)
 - **View counter** + **like button** with localStorage-tracked toggle (atomic Postgres upserts)
 - **AI summary** per article + **AI Q&A** modal (Claude Haiku 4.5, streamed)
 - **Full-text search** (pg_trgm GIN index, works for Chinese substrings) with **⌘K / Ctrl+K** shortcut
 - **Back-to-top** floating button + page fade-in transition
+- **Bangumi anime page** — pulls watching / watched / wish-list from bgm.tv API, card grid, click for detail modal (synopsis, rating histogram, tags)
 - **Sidebar widgets**: profile card · mini calendar · 365-day heatmap · popular posts · tag cloud · recent guestbook · site stats · email subscribe
-- **Custom pages**: `/anime` · `/projects` · `/skills` · `/timeline` · `/albums` · `/diary` · `/friends` · `/guestbook` · `/archive`
+- **Custom pages**: `/projects` · `/skills` · `/timeline` · `/albums` · `/diary` · `/friends` · `/guestbook` · `/archive`
 - **Bilingual UI** (zh-CN / en) via custom React Context — no URL prefix
 - **Mobile-first** responsive layout + hamburger nav
 
@@ -151,8 +156,8 @@ For day-to-day operation — how to write a post, customize the theme, manage DN
 - [x] **v0.4** — admin panel · MDX editor · draft & scheduled publishing · image upload
 - [x] **v0.5** — newsletter (Resend) · analytics (Umami Cloud) · full-text search (pg_trgm)
 - [x] **v1.0** — i18n · guestbook · friends · albums · AI summary & Q&A (Claude Haiku 4.5)
-- [x] **Phase 7-9 polish** — GFM alerts · KaTeX · pinned posts · image lightbox · theme color picker · starfield · sidebar widgets (heatmap, popular posts, tag cloud, mini calendar, recent guestbook) · mobile drawer · code-block decoration · prev/next nav · reading progress bar · share buttons · ⌘K search · back-to-top · custom domain (hypervoid.top)
-- [ ] **Future** — article-level i18n (`posts.locale`) · Resend custom domain · admin UX polish
+- [x] **Phase 7-9 polish** — GFM alerts · KaTeX · pinned posts · image lightbox · sidebar widgets (heatmap, popular posts, tag cloud, mini calendar, recent guestbook) · mobile drawer · code-block decoration · prev/next nav · reading progress bar · share buttons · ⌘K search · back-to-top · custom domain (hypervoid.top) · cosmic-orbit favicon · unified site settings panel (6 palettes · 5 backgrounds · 3 fonts) · reading mode (sepia + large) · Bangumi anime page with detail modal · column toggle on tags & archive
+- [ ] **Future** — article-level i18n (`posts.locale`) · Resend custom domain · admin UX polish · PWA manifest
 
 ## ✦ License
 

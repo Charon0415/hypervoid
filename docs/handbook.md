@@ -2,7 +2,7 @@
 
 > 这是你将来独立维护 Hypervoid 的工具书。覆盖**日常运营**、**站点定制**、**部署运维**、**故障排查**、**扩展开发**——遇到任何"这该怎么做"的问题，先查这里。
 
-**最近更新：** 2026-05-24（Phase 9）
+**最近更新：** 2026-05-24（Phase 9 + 当日多轮迭代）
 **对应站点：** https://hypervoid.top
 
 ---
@@ -36,6 +36,9 @@
 - **评论** 接 GitHub Discussions（Giscus），强一致映射
 - **订阅邮件** 走 Resend，新文章自动通知订阅者
 - **统计分析** 用 Umami Cloud，无 Cookie 合规
+- **追番** 接入 Bangumi (bgm.tv) API，自动同步
+- **站点设置面板**：6 预设调色板、5 种背景、3 种字体，全 localStorage 持久化
+- **阅读模式**：文章页可切 sepia / sepia+大号，作用域仅在 `<article>` 不污染全局
 - **多页面** 包括相册、友链、留言、归档、番剧、技能、时间线、日记
 
 ### 1.2 技术栈
@@ -375,15 +378,45 @@ export const siteConfig = {
 
 改完 `pnpm build` 看一下，没问题就提交。
 
-### 4.2 主题色 / 深浅色
+### 4.2 站点设置面板（主题 / 背景 / 字体）
 
-**深浅色** —— 系统层面切换。`src/components/ThemeToggle.tsx` 控制按钮（用 `next-themes`）。默认 fallback 是浅色。
+入口在导航栏右侧的**彩色圆点按钮**，点开是统一的设置面板。所有设置存 localStorage（key 前缀 `hypervoid:`），全局生效。
 
-**主题色（primary）** —— 用户可在导航栏的色相选择器（🎨）拖动 hue 滑块改变。改完存 localStorage，下次访问保留。**默认色相** 在 `src/components/ThemeColorPicker.tsx` 里的 `DEFAULT_HUE` 常量。
+**架构** —— `src/components/SettingsProvider.tsx` 是 Context，挂在根 layout，管理三个全局状态：
 
-**改默认配色** —— 编辑 `src/app/globals.css`，找 `:root` 和 `.dark` 块，里面的 CSS 变量 `--background`、`--foreground`、`--border`、`--primary` 等定义了主题色板。
+| 状态 | localStorage key | 应用方式 |
+|---|---|---|
+| `hue` (主题色色相 0-360°) | `hypervoid:hue` | `<html>` 的 `--primary` 内联样式 |
+| `background` | `hypervoid:bg` | `<html data-bg="...">` 属性 |
+| `font` | `hypervoid:font` | `<html data-font="...">` 属性 |
 
-### 4.3 导航菜单
+**预设调色板** —— 6 个（Indigo 默认 / Sakura / Ocean / Forest / Amber / Violet），存在 `HUE_PRESETS` 数组。加新预设：在 `SettingsProvider.tsx` 的 `HUE_PRESETS` 加一行 `{ name: 'Custom', hue: 123 }`。
+
+**背景** —— 5 种（cosmic / particles / plain / paper / waves），在 `Backdrop.tsx`（canvas 类）+ `globals.css`（纯 CSS 类）共同实现：
+- `cosmic` / `particles` —— canvas 粒子，根据深浅色切换数量和颜色
+- `plain` —— 啥都不渲染
+- `paper` —— CSS 双向 1px 栅格 + 透明度
+- `waves` —— 三层径向渐变 + `wavesShift` 24s 动画
+
+加新背景：
+1. `BACKGROUND_OPTIONS` 里加一项
+2. 如果是 canvas 类：在 `Backdrop.tsx` 的 useEffect 里加分支
+3. 如果是 CSS 类：在 `globals.css` 加 `html[data-bg="新值"] body::before { ... }` 规则
+
+**字体** —— 3 种（Geist 默认 / Serif / Handwriting），通过 `html[data-font="..."] body { font-family: ... }` 改变。**没下载额外资源**，只用系统字体回落链。加新字体方案：
+1. `FONT_OPTIONS` 里加一项
+2. `globals.css` 加 `html[data-font="新值"] body { font-family: ... }` 规则
+3. 如果非常需要某个非系统字体（例如真的想要 LXGW WenKai），用 `next/font/google` 或 CDN 加载，但要权衡包体积
+
+**3.3 重置全部** —— 面板右上「重置全部」按钮一键清掉 localStorage 的三个 key，恢复默认。
+
+### 4.3 深浅色 / 系统主题
+
+由 `next-themes` 管理，按钮是 `src/components/ThemeToggle.tsx`。深浅色和主题色完全独立——主题色（hue）会同时影响浅色和深色模式。
+
+要改默认配色（背景 / 卡片 / 文字 / 边框等基础色），编辑 `src/app/globals.css` 顶部的 `:root` 和 `.dark` 块。
+
+### 4.4 导航菜单
 
 **桌面端** —— `src/components/NavGroups.tsx` 控制顶部胶囊式分组导航。要加/删菜单项：
 
@@ -400,7 +433,7 @@ const groups = [
 
 **i18n** —— 导航文字走 `src/lib/i18n.ts`，加新菜单时也要同步加翻译。
 
-### 4.4 侧边栏 widgets
+### 4.5 侧边栏 widgets
 
 主页右侧侧边栏在 `src/app/page.tsx` 里组装，包含：
 
@@ -415,15 +448,64 @@ const groups = [
 
 要加 widget：写组件 → 在 `page.tsx` 侧边栏区域插入即可。要删：删掉那一行 import + 组件渲染。顺序就是显示顺序。
 
-### 4.5 页脚
+### 4.6 页脚
 
 `src/components/SiteFooter.tsx`。包含版权 + 站点运行时长 + GitHub/RSS 链接。
 
 `SiteUptime` 组件读 `siteConfig.launchedAt` 自动计算天数。
 
-### 4.6 About 页
+### 4.7 About 页
 
 `src/app/about/page.tsx` —— 纯 JSX，结构 + 内容都在一个文件里。直接编辑这个文件、提交、推送即可发布更新。
+
+### 4.8 阅读模式（文章页专属）
+
+文章详情页右上角的对话气泡图标 → 三档切换：
+
+| 档位 | 效果 |
+|---|---|
+| **默认** | 跟随站点主题 |
+| **护眼 (Sepia)** | 暖黄纸质背景，文字深棕。深色模式下变暗棕底浅色文字 |
+| **护眼 · 大号** | sepia + 字体放大到 1.125rem，行高 1.85 |
+
+实现在 `src/components/ReadingMode.tsx`。CSS 变量**局部作用域**到 `<article>` 元素：
+
+```css
+[data-reading="sepia"] article {
+  --background: #f5edd6;
+  --foreground: #5b4636;
+  /* ... */
+}
+```
+
+只覆盖文章卡片内的颜色，header / sidebar / footer 不受影响。状态存在 `localStorage["hypervoid:reading-mode"]`。
+
+### 4.9 网站图标
+
+`src/app/icon.svg` —— Next.js App Router 自动识别这个文件作为 favicon。当前是「宇宙轨道」设计（深色背景 + 三圈轨道 + 中心光点）。要换：
+
+1. 直接替换 `src/app/icon.svg` 的 SVG 内容（保持 viewBox 64×64 推荐）
+2. 大点的二级图标可加 `src/app/apple-icon.png` (180×180) 和 `src/app/icon.png` (192/512) —— Next.js 同样会自动识别 PWA 用途
+
+### 4.10 Bangumi 番剧集成
+
+`/anime` 页直接从 Bangumi (bgm.tv) API 拉取你的追番数据。**没有数据库存储，没有定时同步**，每小时一次按需 revalidate。
+
+**配置：** `src/lib/site-config.ts` 的 `bangumiUserId` 字段（当前 `"1189551"`）。要换用户：改这里。
+
+**列表 API：** `src/lib/bangumi.ts` 的 `fetchBangumiAnime(status)`，调 `https://api.bgm.tv/v0/users/{id}/collections`：
+- `status` = `watching` / `done` / `wish` / `onhold` / `dropped` 对应 Bangumi 的 type 3/2/1/4/5
+- 缓存 1 小时（`next: { revalidate: 3600 }`）
+- 必须带 User-Agent header（Bangumi 强制要求），值由 `siteConfig.url` 自动拼
+
+**详情 API：** `/api/bangumi/subject/[id]` 是服务端代理，避免浏览器跨域 + 提供 24 小时缓存。点番剧卡片打开 `<AnimeDetailModal>` 时调用，返回 summary / tags / rating distribution / infobox。
+
+**调整显示**：
+- 默认展示 watching / done(限 60) / wish(限 30)。改条数：`src/app/anime/page.tsx` 顶部的 `limit` 参数
+- 把 done 升级到 large 卡：把 `<AnimeGrid items={...} />` 改成 `<AnimeGrid items={...} large />`
+- 不显示某个分类：在 page.tsx 里删掉对应 section
+
+**为什么不存数据库？** Bangumi 是真实信源，缓存就够；存数据库要做同步逻辑、处理删除/修改一致性，反不如直接拉。如果将来 Bangumi 限流厉害需要缓存层，可加一个 KV 或者 Postgres 表存 ETag。
 
 ---
 
@@ -898,10 +980,13 @@ pg_dump "$DATABASE_URL" > backup-$(date +%Y%m%d).sql
 
 | 想改的东西 | 编辑这个文件 |
 |---|---|
-| 站点名 / URL / 作者 / 社交链接 | `src/lib/site-config.ts` |
+| 站点名 / URL / 作者 / 社交链接 / 建站日期 / Bangumi 用户 | `src/lib/site-config.ts` |
 | 导航菜单（桌面+移动） | `src/components/NavGroups.tsx` + `src/components/MobileNav.tsx` |
 | 中英文翻译 | `src/lib/i18n.ts` |
-| 主题色板 | `src/app/globals.css` |
+| 主题色板（基础色 light/dark） | `src/app/globals.css` 的 `:root` / `.dark` 块 |
+| 站点设置面板（调色板 / 背景 / 字体） | `src/components/SettingsProvider.tsx` + `SiteSettings.tsx` + `Backdrop.tsx` |
+| 阅读模式样式 | `src/app/globals.css` 的 `[data-reading]` 规则 + `src/components/ReadingMode.tsx` |
+| 网站图标 favicon | `src/app/icon.svg` |
 | About 页内容 | `src/app/about/page.tsx` |
 | 数据库表结构 | `src/db/schema.ts` |
 | 文章查询逻辑 | `src/lib/posts.ts` |
@@ -911,6 +996,9 @@ pg_dump "$DATABASE_URL" > backup-$(date +%Y%m%d).sql
 | AI 调用逻辑 | `src/lib/ai.ts` |
 | 邮件模板 | `src/lib/newsletter.ts` + `src/app/api/subscribe/route.ts` |
 | Cron 任务 | `src/app/api/cron/publish-scheduled/route.ts` + `vercel.json` |
+| Bangumi 集成 | `src/lib/bangumi.ts` + `src/app/api/bangumi/subject/[id]/route.ts` + `src/components/AnimeGrid.tsx` + `AnimeDetailModal.tsx` |
+| 文章页阅读体验组件 | `ReadingProgress.tsx` · `ReadingMode.tsx` · `ShareButtons.tsx` · `PostNav.tsx` |
+| 列表布局工具 | `src/components/ColumnLayout.tsx` (hook + 切换按钮) · `PostsGrid.tsx` · `ArchiveLayout.tsx` |
 
 ### D. 常用外部链接
 
