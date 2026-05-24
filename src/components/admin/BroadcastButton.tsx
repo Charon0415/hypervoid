@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { broadcastPostAction } from "@/app/admin/posts/actions";
+import { formatDateTimeCN } from "@/lib/datetime-client";
 
 export function BroadcastButton({
   slug,
@@ -30,7 +31,7 @@ export function BroadcastButton({
   if (notifiedAt && !result) {
     return (
       <div className="rounded-md border border-emerald-400/50 bg-emerald-50 p-4 text-sm text-emerald-700 dark:bg-emerald-950 dark:text-emerald-200">
-        ✓ 这篇文章已经群发过（{notifiedAt.toISOString().slice(0, 16).replace("T", " ")}）。
+        ✓ 这篇文章已经群发过（{formatDateTimeCN(notifiedAt)}）。
       </div>
     );
   }

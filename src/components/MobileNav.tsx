@@ -5,7 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LocaleSwitch } from "@/components/LocaleSwitch";
 import { SiteSettings } from "@/components/SiteSettings";
+import { SocialIcon } from "@/components/SocialIcon";
 import { useT } from "@/components/LocaleProvider";
+import { siteConfig } from "@/lib/site-config";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -117,6 +119,27 @@ export function MobileNav() {
                     {item.label}
                   </Link>
                 ))}
+              </div>
+
+              <div className="mt-4 border-t border-border pt-3">
+                <p className="px-3 pb-1.5 text-[10px] uppercase tracking-widest text-muted">
+                  {t.nav.groupLinks}
+                </p>
+                <div className="flex flex-wrap gap-2 px-3">
+                  {siteConfig.socials.map((s) => (
+                    <a
+                      key={s.name}
+                      href={s.url}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      title={s.name}
+                      aria-label={s.name}
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted transition hover:border-primary hover:bg-primary/10 hover:text-primary"
+                    >
+                      <SocialIcon name={s.icon} className="h-4 w-4" />
+                    </a>
+                  ))}
+                </div>
               </div>
             </nav>
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { listAllPosts } from "@/db/admin-posts";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
+import { formatDateCN, formatDateTimeCN } from "@/lib/datetime";
 
 export const metadata: Metadata = {
   title: "文章管理",
@@ -104,11 +105,11 @@ export default async function AdminPostsList() {
                     </td>
                     <td className="px-4 py-3 text-xs text-muted">
                       {post.publishAt
-                        ? post.publishAt.toISOString().slice(0, 16).replace("T", " ")
+                        ? formatDateTimeCN(post.publishAt)
                         : "—"}
                     </td>
                     <td className="px-4 py-3 text-xs text-muted">
-                      {post.updatedAt.toISOString().slice(0, 10)}
+                      {formatDateCN(post.updatedAt)}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <Link

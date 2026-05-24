@@ -4,8 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useT } from "@/components/LocaleProvider";
+import { siteConfig } from "@/lib/site-config";
 
-type NavItem = { href: string; label: string; icon: string };
+type NavItem = {
+  href: string;
+  label: string;
+  icon: string;
+  external?: boolean;
+};
 type NavGroup = { key: string; label: string; items: NavItem[] };
 type DirectLink = { href: string; label: string };
 
@@ -22,6 +28,14 @@ export function NavGroups() {
     { href: "/posts", label: t.nav.posts },
     { href: "/archive", label: t.nav.archive },
   ];
+
+  const SOCIAL_ICON: Record<string, string> = {
+    github: "🐙",
+    bilibili: "📺",
+    gitee: "🍒",
+    codeberg: "🦫",
+    steam: "🎯",
+  };
 
   const groups: NavGroup[] = [
     {
@@ -53,6 +67,16 @@ export function NavGroups() {
         { href: "/friends", label: t.nav.friends, icon: "🤝" },
         { href: "/about", label: t.nav.about, icon: "👤" },
       ],
+    },
+    {
+      key: "links",
+      label: t.nav.groupLinks,
+      items: siteConfig.socials.map((s) => ({
+        href: s.url,
+        label: s.name,
+        icon: SOCIAL_ICON[s.icon] ?? "🔗",
+        external: true,
+      })),
     },
   ];
 
@@ -175,18 +199,47 @@ export function NavGroups() {
                 >
                   <div className="min-w-[12rem] rounded-2xl border border-border bg-card p-1.5 shadow-xl ring-1 ring-black/5">
                     {g.items.map((item) => {
-                      const itemActive = isHrefActive(item.href);
+                      const itemActive = !item.external && isHrefActive(item.href);
+                      const className = `flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition ${
+                        itemActive
+                          ? "bg-primary/10 text-primary"
+                          : "text-foreground/80 hover:bg-background hover:text-foreground"
+                      }`;
+                      if (item.external) {
+                        return (
+                          <a
+                            key={item.href}
+                            href={item.href}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            role="menuitem"
+                            onClick={closeNow}
+                            className={className}
+                          >
+                            <span aria-hidden className="text-base leading-none">
+                              {item.icon}
+                            </span>
+                            <span className="flex-1">{item.label}</span>
+                            <svg
+                              aria-hidden
+                              className="h-3 w-3 opacity-60"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                            >
+                              <path d="M7 17L17 7M17 7H8M17 7v9" />
+                            </svg>
+                          </a>
+                        );
+                      }
                       return (
                         <Link
                           key={item.href}
                           href={item.href}
                           role="menuitem"
                           onClick={closeNow}
-                          className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition ${
-                            itemActive
-                              ? "bg-primary/10 text-primary"
-                              : "text-foreground/80 hover:bg-background hover:text-foreground"
-                          }`}
+                          className={className}
                         >
                           <span aria-hidden className="text-base leading-none">
                             {item.icon}

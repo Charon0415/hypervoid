@@ -3,6 +3,7 @@ import { auth, ADMIN_LOGIN } from "@/auth";
 import { listVisibleMessages } from "@/db/guestbook";
 import { GuestbookForm } from "@/components/GuestbookForm";
 import { GuestbookAdminControls } from "@/components/GuestbookAdminControls";
+import { formatDateTimeCN } from "@/lib/datetime";
 import {
   signInForGuestbook,
   signOutFromGuestbook,
@@ -15,10 +16,7 @@ export const metadata: Metadata = {
   description: "给 Charon 留个言。",
 };
 
-function formatDate(d: Date): string {
-  const iso = d.toISOString();
-  return `${iso.slice(0, 10)} ${iso.slice(11, 16)}`;
-}
+const formatDate = formatDateTimeCN;
 
 export default async function GuestbookPage() {
   const session = await auth();

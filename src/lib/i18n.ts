@@ -27,6 +27,7 @@ export type Messages = {
     groupCreate: string;
     groupLife: string;
     groupInteract: string;
+    groupLinks: string;
   };
   common: {
     search: string;
@@ -88,6 +89,7 @@ export const MESSAGES: Record<Locale, Messages> = {
       groupCreate: "创作",
       groupLife: "生活",
       groupInteract: "交互",
+      groupLinks: "链接",
     },
     common: {
       search: "搜索",
@@ -146,6 +148,7 @@ export const MESSAGES: Record<Locale, Messages> = {
       groupCreate: "Create",
       groupLife: "Life",
       groupInteract: "Connect",
+      groupLinks: "Links",
     },
     common: {
       search: "Search",
