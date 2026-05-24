@@ -71,26 +71,24 @@ export async function PostActivityHeatmap() {
         ))}
       </div>
 
-      <div className="flex gap-[2px]">
-        {/* Day labels */}
-        <div className="mr-0.5 flex shrink-0 flex-col gap-[2px] text-[9px] leading-none text-muted/60">
-          {[0, 1, 2, 3, 4, 5, 6].map((row) => (
-            <div key={row} className="flex aspect-square items-center justify-end pr-0.5">
+      <div className="flex flex-col gap-[2px]">
+        {/* Row 0-6: each row = day label + 18 week cells */}
+        {[0, 1, 2, 3, 4, 5, 6].map((row) => (
+          <div key={row} className="flex items-center gap-[2px]">
+            <span className="mr-0.5 flex w-4 shrink-0 items-center justify-end pr-0.5 text-[9px] leading-none text-muted/60">
               {DAY_ABBR[row] ?? ""}
-            </div>
-          ))}
-        </div>
-
-        {/* Full-width cells */}
-        {weeks.map((week, wi) => (
-          <div key={wi} className="flex flex-1 flex-col gap-[2px]">
-            {week.map((day) => (
-              <div
-                key={day.date}
-                title={`${day.date} · ${day.count} 篇文章`}
-                className={`aspect-square w-full rounded-sm ${cellColor(day.count)}`}
-              />
-            ))}
+            </span>
+            {weeks.map((week) => {
+              const day = week[row];
+              if (!day) return <div key="empty" className="flex-1 aspect-square" />;
+              return (
+                <div
+                  key={day.date}
+                  title={`${day.date} · ${day.count} 篇文章`}
+                  className={`flex-1 aspect-square rounded-sm ${cellColor(day.count)}`}
+                />
+              );
+            })}
           </div>
         ))}
       </div>
