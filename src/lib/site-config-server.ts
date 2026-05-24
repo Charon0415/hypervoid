@@ -6,8 +6,6 @@ import { siteConfig } from "@/lib/site-config";
 
 export type OverridableFields =
   | "name"
-export type OverridableFields =
-  | "name"
   | "title"
   | "description"
   | "author.name"
