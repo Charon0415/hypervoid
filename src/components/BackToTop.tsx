@@ -31,7 +31,11 @@ export function BackToTop() {
       onClick={scrollTop}
       aria-label="返回顶部"
       title="返回顶部"
-      className={`fixed bottom-6 right-6 z-40 inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card/90 text-muted shadow-lg backdrop-blur transition-all duration-200 hover:border-primary/40 hover:text-primary ${
+      style={{
+        bottom: "max(1.5rem, env(safe-area-inset-bottom, 0px) + 1rem)",
+        right: "max(1.5rem, env(safe-area-inset-right, 0px) + 1rem)",
+      }}
+      className={`fixed z-40 inline-flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card/90 text-muted shadow-lg backdrop-blur transition-all duration-200 hover:border-primary/40 hover:text-primary ${
         visible
           ? "translate-y-0 opacity-100"
           : "pointer-events-none translate-y-2 opacity-0"
