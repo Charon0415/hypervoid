@@ -9,6 +9,7 @@ export type PostFrontmatter = {
   title: string;
   description?: string | null;
   date: string;
+  updatedDate: string;
   tags: string[];
   category?: string | null;
   cover?: string | null;
@@ -60,6 +61,7 @@ function toPost(row: typeof schema.posts.$inferSelect): Post {
       title: row.title,
       description: row.description,
       date: formatDateCN(dateSource),
+      updatedDate: formatDateCN(row.updatedAt),
       tags: row.tags ?? [],
       category: row.category,
       cover: row.cover,

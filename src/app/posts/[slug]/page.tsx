@@ -133,6 +133,15 @@ export default async function PostPage(props: { params: Promise<Params> }) {
               </span>
             ) : null}
             <time>{frontmatter.date}</time>
+            {frontmatter.updatedDate &&
+            frontmatter.updatedDate !== frontmatter.date ? (
+              <span
+                className="inline-flex items-center gap-1 rounded-full border border-border bg-card/50 px-2 py-0.5 text-[11px] text-muted"
+                title={`本文最后更新于 ${frontmatter.updatedDate}`}
+              >
+                ↻ 更新于 {frontmatter.updatedDate}
+              </span>
+            ) : null}
             {frontmatter.category ? (
               <>
                 <span>·</span>
