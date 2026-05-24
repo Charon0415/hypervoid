@@ -31,9 +31,7 @@ export const siteConfig = {
    * 留空时「ACG 轮播」背景会回退到一段提示。
    */
   acgWallpapers: [
-     "/wallpapers/01.webp",
-    // "/wallpapers/02.jpg",
-    // "/wallpapers/03.jpg",
+     "/wallpapers/1.webp",
   ] as string[],
   /** 赞赏 / 打赏渠道。enabled 控制是否在站点显示入口与 /donate 页面（false 时整体藏起来）。 */
   donate: {
