@@ -25,4 +25,20 @@ export const siteConfig = {
     title: "Hypervoid",
     description: "Charon 的个人博客文章订阅",
   },
+  /** 赞赏 / 打赏渠道。enabled 控制是否在站点显示入口与 /donate 页面（false 时整体藏起来）。 */
+  donate: {
+    enabled: false,
+    intro:
+      "如果这里的内容帮到了你或让你会心一笑，赞赏一份咖啡是最直接的鼓励。完全自愿，文章本身永远免费。",
+    qrcodes: [
+      { name: "微信", image: "/donate/wechat.jpg" },
+      { name: "支付宝", image: "/donate/alipay.jpg" },
+    ],
+    links: [
+      // 取消注释并填上你自己的链接：
+      // { name: "GitHub Sponsors", url: "https://github.com/sponsors/HyperCharon", icon: "github" },
+      // { name: "爱发电", url: "https://afdian.net/a/HyperCharon", icon: "afdian" },
+      // { name: "Buy Me a Coffee", url: "https://buymeacoffee.com/HyperCharon", icon: "coffee" },
+    ] as { name: string; url: string; icon?: string }[],
+  },
 } as const;

@@ -1,4 +1,5 @@
 import { SiteUptime } from "@/components/SiteUptime";
+import { siteConfig } from "@/lib/site-config";
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
@@ -22,6 +23,11 @@ export function SiteFooter() {
           <a href="/rss.xml" className="hover:text-primary">
             RSS
           </a>
+          {siteConfig.donate.enabled ? (
+            <a href="/donate" className="hover:text-primary">
+              ☕ 赞赏
+            </a>
+          ) : null}
         </p>
       </div>
     </footer>

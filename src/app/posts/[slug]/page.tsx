@@ -221,8 +221,29 @@ export default async function PostPage(props: { params: Promise<Params> }) {
           />
         </div>
         {likeCount !== null ? (
-          <div className="mt-12 flex justify-center">
+          <div className="mt-12 flex flex-col items-center gap-3">
             <LikeButton slug={slug} initialCount={likeCount} />
+            {siteConfig.donate.enabled ? (
+              <Link
+                href="/donate"
+                className="group inline-flex items-center gap-1.5 text-xs text-muted transition hover:text-primary"
+              >
+                ☕ 觉得有用？请作者喝杯咖啡
+                <svg
+                  aria-hidden
+                  className="h-3 w-3 transition group-hover:translate-x-0.5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M5 12h14" />
+                  <path d="M13 5l7 7-7 7" />
+                </svg>
+              </Link>
+            ) : null}
           </div>
         ) : null}
         <PostNav prev={adjacent.prev} next={adjacent.next} />
