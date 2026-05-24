@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "关于" };
@@ -29,20 +30,38 @@ export default function AboutPage() {
         <li>零散思考：日记、灵感、生活片段</li>
       </ul>
 
+      <h2>现在在做什么</h2>
+      <p className="text-muted">
+        {/* TODO: 这里手动填一段近期在折腾的内容 */}
+        近期主要在搭建和打磨这个博客本身，慢慢把碎片想法和过往笔记搬过来。
+        其他在做的事还在整理，过段时间再列。
+      </p>
+
       <h2>这个博客</h2>
       <ul>
-        <li>用 Next.js 16 + React 19 + Tailwind v4 从零搭建</li>
+        <li>用 Next.js 16 + React 19 + Tailwind v4 从零搭建，无模板</li>
         <li>文章存 Postgres（Neon），图片走 Vercel Blob</li>
         <li>评论由 GitHub Discussions（Giscus）承载</li>
-        <li>部署在 Vercel</li>
+        <li>AI 摘要 / Q&A 跑在 Claude Haiku 4.5 上</li>
+        <li>部署在 Vercel · 域名 hypervoid.top</li>
         <li>
           源码：
           <a href="https://github.com/HyperCharon/hypervoid">
             HyperCharon/hypervoid
           </a>
+          （MIT 协议）
         </li>
         <li>前一版（Astro）：charon0415.github.io（2023-07 起，已归档）</li>
       </ul>
+
+      <h2>来聊聊</h2>
+      <p>
+        想交个朋友？欢迎来{" "}
+        <Link href="/guestbook">留言板</Link> 留一句话，
+        或者你也写博客的话来一发{" "}
+        <Link href="/friends">友链申请</Link>。
+        每篇文章底下也有评论区，对内容有任何想法都可以直接聊。
+      </p>
 
       <h2>联系方式</h2>
       <ul>
