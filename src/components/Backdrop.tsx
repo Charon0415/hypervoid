@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 import { useSettings } from "@/components/SettingsProvider";
+import { siteConfig } from "@/lib/site-config";
 
 type Particle = {
   x: number;
@@ -13,13 +14,11 @@ type Particle = {
   vy: number;
 };
 
-export function Backdrop() {
-  const { background } = useSettings();
+function CanvasParticles({ density }: { density: "normal" | "dense" }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const { resolvedTheme } = useTheme();
 
   useEffect(() => {
-    if (background !== "cosmic" && background !== "particles") return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -41,7 +40,7 @@ export function Backdrop() {
 
     const isDark = resolvedTheme === "dark";
 
-    const baseConfig = isDark
+    const base = isDark
       ? {
           count: 90,
           baseSpeed: 0.06,
@@ -60,14 +59,14 @@ export function Backdrop() {
         };
 
     const config =
-      background === "particles"
+      density === "dense"
         ? {
-            ...baseConfig,
-            count: Math.round(baseConfig.count * 1.8),
-            baseSpeed: baseConfig.baseSpeed * 0.55,
-            baseOpacity: baseConfig.baseOpacity * 0.8,
+            ...base,
+            count: Math.round(base.count * 1.8),
+            baseSpeed: base.baseSpeed * 0.55,
+            baseOpacity: base.baseOpacity * 0.8,
           }
-        : baseConfig;
+        : base;
 
     const particles: Particle[] = Array.from({ length: config.count }, () => ({
       x: Math.random() * width,
@@ -117,20 +116,105 @@ export function Backdrop() {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", onResize);
     };
-  }, [resolvedTheme, background]);
+  }, [resolvedTheme, density]);
 
-  if (background === "plain") return null;
+  return (
+    <canvas
+      ref={canvasRef}
+      aria-hidden
+      className="pointer-events-none absolute inset-0 h-full w-full"
+    />
+  );
+}
 
-  if (background === "cosmic" || background === "particles") {
+function AcgCarousel({ wallpapers }: { wallpapers: string[] }) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (wallpapers.length <= 1) return;
+    const id = window.setInterval(() => {
+      setIndex((i) => (i + 1) % wallpapers.length);
+    }, 9000);
+    return () => window.clearInterval(id);
+  }, [wallpapers.length]);
+
+  if (wallpapers.length === 0) {
     return (
-      <canvas
-        ref={canvasRef}
-        aria-hidden
-        className="pointer-events-none fixed inset-0 -z-10 h-full w-full"
-      />
+      <div className="absolute inset-0 flex items-center justify-center bg-card/40 backdrop-blur-sm">
+        <p className="rounded-xl border border-dashed border-border bg-card px-4 py-2 text-xs text-muted">
+          ACG 轮播未配置壁纸 — 在{" "}
+          <code className="rounded bg-background px-1.5 py-0.5">
+            src/lib/site-config.ts
+          </code>{" "}
+          的{" "}
+          <code className="rounded bg-background px-1.5 py-0.5">
+            acgWallpapers
+          </code>{" "}
+          数组填入图片路径
+        </p>
+      </div>
     );
   }
 
-  // paper / waves: pure CSS, body class drives the look (see globals.css)
+  return (
+    <>
+      {wallpapers.map((src, i) => (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={src}
+          src={src}
+          alt=""
+          aria-hidden
+          loading={i === 0 ? "eager" : "lazy"}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1500ms] ease-in-out ${
+            i === index ? "opacity-100" : "opacity-0"
+          }`}
+        />
+      ))}
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/50 to-background/85"
+      />
+    </>
+  );
+}
+
+export function Backdrop() {
+  const { background, displayMode } = useSettings();
+
+  if (displayMode === "simple") return null;
+
+  const wrapperClass =
+    displayMode === "banner"
+      ? "pointer-events-none fixed inset-x-0 top-0 -z-10 h-[44vh] overflow-hidden"
+      : "pointer-events-none fixed inset-0 -z-10 overflow-hidden";
+
+  if (background === "plain") return null;
+
+  if (background === "cosmic") {
+    return (
+      <div className={wrapperClass}>
+        <CanvasParticles density="normal" />
+      </div>
+    );
+  }
+
+  if (background === "particles") {
+    return (
+      <div className={wrapperClass}>
+        <CanvasParticles density="dense" />
+      </div>
+    );
+  }
+
+  if (background === "acg") {
+    return (
+      <div className={wrapperClass}>
+        <AcgCarousel wallpapers={siteConfig.acgWallpapers} />
+      </div>
+    );
+  }
+
+  // paper / waves: pure CSS background, body::before handles the look
   return null;
 }

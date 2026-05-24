@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   BACKGROUND_OPTIONS,
   DEFAULT_HUE,
+  DISPLAY_MODE_OPTIONS,
   FONT_OPTIONS,
   HUE_PRESETS,
   useSettings,
@@ -11,8 +12,17 @@ import {
 
 export function SiteSettings() {
   const [open, setOpen] = useState(false);
-  const { hue, background, font, setHue, setBackground, setFont, reset } =
-    useSettings();
+  const {
+    hue,
+    background,
+    font,
+    displayMode,
+    setHue,
+    setBackground,
+    setFont,
+    setDisplayMode,
+    reset,
+  } = useSettings();
 
   return (
     <div className="relative">
@@ -108,6 +118,33 @@ export function SiteSettings() {
                   </button>
                 ))}
               </div>
+            </section>
+
+            <section className="mt-4">
+              <p className="mb-2 text-xs uppercase tracking-wider text-muted">
+                显示模式
+              </p>
+              <div className="grid grid-cols-3 gap-1.5">
+                {DISPLAY_MODE_OPTIONS.map((o) => (
+                  <button
+                    key={o.key}
+                    type="button"
+                    onClick={() => setDisplayMode(o.key)}
+                    aria-pressed={displayMode === o.key}
+                    title={o.hint}
+                    className={`rounded-md border px-2 py-1.5 text-xs transition ${
+                      displayMode === o.key
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border text-muted hover:border-primary/40 hover:text-foreground"
+                    }`}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-1.5 text-[10px] text-muted">
+                {DISPLAY_MODE_OPTIONS.find((o) => o.key === displayMode)?.hint}
+              </p>
             </section>
 
             <section className="mt-4">
