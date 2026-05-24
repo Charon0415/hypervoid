@@ -29,7 +29,7 @@ export async function ProfileCard() {
       <p className="mt-1 text-xs text-muted">@{handle}</p>
       <p className="mt-3 font-mono text-xs italic text-muted">{bio}</p>
 
-      <div className="mt-5 flex flex-wrap justify-center gap-1.5">
+      <div className="mt-5 flex flex-wrap justify-center gap-1">
         {socials.map((s) => (
           <a
             key={s.name}
@@ -38,9 +38,9 @@ export async function ProfileCard() {
             rel="noreferrer noopener"
             title={s.name}
             aria-label={s.name}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted transition hover:border-primary hover:bg-primary/10 hover:text-primary"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border bg-background text-muted transition hover:border-primary hover:bg-primary/10 hover:text-primary"
           >
-            <SocialIcon name={s.icon} className="h-3.5 w-3.5" />
+            <SocialIcon name={s.icon} className="h-3 w-3" />
           </a>
         ))}
       </div>

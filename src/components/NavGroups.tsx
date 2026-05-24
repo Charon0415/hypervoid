@@ -207,7 +207,7 @@ export function NavGroups() {
                   role="menu"
                   className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-2"
                 >
-                  <div className="w-max min-w-[14rem] max-w-[18rem] rounded-2xl border border-border bg-card p-1.5 shadow-xl ring-1 ring-black/5">
+                  <div className="w-max min-w-[14rem] rounded-2xl border border-border bg-card p-1.5 shadow-xl ring-1 ring-black/5">
                     {g.items.map((item) => {
                       const itemActive = !item.external && isHrefActive(item.href);
                       const className = `flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition ${

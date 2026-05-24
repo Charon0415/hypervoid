@@ -126,7 +126,7 @@ export function MobileNav() {
                 <p className="px-3 pb-1.5 text-[10px] uppercase tracking-widest text-muted">
                   {t.nav.groupLinks}
                 </p>
-                <div className="flex flex-wrap gap-2 px-3">
+                <div className="flex flex-wrap gap-1.5 px-3">
                   {siteConfig.socials.map((s) => (
                     <a
                       key={s.name}
@@ -135,9 +135,9 @@ export function MobileNav() {
                       rel="noreferrer noopener"
                       title={s.name}
                       aria-label={s.name}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted transition hover:border-primary hover:bg-primary/10 hover:text-primary"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted transition hover:border-primary hover:bg-primary/10 hover:text-primary"
                     >
-                      <SocialIcon name={s.icon} className="h-4 w-4" />
+                      <SocialIcon name={s.icon} className="h-3.5 w-3.5" />
                     </a>
                   ))}
                 </div>
