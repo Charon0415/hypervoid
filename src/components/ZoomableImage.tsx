@@ -7,7 +7,12 @@ export function ZoomableImage(props: React.ImgHTMLAttributes<HTMLImageElement>) 
   return (
     <Zoom>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img {...props} alt={props.alt ?? ""} />
+      <img
+        loading="lazy"
+        decoding="async"
+        {...props}
+        alt={props.alt ?? ""}
+      />
     </Zoom>
   );
 }

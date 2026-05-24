@@ -9,7 +9,7 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeKatex from "rehype-katex";
 import rehypeShiki from "@shikijs/rehype";
-import { getAllPostSlugs, getAdjacentPosts, getPostBySlug } from "@/lib/posts";
+import { getAllPostSlugs, getAdjacentPosts, getPostBySlug, getRelatedPosts } from "@/lib/posts";
 import { mdxComponents } from "@/lib/mdx-components";
 import { extractTOC } from "@/lib/toc";
 import { transformerCodeMeta } from "@/lib/shiki-meta";
@@ -19,6 +19,7 @@ import { ViewCounter } from "@/components/ViewCounter";
 import { LikeButton } from "@/components/LikeButton";
 import { AskAI } from "@/components/AskAI";
 import { PostNav } from "@/components/PostNav";
+import { RelatedPosts } from "@/components/RelatedPosts";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { ReadingMode } from "@/components/ReadingMode";
 import { ShareButtons } from "@/components/ShareButtons";
@@ -76,10 +77,11 @@ export default async function PostPage(props: { params: Promise<Params> }) {
 
   const { frontmatter, content } = post;
   const toc = extractTOC(content);
-  const [viewCount, likeCount, adjacent] = await Promise.all([
+  const [viewCount, likeCount, adjacent, related] = await Promise.all([
     getViewCount(slug),
     getLikeCount(slug),
     getAdjacentPosts(slug, { isAdmin: viewer.isAdmin }),
+    getRelatedPosts(slug, frontmatter.tags ?? [], { isAdmin: viewer.isAdmin }),
   ]);
   const giscusRepo = process.env.NEXT_PUBLIC_GISCUS_REPO?.trim();
   const moderateUrl =
@@ -157,7 +159,10 @@ export default async function PostPage(props: { params: Promise<Params> }) {
               </>
             ) : null}
             <span>·</span>
-            <span>{frontmatter.readingMinutes} 分钟阅读</span>
+            <span>
+              {frontmatter.wordCount.toLocaleString()} 字 ·{" "}
+              {frontmatter.readingMinutes} 分钟
+            </span>
             {viewCount !== null ? (
               <>
                 <span>·</span>
@@ -279,6 +284,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             随机一篇
           </Link>
         </div>
+        <RelatedPosts posts={related} />
         {isAiConfigured() ? (
           <section className="mt-12">
             <AskAI slug={slug} />

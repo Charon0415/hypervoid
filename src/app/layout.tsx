@@ -7,6 +7,7 @@ import { Providers } from "@/components/Providers";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { UmamiScript } from "@/components/UmamiScript";
+import { AnnouncementWrapper } from "@/components/AnnouncementWrapper";
 import { Backdrop } from "@/components/Backdrop";
 import { BannerStrip } from "@/components/BannerStrip";
 import { BackToTop } from "@/components/BackToTop";
@@ -104,6 +105,7 @@ export default function RootLayout({
         <SettingsProvider>
           <Backdrop />
           <Providers>
+            <AnnouncementWrapper />
             <SiteHeader />
             <BannerStrip />
             <main id="main-content" tabIndex={-1} className="page-fade mx-auto w-full max-w-6xl flex-1 px-4 py-8">

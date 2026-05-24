@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getAllSeries, getPostsBySeries } from "@/lib/posts";
+import { SeriesPostList } from "@/components/SeriesPostList";
 
 type Params = { name: string };
 
@@ -55,43 +56,7 @@ export default async function SeriesDetailPage(
         所有系列
       </Link>
 
-      <header>
-        <p className="text-xs uppercase tracking-widest text-primary">
-          ✦ Series
-        </p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">
-          {decoded}
-        </h1>
-        <p className="mt-2 text-sm text-muted">共 {posts.length} 篇</p>
-      </header>
-
-      <ol className="flex flex-col gap-2">
-        {posts.map((post, i) => (
-          <li key={post.slug}>
-            <Link
-              href={`/posts/${post.slug}`}
-              className="group flex items-baseline gap-4 rounded-xl border border-border bg-card p-4 transition hover:border-primary/40 hover:shadow-sm"
-            >
-              <span className="shrink-0 font-mono text-sm text-muted">
-                {String(post.frontmatter.seriesOrder ?? i + 1).padStart(2, "0")}
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="font-medium tracking-tight transition group-hover:text-primary">
-                  {post.frontmatter.title}
-                </p>
-                {post.frontmatter.description ? (
-                  <p className="mt-0.5 line-clamp-1 text-xs text-muted">
-                    {post.frontmatter.description}
-                  </p>
-                ) : null}
-              </div>
-              <time className="shrink-0 font-mono text-xs text-muted">
-                {post.frontmatter.date}
-              </time>
-            </Link>
-          </li>
-        ))}
-      </ol>
+      <SeriesPostList posts={posts} seriesName={decoded} />
     </div>
   );
 }

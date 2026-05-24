@@ -69,6 +69,16 @@ export function NavGroups() {
       ],
     },
     {
+      key: "featured",
+      label: t.nav.groupFeatured,
+      items: [
+        { href: "/pinned", label: "置顶文章", icon: "📌" },
+        { href: "/series", label: "系列", icon: "📚" },
+        { href: "/tags", label: "标签", icon: "🏷️" },
+        { href: "/posts/random", label: "随机一篇", icon: "🎲" },
+      ],
+    },
+    {
       key: "links",
       label: t.nav.groupLinks,
       items: siteConfig.socials.map((s) => ({

@@ -33,15 +33,26 @@ export function ReadingProgress() {
     };
   }, []);
 
+  const pct = Math.round(progress * 100);
   return (
-    <div
-      aria-hidden
-      className="pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5"
-    >
+    <>
       <div
-        className="h-full origin-left bg-primary transition-transform duration-150 ease-out"
-        style={{ transform: `scaleX(${progress})` }}
-      />
-    </div>
+        aria-hidden
+        className="pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5"
+      >
+        <div
+          className="h-full origin-left bg-primary transition-transform duration-150 ease-out"
+          style={{ transform: `scaleX(${progress})` }}
+        />
+      </div>
+      {pct > 2 ? (
+        <span
+          aria-hidden
+          className="pointer-events-none fixed right-3 top-3 z-50 rounded-full border border-border/40 bg-card/80 px-2 py-0.5 font-mono text-[11px] text-muted backdrop-blur-sm"
+        >
+          {pct}%
+        </span>
+      ) : null}
+    </>
   );
 }

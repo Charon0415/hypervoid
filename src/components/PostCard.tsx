@@ -14,6 +14,8 @@ export function PostCard({ post }: { post: Post }) {
         <img
           src={frontmatter.cover}
           alt=""
+          loading="lazy"
+          decoding="async"
           className="aspect-[4/3] w-full shrink-0 rounded-xl object-cover sm:h-24 sm:w-32 sm:aspect-auto"
         />
       ) : null}
@@ -39,6 +41,10 @@ export function PostCard({ post }: { post: Post }) {
 
         <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
           <time className="font-mono">{frontmatter.date}</time>
+          <span aria-hidden>·</span>
+          <span className="font-mono">
+            {frontmatter.wordCount.toLocaleString()} 字
+          </span>
           <span aria-hidden>·</span>
           <span className="font-mono">{frontmatter.readingMinutes} min</span>
           {frontmatter.tags?.length ? (

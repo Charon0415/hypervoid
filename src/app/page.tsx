@@ -4,6 +4,7 @@ import { SubscribeForm } from "@/components/SubscribeForm";
 import { RssSubscribeCard } from "@/components/RssSubscribeCard";
 import { isEmailConfigured } from "@/lib/email";
 import { SiteStats } from "@/components/SiteStats";
+import { AnnouncementWidget } from "@/components/AnnouncementWidget";
 import { ProfileCard } from "@/components/ProfileCard";
 import { MiniCalendar } from "@/components/MiniCalendar";
 import { PostActivityHeatmap } from "@/components/PostActivityHeatmap";
@@ -114,6 +115,7 @@ export default async function Home() {
         <div className="flex flex-col gap-6 lg:sticky lg:top-20">
           <ProfileCard />
           <SiteStats />
+          <AnnouncementWidget />
           <div className="hidden md:contents">
             <MiniCalendar />
           </div>

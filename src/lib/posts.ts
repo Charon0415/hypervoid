@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, desc, eq, lte, or, sql } from "drizzle-orm";
+import { and, desc, eq, lte, ne, or, sql } from "drizzle-orm";
 import { getDb, schema } from "@/db/client";
 import { estimateReadingTime } from "@/lib/reading-time";
 import { formatDateCN } from "@/lib/datetime";
@@ -16,6 +16,7 @@ export type PostFrontmatter = {
   summary?: string | null;
   pinned?: boolean;
   readingMinutes: number;
+  wordCount: number;
   draft?: boolean;
   visibility: "public" | "private";
   series?: string | null;
@@ -53,7 +54,7 @@ function visibleClause(isAdmin: boolean) {
 
 function toPost(row: typeof schema.posts.$inferSelect): Post {
   const dateSource = row.publishAt ?? row.createdAt;
-  const { minutes } = estimateReadingTime(row.content);
+  const { minutes, words } = estimateReadingTime(row.content);
   return {
     slug: row.slug,
     content: row.content,
@@ -67,6 +68,7 @@ function toPost(row: typeof schema.posts.$inferSelect): Post {
       cover: row.cover,
       summary: row.summary,
       pinned: row.pinned,
+      wordCount: words,
       readingMinutes: minutes,
       draft: row.status === "draft",
       visibility: row.visibility,
@@ -172,6 +174,40 @@ export async function getAdjacentPosts(
     prev: i > 0 ? toAdjacent(rows[i - 1]) : null,
     next: i < rows.length - 1 ? toAdjacent(rows[i + 1]) : null,
   };
+}
+
+export async function getRelatedPosts(
+  slug: string,
+  tags: string[],
+  opts: ViewerOpts = {},
+): Promise<Post[]> {
+  if (tags.length === 0) return [];
+  const db = getDb();
+  const likePatterns = tags.map((t) => `%${t}%`);
+  const all = await db
+    .select()
+    .from(schema.posts)
+    .where(
+      and(
+        visibleClause(opts.isAdmin === true),
+        ne(schema.posts.slug, slug),
+      ),
+    )
+    .orderBy(
+      desc(schema.posts.pinned),
+      desc(schema.posts.publishAt),
+      desc(schema.posts.createdAt),
+    );
+  // Rank by shared-tag overlap, take top 3
+  const scored = all
+    .map((row) => ({
+      ...row,
+      score: row.tags?.filter((t) => tags.includes(t)).length ?? 0,
+    }))
+    .filter((r) => r.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
+  return scored.map((r) => toPost(r));
 }
 
 export async function getAllTags(
