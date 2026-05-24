@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { PostCard } from "@/components/PostCard";
 import { SubscribeForm } from "@/components/SubscribeForm";
+import { RssSubscribeCard } from "@/components/RssSubscribeCard";
+import { isEmailConfigured } from "@/lib/email";
 import { SiteStats } from "@/components/SiteStats";
 import { ProfileCard } from "@/components/ProfileCard";
 import { MiniCalendar } from "@/components/MiniCalendar";
@@ -104,7 +106,7 @@ export default async function Home() {
         </section>
 
         <section>
-          <SubscribeForm />
+          {isEmailConfigured() ? <SubscribeForm /> : <RssSubscribeCard />}
         </section>
       </div>
 
