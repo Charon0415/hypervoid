@@ -1,3 +1,5 @@
+import { SiteUptime } from "@/components/SiteUptime";
+
 export function SiteFooter() {
   const year = new Date().getFullYear();
   return (
@@ -6,7 +8,9 @@ export function SiteFooter() {
         <p>
           © {year} Hypervoid · <span className="italic">One &amp; Only</span>
         </p>
-        <p className="flex gap-3">
+        <p className="flex flex-wrap items-center gap-3">
+          <SiteUptime className="font-mono text-xs" />
+          <span aria-hidden>·</span>
           <a
             href="https://github.com/HyperCharon"
             target="_blank"
