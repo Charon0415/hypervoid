@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Props = {
   title: string;
@@ -9,6 +9,8 @@ type Props = {
 
 export function ShareButtons({ title, url }: Props) {
   const [copied, setCopied] = useState(false);
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   function copy() {
     if (!navigator.clipboard) return;
@@ -23,14 +25,36 @@ export function ShareButtons({ title, url }: Props) {
       });
   }
 
+  useEffect(() => {
+    if (!open) return;
+    function onDown(e: MouseEvent) {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
   const encodedTitle = encodeURIComponent(title);
   const encodedUrl = encodeURIComponent(url);
   const xHref = `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`;
   const weiboHref = `https://service.weibo.com/share/share.php?url=${encodedUrl}&title=${encodedTitle}`;
 
   return (
-    <div className="group/share relative inline-flex items-center">
-      <div className="pointer-events-none flex items-center gap-1 pr-2 opacity-0 transition-all duration-200 group-hover/share:pointer-events-auto group-hover/share:opacity-100 group-focus-within/share:pointer-events-auto group-focus-within/share:opacity-100">
+    <div ref={rootRef} className="group/share relative inline-flex items-center">
+      <div
+        className={`flex items-center gap-1 pr-2 transition-all duration-200 ${
+          open
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0 sm:group-hover/share:pointer-events-auto sm:group-hover/share:opacity-100 sm:group-focus-within/share:pointer-events-auto sm:group-focus-within/share:opacity-100"
+        }`}
+      >
         <ActionButton onClick={copy} label={copied ? "已复制" : "复制链接"}>
           {copied ? <CheckIcon /> : <LinkIcon />}
         </ActionButton>
@@ -44,7 +68,13 @@ export function ShareButtons({ title, url }: Props) {
       <button
         type="button"
         aria-label="分享"
-        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted transition hover:border-primary/40 hover:text-primary"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className={`inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card transition hover:border-primary/40 hover:text-primary ${
+          open
+            ? "border-primary/40 text-primary"
+            : "border-border text-muted"
+        }`}
       >
         <ShareIcon />
       </button>
@@ -67,7 +97,7 @@ function ActionButton({
       onClick={onClick}
       aria-label={label}
       title={label}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted transition hover:border-primary/40 hover:text-primary"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-muted transition hover:border-primary/40 hover:text-primary"
     >
       {children}
     </button>
@@ -90,7 +120,7 @@ function ActionLink({
       rel="noreferrer noopener"
       aria-label={label}
       title={label}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted transition hover:border-primary/40 hover:text-primary"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-muted transition hover:border-primary/40 hover:text-primary"
     >
       {children}
     </a>

@@ -107,7 +107,7 @@ export function SiteHeader() {
               {isMac ? "⌘K" : "Ctrl K"}
             </kbd>
           </Link>
-          <div className="hidden sm:flex sm:items-center sm:gap-1.5 md:gap-2">
+          <div className="flex items-center gap-1.5 md:gap-2">
             <LocaleSwitch />
             <SiteSettings />
           </div>

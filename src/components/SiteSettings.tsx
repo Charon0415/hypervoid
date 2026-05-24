@@ -35,7 +35,7 @@ export function SiteSettings() {
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute right-0 top-11 z-40 w-72 rounded-xl border border-border bg-card p-4 shadow-xl">
+          <div className="absolute right-0 top-11 z-40 w-72 max-w-[calc(100vw-1rem)] rounded-xl border border-border bg-card p-4 shadow-xl">
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold">站点设置</p>
               <button
