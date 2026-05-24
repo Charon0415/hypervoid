@@ -14,7 +14,8 @@ import {
   type AdminPostInput,
 } from "@/db/admin-posts";
 import { broadcastPost } from "@/lib/newsletter";
-import { summarizePost, isAiConfigured } from "@/lib/ai";
+import { summarizePost, suggestTags, isAiConfigured } from "@/lib/ai";
+import { getAllTags } from "@/lib/posts";
 
 async function requireAuth() {
   const session = await auth();
@@ -205,4 +206,28 @@ export async function clearSummaryAction(slug: string): Promise<void> {
   await clearSummary(slug);
   revalidatePath(`/posts/${slug}`);
   revalidatePath(`/admin/posts/${slug}/edit`);
+}
+
+export async function suggestTagsAction(args: {
+  title: string;
+  content: string;
+}): Promise<{ tags: string[] } | { error: string }> {
+  await requireAuth();
+  if (!isAiConfigured()) {
+    return { error: "AI 未配置：缺少 ANTHROPIC_API_KEY env" };
+  }
+  if (!args.content.trim()) {
+    return { error: "正文为空，先写点东西再让 AI 建议标签" };
+  }
+  try {
+    const existing = await getAllTags({ isAdmin: true });
+    const tags = await suggestTags({
+      title: args.title || "Untitled",
+      content: args.content,
+      existingTags: existing.map((t) => t.tag),
+    });
+    return { tags };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 }

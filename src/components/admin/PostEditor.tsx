@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
+import { suggestTagsAction } from "@/app/admin/posts/actions";
 
 export type PostEditorInitial = {
   slug: string;
@@ -58,6 +59,9 @@ export function PostEditor({
   const [state, setState] = useState<PostEditorInitial>(initial);
   const [pending, startTransition] = useTransition();
   const [deletePending, startDeleteTransition] = useTransition();
+  const [tagSuggesting, startTagSuggest] = useTransition();
+  const [suggestedTags, setSuggestedTags] = useState<string[]>([]);
+  const [tagSuggestError, setTagSuggestError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState<"cover" | "content" | null>(null);
 
@@ -219,14 +223,84 @@ export function PostEditor({
           />
         </Field>
         <Field label="标签 (逗号分隔)">
-          <input
-            name="tags"
-            type="text"
-            placeholder="Next.js, MDX, 杂谈"
-            value={state.tags}
-            onChange={(e) => update("tags", e.target.value)}
-            className={inputClass}
-          />
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
+              <input
+                name="tags"
+                type="text"
+                placeholder="Next.js, MDX, 杂谈"
+                value={state.tags}
+                onChange={(e) => update("tags", e.target.value)}
+                className={inputClass}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setTagSuggestError(null);
+                  startTagSuggest(async () => {
+                    const res = await suggestTagsAction({
+                      title: state.title,
+                      content: state.content,
+                    });
+                    if ("error" in res) {
+                      setTagSuggestError(res.error);
+                      setSuggestedTags([]);
+                    } else {
+                      setSuggestedTags(res.tags);
+                    }
+                  });
+                }}
+                disabled={tagSuggesting || !state.content.trim()}
+                className="shrink-0 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-primary transition hover:border-primary disabled:opacity-50"
+                title="让 Claude Haiku 读正文给标签建议"
+              >
+                {tagSuggesting ? "..." : "✦ AI 建议"}
+              </button>
+            </div>
+            {tagSuggestError ? (
+              <p className="text-xs text-red-500">{tagSuggestError}</p>
+            ) : null}
+            {suggestedTags.length > 0 ? (
+              <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                <span className="text-muted">建议：</span>
+                {suggestedTags.map((t) => {
+                  const current = state.tags
+                    .split(/[,，]/)
+                    .map((x) => x.trim())
+                    .filter(Boolean);
+                  const has = current.includes(t);
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => {
+                        if (has) return;
+                        const next = [...current, t].join(", ");
+                        update("tags", next);
+                      }}
+                      disabled={has}
+                      className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 transition ${
+                        has
+                          ? "border-primary/30 bg-primary/10 text-primary opacity-60"
+                          : "border-border bg-background hover:border-primary/40 hover:text-primary"
+                      }`}
+                      title={has ? "已加入" : "点击加入"}
+                    >
+                      {has ? "✓" : "+"} {t}
+                    </button>
+                  );
+                })}
+                <button
+                  type="button"
+                  onClick={() => setSuggestedTags([])}
+                  className="text-muted hover:text-foreground"
+                  title="收起"
+                >
+                  ×
+                </button>
+              </div>
+            ) : null}
+          </div>
         </Field>
         <Field label="封面图 URL">
           <div className="flex gap-2">

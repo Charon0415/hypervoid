@@ -48,6 +48,46 @@ export async function summarizePost(args: {
   throw new Error("AI 没有返回文本内容");
 }
 
+export async function suggestTags(args: {
+  title: string;
+  content: string;
+  existingTags: string[];
+}): Promise<string[]> {
+  const client = getClient();
+  const existingList =
+    args.existingTags.length > 0
+      ? args.existingTags.slice(0, 60).join("、")
+      : "（站内还没有现成标签）";
+  const response = await client.messages.create({
+    model: MODEL,
+    max_tokens: 200,
+    system: `你是博客文章标签推荐助手。给定一篇中文博客文章，返回 3-5 个最贴合主题的标签。
+
+规则：
+- **优先复用** 用户提供的现成标签列表，只有在没有合适的现有标签时才提议新标签。
+- 标签简短：2-6 个中文字符或 1-3 个英文单词。不要句子。
+- 不要重复、不要无意义的「随笔」「日常」之类宽泛词，除非真的没有更具体的。
+- 输出格式：**仅返回一行**逗号分隔的标签，例如：\`Next.js, MDX, 性能\`。不要任何其他文字、不要 JSON、不要解释。`,
+    messages: [
+      {
+        role: "user",
+        content: `现有标签列表：${existingList}\n\n文章标题：${args.title}\n\n文章正文（截断）：\n${args.content.slice(0, 4000)}\n\n请给出 3-5 个标签：`,
+      },
+    ],
+  });
+
+  for (const block of response.content) {
+    if (block.type === "text") {
+      return block.text
+        .split(/[,，、\n]/)
+        .map((t) => t.trim().replace(/^#/, ""))
+        .filter((t) => t.length > 0 && t.length <= 16)
+        .slice(0, 5);
+    }
+  }
+  return [];
+}
+
 export async function streamAnswer(args: {
   title: string;
   content: string;
