@@ -75,6 +75,30 @@ export async function getAllPosts(): Promise<Post[]> {
   return rows.map(toPost);
 }
 
+export type PopularPost = {
+  slug: string;
+  title: string;
+  views: number;
+};
+
+export async function getPopularPosts(limit = 5): Promise<PopularPost[]> {
+  const rows = await getDb()
+    .select({
+      slug: schema.posts.slug,
+      title: schema.posts.title,
+      views: sql<number>`COALESCE(${schema.postViews.count}, 0)::int`,
+    })
+    .from(schema.posts)
+    .leftJoin(schema.postViews, eq(schema.posts.slug, schema.postViews.slug))
+    .where(visibleClause())
+    .orderBy(
+      desc(sql`COALESCE(${schema.postViews.count}, 0)`),
+      desc(schema.posts.publishAt),
+    )
+    .limit(limit);
+  return rows;
+}
+
 export async function getPostBySlug(slug: string): Promise<Post | null> {
   const rows = await getDb()
     .select()

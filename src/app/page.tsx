@@ -3,6 +3,10 @@ import { PostCard } from "@/components/PostCard";
 import { SubscribeForm } from "@/components/SubscribeForm";
 import { SiteStats } from "@/components/SiteStats";
 import { ProfileCard } from "@/components/ProfileCard";
+import { PostActivityHeatmap } from "@/components/PostActivityHeatmap";
+import { PopularPosts } from "@/components/PopularPosts";
+import { TagCloud } from "@/components/TagCloud";
+import { RecentGuestbook } from "@/components/RecentGuestbook";
 import { getAllPosts } from "@/lib/posts";
 
 export const revalidate = 60;
@@ -55,6 +59,8 @@ export default async function Home() {
 
         <SiteStats />
 
+        <PostActivityHeatmap />
+
         <section>
           <div className="mb-4 flex items-baseline justify-between">
             <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
@@ -86,8 +92,11 @@ export default async function Home() {
       </div>
 
       <aside className="lg:order-2">
-        <div className="lg:sticky lg:top-20">
+        <div className="flex flex-col gap-6 lg:sticky lg:top-20">
           <ProfileCard />
+          <PopularPosts />
+          <TagCloud />
+          <RecentGuestbook />
         </div>
       </aside>
     </div>
