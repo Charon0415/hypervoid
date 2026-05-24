@@ -4,6 +4,7 @@ import { SubscribeForm } from "@/components/SubscribeForm";
 import { ProfileCard } from "@/components/ProfileCard";
 import { PostActivityHeatmap } from "@/components/PostActivityHeatmap";
 import { PopularPosts } from "@/components/PopularPosts";
+import { SidebarAccordion } from "@/components/SidebarAccordion";
 import { Greeting } from "@/components/Greeting";
 import { DailyPick } from "@/components/DailyPick";
 import { getAllPosts } from "@/lib/posts";
@@ -101,9 +102,18 @@ export default async function Home() {
       </div>
 
       <aside className="lg:order-2">
-        <div className="flex flex-col gap-5 lg:sticky lg:top-20">
+        <div className="flex flex-col gap-4 lg:sticky lg:top-20">
           <ProfileCard />
-          <PopularPosts />
+          {/* Desktop: always visible */}
+          <div className="hidden sm:block">
+            <PopularPosts />
+          </div>
+          {/* Mobile: collapsible */}
+          <div className="sm:hidden">
+            <SidebarAccordion title="热门文章" defaultOpen={false}>
+              <PopularPosts />
+            </SidebarAccordion>
+          </div>
         </div>
       </aside>
     </div>
