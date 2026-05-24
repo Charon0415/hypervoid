@@ -40,37 +40,42 @@ Articles live in **Postgres**, images in **Vercel Blob**, comments in **GitHub D
 
 - **MDX articles** with [Shiki](https://shiki.style) syntax highlighting — filename header, copy button, language label
 - **GFM alerts** (`> [!NOTE]` etc.) + **KaTeX math** + **reading time** (CJK-aware)
-- **Pinned posts** + **prev/next nav** at the bottom of every article
-- **Reading progress bar** at the top of article pages
-- **Reading mode** toggle per article — normal / sepia / sepia+large for long-form sessions
-- **Hover-expand share buttons** (copy link · X · Weibo)
-- **Tags** — index + per-tag filtered list, Chinese tags supported (e.g. `/tags/元信息`)
-- **Sticky TOC** with IntersectionObserver scroll-spy (active section highlighted)
-- **Single / double column toggle** on `/posts`, `/tags/[tag]`, and `/archive` — persisted per-page
-- **Site settings panel** — 6 preset color palettes + free hue slider · 5 backgrounds (cosmic / particles / plain / paper / waves) · 3 font families (Geist / Serif / Handwriting) — all localStorage-persisted
-- **System / light / dark** theme toggle
-- **Cosmic-orbit favicon** (custom SVG)
-- **RSS 2.0** feed + `sitemap.xml` + dynamic OG image
-- **Comments** via [Giscus](https://giscus.app) (`mapping="pathname"` so domain change keeps history)
+- **Pinned posts** + **prev/next nav** + **article series** (multi-part collections with sibling-article banner)
+- **Reading progress bar** + **reading mode** toggle (normal / sepia / sepia+large)
+- **"✓ 已读" badge** on visited articles (localStorage, after 6 s dwell) + **"↻ 更新于"** badge when revised
+- **Visitor bookmarks** — save articles to a personal `/bookmarks` page (localStorage)
+- **Hover-expand share buttons** (copy link · X · Weibo) + **/donate** scaffolding (off behind a feature flag)
+- **Tags** index + per-tag pages + **search filters** (filter results by tag/year chips)
+- **Full-text search** (pg_trgm GIN, Chinese substrings) with **⌘K / Ctrl+K** shortcut
+- **Sticky TOC** with IntersectionObserver scroll-spy
+- **Single / double column toggle** on `/posts`, `/tags/[tag]`, `/archive`
+- **Site settings panel** — 6 palettes + free hue · **6 backgrounds** (cosmic / particles / acg / paper / waves / plain) · **3 display modes** (fullscreen / banner / simple) · 3 fonts
+- **System / light / dark** theme + **cosmic-orbit favicon** (custom SVG) + **per-article OG image** (auto-sized title, brand mark)
+- **RSS 2.0** feed + `sitemap.xml` + PWA manifest + apple-touch icon
+- **Comments** via [Giscus](https://giscus.app) (`mapping="pathname"`)
 - **View counter** + **like button** with localStorage-tracked toggle (atomic Postgres upserts)
-- **AI summary** per article + **AI Q&A** modal (Claude Haiku 4.5, streamed)
-- **Full-text search** (pg_trgm GIN index, works for Chinese substrings) with **⌘K / Ctrl+K** shortcut
+- **AI summary** + **AI Q&A** modal (Claude Haiku 4.5, streamed)
+- **Bangumi** integration — **anime** (detail modal with rating histogram) · **movies** · **books** (subject types 2/6/1)
+- **Steam game library** — `/games`, recent-2-weeks + total playtime + search + sort
+- **Cosmic-themed 404** with random article recommendation
 - **Back-to-top** floating button + page fade-in transition
-- **Bangumi anime page** — pulls watching / watched / wish-list from bgm.tv API, card grid, click for detail modal (synopsis, rating histogram, tags)
 - **Sidebar widgets**: profile card · mini calendar · 365-day heatmap · popular posts · tag cloud · recent guestbook · site stats · email subscribe
-- **Custom pages**: `/projects` · `/skills` · `/timeline` · `/albums` · `/diary` · `/friends` · `/guestbook` · `/archive`
-- **Bilingual UI** (zh-CN / en) via custom React Context — no URL prefix
-- **Mobile-first** responsive layout + hamburger nav
+- **Custom pages**: `/projects` · `/skills` · `/timeline` · `/albums` · `/diary` · `/friends` · `/guestbook` · `/archive` · `/series`
+- **Bilingual UI** (zh-CN / en) via custom React Context
+- **Mobile-first** responsive layout + hamburger drawer
 
 ### Author-facing
 
-- **Admin panel** at `/admin` — GitHub-OAuth-gated, only the configured login allowed (`ADMIN_GITHUB_LOGIN`)
-- **In-browser MDX editor** — title-driven auto-slug, tag/category/cover fields, status select
-- **Draft / scheduled / published** workflow — scheduled posts auto-appear at `publishAt`; **daily cron** at 04:00 UTC normalizes the status field
+- **Admin dashboard** at `/admin` — stats (posts/views/likes/subscribers) · recent published · pending counters (drafts / scheduled / private / missing-summary)
+- **GitHub-OAuth-gated** — only `ADMIN_GITHUB_LOGIN` may enter
+- **In-browser MDX editor** — title-driven slug · tags · category · cover · status · **public/private visibility** · **article series + order**
+- **AI tag suggestions** — Claude Haiku reads the draft and proposes 3-5 tags biased toward your existing taxonomy
+- **AI summary** — manual one-click + **auto-generated on first publish** via `next/server`'s `after()` (no editor wait)
+- **Draft / scheduled / published** workflow + **daily cron** at 04:00 UTC + **comment moderation** deep-link to the underlying GitHub Discussion
 - **One-click image upload** to Vercel Blob — markdown `![alt](url)` injected at cursor
-- **AI summary generation** — one click → Haiku writes a 2-3 sentence summary, saved to `posts.summary`
-- **Friends / albums / guestbook** CRUD pages under `/admin`
+- **Friends / albums / guestbook** CRUD with pill-style admin nav
 - **Email subscriber list** — confirmed-only via double opt-in, Resend backend
+- **Print-friendly stylesheet** — `Ctrl/⌘+P` strips chrome, keeps article body
 
 ### Site map
 
@@ -82,6 +87,9 @@ Articles live in **Postgres**, images in **Vercel Blob**, comments in **GitHub D
 /tags/[tag]    标签筛选
 /archive       归档 (按年月)
 /anime         番剧
+/movies        影视 (Bangumi subject_type=6)
+/books         书籍 (Bangumi subject_type=1)
+/games         Steam 游戏库
 /projects      项目
 /skills        技能
 /timeline      时间线
@@ -91,8 +99,12 @@ Articles live in **Postgres**, images in **Vercel Blob**, comments in **GitHub D
 /friends       友链
 /guestbook     留言板
 /about         关于
-/search        全文搜索
-/admin         后台 (GitHub OAuth)
+/search        全文搜索 (?q + ?tag + ?year)
+/series        文章系列索引
+/series/[name] 单个系列详情
+/bookmarks     本地收藏夹 (localStorage)
+/donate        赞赏页 (默认隐藏，受 siteConfig.donate.enabled 控制)
+/admin         后台 dashboard (GitHub OAuth)
 ```
 
 ## ✦ Tech stack
@@ -156,8 +168,8 @@ For day-to-day operation — how to write a post, customize the theme, manage DN
 - [x] **v0.4** — admin panel · MDX editor · draft & scheduled publishing · image upload
 - [x] **v0.5** — newsletter (Resend) · analytics (Umami Cloud) · full-text search (pg_trgm)
 - [x] **v1.0** — i18n · guestbook · friends · albums · AI summary & Q&A (Claude Haiku 4.5)
-- [x] **Phase 7-9 polish** — GFM alerts · KaTeX · pinned posts · image lightbox · sidebar widgets (heatmap, popular posts, tag cloud, mini calendar, recent guestbook) · mobile drawer · code-block decoration · prev/next nav · reading progress bar · share buttons · ⌘K search · back-to-top · custom domain (hypervoid.top) · cosmic-orbit favicon · unified site settings panel (6 palettes · 5 backgrounds · 3 fonts) · reading mode (sepia + large) · Bangumi anime page with detail modal · column toggle on tags & archive
-- [ ] **Future** — article-level i18n (`posts.locale`) · Resend custom domain · admin UX polish · PWA manifest
+- [x] **Phase 7-10 polish** — GFM alerts · KaTeX · pinned posts · sidebar widgets · code-block decoration · prev/next nav · reading progress · share · ⌘K · back-to-top · custom domain · settings panel (6 palettes / 6 backgrounds / 3 display modes / 3 fonts) · reading mode · Bangumi anime+movies+books · Steam library · article series · cosmic 404 · visibility (public/private) · admin dashboard · AI tag suggestions · AI auto-summary on save · search filters · per-article OG · "✓ 已读" + bookmarks + print-friendly CSS
+- [ ] **Future** — article-level i18n (`posts.locale`) · Resend custom domain · ACG carousel wallpapers (drop into `public/wallpapers/`) · donate channel QR codes (drop into `public/donate/` + flip `siteConfig.donate.enabled`)
 
 ## ✦ License
 

@@ -2,7 +2,7 @@
 
 > 这是你将来独立维护 Hypervoid 的工具书。覆盖**日常运营**、**站点定制**、**部署运维**、**故障排查**、**扩展开发**——遇到任何"这该怎么做"的问题，先查这里。
 
-**最近更新：** 2026-05-24（Phase 9 + 当日多轮迭代）
+**最近更新：** 2026-05-24（Phase 10 — 全天密集迭代 46 commits）
 **对应站点：** https://hypervoid.top
 
 ---
@@ -30,16 +30,22 @@
 **Hypervoid**（取自 *hyper* × *void*「高维虚空」）是一个完整的个人博客系统，从空目录手搓出来。它不只是"渲染 Markdown 的静态站"，更接近一个**带后台的内容管理系统 + 数据驱动的个人主页**：
 
 - **文章存数据库**，不在仓库里。无需 redeploy 即可发布
-- **后台 `/admin`** 是浏览器内的所见即所得 MDX 编辑器
+- **后台 `/admin`** 是带 dashboard 的所见即所得 MDX 编辑器（统计 + 待办 + AI 标签建议）
 - **图片上传** 到 Vercel Blob，1GB 免费
-- **AI 摘要 / Q&A** 由 Claude Haiku 4.5 驱动
-- **评论** 接 GitHub Discussions（Giscus），强一致映射
+- **AI 摘要 / Q&A / 标签建议** 由 Claude Haiku 4.5 驱动，摘要保存时自动后台生成
+- **可见性** 每篇文章可设 public / private，私密文章对匿名 404
+- **文章系列** 同系列文章互相联通，banner 显示当前序号
+- **评论** 接 GitHub Discussions（Giscus），admin 有「在 GitHub 管理」深链
 - **订阅邮件** 走 Resend，新文章自动通知订阅者
 - **统计分析** 用 Umami Cloud，无 Cookie 合规
-- **追番** 接入 Bangumi (bgm.tv) API，自动同步
-- **站点设置面板**：6 预设调色板、5 种背景、3 种字体，全 localStorage 持久化
-- **阅读模式**：文章页可切 sepia / sepia+大号，作用域仅在 `<article>` 不污染全局
-- **多页面** 包括相册、友链、留言、归档、番剧、技能、时间线、日记
+- **追番 / 阅读 / 影视** 接入 Bangumi (bgm.tv) API，自动同步
+- **游戏库** 接入 Steam Web API，公开 profile 同步
+- **站点设置面板**：6 预设调色板、6 种背景（含 ACG 轮播）、3 种显示模式、3 种字体
+- **阅读模式**：文章页可切 sepia / sepia+大号，仅 `<article>` 内染色
+- **赞赏 / 打赏**：完整脚手架就位，受 `siteConfig.donate.enabled` 单开关控制
+- **读者侧本地功能**：书签 (`/bookmarks`)、「✓ 已读」标识、打印友好（⌘P）
+- **每文独立 OG 图** + **PWA manifest** + **apple-touch icon**
+- **多页面** 包括相册、友链、留言、归档、番剧、影视、书籍、游戏、技能、时间线、日记、系列
 
 ### 1.2 技术栈
 
@@ -378,37 +384,41 @@ export const siteConfig = {
 
 改完 `pnpm build` 看一下，没问题就提交。
 
-### 4.2 站点设置面板（主题 / 背景 / 字体）
+### 4.2 站点设置面板（主题 / 背景 / 显示模式 / 字体）
 
 入口在导航栏右侧的**彩色圆点按钮**，点开是统一的设置面板。所有设置存 localStorage（key 前缀 `hypervoid:`），全局生效。
 
-**架构** —— `src/components/SettingsProvider.tsx` 是 Context，挂在根 layout，管理三个全局状态：
+**架构** —— `src/components/SettingsProvider.tsx` 是 Context，挂在根 layout，管理四个全局状态：
 
 | 状态 | localStorage key | 应用方式 |
 |---|---|---|
 | `hue` (主题色色相 0-360°) | `hypervoid:hue` | `<html>` 的 `--primary` 内联样式 |
 | `background` | `hypervoid:bg` | `<html data-bg="...">` 属性 |
+| `displayMode` | `hypervoid:display` | `<html data-display="...">` 属性 |
 | `font` | `hypervoid:font` | `<html data-font="...">` 属性 |
 
 **预设调色板** —— 6 个（Indigo 默认 / Sakura / Ocean / Forest / Amber / Violet），存在 `HUE_PRESETS` 数组。加新预设：在 `SettingsProvider.tsx` 的 `HUE_PRESETS` 加一行 `{ name: 'Custom', hue: 123 }`。
 
-**背景** —— 5 种（cosmic / particles / plain / paper / waves），在 `Backdrop.tsx`（canvas 类）+ `globals.css`（纯 CSS 类）共同实现：
+**背景** —— 6 种（cosmic 默认 / particles / acg / paper / waves / plain），在 `Backdrop.tsx`（canvas/img 类）+ `globals.css`（纯 CSS 类）共同实现：
 - `cosmic` / `particles` —— canvas 粒子，根据深浅色切换数量和颜色
+- `acg` —— **ACG 轮播壁纸**：读 `siteConfig.acgWallpapers`，9 秒淡入淡出循环。把横向高清图丢进 `public/wallpapers/` 然后在 site-config 数组登记路径。留空显示提示
 - `plain` —— 啥都不渲染
 - `paper` —— CSS 双向 1px 栅格 + 透明度
 - `waves` —— 三层径向渐变 + `wavesShift` 24s 动画
 
 加新背景：
-1. `BACKGROUND_OPTIONS` 里加一项
-2. 如果是 canvas 类：在 `Backdrop.tsx` 的 useEffect 里加分支
+1. `BACKGROUND_OPTIONS` 里加一项 + `BackgroundKey` 类型加一个 union member
+2. 如果是 canvas/img 类：在 `Backdrop.tsx` 加分支
 3. 如果是 CSS 类：在 `globals.css` 加 `html[data-bg="新值"] body::before { ... }` 规则
 
-**字体** —— 3 种（Geist 默认 / Serif / Handwriting），通过 `html[data-font="..."] body { font-family: ... }` 改变。**没下载额外资源**，只用系统字体回落链。加新字体方案：
-1. `FONT_OPTIONS` 里加一项
-2. `globals.css` 加 `html[data-font="新值"] body { font-family: ... }` 规则
-3. 如果非常需要某个非系统字体（例如真的想要 LXGW WenKai），用 `next/font/google` 或 CDN 加载，但要权衡包体积
+**显示模式** —— 3 种（fullscreen 默认 / banner / simple），影响所有背景的渲染范围：
+- `fullscreen` —— 背景铺满整个视口（原有行为）
+- `banner` —— 背景缩到顶部 44vh 横幅区域（适合 ACG 壁纸场景，不让壁纸压住正文）
+- `simple` —— 完全隐藏背景（包括 canvas 和 CSS 装饰），只剩主题色
 
-**3.3 重置全部** —— 面板右上「重置全部」按钮一键清掉 localStorage 的三个 key，恢复默认。
+**字体** —— 3 种（Geist 默认 / Serif / Handwriting），通过 `html[data-font="..."] body { font-family: ... }` 改变。**没下载额外资源**，只用系统字体回落链。
+
+**重置全部** —— 面板右上「重置全部」按钮一键清掉 localStorage 的所有 key，恢复默认。
 
 ### 4.3 深浅色 / 系统主题
 
@@ -506,6 +516,52 @@ const groups = [
 - 不显示某个分类：在 page.tsx 里删掉对应 section
 
 **为什么不存数据库？** Bangumi 是真实信源，缓存就够；存数据库要做同步逻辑、处理删除/修改一致性，反不如直接拉。如果将来 Bangumi 限流厉害需要缓存层，可加一个 KV 或者 Postgres 表存 ETag。
+
+### 4.11 文章可见性（public / private）
+
+每篇文章可设 `visibility = 'public' | 'private'`。**私密文章对匿名访客 404**——列表、搜索、RSS、sitemap、tag、archive 全部自动排除；只有 admin 登录后能在文章详情页看到带「🔒 私密」徽章的内容。
+
+实现要点：
+- `src/db/schema.ts` 的 `posts.visibility` 枚举列
+- `src/lib/posts.ts` 的 `visibleClause(isAdmin)` 在 SQL 层把私密文章 OR 出查询集
+- `src/lib/viewer.ts` 提供 `getViewer()` 返回 `{ isAdmin }`，所有公开页面默认 `isAdmin=false`
+- `/posts/[slug]` 显式调用 `getViewer()` 并把 `isAdmin` 透传给查询
+
+加 admin-only 内容（不想被搜索引擎或匿名访客看到）就用「私密」开关，比把整篇删了简单。
+
+### 4.12 文章系列
+
+同一主题的多篇文章可以挂到同一个「系列」名下，例如「Hypervoid 搭建笔记」。在 admin 编辑页填「所属系列」字段 + 数字序号即可加入。文章详情页顶部会出现一个 banner：「本文是 X 系列的第 N 篇 / 共 M 篇」+ 同系列文章索引。
+
+- `/series` —— 全部系列索引（按最新更新时间排序）
+- `/series/[name]` —— 单个系列详情
+- `src/components/SeriesBanner.tsx` —— 在文章页 header 下方渲染（仅当系列至少 2 篇）
+
+### 4.13 ACG 壁纸轮播
+
+要让「ACG 轮播」背景能用：
+1. 把横向高清图扔进 `public/wallpapers/`（推荐 16:9 或 21:9，文件名简洁）
+2. 编辑 `src/lib/site-config.ts` 的 `acgWallpapers` 数组，把每张路径加进去：
+   ```ts
+   acgWallpapers: ["/wallpapers/01.jpg", "/wallpapers/02.jpg", ...]
+   ```
+3. 站点设置面板 → 背景 选「ACG 轮播」
+4. 9 秒淡入淡出循环
+
+配合「**横幅模式**」显示效果最好——壁纸只在顶部 44vh 横幅区显示，正文区保持简洁。
+
+### 4.14 打赏开关
+
+`siteConfig.donate.enabled` 是单个 boolean，控制：
+- `/donate` 页面是否可访问（false 则 404）
+- 文章页底部「☕ 觉得有用？请作者喝杯咖啡」链接是否显示
+- 全站页脚「☕ 赞赏」入口是否显示
+
+激活流程：
+1. 把微信/支付宝收款码 png 丢到 `public/donate/wechat.jpg` 和 `public/donate/alipay.jpg`
+2. （可选）在 `donate.links` 数组里取消注释 GitHub Sponsors / 爱发电 / Buy Me a Coffee
+3. 把 `enabled` 改成 `true`
+4. Push → 部署
 
 ---
 
