@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { PostCard } from "@/components/PostCard";
+import { PostsGrid } from "@/components/PostsGrid";
 import { getAllTags, getPostsByTag } from "@/lib/posts";
 
 type Params = { tag: string };
@@ -35,7 +36,7 @@ export default async function TagDetailPage(props: {
   if (posts.length === 0) notFound();
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <Link
         href="/tags"
         className="text-sm text-muted hover:text-primary"
@@ -46,11 +47,11 @@ export default async function TagDetailPage(props: {
         <h1 className="text-3xl font-bold tracking-tight">#{decoded}</h1>
         <span className="text-sm text-muted">{posts.length} 篇文章</span>
       </header>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <PostsGrid>
         {posts.map((post) => (
           <PostCard key={post.slug} post={post} />
         ))}
-      </div>
+      </PostsGrid>
     </div>
   );
 }
