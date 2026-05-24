@@ -2,7 +2,7 @@
 
 > 这是你将来独立维护 Hypervoid 的工具书。覆盖**日常运营**、**站点定制**、**部署运维**、**故障排查**、**扩展开发**——遇到任何"这该怎么做"的问题，先查这里。
 
-**最近更新：** 2026-05-25（v1.1 —— 阅读增强、转场动画、PWA、无障碍、公告栏、精选导航、骨架屏/错误边界、字体字号全局调优）
+**最近更新：** 2026-05-25（v1.2 —— 字号默认 17.5px、公告 CLI 自动化、Steam 折行修复、全局交互打磨）
 **对应站点：** https://hypervoid.top
 
 ---
@@ -472,13 +472,15 @@ export const siteConfig = {
 
 **移动端** —— `src/components/MobileNav.tsx` 是抽屉式菜单，**桌面端的 LocaleSwitch 和 SiteSettings 在所有断点都直接显示在 header 右侧**（`md:hidden` 去掉了），不再隐藏在移动端抽屉底部。
 
+**防折保护** —— pill bar 容器设了 `flex-nowrap overflow-visible`，每个 pill 按钮 `shrink-0`。下拉菜单用 `w-max min-w-[14rem]`（无 max-w）自适应内容宽度。外链项 label span 加 `whitespace-nowrap`，外跳箭头 `ml-auto`。这些规则保证大字号（19.5px）下不会折行。如果以后加更多社交链接或改字体大小，注意检查这几处。
+
 **i18n** —— 导航文字走 `src/lib/i18n.ts`，加新菜单时也要同步加翻译。当前翻译的组 key 为 `groupCreate` / `groupLife` / `groupInteract` / `groupFeatured` / `groupLinks`。
 
 ### 4.5 侧边栏 widgets
 
 主页右侧侧边栏在 `src/app/page.tsx` 里组装，包含：
 
-- `<ProfileCard />` —— 头像 + 简介 + 社交图标
+- `<ProfileCard />` —— 头像 + 简介 + 社交图标（`h-7 w-7 gap-1`，保证 280px 侧边栏内 5 个图标不折行）
 - `<SiteStats />` —— 文章数 / 标签数 / 总浏览
 - `<AnnouncementWidget />` —— 公告卡片（有内容时显示）
 - `<MiniCalendar />` —— 当月日历，文章发布日期高亮（桌面端显示）
@@ -648,7 +650,26 @@ git push   # 推到 main → Vercel 自动部署 production
 
 ### 5.3 环境变量更新
 
-**Vercel 后台：** Project → Settings → Environment Variables
+**Vercel CLI 方式（推荐，无需打开浏览器）：**
+
+```bash
+# 首次需要登录（只需一次）
+npx vercel login
+
+# 连上项目（只需一次）
+npx vercel link
+
+# 查看当前变量
+npx vercel env ls
+
+# 添加 / 更新变量
+echo "变量值" | npx vercel env add <变量名> production --yes
+
+# 改完触发 redeploy（推个空提交即可）
+git commit --allow-empty -m "trigger redeploy" && git push
+```
+
+**Vercel 后台方式：** Project → Settings → Environment Variables
 
 - 改完任何 `NEXT_PUBLIC_*` 变量 **必须做一次 No-Cache Redeploy**——这些变量打包进客户端 JS，缓存命中不会重建
   - Deployments → 最新 → ⋯ → Redeploy → 取消勾选 "Use existing Build Cache"
