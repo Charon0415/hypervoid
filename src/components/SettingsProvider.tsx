@@ -23,7 +23,7 @@ export type DisplayMode = "fullscreen" | "banner" | "simple";
 
 export const DEFAULT_HUE = 210;
 export const DEFAULT_BACKGROUND: BackgroundKey = "cosmic";
-export const DEFAULT_FONT: FontKey = "geist";
+export const DEFAULT_FONT: FontKey = "handwriting";
 export const DEFAULT_DISPLAY_MODE: DisplayMode = "fullscreen";
 
 export const HUE_PRESETS: { name: string; hue: number }[] = [
