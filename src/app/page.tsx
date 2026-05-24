@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { PostCard } from "@/components/PostCard";
 import { SubscribeForm } from "@/components/SubscribeForm";
+import { SiteStats } from "@/components/SiteStats";
 import { ProfileCard } from "@/components/ProfileCard";
+import { MiniCalendar } from "@/components/MiniCalendar";
 import { PostActivityHeatmap } from "@/components/PostActivityHeatmap";
 import { PopularPosts } from "@/components/PopularPosts";
-import { SidebarAccordion } from "@/components/SidebarAccordion";
+import { TagCloud } from "@/components/TagCloud";
+import { RecentGuestbook } from "@/components/RecentGuestbook";
 import { Greeting } from "@/components/Greeting";
 import { DailyPick } from "@/components/DailyPick";
 import { getAllPosts } from "@/lib/posts";
@@ -19,46 +22,50 @@ function pickByDay<T>(arr: T[]): T | null {
 
 export default async function Home() {
   const all = await getAllPosts();
-  const recent = all.slice(0, 6);
+  const recent = all.slice(0, 4);
   const dailyPick = pickByDay(all);
 
   return (
-    <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-10">
-      <div className="flex flex-col gap-6 lg:order-1">
-        <section className="hypervoid-hero relative overflow-hidden rounded-2xl border border-border bg-card p-4 sm:p-5">
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-10">
+      <div className="flex flex-col gap-10 lg:order-1">
+        <section className="hypervoid-hero relative overflow-hidden rounded-3xl border border-border bg-card p-6 sm:p-10 md:p-12">
           <div aria-hidden className="hypervoid-stars" />
-          <div className="relative flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0">
-              <div className="flex items-baseline gap-2">
-                <span className="shrink-0 text-xs uppercase tracking-widest text-primary">
-                  ✦ Hypervoid
-                </span>
-                <span className="hidden text-xs text-muted sm:inline">
-                  高维虚空
-                </span>
-              </div>
-              <h1 className="mt-0.5 text-xl font-bold tracking-tight sm:text-2xl">
-                <Greeting name="Charon" />
-                <span className="ml-1.5 font-mono text-xs font-normal italic text-muted">
-                  · The world is big, you have to go and see.
-                </span>
-              </h1>
-            </div>
-            <div className="flex shrink-0 items-center gap-1.5">
+          <div className="relative">
+            <p className="text-xs uppercase tracking-widest text-primary sm:text-sm">
+              Hypervoid · 高维虚空
+            </p>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight sm:mt-3 sm:text-4xl md:text-5xl">
+              <Greeting name="Charon" />
+            </h1>
+            <p className="mt-2 font-mono text-xs italic text-muted sm:mt-3 sm:text-sm md:text-base">
+              The world is big, you have to go and see.
+            </p>
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted sm:mt-5 sm:text-base md:text-lg">
+              Hypervoid 取自 <em className="text-foreground/80">hyper × void</em>，「高维虚空」——
+              一处用以长期沉淀技术探索、阅读、影像与生活痕迹的私人坐标系。
+              文章、追番、游戏与每一行折腾，都收纳于此。
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2 sm:mt-6 sm:gap-3">
               <Link
                 href="/posts"
-                className="inline-flex items-center gap-1 rounded-full bg-primary px-3.5 py-1.5 text-xs font-medium text-primary-foreground shadow-sm transition hover:shadow-md sm:px-4 sm:py-2 sm:text-sm"
+                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:shadow-md hover:-translate-y-0.5"
               >
-                文章
-                <svg aria-hidden className="h-3 w-3 sm:h-3.5 sm:w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                阅读文章
+                <svg aria-hidden className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12h14M13 5l7 7-7 7" />
                 </svg>
               </Link>
               <Link
                 href="/about"
-                className="inline-flex items-center rounded-full border border-border bg-background px-3.5 py-1.5 text-xs font-medium transition hover:border-primary hover:text-primary sm:px-4 sm:py-2 sm:text-sm"
+                className="inline-flex items-center rounded-full border border-border bg-background px-5 py-2.5 text-sm font-medium transition hover:border-primary hover:text-primary"
               >
-                关于
+                关于我
+              </Link>
+              <Link
+                href="/archive"
+                className="inline-flex items-center rounded-full border border-border bg-background px-5 py-2.5 text-sm font-medium transition hover:border-primary hover:text-primary"
+              >
+                归档
               </Link>
             </div>
           </div>
@@ -70,21 +77,21 @@ export default async function Home() {
 
         <section>
           <div className="mb-4 flex items-baseline justify-between">
-            <h2 className="text-lg font-bold tracking-tight sm:text-xl">
+            <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
               最新文章
             </h2>
             <Link
               href="/posts"
-              className="group inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-foreground/80 transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary sm:px-4 sm:py-1.5 sm:text-sm"
+              className="group inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium text-foreground/80 transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
             >
               全部
-              <svg aria-hidden className="h-3 w-3 transition group-hover:translate-x-0.5 sm:h-3.5 sm:w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg aria-hidden className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M13 5l7 7-7 7" />
               </svg>
             </Link>
           </div>
           {recent.length ? (
-            <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               {recent.map((post) => (
                 <PostCard key={post.slug} post={post} />
               ))}
@@ -102,18 +109,17 @@ export default async function Home() {
       </div>
 
       <aside className="lg:order-2">
-        <div className="flex flex-col gap-4 lg:sticky lg:top-20">
+        <div className="flex flex-col gap-6 lg:sticky lg:top-20">
           <ProfileCard />
-          {/* Desktop: always visible */}
-          <div className="hidden sm:block">
-            <PopularPosts />
+          <SiteStats />
+          <div className="hidden md:contents">
+            <MiniCalendar />
           </div>
-          {/* Mobile: collapsible */}
-          <div className="sm:hidden">
-            <SidebarAccordion title="热门文章" defaultOpen={false}>
-              <PopularPosts />
-            </SidebarAccordion>
+          <PopularPosts />
+          <div className="hidden md:contents">
+            <TagCloud />
           </div>
+          <RecentGuestbook />
         </div>
       </aside>
     </div>
