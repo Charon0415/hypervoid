@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PlaceholderBanner } from "@/components/PlaceholderBanner";
 
 export const metadata: Metadata = { title: "技能" };
 
@@ -44,6 +45,7 @@ export default function SkillsPage() {
           </div>
         ))}
       </div>
+      <PlaceholderBanner hint="编辑 src/app/skills/page.tsx 更新你的技能树。" />
     </div>
   );
 }

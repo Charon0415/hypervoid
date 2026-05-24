@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PlaceholderBanner } from "@/components/PlaceholderBanner";
 
 export const metadata: Metadata = { title: "时间线" };
 
@@ -25,6 +26,7 @@ export default function TimelinePage() {
           </li>
         ))}
       </ol>
+      <PlaceholderBanner hint="编辑 src/app/timeline/page.tsx 添加你自己的里程碑。" />
     </div>
   );
 }
