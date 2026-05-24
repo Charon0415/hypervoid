@@ -1,38 +1,13 @@
 import "server-only";
 import { siteConfig } from "@/lib/site-config";
+import {
+  STATUS_TO_TYPE,
+  type BangumiAnime,
+  type BangumiStatus,
+} from "@/lib/bangumi-types";
 
-export type BangumiStatus = "wish" | "done" | "watching" | "onhold" | "dropped";
-
-export const STATUS_TO_TYPE: Record<BangumiStatus, number> = {
-  wish: 1,
-  done: 2,
-  watching: 3,
-  onhold: 4,
-  dropped: 5,
-};
-
-export const STATUS_LABEL: Record<BangumiStatus, string> = {
-  watching: "在看",
-  done: "看过",
-  wish: "想看",
-  onhold: "搁置",
-  dropped: "抛弃",
-};
-
-export type BangumiAnime = {
-  id: number;
-  name: string;
-  nameCn: string | null;
-  date: string | null;
-  cover: string | null;
-  myRating: number;
-  bgmScore: number | null;
-  bgmRaters: number;
-  epStatus: number;
-  totalEps: number;
-  updatedAt: string;
-  url: string;
-};
+export type { BangumiAnime, BangumiStatus } from "@/lib/bangumi-types";
+export { STATUS_LABEL, STATUS_TO_TYPE } from "@/lib/bangumi-types";
 
 type RawCollection = {
   data: Array<{
@@ -82,6 +57,7 @@ export async function fetchBangumiAnime(
       total: json.total,
       items: json.data.map((row) => ({
         id: row.subject.id,
+        status,
         name: row.subject.name,
         nameCn: row.subject.name_cn || null,
         date: row.subject.date || null,
@@ -103,4 +79,21 @@ export async function fetchBangumiAnime(
     console.error("[bangumi] fetch error", e);
     return { items: [], total: 0 };
   }
+}
+
+export async function fetchAllAnime(): Promise<{
+  watching: { items: BangumiAnime[]; total: number };
+  done: { items: BangumiAnime[]; total: number };
+  wish: { items: BangumiAnime[]; total: number };
+  onhold: { items: BangumiAnime[]; total: number };
+  dropped: { items: BangumiAnime[]; total: number };
+}> {
+  const [watching, done, wish, onhold, dropped] = await Promise.all([
+    fetchBangumiAnime("watching", { limit: 50 }),
+    fetchBangumiAnime("done", { limit: 100 }),
+    fetchBangumiAnime("wish", { limit: 50 }),
+    fetchBangumiAnime("onhold", { limit: 30 }),
+    fetchBangumiAnime("dropped", { limit: 30 }),
+  ]);
+  return { watching, done, wish, onhold, dropped };
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { BangumiAnime } from "@/lib/bangumi";
+import type { BangumiAnime } from "@/lib/bangumi-types";
 
 type SubjectDetail = {
   id: number;
