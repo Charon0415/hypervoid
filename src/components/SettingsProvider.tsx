@@ -21,7 +21,7 @@ export type FontKey = "geist" | "serif" | "handwriting";
 
 export type DisplayMode = "fullscreen" | "banner" | "simple";
 
-export const DEFAULT_HUE = 210;
+export const DEFAULT_HUE = 215;
 export const DEFAULT_BACKGROUND: BackgroundKey = "cosmic";
 export const DEFAULT_FONT: FontKey = "handwriting";
 export const DEFAULT_DISPLAY_MODE: DisplayMode = "fullscreen";

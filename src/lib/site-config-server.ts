@@ -5,35 +5,64 @@ import { getDb, schema } from "@/db/client";
 import { siteConfig } from "@/lib/site-config";
 
 export type OverridableFields =
+  | "name"
+export type OverridableFields =
+  | "name"
+  | "title"
+  | "description"
   | "author.name"
   | "author.handle"
   | "author.bio"
   | "author.avatar"
   | "author.githubUsername"
   | "author.githubUrl"
-  | "description"
-  | "bangumiUserId";
+  | "bangumiUserId"
+  | "rss.title"
+  | "rss.description"
+  | "socials.github"
+  | "socials.bilibili"
+  | "socials.gitee"
+  | "socials.codeberg"
+  | "socials.steam";
 
 const DEFAULT_MAP: Record<OverridableFields, string> = {
+  name: siteConfig.name,
+  title: siteConfig.title,
+  description: siteConfig.description,
   "author.name": siteConfig.author.name,
   "author.handle": siteConfig.author.handle,
   "author.bio": siteConfig.author.bio,
   "author.avatar": siteConfig.author.avatar,
   "author.githubUsername": siteConfig.author.githubUsername,
   "author.githubUrl": siteConfig.author.githubUrl,
-  "description": siteConfig.description,
-  "bangumiUserId": siteConfig.bangumiUserId,
+  bangumiUserId: siteConfig.bangumiUserId,
+  "rss.title": siteConfig.rss.title,
+  "rss.description": siteConfig.rss.description,
+  "socials.github": siteConfig.socials.find((s) => s.icon === "github")?.url ?? "",
+  "socials.bilibili": siteConfig.socials.find((s) => s.icon === "bilibili")?.url ?? "",
+  "socials.gitee": siteConfig.socials.find((s) => s.icon === "gitee")?.url ?? "",
+  "socials.codeberg": siteConfig.socials.find((s) => s.icon === "codeberg")?.url ?? "",
+  "socials.steam": siteConfig.socials.find((s) => s.icon === "steam")?.url ?? "",
 };
 
 const LABELS: Record<OverridableFields, string> = {
+  name: "站点名 (title suffix)",
+  title: "SEO 标题",
+  description: "站点描述",
   "author.name": "作者名",
-  "author.handle": "GitHub 用户名",
+  "author.handle": "显示用户名",
   "author.bio": "个人简介",
   "author.avatar": "头像路径",
   "author.githubUsername": "GitHub 用户名",
-  "author.githubUrl": "GitHub 链接",
-  "description": "站点描述",
-  "bangumiUserId": "Bangumi 用户 ID",
+  "author.githubUrl": "GitHub 主页链接",
+  bangumiUserId: "Bangumi 用户 ID",
+  "rss.title": "RSS 标题",
+  "rss.description": "RSS 描述",
+  "socials.github": "GitHub Profile 链接",
+  "socials.bilibili": "Bilibili 链接",
+  "socials.gitee": "Gitee 链接",
+  "socials.codeberg": "Codeberg 链接",
+  "socials.steam": "Steam 链接",
 };
 
 export const OVERRIDABLE_FIELDS = Object.entries(LABELS).map(

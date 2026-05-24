@@ -36,31 +36,33 @@ export const viewport: Viewport = {
 };
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [description, authorName, authorUrl] = await Promise.all([
+  const [description, authorName, authorUrl, title, siteName] = await Promise.all([
     getSiteOverride("description"),
     getSiteOverride("author.name"),
     getSiteOverride("author.githubUrl"),
+    getSiteOverride("title"),
+    getSiteOverride("name"),
   ]);
   return {
     metadataBase: new URL(siteConfig.url),
     title: {
-      default: siteConfig.title,
-      template: `%s · ${siteConfig.name}`,
+      default: title,
+      template: `%s · ${siteName}`,
     },
     description,
     authors: [{ name: authorName, url: authorUrl }],
     creator: authorName,
     openGraph: {
-      title: siteConfig.title,
+      title,
       description,
       url: siteConfig.url,
-      siteName: siteConfig.name,
+      siteName,
       type: "website",
       locale: siteConfig.locale,
     },
     twitter: {
       card: "summary_large_image",
-      title: siteConfig.title,
+      title,
       description,
     },
     alternates: {
