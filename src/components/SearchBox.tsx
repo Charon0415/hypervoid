@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useT } from "@/components/LocaleProvider";
 
 export function SearchBox({ initial = "" }: { initial?: string }) {
@@ -9,6 +9,11 @@ export function SearchBox({ initial = "" }: { initial?: string }) {
   const params = useSearchParams();
   const t = useT();
   const [q, setQ] = useState(initial || params.get("q") || "");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,6 +25,7 @@ export function SearchBox({ initial = "" }: { initial?: string }) {
   return (
     <form onSubmit={onSubmit} className="relative">
       <input
+        ref={inputRef}
         type="search"
         value={q}
         onChange={(e) => setQ(e.target.value)}
