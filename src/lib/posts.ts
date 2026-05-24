@@ -185,7 +185,7 @@ export type SearchHit = Post & { score: number };
 
 export async function searchPosts(
   query: string,
-  opts: ViewerOpts = {},
+  opts: ViewerOpts & { tag?: string; year?: string } = {},
 ): Promise<SearchHit[]> {
   const q = query.trim();
   if (!q) return [];
@@ -210,10 +210,19 @@ export async function searchPosts(
     )
     .limit(50);
 
-  return rows.map((row) => {
+  let hits = rows.map((row) => {
     const post = toPost(row);
     return { ...post, score: 0 };
   });
+
+  if (opts.tag) {
+    hits = hits.filter((h) => h.frontmatter.tags.includes(opts.tag!));
+  }
+  if (opts.year) {
+    hits = hits.filter((h) => h.frontmatter.date.startsWith(opts.year!));
+  }
+
+  return hits;
 }
 
 export type SeriesSummary = {
