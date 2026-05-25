@@ -142,28 +142,29 @@ export async function getAdminNotifications(): Promise<Notification[]> {
     /* db unavailable */
   }
 
-  // Top liked posts (snapshot)
+  // Top reacted posts (snapshot — sums across all emojis per slug)
   try {
     const rows = await getDb()
       .select({
-        slug: schema.postLikes.slug,
-        count: schema.postLikes.count,
+        slug: schema.postReactions.slug,
+        count: sql<number>`SUM(${schema.postReactions.count})::int`,
         title: schema.posts.title,
-        updatedAt: schema.postLikes.updatedAt,
+        updatedAt: sql<Date>`MAX(${schema.postReactions.updatedAt})`,
       })
-      .from(schema.postLikes)
-      .leftJoin(schema.posts, eq(schema.posts.slug, schema.postLikes.slug))
-      .where(gt(schema.postLikes.count, 0))
-      .orderBy(desc(schema.postLikes.count))
+      .from(schema.postReactions)
+      .leftJoin(schema.posts, eq(schema.posts.slug, schema.postReactions.slug))
+      .where(gt(schema.postReactions.count, 0))
+      .groupBy(schema.postReactions.slug, schema.posts.title)
+      .orderBy(desc(sql`SUM(${schema.postReactions.count})`))
       .limit(5);
     for (const r of rows) {
       out.push({
         id: `like-${r.slug}`,
         type: "like",
         title: `${r.title ?? r.slug}`,
-        metric: `♥ ${r.count}`,
+        metric: `🎉 ${r.count}`,
         href: `/posts/${r.slug}`,
-        at: r.updatedAt.toISOString(),
+        at: new Date(r.updatedAt).toISOString(),
       });
     }
   } catch {

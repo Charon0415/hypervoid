@@ -72,6 +72,21 @@ const STATEMENTS = [
   );`,
 
   `CREATE INDEX IF NOT EXISTS resources_category_sort_idx ON resources (category, sort_order);`,
+
+  `CREATE TABLE IF NOT EXISTS post_reactions (
+    slug text NOT NULL,
+    emoji text NOT NULL,
+    count integer NOT NULL DEFAULT 0,
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    PRIMARY KEY (slug, emoji)
+  );`,
+
+  // Migrate existing heart counts from post_likes into post_reactions.
+  // Idempotent: ON CONFLICT DO NOTHING preserves any newer reaction state.
+  `INSERT INTO post_reactions (slug, emoji, count)
+     SELECT slug, 'heart', count FROM post_likes
+     WHERE count > 0
+   ON CONFLICT (slug, emoji) DO NOTHING;`,
 ];
 
 async function main() {

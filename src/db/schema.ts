@@ -4,6 +4,7 @@ import {
   jsonb,
   pgEnum,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uuid,
@@ -65,6 +66,24 @@ export const postLikes = pgTable("post_likes", {
     .notNull()
     .defaultNow(),
 });
+
+/**
+ * Multi-emoji reactions. Replaces postLikes as the source-of-truth for
+ * engagement counts; legacy heart counts are migrated as emoji='heart'
+ * during admin-tables setup.
+ */
+export const postReactions = pgTable(
+  "post_reactions",
+  {
+    slug: text("slug").notNull(),
+    emoji: text("emoji").notNull(),
+    count: integer("count").notNull().default(0),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.slug, t.emoji] })],
+);
 
 export const subscribers = pgTable("subscribers", {
   id: uuid("id").primaryKey().defaultRandom(),

@@ -71,7 +71,7 @@ export async function getSiteStats(opts: { isAdmin?: boolean } = {}): Promise<Si
 
   const [likesRow] = await db
     .select({ sum: sql<number>`COALESCE(SUM(count), 0)::int` })
-    .from(schema.postLikes);
+    .from(schema.postReactions);
 
   const daysOnline = Math.max(
     1,

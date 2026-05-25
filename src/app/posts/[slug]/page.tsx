@@ -17,7 +17,8 @@ import { transformerCodeMeta } from "@/lib/shiki-meta";
 import { TableOfContents } from "@/components/TableOfContents";
 import { Comments } from "@/components/Comments";
 import { ViewCounter } from "@/components/ViewCounter";
-import { LikeButton } from "@/components/LikeButton";
+import { ReactionBar } from "@/components/ReactionBar";
+import { getReactionCounts } from "@/lib/reactions";
 import { AskAI } from "@/components/AskAI";
 import { PostNav } from "@/components/PostNav";
 import { RelatedPosts } from "@/components/RelatedPosts";
@@ -30,7 +31,7 @@ import { ReadTracker } from "@/components/ReadTracker";
 import { ArticleTopAnnouncement } from "@/components/ArticleTopAnnouncement";
 import { siteConfig } from "@/lib/site-config";
 import { getViewer } from "@/lib/viewer";
-import { getLikeCount, getViewCount } from "@/db/posts-stats";
+import { getViewCount } from "@/db/posts-stats";
 import { isAiConfigured } from "@/lib/ai";
 
 type Params = { slug: string };
@@ -79,9 +80,9 @@ export default async function PostPage(props: { params: Promise<Params> }) {
 
   const { frontmatter, content } = post;
   const toc = extractTOC(content);
-  const [viewCount, likeCount, adjacent, related] = await Promise.all([
+  const [viewCount, reactionCounts, adjacent, related] = await Promise.all([
     getViewCount(slug),
-    getLikeCount(slug),
+    getReactionCounts(slug),
     getAdjacentPosts(slug, { isAdmin: viewer.isAdmin }),
     getRelatedPosts(slug, frontmatter.tags ?? [], { isAdmin: viewer.isAdmin }),
   ]);
@@ -245,9 +246,9 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             }}
           />
         </div>
-        {likeCount !== null ? (
+        {reactionCounts !== null ? (
           <div className="mt-12 flex flex-col items-center gap-3">
-            <LikeButton slug={slug} initialCount={likeCount} />
+            <ReactionBar slug={slug} initialCounts={reactionCounts} />
             {siteConfig.donate.enabled ? (
               <Link
                 href="/donate"
