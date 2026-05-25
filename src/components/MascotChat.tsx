@@ -169,9 +169,7 @@ export function MascotChat({ onClose }: { onClose: () => void }) {
         className="flex-1 overflow-y-auto p-3 text-sm leading-relaxed"
       >
         {messages.length === 0 && !partial ? (
-          <p className="text-xs text-muted">
-            康娜在偷瞄你…说点什么吧（聊天对话她记得住，但不能替小林答正经问题）。
-          </p>
+          <p className="text-xs text-muted">康娜在偷瞄你…说点什么吧。</p>
         ) : null}
         <ul className="flex flex-col gap-2.5">
           {messages.map((m, i) => (
@@ -215,12 +213,12 @@ export function MascotChat({ onClose }: { onClose: () => void }) {
           disabled={streaming}
           placeholder="说点什么…"
           maxLength={400}
-          className="flex-1 rounded-md border border-border bg-background px-2 py-1.5 text-xs outline-none transition focus:border-primary disabled:opacity-60"
+          className="min-w-0 flex-1 rounded-md border border-border bg-background px-2 py-1.5 text-xs outline-none transition focus:border-primary disabled:opacity-60"
         />
         <button
           type="submit"
           disabled={streaming || !input.trim()}
-          className="rounded-md bg-primary px-2.5 py-1.5 text-xs font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-40"
+          className="shrink-0 whitespace-nowrap rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-40"
         >
           {streaming ? "…" : "发送"}
         </button>
