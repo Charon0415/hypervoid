@@ -219,7 +219,13 @@ html[data-bg="paper"] body::before {
   opacity: 0.35;
 }
 
-/* Cyberpunk — dark neon with wallpaper */
+/* Cyberpunk — dark neon, but the wallpaper is reserved for the banner strip
+   (see <BannerStrip />). Suppress body::before so the heavy 1MB wallpaper
+   never renders as a full-page background; theme colors below still apply. */
+html[data-bg="cyberpunk"] body::before {
+  display: none;
+}
+
 html[data-bg="cyberpunk"] {
   --background: #0a0a14;
   --foreground: #e0e8ff;
@@ -235,39 +241,6 @@ html[data-bg="cyberpunk"] {
   --card: #0d0d22;
   --border: #181840;
   --primary: #00d4ff;
-}
-
-html[data-bg="cyberpunk"] body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -20;
-  pointer-events: none;
-  background-image:
-    url("/wallpapers/2.png"),
-    linear-gradient(
-      160deg,
-      rgba(0, 200, 255, 0.12) 0%,
-      transparent 40%,
-      transparent 60%,
-      rgba(200, 0, 200, 0.10) 100%
-    );
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 1;
-}
-.dark html[data-bg="cyberpunk"] body::before {
-  background-image:
-    url("/wallpapers/2.png"),
-    linear-gradient(
-      160deg,
-      rgba(0, 180, 255, 0.15) 0%,
-      transparent 40%,
-      transparent 60%,
-      rgba(180, 0, 180, 0.12) 100%
-    );
-  opacity: 0.9;
 }
 
 /* Waves — slow drifting radial gradients */

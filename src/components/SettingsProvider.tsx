@@ -268,15 +268,29 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const setBackground = useCallback((v: BackgroundKey) => {
-    setBackgroundState(v);
-    applyBackground(v);
-    try {
-      localStorage.setItem(BG_KEY, v);
-    } catch {
-      /* ignore */
-    }
-  }, []);
+  const setBackground = useCallback(
+    (v: BackgroundKey) => {
+      setBackgroundState(v);
+      applyBackground(v);
+      try {
+        localStorage.setItem(BG_KEY, v);
+      } catch {
+        /* ignore */
+      }
+      // Cyberpunk wallpaper is heavy and themed for the banner strip — force
+      // banner mode so it doesn't dominate the whole page in fullscreen.
+      if (v === "cyberpunk") {
+        setDisplayModeState("banner");
+        applyDisplayMode("banner");
+        try {
+          localStorage.setItem(DISPLAY_MODE_KEY, "banner");
+        } catch {
+          /* ignore */
+        }
+      }
+    },
+    [],
+  );
 
   const setFont = useCallback((v: FontKey) => {
     setFontState(v);

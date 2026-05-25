@@ -4,10 +4,44 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 const STORAGE_KEY = "hypervoid:mascot";
 const DEFAULT_MODEL = "/live2d/haru01/haru01.model.json";
+const CUBISM2_RUNTIME = "/live2d/live2d.min.js";
 const MASCOT_W = 220;
 const MASCOT_H = 260;
 const CANVAS_W = 200;
 const CANVAS_H = 250;
+
+function loadCubism2Runtime(): Promise<void> {
+  if (typeof window === "undefined") {
+    return Promise.reject(new Error("no window"));
+  }
+  const w = window as unknown as { Live2D?: unknown };
+  if (w.Live2D) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector<HTMLScriptElement>(
+      "script[data-cubism2-runtime]",
+    );
+    if (existing) {
+      if ((window as unknown as { Live2D?: unknown }).Live2D) {
+        resolve();
+      } else {
+        existing.addEventListener("load", () => resolve(), { once: true });
+        existing.addEventListener(
+          "error",
+          () => reject(new Error("script error")),
+          { once: true },
+        );
+      }
+      return;
+    }
+    const s = document.createElement("script");
+    s.src = CUBISM2_RUNTIME;
+    s.async = true;
+    s.dataset.cubism2Runtime = "true";
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error("script error"));
+    document.head.appendChild(s);
+  });
+}
 
 const MESSAGES = {
   tap: [
@@ -150,6 +184,8 @@ export function Live2DMascot() {
         const PIXI = await import("pixi.js");
         const w = window as unknown as { PIXI?: unknown };
         if (!w.PIXI) w.PIXI = PIXI;
+
+        await loadCubism2Runtime();
 
         const { Live2DModel } = await import("pixi-live2d-display/cubism2");
 

@@ -213,27 +213,9 @@ export function Backdrop() {
   }
 
   if (background === "cyberpunk") {
-    return (
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/wallpapers/2.png"
-          alt=""
-          aria-hidden
-          loading="eager"
-          fetchPriority="high"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent"
-        />
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(0,200,255,0.15),transparent_50%),radial-gradient(ellipse_at_bottom_left,rgba(200,0,200,0.1),transparent_50%)]"
-        />
-      </div>
-    );
+    // Cyberpunk is banner-only — see <BannerStrip /> for the wallpaper strip
+    // and SettingsProvider for the auto-switch to displayMode="banner".
+    return null;
   }
 
   if (background === "medieval") {
