@@ -430,6 +430,29 @@ html[data-reading="large"] article .prose {
   pointer-events: none;
 }
 
+/* Hypervoid wordmark — cosmic spark twinkle */
+.hv-wordmark-spark {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: hvTwinkle 3.6s ease-in-out infinite;
+}
+@keyframes hvTwinkle {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.85) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.18) rotate(45deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hv-wordmark-spark {
+    animation: none;
+  }
+}
+
 /* Mobile bottom-sheet entrance for the SiteSettings panel */
 @keyframes sheetUp {
   from {

@@ -7,6 +7,7 @@ import { LocaleSwitch } from "@/components/LocaleSwitch";
 import { SiteSettings } from "@/components/SiteSettings";
 import { MobileNav } from "@/components/MobileNav";
 import { NavGroups } from "@/components/NavGroups";
+import { HypervoidWordmark } from "@/components/HypervoidWordmark";
 import { useT } from "@/components/LocaleProvider";
 
 export function SiteHeader() {
@@ -70,8 +71,8 @@ export function SiteHeader() {
               <circle cx="32" cy="32" r="5" fill="#ffffff" />
             </svg>
           </span>
-          <span className="hidden bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-base font-serif tracking-wide text-transparent sm:inline">
-            Hypervoid
+          <span className="hidden text-primary sm:inline">
+            <HypervoidWordmark className="h-7 w-auto" />
           </span>
         </Link>
 
