@@ -96,6 +96,35 @@ function BgThumb({ bg }: { bg: BackgroundKey }) {
           }}
         />
       );
+    case "cyberpunk":
+      return (
+        <div
+          className={`${base} relative`}
+          style={{
+            backgroundImage:
+              "linear-gradient(135deg, #0a0a14 0%, #1a0a2e 50%, #050510 100%)",
+          }}
+        >
+          <span
+            aria-hidden
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(ellipse at 20% 30%, rgba(0,229,255,0.55), transparent 55%), radial-gradient(ellipse at 80% 75%, rgba(200,0,200,0.45), transparent 55%)",
+            }}
+          />
+          <span
+            aria-hidden
+            className="absolute left-1.5 top-1.5 h-0.5 w-3 rounded-full"
+            style={{ background: "#00e5ff", boxShadow: "0 0 4px #00e5ff" }}
+          />
+          <span
+            aria-hidden
+            className="absolute bottom-1.5 right-2 h-0.5 w-2 rounded-full"
+            style={{ background: "#ff00d4", boxShadow: "0 0 4px #ff00d4" }}
+          />
+        </div>
+      );
   }
 }
 

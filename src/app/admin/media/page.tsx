@@ -84,11 +84,11 @@ export default async function AdminMediaPage() {
                   />
                   <div className="absolute top-2 right-2 flex gap-1.5">
                     {refCount === 0 ? (
-                      <span className="rounded-full bg-amber-500/90 px-2 py-0.5 text-[10px] font-medium text-white">
+                      <span className="dark-locked rounded-full bg-amber-500/90 px-2 py-0.5 text-[10px] font-medium text-white">
                         孤儿
                       </span>
                     ) : (
-                      <span className="rounded-full bg-emerald-500/90 px-2 py-0.5 text-[10px] font-medium text-white">
+                      <span className="dark-locked rounded-full bg-emerald-500/90 px-2 py-0.5 text-[10px] font-medium text-white">
                         被引用 ×{refCount}
                       </span>
                     )}

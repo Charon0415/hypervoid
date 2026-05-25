@@ -55,7 +55,7 @@ export function PendingApplications({ applications }: { applications: App[] }) {
               >
                 <button
                   type="submit"
-                  className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-green-700"
+                  className="dark-locked rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-green-700"
                 >
                   通过
                 </button>
@@ -68,7 +68,7 @@ export function PendingApplications({ applications }: { applications: App[] }) {
               >
                 <button
                   type="submit"
-                  className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-red-700"
+                  className="dark-locked rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-red-700"
                 >
                   拒绝
                 </button>

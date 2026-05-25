@@ -43,7 +43,7 @@ export default async function SignInPage(props: {
       >
         <button
           type="submit"
-          className="flex w-full items-center justify-center gap-2 rounded-md bg-foreground px-4 py-2.5 text-sm font-medium text-background transition hover:opacity-90"
+          className="dark-locked flex w-full items-center justify-center gap-2 rounded-md bg-[#24292f] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#1f2329]"
         >
           <svg
             aria-hidden="true"

@@ -61,7 +61,7 @@ export default async function GuestbookPage() {
             <p className="text-sm text-muted">登录后即可留言。</p>
             <button
               type="submit"
-              className="inline-flex items-center gap-2 rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition hover:opacity-90"
+              className="dark-locked inline-flex items-center gap-2 rounded-md bg-[#24292f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#1f2329]"
             >
               <svg
                 aria-hidden="true"

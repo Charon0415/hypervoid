@@ -99,12 +99,12 @@ export function PhotoManager({
                 type="button"
                 onClick={() => onDelete(p.id)}
                 disabled={pending}
-                className="absolute right-1 top-1 hidden rounded bg-red-500/90 px-2 py-1 text-xs text-white group-hover:block disabled:opacity-50"
+                className="dark-locked absolute right-1 top-1 hidden rounded bg-red-500/90 px-2 py-1 text-xs text-white group-hover:block disabled:opacity-50"
               >
                 删除
               </button>
               {p.caption ? (
-                <p className="absolute bottom-0 left-0 right-0 truncate bg-black/60 px-2 py-1 text-xs text-white">
+                <p className="dark-locked absolute bottom-0 left-0 right-0 truncate bg-black/60 px-2 py-1 text-xs text-white">
                   {p.caption}
                 </p>
               ) : null}

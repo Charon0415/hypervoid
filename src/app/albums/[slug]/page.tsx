@@ -66,7 +66,7 @@ export default async function AlbumDetail(props: {
                 loading="lazy"
               />
               {p.caption ? (
-                <p className="absolute bottom-0 left-0 right-0 translate-y-full truncate bg-black/60 px-2 py-1 text-xs text-white transition group-hover:translate-y-0">
+                <p className="dark-locked absolute bottom-0 left-0 right-0 translate-y-full truncate bg-black/60 px-2 py-1 text-xs text-white transition group-hover:translate-y-0">
                   {p.caption}
                 </p>
               ) : null}
