@@ -171,6 +171,26 @@ export default async function AdminHome() {
             desc="月度发文趋势、热门文章排行、累计指标"
           />
           <NavTile
+            href="/admin/notes"
+            title="公告管理"
+            desc="多位点公告 · 顶部条 / 侧边栏 / 文章顶部，带时间窗"
+          />
+          <NavTile
+            href="/admin/redirects"
+            title="短链管理"
+            desc="/r/<码> 跳转 + 命中计数"
+          />
+          <NavTile
+            href="/admin/media"
+            title="图库管理"
+            desc="查看 Vercel Blob 全部图片、复制URL、孤儿图清理"
+          />
+          <NavTile
+            href="/admin/themes"
+            title="主题定制"
+            desc="调色板 + 实时预览 + JSON 主题包导入导出"
+          />
+          <NavTile
             href="/admin/guestbook"
             title="留言板管理"
             desc="审核访客留言：隐藏、恢复、删除"
@@ -191,9 +211,14 @@ export default async function AdminHome() {
             desc="创建相册、上传照片、添加说明"
           />
           <NavTile
+            href="/admin/audit"
+            title="操作审计"
+            desc="所有后台动作的只读时间线"
+          />
+          <NavTile
             href="/admin/settings"
             title="站点设置"
-            desc="在线修改作者名、头像、简介等全局信息"
+            desc="作者名、头像、简介、首页名句、公告——在线可改"
           />
         </div>
       </section>

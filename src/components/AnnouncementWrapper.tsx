@@ -1,6 +1,7 @@
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { getDb, schema } from "@/db/client";
 import { eq } from "drizzle-orm";
+import { getActiveAnnouncement } from "@/db/announcements";
 
 async function getAnnouncementOverride(key: string): Promise<string> {
   try {
@@ -16,7 +17,20 @@ async function getAnnouncementOverride(key: string): Promise<string> {
 }
 
 export async function AnnouncementWrapper() {
-  // DB overrides take priority; fall back to env vars for quick setup.
+  // 1) New: announcements table at slot=top (highest priority)
+  const top = await getActiveAnnouncement("top").catch(() => null);
+  if (top) {
+    return (
+      <AnnouncementBar
+        id={`slot-${top.id}`}
+        message={top.message}
+        linkHref={top.link ?? undefined}
+        linkText={top.linkText ?? undefined}
+      />
+    );
+  }
+
+  // 2) Legacy: site_overrides keys
   const message =
     (await getAnnouncementOverride("announcementMessage")) ||
     process.env.ANNOUNCEMENT_MESSAGE ||

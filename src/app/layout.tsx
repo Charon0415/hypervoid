@@ -16,6 +16,7 @@ import { siteConfig } from "@/lib/site-config";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { CommandPaletteHost } from "@/components/CommandPaletteHost";
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
+import { CustomThemeStyles } from "@/components/CustomThemeStyles";
 import { getSiteOverride } from "@/lib/site-config-server";
 
 const geistSans = Geist({
@@ -96,6 +97,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://lain.bgm.tv" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://media.steampowered.com" crossOrigin="anonymous" />
+        <CustomThemeStyles />
       </head>
       <body className="min-h-full flex flex-col">
         <a

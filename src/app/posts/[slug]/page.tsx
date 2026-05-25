@@ -26,6 +26,7 @@ import { ShareButtons } from "@/components/ShareButtons";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { SeriesBanner } from "@/components/SeriesBanner";
 import { ReadTracker } from "@/components/ReadTracker";
+import { ArticleTopAnnouncement } from "@/components/ArticleTopAnnouncement";
 import { siteConfig } from "@/lib/site-config";
 import { getViewer } from "@/lib/viewer";
 import { getLikeCount, getViewCount } from "@/db/posts-stats";
@@ -193,6 +194,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
           ) : null}
         </header>
         <SeriesBanner post={post} />
+        <ArticleTopAnnouncement />
         {frontmatter.summary ? (
           <aside className="mt-8 rounded-md border-l-4 border-primary bg-primary/5 p-4">
             <p className="mb-1 text-xs uppercase tracking-wider text-primary">

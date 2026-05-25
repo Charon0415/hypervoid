@@ -1,7 +1,7 @@
 import "server-only";
 
 import { randomUUID } from "node:crypto";
-import { put } from "@vercel/blob";
+import { del, list, put, type ListBlobResultBlob } from "@vercel/blob";
 
 const EXT_FROM_MIME: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -35,4 +35,35 @@ export async function uploadImage(
   });
 
   return result.url;
+}
+
+export type MediaItem = {
+  url: string;
+  pathname: string;
+  size: number;
+  uploadedAt: Date;
+};
+
+export async function listAllBlobs(): Promise<MediaItem[]> {
+  if (!isBlobConfigured()) return [];
+  const items: MediaItem[] = [];
+  let cursor: string | undefined;
+  do {
+    const res = await list({ cursor, limit: 1000 });
+    for (const b of res.blobs as ListBlobResultBlob[]) {
+      items.push({
+        url: b.url,
+        pathname: b.pathname,
+        size: b.size,
+        uploadedAt: new Date(b.uploadedAt),
+      });
+    }
+    cursor = res.cursor;
+  } while (cursor);
+  items.sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime());
+  return items;
+}
+
+export async function deleteBlob(url: string): Promise<void> {
+  await del(url);
 }

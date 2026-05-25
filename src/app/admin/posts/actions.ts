@@ -16,6 +16,7 @@ import {
 import { broadcastPost } from "@/lib/newsletter";
 import { summarizePost, suggestTags, isAiConfigured } from "@/lib/ai";
 import { getAllTags } from "@/lib/posts";
+import { recordAudit } from "@/lib/audit";
 
 async function requireAuth() {
   const session = await auth();
@@ -135,6 +136,12 @@ export async function createPostAction(formData: FormData) {
   }
 
   await createPost({ slug, ...input });
+  await recordAudit({
+    action: "post.create",
+    targetType: "post",
+    targetId: slug,
+    details: { title: input.title, status: input.status, visibility: input.visibility },
+  });
   revalidatePath("/posts");
   revalidatePath("/tags");
   revalidatePath("/");
@@ -151,6 +158,12 @@ export async function updatePostAction(originalSlug: string, formData: FormData)
   const hadSummary = !!existing?.summary;
 
   await updatePost(originalSlug, input);
+  await recordAudit({
+    action: "post.update",
+    targetType: "post",
+    targetId: originalSlug,
+    details: { title: input.title, status: input.status, visibility: input.visibility },
+  });
   revalidatePath("/posts");
   revalidatePath("/tags");
   revalidatePath("/");
@@ -164,6 +177,11 @@ export async function updatePostAction(originalSlug: string, formData: FormData)
 export async function deletePostAction(slug: string) {
   await requireAuth();
   await deletePost(slug);
+  await recordAudit({
+    action: "post.delete",
+    targetType: "post",
+    targetId: slug,
+  });
   revalidatePath("/posts");
   revalidatePath("/tags");
   revalidatePath("/");
