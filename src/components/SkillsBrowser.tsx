@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import type { Skill } from "@/lib/skills";
 
@@ -138,13 +139,14 @@ function SkillCard({ skill }: { skill: Skill }) {
       style={{ borderLeft: `4px solid ${accent}` }}
     >
       <div className="flex items-start gap-3">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={iconUrl(skill.icon)}
           alt=""
-          loading="lazy"
           width={32}
           height={32}
+          sizes="32px"
+          loading="lazy"
+          unoptimized
           className="h-8 w-8 shrink-0"
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).style.opacity = "0.25";

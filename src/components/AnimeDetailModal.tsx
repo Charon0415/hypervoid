@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import type { BangumiAnime } from "@/lib/bangumi-types";
 
@@ -110,10 +111,12 @@ export function AnimeDetailModal({
           <div className="mx-auto w-[140px] shrink-0 sm:mx-0 sm:w-[180px]">
             <div className="aspect-[2/3] overflow-hidden rounded-xl border border-border bg-background">
               {item.cover ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <Image
                   src={item.cover}
                   alt={title}
+                  width={360}
+                  height={540}
+                  sizes="(min-width: 640px) 180px, 140px"
                   className="h-full w-full object-cover"
                 />
               ) : null}

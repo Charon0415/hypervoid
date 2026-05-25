@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRef, useState, useTransition } from "react";
 import {
   addPhotoAction,
@@ -89,10 +90,13 @@ export function PhotoManager({
               key={p.id}
               className="group relative overflow-hidden rounded-md border border-border"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={p.url}
                 alt={p.caption ?? ""}
+                width={400}
+                height={400}
+                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+                loading="lazy"
                 className="aspect-square w-full object-cover"
               />
               <button

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   THEME_KEYS,
@@ -499,10 +500,13 @@ function WallpaperField({
       </span>
       {value ? (
         <div className="relative aspect-video overflow-hidden rounded-lg border border-border bg-background">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={value}
             alt=""
+            width={640}
+            height={360}
+            sizes="320px"
+            unoptimized
             className="h-full w-full object-cover"
           />
         </div>
@@ -627,11 +631,13 @@ function PreviewSurface({
       }}
     >
       {wallpaper ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={wallpaper}
           alt=""
           aria-hidden
+          fill
+          sizes="(min-width: 1024px) 50vw, 100vw"
+          unoptimized
           className="pointer-events-none absolute inset-0 h-full w-full object-cover"
           style={{
             opacity: opacity / 100,

@@ -1,23 +1,10 @@
 import type { NextConfig } from "next";
 import path from "node:path";
 
-const csp = [
-  "default-src 'self'",
-  // 'unsafe-inline' is still required by next-themes' inline hydration script
-  // and by Giscus / Umami inline init. 'unsafe-eval' was dropped in v1.6
-  // after audit — Next 16 + React 19 don't need runtime eval, and we
-  // verified Mermaid + Live2D Cubism 2 runtime don't either.
-  "script-src 'self' 'unsafe-inline' https://giscus.app https://cloud.umami.is https://umami.hypervoid.top",
-  "style-src 'self' 'unsafe-inline' https://giscus.app",
-  "img-src 'self' data: blob: https:",
-  "font-src 'self' data:",
-  "frame-src https://giscus.app https://www.youtube.com https://player.bilibili.com",
-  "connect-src 'self' https://cloud.umami.is https://umami.hypervoid.top https://giscus.app https://api.bgm.tv https://api.anthropic.com",
-  "media-src 'self'",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-].join("; ");
+// CSP is now set per-request by src/middleware.ts so admin/api routes
+// get a stricter nonce-based policy without 'unsafe-inline', while
+// ISR-cached routes keep 'unsafe-inline' (cached HTML can't carry a
+// matching per-request nonce). Other security headers stay here.
 
 const nextConfig: NextConfig = {
   turbopack: {
@@ -47,7 +34,6 @@ const nextConfig: NextConfig = {
         { key: "X-XSS-Protection", value: "0" },
         { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
         { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
-        { key: "Content-Security-Policy", value: csp },
         { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
       ],
     },

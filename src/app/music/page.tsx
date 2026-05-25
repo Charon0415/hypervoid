@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ALBUMS_ON_REPEAT,
@@ -69,11 +70,14 @@ export default function MusicPage() {
                 <div className="group flex h-full flex-col gap-3 overflow-hidden rounded-2xl border border-border bg-card p-4 transition hover:border-primary/40 hover:shadow-md">
                   <div className="flex gap-4">
                     {album.cover ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={album.cover}
                         alt={album.title}
+                        width={160}
+                        height={160}
+                        sizes="80px"
                         loading="lazy"
+                        unoptimized
                         className="h-20 w-20 shrink-0 rounded-lg object-cover shadow-sm"
                       />
                     ) : (

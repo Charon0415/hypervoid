@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 import { siteConfig } from "@/lib/site-config";
@@ -18,12 +19,14 @@ function AcgCarouselInline({ wallpapers }: { wallpapers: string[] }) {
   return (
     <>
       {wallpapers.map((src, i) => (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           key={src}
           src={src}
           alt=""
           aria-hidden
+          fill
+          sizes="100vw"
+          priority={i === 0}
           loading={i === 0 ? "eager" : "lazy"}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1500ms] ease-in-out ${
             i === index ? "opacity-100" : "opacity-0"
@@ -75,13 +78,13 @@ export function BannerStrip() {
   if (background === "cyberpunk") {
     return (
       <div className={stripClass}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src="/wallpapers/cyberpunk.webp"
           alt=""
           aria-hidden
-          loading="eager"
-          fetchPriority="high"
+          fill
+          sizes="100vw"
+          priority
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div
@@ -99,13 +102,13 @@ export function BannerStrip() {
   if (background === "medieval") {
     return (
       <div className={stripClass}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src="/wallpapers/medieval.webp"
           alt=""
           aria-hidden
-          loading="eager"
-          fetchPriority="high"
+          fill
+          sizes="100vw"
+          priority
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div

@@ -315,7 +315,6 @@ export const aiCustomModels = pgTable("ai_custom_models", {
     .$type<Record<string, string>>()
     .notNull()
     .default({}),
-  enabled: boolean("enabled").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

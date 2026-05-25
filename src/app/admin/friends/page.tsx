@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { listFriends, listPendingApplications } from "@/db/friends";
@@ -48,10 +49,14 @@ export default async function AdminFriendsList() {
               className="group flex gap-3 rounded-xl border border-border bg-card p-4 transition hover:border-primary"
             >
               {f.avatar ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <Image
                   src={f.avatar}
                   alt=""
+                  width={96}
+                  height={96}
+                  sizes="48px"
+                  loading="lazy"
+                  unoptimized
                   className="h-12 w-12 shrink-0 rounded-full object-cover"
                 />
               ) : (

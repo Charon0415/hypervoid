@@ -2,6 +2,7 @@ import "server-only";
 
 import { and, eq, gte, sql } from "drizzle-orm";
 import { getDb, schema } from "@/db/client";
+import { recordAudit } from "@/lib/audit";
 
 /**
  * Daily-quota guard + usage tracker for AI calls.
@@ -141,14 +142,19 @@ export async function ensureUnderQuota(provider: string): Promise<void> {
 /**
  * Atomically increments today's counters for the provider. Best-effort —
  * never throws; usage tracking failure must not break a successful AI call.
+ *
+ * Also appends an `ai.call` row to the audit log so /admin/audit can
+ * show per-call traces (provider, model id/label, tokens). Audit insert
+ * is also swallowed on failure.
  */
 export async function recordUsage(
   provider: string,
   tokens: { prompt: number; completion: number },
+  meta?: { modelId?: string; modelLabel?: string },
 ): Promise<void> {
+  const total = (tokens.prompt || 0) + (tokens.completion || 0);
   try {
     const date = todayKey();
-    const total = (tokens.prompt || 0) + (tokens.completion || 0);
     const now = new Date();
     await getDb()
       .insert(schema.aiUsage)
@@ -176,6 +182,23 @@ export async function recordUsage(
   } catch {
     /* swallow — usage tracking is best-effort */
   }
+
+  // Append an audit entry. `actor` is set so recordAudit doesn't try to
+  // resolve the current session (most AI calls come from anonymous
+  // visitors via Ask AI / Kanna chat).
+  await recordAudit({
+    action: "ai.call",
+    targetType: "ai",
+    targetId: meta?.modelId ?? provider,
+    actor: "ai",
+    details: {
+      provider,
+      modelLabel: meta?.modelLabel,
+      promptTokens: tokens.prompt || 0,
+      completionTokens: tokens.completion || 0,
+      totalTokens: total,
+    },
+  });
 }
 
 /** Convenience: char-length-based fallback when the provider doesn't return usage. */

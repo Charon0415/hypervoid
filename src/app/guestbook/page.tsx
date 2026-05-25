@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { auth, ADMIN_LOGIN } from "@/auth";
 import { listVisibleMessages } from "@/db/guestbook";
 import { GuestbookForm } from "@/components/GuestbookForm";
@@ -99,10 +100,13 @@ export default async function GuestbookPage() {
               >
                 <div className="flex items-start gap-3">
                   {m.avatarUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       src={m.avatarUrl}
                       alt=""
+                      width={80}
+                      height={80}
+                      sizes="40px"
+                      loading="lazy"
                       className="h-10 w-10 shrink-0 rounded-full object-cover"
                     />
                   ) : (

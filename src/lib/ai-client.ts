@@ -109,10 +109,14 @@ export async function chat(args: {
     for (const block of res.content) {
       if (block.type === "text") text = block.text.trim();
     }
-    await recordUsage("anthropic", {
-      prompt: res.usage?.input_tokens ?? 0,
-      completion: res.usage?.output_tokens ?? 0,
-    });
+    await recordUsage(
+      "anthropic",
+      {
+        prompt: res.usage?.input_tokens ?? 0,
+        completion: res.usage?.output_tokens ?? 0,
+      },
+      { modelId: model.id, modelLabel: model.label },
+    );
     if (!text) throw new Error("Anthropic 没有返回文本");
     return text;
   }
@@ -126,6 +130,8 @@ export async function chat(args: {
       system: args.system,
       messages: args.messages,
       maxTokens: args.maxTokens,
+      modelId: model.id,
+      modelLabel: model.label,
       upstreamId: model.upstreamId,
     });
   }
@@ -163,12 +169,16 @@ export async function chat(args: {
     };
   };
   const text = data.choices?.[0]?.message?.content;
-  await recordUsage(endpoint.providerKey, {
-    prompt:
-      data.usage?.prompt_tokens ??
-      estimateTokens(args.system + args.messages.map((m) => m.content).join("\n")),
-    completion: data.usage?.completion_tokens ?? estimateTokens(text || ""),
-  });
+  await recordUsage(
+    endpoint.providerKey,
+    {
+      prompt:
+        data.usage?.prompt_tokens ??
+        estimateTokens(args.system + args.messages.map((m) => m.content).join("\n")),
+      completion: data.usage?.completion_tokens ?? estimateTokens(text || ""),
+    },
+    { modelId: model.id, modelLabel: model.label },
+  );
   if (!text) throw new Error(`${endpoint.providerKey} 没有返回文本`);
   return text.trim();
 }
@@ -178,6 +188,8 @@ async function chatAnthropicCompat(args: {
   system: string;
   messages: ChatMessage[];
   maxTokens: number;
+  modelId: string;
+  modelLabel: string;
   upstreamId: string;
 }): Promise<string> {
   const res = await fetch(`${args.endpoint.baseUrl}/v1/messages`, {
@@ -211,12 +223,16 @@ async function chatAnthropicCompat(args: {
       text = block.text.trim();
     }
   }
-  await recordUsage(args.endpoint.providerKey, {
-    prompt:
-      data.usage?.input_tokens ??
-      estimateTokens(args.system + args.messages.map((m) => m.content).join("\n")),
-    completion: data.usage?.output_tokens ?? estimateTokens(text),
-  });
+  await recordUsage(
+    args.endpoint.providerKey,
+    {
+      prompt:
+        data.usage?.input_tokens ??
+        estimateTokens(args.system + args.messages.map((m) => m.content).join("\n")),
+      completion: data.usage?.output_tokens ?? estimateTokens(text),
+    },
+    { modelId: args.modelId, modelLabel: args.modelLabel },
+  );
   if (!text) throw new Error(`${args.endpoint.providerKey} 没有返回文本`);
   return text;
 }
@@ -281,10 +297,14 @@ export async function* chatStream(args: {
             ?.output_tokens ?? outputTokens;
       }
     }
-    await recordUsage("anthropic", {
-      prompt: inputTokens,
-      completion: outputTokens || estimateTokens(collected),
-    });
+    await recordUsage(
+      "anthropic",
+      {
+        prompt: inputTokens,
+        completion: outputTokens || estimateTokens(collected),
+      },
+      { modelId: model.id, modelLabel: model.label },
+    );
     return;
   }
 
@@ -297,6 +317,8 @@ export async function* chatStream(args: {
       system: args.system,
       messages: args.messages,
       maxTokens: args.maxTokens,
+      modelId: model.id,
+      modelLabel: model.label,
       upstreamId: model.upstreamId,
     });
     return;
@@ -344,14 +366,18 @@ export async function* chatStream(args: {
       if (!trimmed.startsWith("data:")) continue;
       const payload = trimmed.slice(5).trim();
       if (payload === "[DONE]") {
-        await recordUsage(endpoint.providerKey, {
-          prompt:
-            prompt ||
-            estimateTokens(
-              args.system + args.messages.map((m) => m.content).join("\n"),
-            ),
-          completion: completion || estimateTokens(collected),
-        });
+        await recordUsage(
+          endpoint.providerKey,
+          {
+            prompt:
+              prompt ||
+              estimateTokens(
+                args.system + args.messages.map((m) => m.content).join("\n"),
+              ),
+            completion: completion || estimateTokens(collected),
+          },
+          { modelId: model.id, modelLabel: model.label },
+        );
         return;
       }
       try {
@@ -377,14 +403,18 @@ export async function* chatStream(args: {
     }
   }
   // Stream ended without [DONE] — record what we have.
-  await recordUsage(endpoint.providerKey, {
-    prompt:
-      prompt ||
-      estimateTokens(
-        args.system + args.messages.map((m) => m.content).join("\n"),
-      ),
-    completion: completion || estimateTokens(collected),
-  });
+  await recordUsage(
+    endpoint.providerKey,
+    {
+      prompt:
+        prompt ||
+        estimateTokens(
+          args.system + args.messages.map((m) => m.content).join("\n"),
+        ),
+      completion: completion || estimateTokens(collected),
+    },
+    { modelId: model.id, modelLabel: model.label },
+  );
 }
 
 async function* streamAnthropicCompat(args: {
@@ -392,6 +422,8 @@ async function* streamAnthropicCompat(args: {
   system: string;
   messages: ChatMessage[];
   maxTokens: number;
+  modelId: string;
+  modelLabel: string;
   upstreamId: string;
 }): AsyncGenerator<string, void, unknown> {
   const res = await fetch(`${args.endpoint.baseUrl}/v1/messages`, {
@@ -457,8 +489,12 @@ async function* streamAnthropicCompat(args: {
       }
     }
   }
-  await recordUsage(args.endpoint.providerKey, {
-    prompt: inputTokens,
-    completion: outputTokens || estimateTokens(collected),
-  });
+  await recordUsage(
+    args.endpoint.providerKey,
+    {
+      prompt: inputTokens,
+      completion: outputTokens || estimateTokens(collected),
+    },
+    { modelId: args.modelId, modelLabel: args.modelLabel },
+  );
 }

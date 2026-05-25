@@ -31,30 +31,21 @@ export function Avatar({
     );
   }
 
-  // next/image auto-serves WebP/AVIF and emits a responsive srcset.
-  // External hosts (avatars hosted on github/etc) need to be allow-listed
-  // in next.config.ts, so we fall back to plain <img> for those.
-  if (/^https?:\/\//i.test(src)) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return (
-      <img
-        src={src}
-        alt={alt}
-        width={size}
-        height={size}
-        loading="lazy"
-        onError={() => setErrored(true)}
-        className={`${className ?? ""} object-cover`}
-      />
-    );
-  }
-
+  // next/image auto-serves WebP/AVIF and emits a responsive srcset for
+  // hosts allow-listed in next.config.ts. For arbitrary external hosts
+  // (e.g. friend-link avatars on random domains) we drop optimization
+  // and let the browser fetch the original — still better than a raw
+  // <img> because we keep the error fallback, lazy loading, and sizes.
+  const isArbitraryHost = /^https?:\/\//i.test(src);
   return (
     <Image
       src={src}
       alt={alt}
       width={size}
       height={size}
+      sizes={`${size}px`}
+      loading="lazy"
+      unoptimized={isArbitraryHost}
       onError={() => setErrored(true)}
       className={`${className ?? ""} object-cover`}
     />

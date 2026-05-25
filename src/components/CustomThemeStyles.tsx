@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getCustomTheme, renderThemeCss } from "@/lib/custom-theme";
 
 /**
@@ -41,23 +42,23 @@ export async function CustomWallpaper() {
       className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
     >
       {desktop ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={desktop}
           alt=""
-          loading="eager"
-          fetchPriority="high"
+          fill
+          sizes="100vw"
+          priority
           className="hidden h-full w-full object-cover md:block"
           style={style}
         />
       ) : null}
       {mobile ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={mobile}
           alt=""
-          loading="eager"
-          fetchPriority="high"
+          fill
+          sizes="100vw"
+          priority
           className="block h-full w-full object-cover md:hidden"
           style={style}
         />

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { AdjacentPost } from "@/lib/posts";
 
@@ -44,10 +45,12 @@ function NavCard({
       }`}
     >
       {post.cover ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={post.cover}
           alt=""
+          width={160}
+          height={160}
+          sizes="(min-width: 640px) 80px, 64px"
           loading="lazy"
           className="aspect-square h-16 w-16 shrink-0 rounded-xl object-cover sm:h-20 sm:w-20"
         />

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Webmention } from "@/lib/webmentions";
 
 function hostnameOf(url: string): string {
@@ -24,11 +25,14 @@ export function Webmentions({ items }: { items: Webmention[] }) {
             className="flex gap-3 rounded-xl border border-border bg-card p-3"
           >
             {w.authorPhoto ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={w.authorPhoto}
                 alt=""
+                width={40}
+                height={40}
+                sizes="40px"
                 loading="lazy"
+                unoptimized
                 className="h-10 w-10 shrink-0 rounded-full border border-border object-cover"
               />
             ) : (

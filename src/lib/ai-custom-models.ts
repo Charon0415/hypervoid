@@ -27,7 +27,6 @@ export type CustomModelRow = {
   upstreamId: string;
   apiKey: string;
   extraHeaders: Record<string, string>;
-  enabled: boolean;
 };
 
 export type CustomModelInput = {
@@ -39,7 +38,6 @@ export type CustomModelInput = {
   upstreamId: string;
   apiKey: string;
   extraHeaders?: Record<string, string>;
-  enabled?: boolean;
 };
 
 export function customIdNamespace(rawId: string): string {
@@ -67,7 +65,6 @@ export async function listCustomModels(): Promise<CustomModelRow[]> {
       upstreamId: r.upstreamId,
       apiKey: r.apiKey,
       extraHeaders: (r.extraHeaders || {}) as Record<string, string>,
-      enabled: r.enabled,
     }));
   } catch {
     return [];
@@ -96,7 +93,6 @@ export async function getCustomModel(
       upstreamId: r.upstreamId,
       apiKey: r.apiKey,
       extraHeaders: (r.extraHeaders || {}) as Record<string, string>,
-      enabled: r.enabled,
     };
   } catch {
     return null;
@@ -124,7 +120,6 @@ export async function upsertCustomModel(input: CustomModelInput): Promise<void> 
     upstreamId: input.upstreamId.trim(),
     apiKey: input.apiKey.trim(),
     extraHeaders: input.extraHeaders || {},
-    enabled: input.enabled ?? true,
     updatedAt: now,
   };
 

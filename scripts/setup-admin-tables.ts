@@ -129,10 +129,14 @@ const STATEMENTS = [
     upstream_id text NOT NULL,
     api_key text NOT NULL,
     extra_headers jsonb NOT NULL DEFAULT '{}'::jsonb,
-    enabled boolean NOT NULL DEFAULT true,
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     updated_at timestamp with time zone NOT NULL DEFAULT now()
   );`,
+
+  // v1.7 → v1.8: the per-row "enabled" toggle was confusing alongside
+  // the model-picker radio (both were called "启用"), so the UI dropped
+  // it. The column gets removed too to keep schema and code aligned.
+  `ALTER TABLE ai_custom_models DROP COLUMN IF EXISTS enabled;`,
 
   // Hot-path indexes — every list page filters posts by (status, visibility,
   // publish_at) and orders by (pinned desc, publish_at desc). Without these,

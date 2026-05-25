@@ -65,9 +65,7 @@ export default async function AdminAiPage() {
   // Quota config covers built-in providers + each enabled custom model.
   const quotaProviders: { key: string; label: string }[] = [
     ...BUILTIN_PROVIDERS.map((p) => ({ key: p.id, label: p.label })),
-    ...customRows
-      .filter((c) => c.enabled)
-      .map((c) => ({ key: c.id, label: c.label })),
+    ...customRows.map((c) => ({ key: c.id, label: c.label })),
   ];
   const quotas: Record<string, number> = {};
   for (const p of quotaProviders) {

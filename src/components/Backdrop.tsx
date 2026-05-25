@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 import { useSettings } from "@/components/SettingsProvider";
@@ -159,12 +160,14 @@ function AcgCarousel({ wallpapers }: { wallpapers: string[] }) {
   return (
     <>
       {wallpapers.map((src, i) => (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           key={src}
           src={src}
           alt=""
           aria-hidden
+          fill
+          sizes="100vw"
+          priority={i === 0}
           loading={i === 0 ? "eager" : "lazy"}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1500ms] ease-in-out ${
             i === index ? "opacity-100" : "opacity-0"
@@ -221,13 +224,13 @@ export function Backdrop() {
   if (background === "medieval") {
     return (
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src="/wallpapers/medieval.webp"
           alt=""
           aria-hidden
-          loading="eager"
-          fetchPriority="high"
+          fill
+          sizes="100vw"
+          priority
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div

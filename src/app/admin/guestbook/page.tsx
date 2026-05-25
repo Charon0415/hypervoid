@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { auth } from "@/auth";
@@ -53,10 +54,13 @@ export default async function AdminGuestbookPage() {
             >
               <div className="flex items-start gap-3">
                 {m.avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={m.avatarUrl}
                     alt={`${m.githubLogin}的头像`}
+                    width={80}
+                    height={80}
+                    sizes="40px"
+                    loading="lazy"
                     className="h-10 w-10 shrink-0 rounded-full"
                   />
                 ) : (

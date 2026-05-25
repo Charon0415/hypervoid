@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { existsSync } from "node:fs";
@@ -71,10 +72,12 @@ export default function DonatePage() {
             >
               <p className="text-sm font-medium text-muted">{q.name}</p>
               <div className="overflow-hidden rounded-xl border border-border bg-background">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={q.image}
                   alt={`${q.name} 收款码`}
+                  width={448}
+                  height={448}
+                  sizes="224px"
                   className="h-56 w-56 object-contain"
                 />
               </div>

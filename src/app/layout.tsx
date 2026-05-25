@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "remark-github-blockquote-alert/alert.css";
@@ -79,11 +80,14 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Set by src/middleware.ts. Undefined when middleware doesn't run (e.g.
+  // RSC dev compile passes); next-themes silently skips the nonce attr.
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
     <html
       lang="zh-CN"
@@ -108,7 +112,7 @@ export default function RootLayout({
         <SettingsProvider>
           <Backdrop />
           <CustomWallpaper />
-          <Providers>
+          <Providers nonce={nonce}>
             <AnnouncementWrapper />
             <SiteHeader />
             <BannerStrip />

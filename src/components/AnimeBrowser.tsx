@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import type { BangumiItem, BangumiStatus } from "@/lib/bangumi-types";
 import { STATUS_LABEL } from "@/lib/bangumi-types";
@@ -223,10 +224,12 @@ function AnimeCard({
     >
       <div className="relative aspect-[2/3] w-full overflow-hidden bg-background">
         {item.cover ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={item.cover}
             alt=""
+            width={300}
+            height={450}
+            sizes="(min-width: 1024px) 200px, (min-width: 640px) 25vw, 50vw"
             loading="lazy"
             className="h-full w-full object-cover transition group-hover:scale-[1.03]"
           />

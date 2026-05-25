@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { listAlbums } from "@/db/albums";
@@ -42,10 +43,12 @@ export default async function AdminAlbumsList() {
               className="group overflow-hidden rounded-xl border border-border bg-card transition hover:border-primary"
             >
               {a.coverUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <Image
                   src={a.coverUrl}
                   alt=""
+                  width={480}
+                  height={270}
+                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw"
                   className="aspect-video w-full object-cover"
                 />
               ) : (

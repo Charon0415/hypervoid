@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { listFriends } from "@/db/friends";
 import { FriendApplyForm } from "@/components/FriendApplyForm";
 
@@ -30,10 +31,14 @@ export default async function FriendsPage() {
               className="group flex gap-3 rounded-xl border border-border bg-card p-5 transition hover:border-primary hover:shadow-md"
             >
               {f.avatar ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <Image
                   src={f.avatar}
                   alt=""
+                  width={112}
+                  height={112}
+                  sizes="56px"
+                  loading="lazy"
+                  unoptimized
                   className="h-14 w-14 shrink-0 rounded-full object-cover"
                 />
               ) : (

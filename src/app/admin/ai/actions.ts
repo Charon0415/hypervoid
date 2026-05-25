@@ -89,7 +89,6 @@ export async function saveCustomModelAction(form: FormData): Promise<void> {
     upstreamId,
     apiKey,
     extraHeaders,
-    enabled: true,
   });
   await recordAudit({
     action: "ai.custom.save",

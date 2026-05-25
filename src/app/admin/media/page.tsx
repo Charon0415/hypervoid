@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { auth } from "@/auth";
@@ -75,10 +76,12 @@ export default async function AdminMediaPage() {
                 className="overflow-hidden rounded-xl border border-border bg-card"
               >
                 <div className="relative aspect-video overflow-hidden bg-background">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={item.url}
                     alt={item.pathname}
+                    width={480}
+                    height={270}
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw"
                     loading="lazy"
                     className="h-full w-full object-cover"
                   />
