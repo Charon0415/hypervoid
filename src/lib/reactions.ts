@@ -111,3 +111,49 @@ export async function getTotalReactionCount(): Promise<number> {
     return 0;
   }
 }
+
+/**
+ * Admin-only: every post's reaction breakdown joined with title.
+ * Used by /admin/reactions for the per-post analytics dashboard.
+ */
+export type PostReactionRow = {
+  slug: string;
+  title: string;
+  counts: ReactionCounts;
+  total: number;
+};
+
+export async function listAllPostReactions(): Promise<PostReactionRow[]> {
+  if (!isConfigured()) return [];
+  const rows = await getDb()
+    .select({
+      slug: schema.postReactions.slug,
+      emoji: schema.postReactions.emoji,
+      count: schema.postReactions.count,
+      title: schema.posts.title,
+    })
+    .from(schema.postReactions)
+    .leftJoin(
+      schema.posts,
+      sql`${schema.posts.slug} = ${schema.postReactions.slug}`,
+    );
+
+  const map = new Map<string, PostReactionRow>();
+  for (const r of rows) {
+    let entry = map.get(r.slug);
+    if (!entry) {
+      entry = {
+        slug: r.slug,
+        title: r.title ?? r.slug,
+        counts: emptyReactionCounts(),
+        total: 0,
+      };
+      map.set(r.slug, entry);
+    }
+    if (isValidEmoji(r.emoji)) {
+      entry.counts[r.emoji] = r.count;
+      entry.total += r.count;
+    }
+  }
+  return [...map.values()].sort((a, b) => b.total - a.total);
+}

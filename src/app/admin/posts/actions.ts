@@ -5,6 +5,10 @@ import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { auth } from "@/auth";
 import {
+  bulkDelete,
+  bulkSetPinned,
+  bulkSetStatus,
+  bulkSetVisibility,
   clearSummary,
   createPost,
   deletePost,
@@ -190,6 +194,58 @@ export async function deletePostAction(slug: string) {
   revalidatePath(`/posts/${slug}`);
   updateTag("posts");
   redirect("/admin/posts");
+}
+
+export type BulkOp =
+  | "publish"
+  | "draft"
+  | "set-public"
+  | "set-private"
+  | "pin"
+  | "unpin"
+  | "delete";
+
+export async function bulkAction(
+  slugs: string[],
+  op: BulkOp,
+): Promise<{ affected: number }> {
+  await requireAuth();
+  if (slugs.length === 0) return { affected: 0 };
+  let affected = 0;
+  switch (op) {
+    case "publish":
+      affected = await bulkSetStatus(slugs, "published", new Date());
+      break;
+    case "draft":
+      affected = await bulkSetStatus(slugs, "draft", null);
+      break;
+    case "set-public":
+      affected = await bulkSetVisibility(slugs, "public");
+      break;
+    case "set-private":
+      affected = await bulkSetVisibility(slugs, "private");
+      break;
+    case "pin":
+      affected = await bulkSetPinned(slugs, true);
+      break;
+    case "unpin":
+      affected = await bulkSetPinned(slugs, false);
+      break;
+    case "delete":
+      affected = await bulkDelete(slugs);
+      break;
+  }
+  await recordAudit({
+    action: `post.bulk.${op}`,
+    targetType: "post",
+    details: { slugs, affected },
+  });
+  revalidatePath("/posts");
+  revalidatePath("/tags");
+  revalidatePath("/");
+  revalidatePath("/admin/posts");
+  updateTag("posts");
+  return { affected };
 }
 
 export async function broadcastPostAction(

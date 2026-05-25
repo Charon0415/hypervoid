@@ -1,6 +1,6 @@
 import "server-only";
 
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, inArray } from "drizzle-orm";
 import { getDb, schema } from "@/db/client";
 
 export type AdminPost = typeof schema.posts.$inferSelect;
@@ -87,6 +87,56 @@ export async function updatePost(
 
 export async function deletePost(slug: string): Promise<void> {
   await getDb().delete(schema.posts).where(eq(schema.posts.slug, slug));
+}
+
+/** Bulk operations — used by /admin/posts batch toolbar. */
+export async function bulkSetStatus(
+  slugs: string[],
+  status: AdminPostInput["status"],
+  publishAt: Date | null,
+): Promise<number> {
+  if (slugs.length === 0) return 0;
+  const rows = await getDb()
+    .update(schema.posts)
+    .set({ status, publishAt, updatedAt: new Date() })
+    .where(inArray(schema.posts.slug, slugs))
+    .returning({ slug: schema.posts.slug });
+  return rows.length;
+}
+
+export async function bulkSetVisibility(
+  slugs: string[],
+  visibility: AdminPostInput["visibility"],
+): Promise<number> {
+  if (slugs.length === 0) return 0;
+  const rows = await getDb()
+    .update(schema.posts)
+    .set({ visibility, updatedAt: new Date() })
+    .where(inArray(schema.posts.slug, slugs))
+    .returning({ slug: schema.posts.slug });
+  return rows.length;
+}
+
+export async function bulkSetPinned(
+  slugs: string[],
+  pinned: boolean,
+): Promise<number> {
+  if (slugs.length === 0) return 0;
+  const rows = await getDb()
+    .update(schema.posts)
+    .set({ pinned, updatedAt: new Date() })
+    .where(inArray(schema.posts.slug, slugs))
+    .returning({ slug: schema.posts.slug });
+  return rows.length;
+}
+
+export async function bulkDelete(slugs: string[]): Promise<number> {
+  if (slugs.length === 0) return 0;
+  const rows = await getDb()
+    .delete(schema.posts)
+    .where(inArray(schema.posts.slug, slugs))
+    .returning({ slug: schema.posts.slug });
+  return rows.length;
 }
 
 export async function setSummary(slug: string, summary: string): Promise<void> {

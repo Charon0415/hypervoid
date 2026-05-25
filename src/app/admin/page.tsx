@@ -171,6 +171,11 @@ export default async function AdminHome() {
             desc="月度发文趋势、热门文章排行、累计指标"
           />
           <NavTile
+            href="/admin/reactions"
+            title="反应数据"
+            desc="每篇文章 5 个 emoji 的反应数；找出最受欢迎的内容"
+          />
+          <NavTile
             href="/admin/notes"
             title="公告管理"
             desc="多位点公告 · 顶部条 / 侧边栏 / 文章顶部，带时间窗"
