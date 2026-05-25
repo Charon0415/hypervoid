@@ -4,9 +4,11 @@ import { auth } from "@/auth";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import {
   AI_MODELS,
-  getAiModel,
-  isAiKeyConfigured,
-  maskedKeyHint,
+  PROVIDERS,
+  getActiveAiModel,
+  isProviderConfigured,
+  providerKeyHint,
+  type AiProvider,
 } from "@/lib/ai-config";
 import { updateModelAction } from "./actions";
 
@@ -17,13 +19,27 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
+const ENV_NAME: Record<AiProvider, string> = {
+  anthropic: "ANTHROPIC_API_KEY",
+  deepseek: "DEEPSEEK_API_KEY",
+};
+
+const PROVIDER_DOCS: Record<AiProvider, { url: string; hint: string }> = {
+  anthropic: {
+    url: "https://console.anthropic.com/",
+    hint: "在 console.anthropic.com 创建 Key,需要绑卡。",
+  },
+  deepseek: {
+    url: "https://platform.deepseek.com/",
+    hint: "在 platform.deepseek.com 创建 Key,支付宝/微信充值。",
+  },
+};
+
 export default async function AdminAiPage() {
   const session = await auth();
   if (!session?.user) redirect("/admin/sign-in");
 
-  const current = await getAiModel();
-  const keyOk = isAiKeyConfigured();
-  const masked = maskedKeyHint();
+  const current = await getActiveAiModel();
 
   return (
     <div className="flex flex-col gap-6">
@@ -33,64 +49,114 @@ export default async function AdminAiPage() {
       </header>
 
       <p className="text-sm text-muted">
-        所有 AI 功能（文章摘要、标签建议、AskAI、康娜聊天）共用这里选定的模型与 API Key。
+        所有 AI 功能（文章摘要、标签建议、AskAI、康娜聊天、写作助手）共用这里选的模型。
+        当前生效:{" "}
+        <span className="font-mono text-foreground">{current.label}</span>{" "}
+        <span className="text-[10px] text-muted">
+          ({current.upstreamId})
+        </span>
       </p>
 
-      <section className="rounded-2xl border border-border bg-card p-5">
-        <header className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold tracking-tight">API Key</h2>
-          <span
-            className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-              keyOk
-                ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
-                : "bg-red-500/15 text-red-700 dark:text-red-300"
-            }`}
-          >
-            {keyOk ? "已配置" : "未配置"}
-          </span>
-        </header>
-        <p className="font-mono text-xs text-muted">{masked}</p>
-        <p className="mt-2 text-xs text-muted">
-          出于安全考虑，API Key 仅存在于环境变量（<code>ANTHROPIC_API_KEY</code>）中，不在 DB 里。要更换：
-          在 Vercel 项目设置 → Environment Variables 修改后重新部署，或在本地 <code>.env.local</code> 修改后重启。
-        </p>
+      <section className="grid gap-3 sm:grid-cols-2">
+        {PROVIDERS.map((p) => {
+          const ok = isProviderConfigured(p.id);
+          const masked = providerKeyHint(p.id);
+          return (
+            <div
+              key={p.id}
+              className={`rounded-2xl border p-5 ${
+                current.provider === p.id
+                  ? "border-primary bg-primary/5"
+                  : "border-border bg-card"
+              }`}
+            >
+              <header className="mb-2 flex items-center justify-between gap-3">
+                <h2 className="text-sm font-semibold tracking-tight">
+                  {p.label}
+                </h2>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                    ok
+                      ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                      : "bg-red-500/15 text-red-700 dark:text-red-300"
+                  }`}
+                >
+                  {ok ? "已配置" : "未配置"}
+                </span>
+              </header>
+              <p className="font-mono text-[11px] text-muted">{masked}</p>
+              <p className="mt-2 text-xs text-muted">
+                环境变量:{" "}
+                <code className="rounded bg-background px-1 py-0.5 font-mono text-[10px]">
+                  {ENV_NAME[p.id]}
+                </code>
+              </p>
+              <p className="mt-1 text-xs text-muted">
+                {PROVIDER_DOCS[p.id].hint}{" "}
+                <a
+                  href={PROVIDER_DOCS[p.id].url}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="text-primary hover:underline"
+                >
+                  控制台 ↗
+                </a>
+              </p>
+            </div>
+          );
+        })}
       </section>
 
       <section className="rounded-2xl border border-border bg-card p-5">
-        <h2 className="mb-3 text-sm font-semibold tracking-tight">模型选择</h2>
+        <h2 className="mb-1 text-sm font-semibold tracking-tight">模型选择</h2>
         <p className="mb-4 text-xs text-muted">
-          当前：<span className="font-mono text-foreground">{current}</span>。
-          换模型会立即生效，下一次请求即用新模型。
+          换模型立即生效——下一次请求即用新模型。Pro 类模型更贵更慢但更聪明,Flash 类更快更便宜。
         </p>
         <form action={updateModelAction} className="flex flex-col gap-3">
-          {AI_MODELS.map((m) => {
-            const active = m.id === current;
+          {(["deepseek", "anthropic"] as AiProvider[]).map((provider) => {
+            const models = AI_MODELS.filter((m) => m.provider === provider);
+            const providerOk = isProviderConfigured(provider);
             return (
-              <label
-                key={m.id}
-                className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${
-                  active
-                    ? "border-primary bg-primary/5"
-                    : "border-border bg-background hover:border-primary/40"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="model"
-                  value={m.id}
-                  defaultChecked={active}
-                  className="mt-1 accent-primary"
-                />
-                <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <span className="flex items-center gap-2 text-sm font-medium">
-                    {m.label}
-                    <code className="rounded bg-card px-1.5 py-0.5 font-mono text-[10px] text-muted">
-                      {m.id}
-                    </code>
-                  </span>
-                  <span className="text-xs text-muted">{m.hint}</span>
-                </div>
-              </label>
+              <div key={provider} className="flex flex-col gap-2">
+                <p className="text-[10px] uppercase tracking-widest text-muted">
+                  {PROVIDERS.find((p) => p.id === provider)?.label}
+                  {!providerOk ? (
+                    <span className="ml-2 normal-case tracking-normal text-red-500">
+                      ({ENV_NAME[provider]} 未配置 — 选了也不能用)
+                    </span>
+                  ) : null}
+                </p>
+                {models.map((m) => {
+                  const active = m.id === current.id;
+                  return (
+                    <label
+                      key={m.id}
+                      className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${
+                        active
+                          ? "border-primary bg-primary/5"
+                          : "border-border bg-background hover:border-primary/40"
+                      } ${!providerOk ? "opacity-60" : ""}`}
+                    >
+                      <input
+                        type="radio"
+                        name="model"
+                        value={m.id}
+                        defaultChecked={active}
+                        className="mt-1 accent-primary"
+                      />
+                      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                        <span className="flex flex-wrap items-center gap-2 text-sm font-medium">
+                          {m.label}
+                          <code className="rounded bg-card px-1.5 py-0.5 font-mono text-[10px] text-muted">
+                            {m.upstreamId}
+                          </code>
+                        </span>
+                        <span className="text-xs text-muted">{m.hint}</span>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
             );
           })}
           <button
@@ -110,10 +176,14 @@ export default async function AdminAiPage() {
             hint="发布时自动生成 / 编辑页手动重生"
           />
           <FeatureCard title="标签建议" hint="编辑页「AI 建议标签」按钮" />
-          <FeatureCard title="AskAI" hint="文章页访客提问，按文章内容回答" />
+          <FeatureCard title="AskAI" hint="文章页访客提问,按文章内容回答" />
           <FeatureCard
             title="康娜聊天"
-            hint="看板娘的对话功能（角色扮演 prompt）"
+            hint="看板娘的对话功能(角色扮演 prompt)"
+          />
+          <FeatureCard
+            title="写作助手"
+            hint="编辑页大纲 / 润色 / 起标题 / TL;DR"
           />
         </ul>
       </section>

@@ -457,8 +457,8 @@ export function SiteSettings() {
                     }`}
                   >
                     <span
-                      className={`absolute top-1/2 -translate-y-1/2 inline-block h-3 w-3 rounded-full bg-white shadow-sm transition-transform ${
-                        mascot ? "translate-x-3.5" : "translate-x-0.5"
+                      className={`absolute top-0.5 inline-block h-3 w-3 rounded-full bg-white shadow-sm transition-all ${
+                        mascot ? "left-3.5" : "left-0.5"
                       }`}
                     />
                   </span>

@@ -72,19 +72,14 @@ export async function POST(
   const readable = new ReadableStream<Uint8Array>({
     async start(controller) {
       try {
-        for await (const event of aiStream) {
-          if (
-            event.type === "content_block_delta" &&
-            event.delta.type === "text_delta"
-          ) {
-            controller.enqueue(encoder.encode(event.delta.text));
-          }
+        for await (const delta of aiStream) {
+          controller.enqueue(encoder.encode(delta));
         }
         controller.close();
       } catch (e) {
         controller.enqueue(
           encoder.encode(
-            `\n\n[AI 错误：${(e as Error).message.slice(0, 200)}]`,
+            `\n\n[AI 错误:${(e as Error).message.slice(0, 200)}]`,
           ),
         );
         controller.close();
