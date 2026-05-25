@@ -1,11 +1,20 @@
 import { getPostBySlug } from "@/lib/posts";
 import { isAiConfigured, streamAnswer } from "@/lib/ai";
 import { getViewer } from "@/lib/viewer";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 type Params = { slug: string };
+
+function getIp(request: Request): string {
+  return (
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown"
+  );
+}
 
 export async function POST(
   request: Request,
@@ -15,6 +24,18 @@ export async function POST(
     return Response.json(
       { error: "AI 未配置，无法回答问题" },
       { status: 503 },
+    );
+  }
+
+  const rl = rateLimit(getIp(request), {
+    key: "ask",
+    limit: 10,
+    windowSec: 300,
+  });
+  if (!rl.ok) {
+    return Response.json(
+      { error: `请求过于频繁，请 ${rl.resetInSec} 秒后重试` },
+      { status: 429 },
     );
   }
 

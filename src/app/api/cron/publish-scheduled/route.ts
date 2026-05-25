@@ -5,9 +5,12 @@ import { getDb, schema } from "@/db/client";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
   const expected = process.env.CRON_SECRET;
-  if (expected && authHeader !== `Bearer ${expected}`) {
+  if (!expected) {
+    return new Response("CRON_SECRET not configured", { status: 500 });
+  }
+  const authHeader = request.headers.get("authorization");
+  if (authHeader !== `Bearer ${expected}`) {
     return new Response("Unauthorized", { status: 401 });
   }
 

@@ -3,12 +3,33 @@ import { eq } from "drizzle-orm";
 import { getDb, schema } from "@/db/client";
 import { sendEmail, isEmailConfigured } from "@/lib/email";
 import { siteConfig } from "@/lib/site-config";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+function getIp(request: Request): string {
+  return (
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown"
+  );
+}
+
 export async function POST(request: Request) {
+  const rl = rateLimit(getIp(request), {
+    key: "subscribe",
+    limit: 3,
+    windowSec: 900,
+  });
+  if (!rl.ok) {
+    return Response.json(
+      { error: `请求过于频繁，请 ${rl.resetInSec} 秒后重试` },
+      { status: 429 },
+    );
+  }
+
   let body: { email?: string };
   try {
     body = await request.json();

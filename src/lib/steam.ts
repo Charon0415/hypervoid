@@ -109,7 +109,7 @@ export async function fetchOwnedGames(): Promise<{
       })),
     };
   } catch (e) {
-    console.error("[steam] fetch error", e);
+    console.error("[steam] fetch error", (e as Error).message ?? String(e));
     return { games: [], total: 0 };
   }
 }
