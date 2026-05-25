@@ -210,6 +210,44 @@ export async function getRelatedPosts(
   return scored.map((r) => toPost(r));
 }
 
+/**
+ * Find published+visible posts whose body contains an internal link to `slug`.
+ * Used to render a "Linked here from…" section. Excludes the post itself and
+ * limits to 12 results sorted by publish date desc.
+ */
+export async function getBacklinks(
+  slug: string,
+  opts: ViewerOpts = {},
+): Promise<Post[]> {
+  if (!slug) return [];
+  const db = getDb();
+  // Match `/posts/<slug>` as URL substring and `[[<slug>]]` wiki-style links.
+  // ILIKE for case-insensitivity; the slug regex earlier guarantees no %
+  // wildcards inside the slug itself.
+  const safeSlug = slug.replace(/[%_]/g, "");
+  const urlPattern = `%/posts/${safeSlug}%`;
+  const wikiPattern = `%[[${safeSlug}]]%`;
+  const rows = await db
+    .select()
+    .from(schema.posts)
+    .where(
+      and(
+        visibleClause(opts.isAdmin === true),
+        ne(schema.posts.slug, slug),
+        or(
+          sql`${schema.posts.content} ILIKE ${urlPattern}`,
+          sql`${schema.posts.content} ILIKE ${wikiPattern}`,
+        ),
+      ),
+    )
+    .orderBy(
+      desc(schema.posts.publishAt),
+      desc(schema.posts.createdAt),
+    )
+    .limit(12);
+  return rows.map((r) => toPost(r));
+}
+
 export async function getAllTags(
   opts: ViewerOpts = {},
 ): Promise<{ tag: string; count: number }[]> {

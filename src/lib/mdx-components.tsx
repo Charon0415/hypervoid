@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ZoomableImage } from "@/components/ZoomableImage";
 import { CodeBlock } from "@/components/CodeBlock";
 import { VideoEmbed } from "@/components/VideoEmbed";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const mdxComponents: MDXComponents = {
   a: ({ href, children, ...rest }) => {
@@ -26,4 +27,6 @@ export const mdxComponents: MDXComponents = {
   VideoEmbed: (props: { src: string; title?: string; aspect?: string }) => (
     <VideoEmbed {...props} />
   ),
+  // Emitted by `remarkMermaid` for ```mermaid code blocks.
+  MermaidDiagram: (props: { code: string }) => <MermaidDiagram {...props} />,
 };

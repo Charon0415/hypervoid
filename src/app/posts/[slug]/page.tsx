@@ -10,7 +10,8 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeKatex from "rehype-katex";
 import rehypeShiki from "@shikijs/rehype";
 import { remarkVideoEmbed } from "@/lib/remark-video-embed";
-import { getAllPostSlugs, getAdjacentPosts, getPostBySlug, getRelatedPosts } from "@/lib/posts";
+import { remarkMermaid } from "@/lib/remark-mermaid";
+import { getAllPostSlugs, getAdjacentPosts, getBacklinks, getPostBySlug, getRelatedPosts } from "@/lib/posts";
 import { mdxComponents } from "@/lib/mdx-components";
 import { extractTOC } from "@/lib/toc";
 import { transformerCodeMeta } from "@/lib/shiki-meta";
@@ -22,6 +23,7 @@ import { getReactionCounts } from "@/lib/reactions";
 import { AskAI } from "@/components/AskAI";
 import { PostNav } from "@/components/PostNav";
 import { RelatedPosts } from "@/components/RelatedPosts";
+import { Backlinks } from "@/components/Backlinks";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { ReadingMode } from "@/components/ReadingMode";
 import { ShareButtons } from "@/components/ShareButtons";
@@ -80,11 +82,12 @@ export default async function PostPage(props: { params: Promise<Params> }) {
 
   const { frontmatter, content } = post;
   const toc = extractTOC(content);
-  const [viewCount, reactionCounts, adjacent, related] = await Promise.all([
+  const [viewCount, reactionCounts, adjacent, related, backlinks] = await Promise.all([
     getViewCount(slug),
     getReactionCounts(slug),
     getAdjacentPosts(slug, { isAdmin: viewer.isAdmin }),
     getRelatedPosts(slug, frontmatter.tags ?? [], { isAdmin: viewer.isAdmin }),
+    getBacklinks(slug, { isAdmin: viewer.isAdmin }),
   ]);
   const giscusRepo = process.env.NEXT_PUBLIC_GISCUS_REPO?.trim();
   const moderateUrl =
@@ -211,7 +214,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             components={mdxComponents}
             options={{
               mdxOptions: {
-                remarkPlugins: [remarkGfm, remarkMath, remarkAlert, remarkVideoEmbed],
+                remarkPlugins: [remarkGfm, remarkMath, remarkAlert, remarkMermaid, remarkVideoEmbed],
                 rehypePlugins: [
                   rehypeSlug,
                   [
@@ -289,6 +292,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
           </Link>
         </div>
         <RelatedPosts posts={related} />
+        <Backlinks posts={backlinks} />
         {isAiConfigured() ? (
           <section className="mt-12">
             <AskAI slug={slug} />

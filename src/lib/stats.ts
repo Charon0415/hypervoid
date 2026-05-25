@@ -207,3 +207,145 @@ export async function getMonthCalendar(
 
   return { year, month, weeks, totalPosts: postDays.size };
 }
+
+export type YearInReview = {
+  year: number;
+  postCount: number;
+  totalWords: number;
+  totalReactions: number;
+  totalViews: number;
+  totalReadingMinutes: number;
+  monthly: { month: number; count: number }[];
+  topPosts: {
+    slug: string;
+    title: string;
+    views: number;
+    reactions: number;
+    publishedAt: string | null;
+  }[];
+  topTags: { tag: string; count: number }[];
+};
+
+export async function getYearInReview(year: number): Promise<YearInReview> {
+  const db = getDb();
+  const startIso = `${year}-01-01T00:00:00+08:00`;
+  const endIso = `${year + 1}-01-01T00:00:00+08:00`;
+  const start = new Date(startIso);
+  const end = new Date(endIso);
+
+  const rows = await db
+    .select({
+      slug: schema.posts.slug,
+      title: schema.posts.title,
+      content: schema.posts.content,
+      tags: schema.posts.tags,
+      publishAt: schema.posts.publishAt,
+      createdAt: schema.posts.createdAt,
+    })
+    .from(schema.posts)
+    .where(
+      sql`(status = 'published' OR (status = 'scheduled' AND publish_at <= NOW()))
+          AND visibility = 'public'
+          AND COALESCE(publish_at, created_at) >= ${start.toISOString()}
+          AND COALESCE(publish_at, created_at) < ${end.toISOString()}`,
+    );
+
+  const slugs = rows.map((r) => r.slug);
+
+  // Per-slug stats joins — fall back to 0 if absent
+  const viewMap = new Map<string, number>();
+  const reactionMap = new Map<string, number>();
+  if (slugs.length > 0) {
+    const viewRows = await db
+      .select({
+        slug: schema.postViews.slug,
+        count: schema.postViews.count,
+      })
+      .from(schema.postViews)
+      .where(sql`${schema.postViews.slug} = ANY(${slugs})`);
+    for (const v of viewRows) viewMap.set(v.slug, v.count);
+
+    const reactionRows = await db
+      .select({
+        slug: schema.postReactions.slug,
+        total: sql<number>`SUM(${schema.postReactions.count})::int`,
+      })
+      .from(schema.postReactions)
+      .where(sql`${schema.postReactions.slug} = ANY(${slugs})`)
+      .groupBy(schema.postReactions.slug);
+    for (const r of reactionRows) reactionMap.set(r.slug, r.total);
+  }
+
+  // Word count by stripping markdown to a rough text count.
+  function wordCount(content: string): number {
+    const text = content
+      .replace(/```[\s\S]*?```/g, " ") // fenced code
+      .replace(/`[^`]*`/g, " ") // inline code
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, " ") // images
+      .replace(/\[[^\]]*\]\([^)]*\)/g, " ") // links
+      .replace(/[#>*_`~\-]/g, " ");
+    const cjk = (text.match(/[一-鿿]/g) ?? []).length;
+    const ascii = (text.match(/[A-Za-z]+/g) ?? []).length;
+    return cjk + ascii;
+  }
+
+  let totalWords = 0;
+  const tagCounts = new Map<string, number>();
+  const monthly: { month: number; count: number }[] = Array.from(
+    { length: 12 },
+    (_, i) => ({ month: i + 1, count: 0 }),
+  );
+
+  for (const row of rows) {
+    totalWords += wordCount(row.content ?? "");
+    for (const tag of row.tags ?? []) {
+      tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+    }
+    const dateUsed = row.publishAt ?? row.createdAt;
+    if (dateUsed) {
+      // Local CN month
+      const m =
+        Number(
+          new Intl.DateTimeFormat("en-US", {
+            timeZone: "Asia/Shanghai",
+            month: "numeric",
+          }).format(dateUsed),
+        ) - 1;
+      if (m >= 0 && m < 12) monthly[m].count += 1;
+    }
+  }
+
+  const topPosts = rows
+    .map((r) => ({
+      slug: r.slug,
+      title: r.title,
+      views: viewMap.get(r.slug) ?? 0,
+      reactions: reactionMap.get(r.slug) ?? 0,
+      publishedAt: (r.publishAt ?? r.createdAt)?.toISOString() ?? null,
+    }))
+    .sort((a, b) => b.views + b.reactions * 10 - (a.views + a.reactions * 10))
+    .slice(0, 5);
+
+  const topTags = [...tagCounts.entries()]
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 8);
+
+  // Rough reading-time estimate: 300 CJK chars / 200 words per minute average.
+  const totalReadingMinutes = Math.max(1, Math.round(totalWords / 250));
+
+  const totalViews = [...viewMap.values()].reduce((a, b) => a + b, 0);
+  const totalReactions = [...reactionMap.values()].reduce((a, b) => a + b, 0);
+
+  return {
+    year,
+    postCount: rows.length,
+    totalWords,
+    totalReactions,
+    totalViews,
+    totalReadingMinutes,
+    monthly,
+    topPosts,
+    topTags,
+  };
+}
