@@ -17,6 +17,10 @@ export type CustomThemeRow = {
   enabled: boolean;
   light: ThemeColors;
   dark: ThemeColors;
+  wallpaperDesktop: string | null;
+  wallpaperMobile: string | null;
+  wallpaperOpacity: number; // 0–100
+  wallpaperBlur: number; // 0–20 (px)
   updatedAt: Date;
 };
 

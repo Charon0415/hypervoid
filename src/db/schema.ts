@@ -150,6 +150,10 @@ export const customTheme = pgTable("custom_theme", {
   enabled: boolean("enabled").notNull().default(false),
   light: jsonb("light").$type<Record<string, string>>().notNull().default({}),
   dark: jsonb("dark").$type<Record<string, string>>().notNull().default({}),
+  wallpaperDesktop: text("wallpaper_desktop"),
+  wallpaperMobile: text("wallpaper_mobile"),
+  wallpaperOpacity: integer("wallpaper_opacity").notNull().default(100),
+  wallpaperBlur: integer("wallpaper_blur").notNull().default(0),
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

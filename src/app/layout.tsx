@@ -16,7 +16,7 @@ import { siteConfig } from "@/lib/site-config";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { CommandPaletteHost } from "@/components/CommandPaletteHost";
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
-import { CustomThemeStyles } from "@/components/CustomThemeStyles";
+import { CustomThemeStyles, CustomWallpaper } from "@/components/CustomThemeStyles";
 import { getSiteOverride } from "@/lib/site-config-server";
 
 const geistSans = Geist({
@@ -108,6 +108,7 @@ export default function RootLayout({
         </a>
         <SettingsProvider>
           <Backdrop />
+          <CustomWallpaper />
           <Providers>
             <AnnouncementWrapper />
             <SiteHeader />

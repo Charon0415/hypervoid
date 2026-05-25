@@ -430,6 +430,37 @@ html[data-reading="large"] article .prose {
   pointer-events: none;
 }
 
+/* Fullscreen display mode — let the wallpaper / cosmic backdrop show through.
+   Cards, sidebar, header, footer all gain a semi-transparent backdrop with
+   blur so readability stays high while the background carries the mood.
+   Other modes (simple / banner) leave surfaces solid. */
+html[data-display="fullscreen"] [class*="bg-card"]:not(input):not(textarea) {
+  background-color: color-mix(in srgb, var(--card) 78%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+html[data-display="fullscreen"] header[class*="bg-background"] {
+  background-color: color-mix(in srgb, var(--background) 65%, transparent) !important;
+}
+html[data-display="fullscreen"] footer {
+  background-color: color-mix(in srgb, var(--background) 65%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+/* Article prose stays fully readable — we only soften the chrome */
+html[data-display="fullscreen"] article.prose,
+html[data-display="fullscreen"] .prose {
+  /* no-op — prose backgrounds usually come via the card containers above */
+}
+/* Form controls keep solid backgrounds so input contrast isn't lost */
+html[data-display="fullscreen"] input,
+html[data-display="fullscreen"] textarea,
+html[data-display="fullscreen"] select {
+  background-color: var(--background);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 /* Hypervoid wordmark — cosmic spark twinkle */
 .hv-wordmark-spark {
   transform-origin: center;

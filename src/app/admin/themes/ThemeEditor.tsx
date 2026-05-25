@@ -46,11 +46,17 @@ function isHex(v: string): boolean {
   return /^#([0-9a-fA-F]{3,8})$/.test(v.trim());
 }
 
-export function ThemeEditor({
-  initial,
-}: {
-  initial: { enabled: boolean; light: ThemeColors; dark: ThemeColors };
-}) {
+export type ThemeEditorInitial = {
+  enabled: boolean;
+  light: ThemeColors;
+  dark: ThemeColors;
+  wallpaperDesktop: string | null;
+  wallpaperMobile: string | null;
+  wallpaperOpacity: number;
+  wallpaperBlur: number;
+};
+
+export function ThemeEditor({ initial }: { initial: ThemeEditorInitial }) {
   const [enabled, setEnabled] = useState(initial.enabled);
   const [light, setLight] = useState<Record<ThemeKey, string>>(() => ({
     ...DEFAULT_LIGHT,
@@ -60,11 +66,26 @@ export function ThemeEditor({
     ...DEFAULT_DARK,
     ...initial.dark,
   }));
+  const [wallpaperDesktop, setWallpaperDesktop] = useState(
+    initial.wallpaperDesktop ?? "",
+  );
+  const [wallpaperMobile, setWallpaperMobile] = useState(
+    initial.wallpaperMobile ?? "",
+  );
+  const [wallpaperOpacity, setWallpaperOpacity] = useState(
+    initial.wallpaperOpacity,
+  );
+  const [wallpaperBlur, setWallpaperBlur] = useState(initial.wallpaperBlur);
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [previewMode, setPreviewMode] = useState<"light" | "dark">("light");
   const [importErr, setImportErr] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const desktopUploadRef = useRef<HTMLInputElement>(null);
+  const mobileUploadRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState<"desktop" | "mobile" | null>(
+    null,
+  );
 
   // Inject inline preview styles when "enabled" is toggled. These override
   // the page CSS for THIS admin page only via a scoped <style data-preview>.
@@ -110,14 +131,21 @@ export function ThemeEditor({
   const onSave = async () => {
     setSaving(true);
     try {
-      // Drop empty fields so DB stores partial diffs cleanly
       const lightOut: ThemeColors = {};
       const darkOut: ThemeColors = {};
       for (const k of THEME_KEYS) {
         if (isHex(light[k])) lightOut[k] = normalizeHex(light[k]);
         if (isHex(dark[k])) darkOut[k] = normalizeHex(dark[k]);
       }
-      await saveThemeAction({ enabled, light: lightOut, dark: darkOut });
+      await saveThemeAction({
+        enabled,
+        light: lightOut,
+        dark: darkOut,
+        wallpaperDesktop: wallpaperDesktop.trim() || null,
+        wallpaperMobile: wallpaperMobile.trim() || null,
+        wallpaperOpacity: Math.max(0, Math.min(100, wallpaperOpacity)),
+        wallpaperBlur: Math.max(0, Math.min(20, wallpaperBlur)),
+      });
       setSavedAt(Date.now());
     } finally {
       setSaving(false);
@@ -136,6 +164,10 @@ export function ThemeEditor({
       enabled,
       light,
       dark,
+      wallpaperDesktop: wallpaperDesktop || null,
+      wallpaperMobile: wallpaperMobile || null,
+      wallpaperOpacity,
+      wallpaperBlur,
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], {
       type: "application/json",
@@ -175,8 +207,37 @@ export function ThemeEditor({
       setLight(newLight);
       setDark(newDark);
       if (typeof data.enabled === "boolean") setEnabled(data.enabled);
+      if (typeof data.wallpaperDesktop === "string")
+        setWallpaperDesktop(data.wallpaperDesktop);
+      if (typeof data.wallpaperMobile === "string")
+        setWallpaperMobile(data.wallpaperMobile);
+      if (typeof data.wallpaperOpacity === "number")
+        setWallpaperOpacity(data.wallpaperOpacity);
+      if (typeof data.wallpaperBlur === "number")
+        setWallpaperBlur(data.wallpaperBlur);
     } catch (e) {
       setImportErr(e instanceof Error ? e.message : "导入失败");
+    }
+  };
+
+  const uploadWallpaper = async (file: File, target: "desktop" | "mobile") => {
+    setUploading(target);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const json = await res.json();
+      if (!res.ok || !json.url) {
+        alert(json.error ?? "上传失败");
+        return;
+      }
+      if (target === "desktop") setWallpaperDesktop(json.url);
+      else setWallpaperMobile(json.url);
+    } finally {
+      setUploading(null);
     }
   };
 
@@ -194,8 +255,8 @@ export function ThemeEditor({
             <span>
               <span className="font-medium">启用自定义主题</span>
               <span className="block text-xs text-muted">
-                关闭时网站使用内置 6 套预设。开启后下面的颜色会通过 CSS
-                变量覆盖到所有页面。
+                关闭时网站使用内置预设。开启后下面的颜色 + 壁纸会通过 CSS
+                变量与背景图覆盖到所有页面。
               </span>
             </span>
           </label>
@@ -217,12 +278,87 @@ export function ThemeEditor({
           onChange={onChange}
         />
 
+        {/* Wallpaper section */}
+        <section className="rounded-2xl border border-border bg-card p-5">
+          <h3 className="text-sm font-semibold tracking-tight">
+            背景壁纸 · 桌面端 / 移动端
+          </h3>
+          <p className="mt-1 text-xs text-muted">
+            桌面与移动端可分开配置——比如桌面用宽幅 16:9
+            的风景，移动端用更适合竖屏的图。两者都可留空走默认背景。
+          </p>
+
+          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+            <WallpaperField
+              label="桌面端 (≥768px)"
+              hint="推荐 1920×1080 以上的横向图"
+              value={wallpaperDesktop}
+              onChange={setWallpaperDesktop}
+              onUploadClick={() => desktopUploadRef.current?.click()}
+              uploading={uploading === "desktop"}
+              fileRef={desktopUploadRef}
+              onFile={(f) => uploadWallpaper(f, "desktop")}
+            />
+            <WallpaperField
+              label="移动端 (<768px)"
+              hint="推荐 1080×1920 左右的竖向图"
+              value={wallpaperMobile}
+              onChange={setWallpaperMobile}
+              onUploadClick={() => mobileUploadRef.current?.click()}
+              uploading={uploading === "mobile"}
+              fileRef={mobileUploadRef}
+              onFile={(f) => uploadWallpaper(f, "mobile")}
+            />
+          </div>
+
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <label className="flex flex-col gap-2">
+              <span className="flex items-baseline justify-between text-xs">
+                <span className="font-medium">不透明度</span>
+                <span className="font-mono text-muted">
+                  {wallpaperOpacity}%
+                </span>
+              </span>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={wallpaperOpacity}
+                onChange={(e) => setWallpaperOpacity(Number(e.target.value))}
+                className="w-full accent-primary"
+              />
+              <span className="text-[11px] text-muted/80">
+                越低越淡。100% 完全显示。
+              </span>
+            </label>
+            <label className="flex flex-col gap-2">
+              <span className="flex items-baseline justify-between text-xs">
+                <span className="font-medium">模糊</span>
+                <span className="font-mono text-muted">
+                  {wallpaperBlur}px
+                </span>
+              </span>
+              <input
+                type="range"
+                min={0}
+                max={20}
+                value={wallpaperBlur}
+                onChange={(e) => setWallpaperBlur(Number(e.target.value))}
+                className="w-full accent-primary"
+              />
+              <span className="text-[11px] text-muted/80">
+                高于 0 时为壁纸添加 backdrop blur，避免抢戏正文。
+              </span>
+            </label>
+          </div>
+        </section>
+
         <section className="rounded-2xl border border-border bg-card p-5">
           <h3 className="text-sm font-semibold tracking-tight">
             JSON 导入 / 导出
           </h3>
           <p className="mt-1 text-xs text-muted">
-            把当前配色打包成 JSON 文件保留，或导入别人分享的主题包。
+            把当前配色 + 壁纸打包成 JSON 文件保留，或导入别人分享的主题包。
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <button
@@ -315,12 +451,95 @@ export function ThemeEditor({
           <PreviewSurface
             mode={previewMode}
             colors={previewMode === "light" ? light : dark}
+            wallpaper={wallpaperDesktop || null}
+            opacity={wallpaperOpacity}
+            blur={wallpaperBlur}
           />
           <p className="mt-3 text-[11px] text-muted">
             预览只对这个页面生效。保存后才会写入数据库、应用到全站。
           </p>
         </div>
       </aside>
+    </div>
+  );
+}
+
+function WallpaperField({
+  label,
+  hint,
+  value,
+  onChange,
+  onUploadClick,
+  uploading,
+  fileRef,
+  onFile,
+}: {
+  label: string;
+  hint: string;
+  value: string;
+  onChange: (v: string) => void;
+  onUploadClick: () => void;
+  uploading: boolean;
+  fileRef: React.RefObject<HTMLInputElement | null>;
+  onFile: (file: File) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="flex items-baseline justify-between text-xs">
+        <span className="font-medium">{label}</span>
+        {value ? (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="font-mono text-[10px] text-muted hover:text-red-500"
+          >
+            清空
+          </button>
+        ) : null}
+      </span>
+      {value ? (
+        <div className="relative aspect-video overflow-hidden rounded-lg border border-border bg-background">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={value}
+            alt=""
+            className="h-full w-full object-cover"
+          />
+        </div>
+      ) : (
+        <div className="flex aspect-video items-center justify-center rounded-lg border border-dashed border-border bg-background text-xs text-muted">
+          未设置壁纸
+        </div>
+      )}
+      <input
+        type="url"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="https://...  或留空"
+        className="rounded-md border border-border bg-background px-2 py-1 font-mono text-[11px] transition focus:border-primary focus:outline-none"
+      />
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={onUploadClick}
+          disabled={uploading}
+          className="rounded-md border border-border bg-card px-2.5 py-1 text-[11px] transition hover:border-primary hover:text-primary disabled:opacity-50"
+        >
+          {uploading ? "上传中…" : "上传图片"}
+        </button>
+        <span className="text-[11px] text-muted">{hint}</span>
+      </div>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        hidden
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) onFile(f);
+          e.target.value = "";
+        }}
+      />
     </div>
   );
 }
@@ -388,26 +607,45 @@ function ColorGrid({
 function PreviewSurface({
   mode,
   colors,
+  wallpaper,
+  opacity,
+  blur,
 }: {
   mode: "light" | "dark";
   colors: Record<ThemeKey, string>;
+  wallpaper: string | null;
+  opacity: number;
+  blur: number;
 }) {
   return (
     <div
-      className="mt-3 overflow-hidden rounded-xl border"
+      className="relative mt-3 overflow-hidden rounded-xl border"
       style={{
         background: colors.background,
         color: colors.foreground,
         borderColor: colors.border,
       }}
     >
+      {wallpaper ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={wallpaper}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+          style={{
+            opacity: opacity / 100,
+            filter: blur > 0 ? `blur(${blur}px)` : undefined,
+          }}
+        />
+      ) : null}
       <div
-        className="border-b px-4 py-3 text-xs"
+        className="relative border-b px-4 py-3 text-xs"
         style={{ borderColor: colors.border, color: colors.muted }}
       >
         预览（{mode === "light" ? "浅色" : "深色"}）
       </div>
-      <div className="p-4">
+      <div className="relative p-4">
         <div
           className="rounded-lg border p-4"
           style={{

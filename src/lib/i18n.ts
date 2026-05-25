@@ -15,6 +15,7 @@ export type Messages = {
     games: string;
     books: string;
     movies: string;
+    music: string;
     projects: string;
     skills: string;
     timeline: string;
@@ -78,6 +79,7 @@ export const MESSAGES: Record<Locale, Messages> = {
       games: "游戏",
       books: "书籍",
       movies: "影视",
+      music: "音乐",
       projects: "项目",
       skills: "技能",
       timeline: "时间线",
@@ -138,6 +140,7 @@ export const MESSAGES: Record<Locale, Messages> = {
       games: "Games",
       books: "Books",
       movies: "Films",
+      music: "Music",
       projects: "Projects",
       skills: "Skills",
       timeline: "Timeline",

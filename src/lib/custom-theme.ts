@@ -14,6 +14,10 @@ const FALLBACK: CustomThemeRow = {
   enabled: false,
   light: {},
   dark: {},
+  wallpaperDesktop: null,
+  wallpaperMobile: null,
+  wallpaperOpacity: 100,
+  wallpaperBlur: 0,
   updatedAt: new Date(0),
 };
 
@@ -35,6 +39,10 @@ export async function getCustomTheme(): Promise<CustomThemeRow> {
         enabled: rows[0].enabled,
         light: (rows[0].light as ThemeColors) ?? {},
         dark: (rows[0].dark as ThemeColors) ?? {},
+        wallpaperDesktop: rows[0].wallpaperDesktop,
+        wallpaperMobile: rows[0].wallpaperMobile,
+        wallpaperOpacity: rows[0].wallpaperOpacity,
+        wallpaperBlur: rows[0].wallpaperBlur,
         updatedAt: rows[0].updatedAt,
       };
       _cacheAt = now;
@@ -50,6 +58,10 @@ export async function saveCustomTheme(input: {
   enabled: boolean;
   light: ThemeColors;
   dark: ThemeColors;
+  wallpaperDesktop: string | null;
+  wallpaperMobile: string | null;
+  wallpaperOpacity: number;
+  wallpaperBlur: number;
 }): Promise<void> {
   await getDb()
     .insert(schema.customTheme)
@@ -58,6 +70,10 @@ export async function saveCustomTheme(input: {
       enabled: input.enabled,
       light: input.light,
       dark: input.dark,
+      wallpaperDesktop: input.wallpaperDesktop,
+      wallpaperMobile: input.wallpaperMobile,
+      wallpaperOpacity: input.wallpaperOpacity,
+      wallpaperBlur: input.wallpaperBlur,
       updatedAt: new Date(),
     })
     .onConflictDoUpdate({
@@ -66,6 +82,10 @@ export async function saveCustomTheme(input: {
         enabled: input.enabled,
         light: input.light,
         dark: input.dark,
+        wallpaperDesktop: input.wallpaperDesktop,
+        wallpaperMobile: input.wallpaperMobile,
+        wallpaperOpacity: input.wallpaperOpacity,
+        wallpaperBlur: input.wallpaperBlur,
         updatedAt: new Date(),
       },
     });

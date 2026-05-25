@@ -8,6 +8,7 @@ import { SiteSettings } from "@/components/SiteSettings";
 import { MobileNav } from "@/components/MobileNav";
 import { NavGroups } from "@/components/NavGroups";
 import { HypervoidWordmark } from "@/components/HypervoidWordmark";
+import { NotificationBell } from "@/components/NotificationBell";
 import { useT } from "@/components/LocaleProvider";
 
 export function SiteHeader() {
@@ -35,44 +36,40 @@ export function SiteHeader() {
               role="img"
               aria-label="Hypervoid"
             >
+              <defs>
+                <radialGradient id="hv-core" cx="0.4" cy="0.35" r="0.8">
+                  <stop offset="0%" stopColor="#ffffff" />
+                  <stop offset="60%" stopColor="currentColor" stopOpacity="0.95" />
+                  <stop offset="100%" stopColor="currentColor" stopOpacity="0.7" />
+                </radialGradient>
+              </defs>
               <rect width="64" height="64" rx="14" fill="#0b0f1a" />
               <ellipse
                 cx="32"
                 cy="32"
-                rx="22"
-                ry="8"
+                rx="24"
+                ry="9"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.2"
-                opacity="0.95"
+                strokeWidth="2"
+                opacity="0.92"
               />
               <ellipse
                 cx="32"
                 cy="32"
-                rx="22"
-                ry="8"
+                rx="24"
+                ry="9"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.2"
-                opacity="0.55"
-                transform="rotate(60 32 32)"
+                strokeWidth="2"
+                opacity="0.4"
+                transform="rotate(72 32 32)"
               />
-              <ellipse
-                cx="32"
-                cy="32"
-                rx="22"
-                ry="8"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                opacity="0.35"
-                transform="rotate(-60 32 32)"
-              />
-              <circle cx="32" cy="32" r="5" fill="#ffffff" />
+              <circle cx="32" cy="32" r="4.5" fill="url(#hv-core)" />
             </svg>
           </span>
-          <span className="hidden text-primary sm:inline">
-            <HypervoidWordmark className="h-7 w-auto" />
+          <span className="hidden text-foreground sm:inline">
+            <HypervoidWordmark className="h-6 w-auto" />
           </span>
         </Link>
 
@@ -105,6 +102,7 @@ export function SiteHeader() {
           <div className="flex items-center gap-1.5 md:gap-2">
             <LocaleSwitch />
             <SiteSettings />
+            <NotificationBell />
           </div>
           <ThemeToggle />
           <MobileNav />

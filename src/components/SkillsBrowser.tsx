@@ -1,0 +1,244 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import type { Skill } from "@/lib/skills";
+
+const CATEGORY_LABEL: Record<Skill["category"], string> = {
+  frontend: "前端",
+  backend: "后端",
+  database: "数据库",
+  tools: "工具",
+  other: "其他",
+};
+
+const LEVEL_LABEL: Record<Skill["level"], string> = {
+  beginner: "入门",
+  intermediate: "熟练",
+  advanced: "进阶",
+  expert: "专家",
+};
+
+const LEVEL_VALUE: Record<Skill["level"], number> = {
+  beginner: 1,
+  intermediate: 2,
+  advanced: 3,
+  expert: 4,
+};
+
+const LEVEL_COLOR: Record<Skill["level"], string> = {
+  beginner: "text-sky-600 dark:text-sky-300 bg-sky-500/10",
+  intermediate: "text-emerald-600 dark:text-emerald-300 bg-emerald-500/10",
+  advanced: "text-violet-600 dark:text-violet-300 bg-violet-500/10",
+  expert: "text-amber-600 dark:text-amber-300 bg-amber-500/10",
+};
+
+type CategoryFilter = "all" | Skill["category"];
+type LevelFilter = "all" | Skill["level"];
+
+function iconUrl(name: string): string {
+  return `https://api.iconify.design/${name.replace(/:/, "/")}.svg`;
+}
+
+function formatExp(years: number, months: number): string {
+  if (years === 0 && months === 0) return "—";
+  if (years === 0) return `${months} 个月`;
+  if (months === 0) return `${years} 年`;
+  return `${years}年${months}月`;
+}
+
+export function SkillsBrowser({ skills }: { skills: Skill[] }) {
+  const [category, setCategory] = useState<CategoryFilter>("all");
+  const [level, setLevel] = useState<LevelFilter>("all");
+  const [sort, setSort] = useState<"experience" | "level" | "name">(
+    "experience",
+  );
+
+  const filtered = useMemo(() => {
+    let out = [...skills];
+    if (category !== "all") {
+      out = out.filter((s) => s.category === category);
+    }
+    if (level !== "all") {
+      out = out.filter((s) => s.level === level);
+    }
+    if (sort === "experience") {
+      out.sort(
+        (a, b) =>
+          b.experience.years * 12 + b.experience.months -
+          (a.experience.years * 12 + a.experience.months),
+      );
+    } else if (sort === "level") {
+      out.sort((a, b) => LEVEL_VALUE[b.level] - LEVEL_VALUE[a.level]);
+    } else {
+      out.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    return out;
+  }, [skills, category, level, sort]);
+
+  const categoryCounts = useMemo(() => {
+    const c: Record<CategoryFilter, number> = {
+      all: skills.length,
+      frontend: 0,
+      backend: 0,
+      database: 0,
+      tools: 0,
+      other: 0,
+    };
+    for (const s of skills) c[s.category]++;
+    return c;
+  }, [skills]);
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Filter row */}
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="mr-1 text-xs text-muted">分类：</span>
+          {(["all", "frontend", "backend", "database", "tools", "other"] as const).map(
+            (c) => {
+              const active = category === c;
+              return (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setCategory(c)}
+                  className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs transition ${
+                    active
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border bg-card text-muted hover:border-primary/40 hover:text-foreground"
+                  }`}
+                >
+                  {c === "all" ? "全部" : CATEGORY_LABEL[c]}
+                  <span className="font-mono text-[10px] opacity-70">
+                    {categoryCounts[c]}
+                  </span>
+                </button>
+              );
+            },
+          )}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="mr-1 text-xs text-muted">等级：</span>
+          {(["all", "expert", "advanced", "intermediate", "beginner"] as const).map(
+            (l) => {
+              const active = level === l;
+              return (
+                <button
+                  key={l}
+                  type="button"
+                  onClick={() => setLevel(l)}
+                  className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs transition ${
+                    active
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border bg-card text-muted hover:border-primary/40 hover:text-foreground"
+                  }`}
+                >
+                  {l === "all" ? "全部" : LEVEL_LABEL[l]}
+                </button>
+              );
+            },
+          )}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="mr-1 text-xs text-muted">排序：</span>
+          {(["experience", "level", "name"] as const).map((s) => {
+            const active = sort === s;
+            const label =
+              s === "experience" ? "按经验" : s === "level" ? "按等级" : "按名称";
+            return (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setSort(s)}
+                className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs transition ${
+                  active
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border bg-card text-muted hover:border-primary/40 hover:text-foreground"
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <p className="text-xs text-muted">
+        共 <span className="font-mono text-foreground">{filtered.length}</span>{" "}
+        项符合筛选。
+      </p>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {filtered.map((skill) => (
+          <SkillCard key={skill.id} skill={skill} />
+        ))}
+      </div>
+
+      {filtered.length === 0 ? (
+        <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
+          没有匹配的技能。换个组合试试。
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function SkillCard({ skill }: { skill: Skill }) {
+  const accent = skill.color ?? "var(--primary)";
+  return (
+    <div
+      className="group relative flex h-full flex-col gap-3 overflow-hidden rounded-2xl border border-border bg-card p-4 transition hover:-translate-y-0.5 hover:shadow-md"
+      style={{ borderLeft: `4px solid ${accent}` }}
+    >
+      <div className="flex items-start gap-3">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={iconUrl(skill.icon)}
+          alt=""
+          loading="lazy"
+          width={32}
+          height={32}
+          className="h-8 w-8 shrink-0"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).style.opacity = "0.25";
+          }}
+        />
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <h3 className="text-base font-semibold leading-snug tracking-tight">
+            {skill.name}
+          </h3>
+          <p className="text-[11px] uppercase tracking-wider text-muted">
+            {CATEGORY_LABEL[skill.category]}
+          </p>
+        </div>
+        <span
+          className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${LEVEL_COLOR[skill.level]}`}
+        >
+          {LEVEL_LABEL[skill.level]}
+        </span>
+      </div>
+
+      <p className="line-clamp-3 text-sm leading-relaxed text-muted">
+        {skill.description}
+      </p>
+
+      <div className="mt-auto flex flex-wrap items-baseline gap-x-3 gap-y-1 pt-1 text-xs">
+        <span className="font-mono text-muted">
+          {formatExp(skill.experience.years, skill.experience.months)}
+        </span>
+        {skill.projects?.length ? (
+          <span className="font-mono text-muted">
+            · {skill.projects.length} 项目
+          </span>
+        ) : null}
+        {skill.certifications?.length ? (
+          <span className="font-mono text-muted">
+            · {skill.certifications.length} 认证
+          </span>
+        ) : null}
+      </div>
+    </div>
+  );
+}
