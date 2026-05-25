@@ -44,9 +44,12 @@ export default async function Home() {
               The world is big, you have to go and see.
             </p>
             <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted sm:mt-5 sm:text-base md:text-lg">
-              Hypervoid 取自 <em className="text-foreground/80">hyper × void</em>，「高维虚空」——
-              一处用以长期沉淀技术探索、阅读、影像与生活痕迹的私人坐标系。
-              文章、追番、游戏与每一行折腾，都收纳于此。
+              <span className="text-foreground/80">
+                「我们都是星尘——也是宇宙了解自身的一种方式。」
+              </span>
+              <span className="ml-2 text-xs text-muted/80 sm:text-sm">
+                —— Carl Sagan
+              </span>
             </p>
             <div className="mt-5 flex flex-wrap gap-2 sm:mt-6 sm:gap-3">
               <Link
