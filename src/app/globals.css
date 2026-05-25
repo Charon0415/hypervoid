@@ -52,6 +52,7 @@ html[data-font-size="large"] .prose {
 }
 
 :root {
+  color-scheme: light dark;
   --background: #fafafa;
   --foreground: #18181b;
   --card: #ffffff;
