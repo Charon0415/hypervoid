@@ -33,6 +33,7 @@ import { BookmarkButton } from "@/components/BookmarkButton";
 import { SeriesBanner } from "@/components/SeriesBanner";
 import { ReadTracker } from "@/components/ReadTracker";
 import { ArticleTopAnnouncement } from "@/components/ArticleTopAnnouncement";
+import { ArticleJsonLd } from "@/components/ArticleJsonLd";
 import { siteConfig } from "@/lib/site-config";
 import { getViewer } from "@/lib/viewer";
 import { getViewCount } from "@/db/posts-stats";
@@ -100,6 +101,17 @@ export default async function PostPage(props: { params: Promise<Params> }) {
 
   return (
     <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_220px]">
+      <ArticleJsonLd
+        url={`${siteConfig.url}/posts/${slug}`}
+        title={frontmatter.title}
+        description={frontmatter.description ?? null}
+        cover={frontmatter.cover ?? null}
+        publishedAt={frontmatter.date}
+        updatedAt={frontmatter.updatedDate}
+        authorName={siteConfig.author.name}
+        authorUrl={siteConfig.author.githubUrl}
+        tags={frontmatter.tags ?? []}
+      />
       <ReadingProgress />
       <ReadTracker slug={slug} />
       <article className="mx-auto w-full max-w-3xl">

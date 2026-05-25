@@ -7,7 +7,8 @@ export interface Skill {
 	description: string;
 	icon: string; // Iconify icon name
 	category: "frontend" | "backend" | "database" | "tools" | "other";
-	level: "beginner" | "intermediate" | "advanced" | "expert";
+	/** Legacy field; no longer shown on /skills. Kept optional for data compat. */
+	level?: "beginner" | "intermediate" | "advanced" | "expert";
 	experience: {
 		years: number;
 		months: number;

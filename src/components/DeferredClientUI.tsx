@@ -35,9 +35,11 @@ const Live2DMascot = dynamic(
   { ssr: false },
 );
 
-const PwaInstallPrompt = dynamic(
+const PwaInstallController = dynamic(
   () =>
-    import("@/components/PwaInstallPrompt").then((m) => m.PwaInstallPrompt),
+    import("@/components/PwaInstallController").then(
+      (m) => m.PwaInstallController,
+    ),
   { ssr: false },
 );
 
@@ -48,7 +50,7 @@ export function DeferredClientUI() {
       <ServiceWorkerRegister />
       <KeyboardShortcuts />
       <Live2DMascot />
-      <PwaInstallPrompt />
+      <PwaInstallController />
     </>
   );
 }

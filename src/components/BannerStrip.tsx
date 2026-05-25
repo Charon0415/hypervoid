@@ -77,7 +77,7 @@ export function BannerStrip() {
       <div className={stripClass}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/wallpapers/2.png"
+          src="/wallpapers/cyberpunk.webp"
           alt=""
           aria-hidden
           loading="eager"
@@ -101,7 +101,7 @@ export function BannerStrip() {
       <div className={stripClass}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/wallpapers/2.webp"
+          src="/wallpapers/medieval.webp"
           alt=""
           aria-hidden
           loading="eager"

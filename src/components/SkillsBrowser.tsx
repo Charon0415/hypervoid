@@ -11,29 +11,7 @@ const CATEGORY_LABEL: Record<Skill["category"], string> = {
   other: "其他",
 };
 
-const LEVEL_LABEL: Record<Skill["level"], string> = {
-  beginner: "入门",
-  intermediate: "熟练",
-  advanced: "进阶",
-  expert: "专家",
-};
-
-const LEVEL_VALUE: Record<Skill["level"], number> = {
-  beginner: 1,
-  intermediate: 2,
-  advanced: 3,
-  expert: 4,
-};
-
-const LEVEL_COLOR: Record<Skill["level"], string> = {
-  beginner: "text-sky-600 dark:text-sky-300 bg-sky-500/10",
-  intermediate: "text-emerald-600 dark:text-emerald-300 bg-emerald-500/10",
-  advanced: "text-violet-600 dark:text-violet-300 bg-violet-500/10",
-  expert: "text-amber-600 dark:text-amber-300 bg-amber-500/10",
-};
-
 type CategoryFilter = "all" | Skill["category"];
-type LevelFilter = "all" | Skill["level"];
 
 function iconUrl(name: string): string {
   return `https://api.iconify.design/${name.replace(/:/, "/")}.svg`;
@@ -48,18 +26,12 @@ function formatExp(years: number, months: number): string {
 
 export function SkillsBrowser({ skills }: { skills: Skill[] }) {
   const [category, setCategory] = useState<CategoryFilter>("all");
-  const [level, setLevel] = useState<LevelFilter>("all");
-  const [sort, setSort] = useState<"experience" | "level" | "name">(
-    "experience",
-  );
+  const [sort, setSort] = useState<"experience" | "name">("experience");
 
   const filtered = useMemo(() => {
     let out = [...skills];
     if (category !== "all") {
       out = out.filter((s) => s.category === category);
-    }
-    if (level !== "all") {
-      out = out.filter((s) => s.level === level);
     }
     if (sort === "experience") {
       out.sort(
@@ -67,13 +39,11 @@ export function SkillsBrowser({ skills }: { skills: Skill[] }) {
           b.experience.years * 12 + b.experience.months -
           (a.experience.years * 12 + a.experience.months),
       );
-    } else if (sort === "level") {
-      out.sort((a, b) => LEVEL_VALUE[b.level] - LEVEL_VALUE[a.level]);
     } else {
       out.sort((a, b) => a.name.localeCompare(b.name));
     }
     return out;
-  }, [skills, category, level, sort]);
+  }, [skills, category, sort]);
 
   const categoryCounts = useMemo(() => {
     const c: Record<CategoryFilter, number> = {
@@ -90,7 +60,6 @@ export function SkillsBrowser({ skills }: { skills: Skill[] }) {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Filter row */}
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="mr-1 text-xs text-muted">分类：</span>
@@ -119,34 +88,10 @@ export function SkillsBrowser({ skills }: { skills: Skill[] }) {
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="mr-1 text-xs text-muted">等级：</span>
-          {(["all", "expert", "advanced", "intermediate", "beginner"] as const).map(
-            (l) => {
-              const active = level === l;
-              return (
-                <button
-                  key={l}
-                  type="button"
-                  onClick={() => setLevel(l)}
-                  className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs transition ${
-                    active
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border bg-card text-muted hover:border-primary/40 hover:text-foreground"
-                  }`}
-                >
-                  {l === "all" ? "全部" : LEVEL_LABEL[l]}
-                </button>
-              );
-            },
-          )}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-1.5">
           <span className="mr-1 text-xs text-muted">排序：</span>
-          {(["experience", "level", "name"] as const).map((s) => {
+          {(["experience", "name"] as const).map((s) => {
             const active = sort === s;
-            const label =
-              s === "experience" ? "按经验" : s === "level" ? "按等级" : "按名称";
+            const label = s === "experience" ? "按经验" : "按名称";
             return (
               <button
                 key={s}
@@ -213,11 +158,6 @@ function SkillCard({ skill }: { skill: Skill }) {
             {CATEGORY_LABEL[skill.category]}
           </p>
         </div>
-        <span
-          className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${LEVEL_COLOR[skill.level]}`}
-        >
-          {LEVEL_LABEL[skill.level]}
-        </span>
       </div>
 
       <p className="line-clamp-3 text-sm leading-relaxed text-muted">

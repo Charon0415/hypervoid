@@ -14,6 +14,7 @@ import {
   type BackgroundKey,
 } from "@/components/SettingsProvider";
 import { isMascotEnabled, setMascotEnabled } from "@/components/Live2DMascot";
+import { useInstallPrompt } from "@/components/PwaInstallController";
 
 function BgThumb({ bg }: { bg: BackgroundKey }) {
   const base = "h-10 w-full overflow-hidden rounded";
@@ -90,7 +91,7 @@ function BgThumb({ bg }: { bg: BackgroundKey }) {
         <div
           className={base}
           style={{
-            backgroundImage: "url(/wallpapers/2.webp)",
+            backgroundImage: "url(/wallpapers/medieval.webp)",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
@@ -133,6 +134,7 @@ export function SiteSettings() {
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mascot, setMascot] = useState(false);
+  const { available: installAvailable, install } = useInstallPrompt();
   const {
     hue,
     background,
@@ -449,12 +451,13 @@ export function SiteSettings() {
                   style={{ width: "100%" }}
                 >
                   <span
-                    className={`inline-block h-4 w-7 rounded-full transition-colors ${
+                    aria-hidden
+                    className={`relative inline-block h-4 w-7 shrink-0 rounded-full transition-colors ${
                       mascot ? "bg-primary" : "bg-border"
                     }`}
                   >
                     <span
-                      className={`mt-0.5 inline-block h-3 w-3 rounded-full bg-white shadow-sm transition-transform ${
+                      className={`absolute top-1/2 -translate-y-1/2 inline-block h-3 w-3 rounded-full bg-white shadow-sm transition-transform ${
                         mascot ? "translate-x-3.5" : "translate-x-0.5"
                       }`}
                     />
@@ -465,6 +468,27 @@ export function SiteSettings() {
                   在页面右下角显示 Live2D 看板娘（默认关闭）
                 </p>
               </section>
+
+              {installAvailable ? (
+                <section className="mt-5 md:mt-4">
+                  <p className="mb-2 text-xs uppercase tracking-wider text-muted">
+                    安装到桌面
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      install();
+                    }}
+                    className={`${pillBase} ${pillIdle} flex w-full items-center justify-center gap-2`}
+                  >
+                    <span aria-hidden>📲</span>
+                    立即安装 Hypervoid
+                  </button>
+                  <p className="mt-1.5 text-[10px] text-muted">
+                    把站点装到桌面 / 主屏，启动更快，离线也能看缓存过的页面。
+                  </p>
+                </section>
+              ) : null}
 
               <p className="mt-4 hidden text-[10px] text-muted md:block">
                 快捷键：⌘/Ctrl + , 打开 · Esc 关闭

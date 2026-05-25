@@ -223,7 +223,7 @@ export function Backdrop() {
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/wallpapers/2.webp"
+          src="/wallpapers/medieval.webp"
           alt=""
           aria-hidden
           loading="eager"

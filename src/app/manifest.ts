@@ -49,7 +49,7 @@ export default function manifest(): MetadataRoute.Manifest {
         label: `${siteConfig.name} 主页`,
       },
       {
-        src: "/wallpapers/2.webp",
+        src: "/wallpapers/medieval.webp",
         sizes: "2560x1113",
         type: "image/webp",
         form_factor: "wide",
