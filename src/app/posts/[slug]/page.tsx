@@ -24,6 +24,8 @@ import { AskAI } from "@/components/AskAI";
 import { PostNav } from "@/components/PostNav";
 import { RelatedPosts } from "@/components/RelatedPosts";
 import { Backlinks } from "@/components/Backlinks";
+import { Webmentions } from "@/components/Webmentions";
+import { listForSlug as listWebmentions } from "@/lib/webmentions";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { ReadingMode } from "@/components/ReadingMode";
 import { ShareButtons } from "@/components/ShareButtons";
@@ -82,12 +84,13 @@ export default async function PostPage(props: { params: Promise<Params> }) {
 
   const { frontmatter, content } = post;
   const toc = extractTOC(content);
-  const [viewCount, reactionCounts, adjacent, related, backlinks] = await Promise.all([
+  const [viewCount, reactionCounts, adjacent, related, backlinks, webmentions] = await Promise.all([
     getViewCount(slug),
     getReactionCounts(slug),
     getAdjacentPosts(slug, { isAdmin: viewer.isAdmin }),
     getRelatedPosts(slug, frontmatter.tags ?? [], { isAdmin: viewer.isAdmin }),
     getBacklinks(slug, { isAdmin: viewer.isAdmin }),
+    listWebmentions(slug).catch(() => []),
   ]);
   const giscusRepo = process.env.NEXT_PUBLIC_GISCUS_REPO?.trim();
   const moderateUrl =
@@ -293,6 +296,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
         </div>
         <RelatedPosts posts={related} />
         <Backlinks posts={backlinks} />
+        <Webmentions items={webmentions} />
         {isAiConfigured() ? (
           <section className="mt-12">
             <AskAI slug={slug} />

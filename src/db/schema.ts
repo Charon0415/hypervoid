@@ -244,3 +244,29 @@ export const resources = pgTable("resources", {
     .notNull()
     .defaultNow(),
 });
+
+/**
+ * Incoming Webmentions (IndieWeb). Each row represents a verified external
+ * source URL that links to a post on this site (target). Status flow:
+ *   pending → verified  (source fetched and confirmed to contain target URL)
+ *   pending → rejected  (verification failed; kept briefly for debugging)
+ *   verified → hidden   (admin moderation)
+ * Only `verified` (and not hidden) rows are shown publicly.
+ */
+export const webmentions = pgTable("webmentions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  source: text("source").notNull(),
+  target: text("target").notNull(),
+  targetSlug: text("target_slug"),
+  status: text("status").notNull().default("pending"),
+  type: text("type").notNull().default("mention"),
+  content: text("content"),
+  authorName: text("author_name"),
+  authorUrl: text("author_url"),
+  authorPhoto: text("author_photo"),
+  hidden: boolean("hidden").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  verifiedAt: timestamp("verified_at", { withTimezone: true }),
+});

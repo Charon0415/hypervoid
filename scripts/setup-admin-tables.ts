@@ -87,6 +87,25 @@ const STATEMENTS = [
      SELECT slug, 'heart', count FROM post_likes
      WHERE count > 0
    ON CONFLICT (slug, emoji) DO NOTHING;`,
+
+  `CREATE TABLE IF NOT EXISTS webmentions (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    source text NOT NULL,
+    target text NOT NULL,
+    target_slug text,
+    status text NOT NULL DEFAULT 'pending',
+    type text NOT NULL DEFAULT 'mention',
+    content text,
+    author_name text,
+    author_url text,
+    author_photo text,
+    hidden boolean NOT NULL DEFAULT false,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    verified_at timestamp with time zone,
+    UNIQUE (source, target)
+  );`,
+
+  `CREATE INDEX IF NOT EXISTS webmentions_target_slug_idx ON webmentions (target_slug);`,
 ];
 
 async function main() {

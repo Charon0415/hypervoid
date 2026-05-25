@@ -100,6 +100,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://lain.bgm.tv" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://media.steampowered.com" crossOrigin="anonymous" />
+        <link rel="webmention" href="/api/webmention" />
         <CustomThemeStyles />
       </head>
       <body className="min-h-full flex flex-col">
