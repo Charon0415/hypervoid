@@ -4,6 +4,7 @@ import { listVisibleMessages } from "@/db/guestbook";
 import { GuestbookForm } from "@/components/GuestbookForm";
 import { GuestbookAdminControls } from "@/components/GuestbookAdminControls";
 import { formatDateTimeCN } from "@/lib/datetime";
+import { renderMentionsHtml } from "@/lib/mentions";
 import {
   signInForGuestbook,
   signOutFromGuestbook,
@@ -126,9 +127,12 @@ export default async function GuestbookPage() {
                         {formatDate(m.createdAt)}
                       </time>
                     </div>
-                    <p className="mt-2 whitespace-pre-wrap break-words text-sm">
-                      {m.message}
-                    </p>
+                    <p
+                      className="mt-2 whitespace-pre-wrap break-words text-sm"
+                      dangerouslySetInnerHTML={{
+                        __html: renderMentionsHtml(m.message),
+                      }}
+                    />
                     {isAdmin ? (
                       <div className="mt-2">
                         <GuestbookAdminControls id={m.id} />

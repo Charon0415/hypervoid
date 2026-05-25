@@ -18,7 +18,15 @@ import {
   type AdminPostInput,
 } from "@/db/admin-posts";
 import { broadcastPost } from "@/lib/newsletter";
-import { summarizePost, suggestTags, isAiConfigured } from "@/lib/ai";
+import {
+  generateOutline,
+  generateTldr,
+  isAiConfigured,
+  polishText,
+  suggestTags,
+  suggestTitles,
+  summarizePost,
+} from "@/lib/ai";
 import { getAllTags } from "@/lib/posts";
 import { recordAudit } from "@/lib/audit";
 
@@ -304,6 +312,76 @@ export async function suggestTagsAction(args: {
       existingTags: existing.map((t) => t.tag),
     });
     return { tags };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
+export async function generateOutlineAction(args: {
+  title: string;
+  content: string;
+}): Promise<{ outline: string } | { error: string }> {
+  await requireAuth();
+  if (!isAiConfigured()) return { error: "AI 未配置" };
+  if (!args.title.trim()) return { error: "需要标题才能生成大纲" };
+  try {
+    const outline = await generateOutline({
+      title: args.title,
+      content: args.content,
+    });
+    return { outline };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
+export async function polishTextAction(
+  text: string,
+): Promise<{ text: string } | { error: string }> {
+  await requireAuth();
+  if (!isAiConfigured()) return { error: "AI 未配置" };
+  const trimmed = text.trim();
+  if (!trimmed) return { error: "请先选中或粘贴一段文字" };
+  if (trimmed.length > 4000) return { error: "段落太长（>4000 字），请分段" };
+  try {
+    const out = await polishText(trimmed);
+    return { text: out };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
+export async function suggestTitlesAction(args: {
+  title: string;
+  content: string;
+}): Promise<{ titles: string[] } | { error: string }> {
+  await requireAuth();
+  if (!isAiConfigured()) return { error: "AI 未配置" };
+  if (!args.content.trim()) return { error: "正文为空，无法建议标题" };
+  try {
+    const titles = await suggestTitles({
+      currentTitle: args.title,
+      content: args.content,
+    });
+    return { titles };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
+export async function generateTldrAction(args: {
+  title: string;
+  content: string;
+}): Promise<{ tldr: string } | { error: string }> {
+  await requireAuth();
+  if (!isAiConfigured()) return { error: "AI 未配置" };
+  if (!args.content.trim()) return { error: "正文为空" };
+  try {
+    const tldr = await generateTldr({
+      title: args.title || "Untitled",
+      content: args.content,
+    });
+    return { tldr };
   } catch (e) {
     return { error: (e as Error).message };
   }

@@ -7,6 +7,9 @@ import {
   hideMessage,
   postMessage,
 } from "@/db/guestbook";
+import { notifyAdmin } from "@/lib/email";
+import { parseMentions } from "@/lib/mentions";
+import { siteConfig } from "@/lib/site-config";
 
 export async function postGuestbookAction(formData: FormData) {
   const session = await auth();
@@ -25,6 +28,17 @@ export async function postGuestbookAction(formData: FormData) {
     message: raw,
   });
   revalidatePath("/guestbook");
+
+  // Fire-and-forget admin notification with @mention summary.
+  const mentions = parseMentions(raw);
+  const mentionsLine =
+    mentions.length > 0
+      ? `\n@提及：${mentions.map((m) => `@${m}`).join(" ")}`
+      : "";
+  void notifyAdmin({
+    subject: `[Hypervoid] 留言板有新留言来自 @${login}`,
+    bodyText: `${session.user.name ?? login} (@${login}) 在留言板留言：\n\n${raw}${mentionsLine}\n\n${siteConfig.url}/guestbook`,
+  });
 }
 
 export async function hideGuestbookAction(id: string) {

@@ -22,6 +22,35 @@ function fromAddress(): string {
   return `${name} <${email}>`;
 }
 
+function adminEmail(): string | null {
+  return process.env.ADMIN_EMAIL?.trim() || null;
+}
+
+/**
+ * Best-effort admin notification — silently no-ops if RESEND_API_KEY or
+ * ADMIN_EMAIL aren't set. Never throws; intended to be fire-and-forget.
+ */
+export async function notifyAdmin(args: {
+  subject: string;
+  bodyText: string;
+  bodyHtml?: string;
+}): Promise<void> {
+  const to = adminEmail();
+  if (!to || !isEmailConfigured()) return;
+  try {
+    const client = getClient();
+    await client.emails.send({
+      from: fromAddress(),
+      to,
+      subject: args.subject,
+      text: args.bodyText,
+      html: args.bodyHtml ?? args.bodyText.replace(/\n/g, "<br>"),
+    });
+  } catch (e) {
+    console.warn("[email] admin notify failed:", e);
+  }
+}
+
 export async function sendEmail(args: {
   to: string;
   subject: string;

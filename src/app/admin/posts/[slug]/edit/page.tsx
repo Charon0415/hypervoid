@@ -7,6 +7,7 @@ import {
 } from "@/components/admin/PostEditor";
 import { BroadcastButton } from "@/components/admin/BroadcastButton";
 import { SummaryPanel } from "@/components/admin/SummaryPanel";
+import { AiWriterPanel } from "@/components/admin/AiWriterPanel";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { getPostForEditing, type AdminPost } from "@/db/admin-posts";
 import {
@@ -90,6 +91,7 @@ export default async function EditPostPage(props: {
         subscriberCount={subscriberCount}
       />
       <SummaryPanel slug={slug} initialSummary={post.summary} />
+      <AiWriterPanel />
       <PostEditor
         mode="edit"
         initial={initial}
