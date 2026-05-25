@@ -2,19 +2,25 @@ import "server-only";
 
 import { eq } from "drizzle-orm";
 import { getDb, schema } from "@/db/client";
+import {
+  customRowToModel,
+  listCustomModels,
+  getCustomModel,
+  type CustomModelRow,
+} from "@/lib/ai-custom-models";
 
-export type AiProvider = "anthropic" | "deepseek";
+/**
+ * Provider key — built-ins are "anthropic" / "deepseek". Custom models
+ * each get their own provider key equal to their id ("custom:foo") so
+ * usage tracking and quotas are isolated per endpoint.
+ */
+export type AiProvider = string;
 
 export type AiModel = {
   id: string;
   provider: AiProvider;
   label: string;
   hint: string;
-  /**
-   * Real upstream model ID the provider's API will accept. Lets us expose
-   * a stable "marketing" ID in the admin UI while the actual API string
-   * can be remapped without a migration.
-   */
   upstreamId: string;
 };
 
@@ -57,14 +63,19 @@ export const AI_MODELS: AiModel[] = [
 ];
 
 export const DEFAULT_AI_MODEL_ID = "deepseek-v4-flash";
-export const PROVIDERS: { id: AiProvider; label: string }[] = [
+
+/** Stable provider keys used for built-ins. Custom models append their own. */
+export const BUILTIN_PROVIDERS: { id: AiProvider; label: string }[] = [
   { id: "deepseek", label: "DeepSeek" },
   { id: "anthropic", label: "Claude (Anthropic)" },
 ];
 
+/** Back-compat alias — some pages import this name. */
+export const PROVIDERS = BUILTIN_PROVIDERS;
+
 const MODEL_KEY = "ai.model";
 
-function isValid(id: string): boolean {
+function isBuiltinValid(id: string): boolean {
   return AI_MODELS.some((m) => m.id === id);
 }
 
@@ -72,6 +83,16 @@ function fallbackModel(): AiModel {
   return (
     AI_MODELS.find((m) => m.id === DEFAULT_AI_MODEL_ID) ?? AI_MODELS[0]
   );
+}
+
+/**
+ * Returns all models (built-in + custom). Custom rows are converted to the
+ * AiModel shape; their keys/baseUrls stay in CustomModelRow accessible via
+ * resolveModelRow().
+ */
+export async function listAllModels(): Promise<AiModel[]> {
+  const custom = await listCustomModels();
+  return [...AI_MODELS, ...custom.filter((c) => c.enabled).map(customRowToModel)];
 }
 
 /** Resolves to the stored selection (DB), or falls back to the default. */
@@ -83,14 +104,38 @@ export async function getActiveAiModel(): Promise<AiModel> {
       .where(eq(schema.siteOverrides.key, MODEL_KEY))
       .limit(1);
     const stored = rows[0]?.value;
-    if (stored && isValid(stored)) {
-      const m = AI_MODELS.find((x) => x.id === stored);
-      if (m) return m;
+    if (stored) {
+      if (isBuiltinValid(stored)) {
+        const m = AI_MODELS.find((x) => x.id === stored);
+        if (m) return m;
+      }
+      // Custom model lookup
+      if (stored.startsWith("custom:")) {
+        const row = await getCustomModel(stored);
+        if (row && row.enabled) return customRowToModel(row);
+      }
     }
   } catch {
     /* fall through */
   }
   return fallbackModel();
+}
+
+/**
+ * Like getActiveAiModel(), but also returns the CustomModelRow if the
+ * selected model is a custom one. ai-client uses this to read baseUrl,
+ * apiKey, protocol, and extraHeaders.
+ */
+export async function resolveActiveModelWithRow(): Promise<{
+  model: AiModel;
+  custom: CustomModelRow | null;
+}> {
+  const model = await getActiveAiModel();
+  if (model.id.startsWith("custom:")) {
+    const custom = await getCustomModel(model.id);
+    return { model, custom: custom?.enabled ? custom : null };
+  }
+  return { model, custom: null };
 }
 
 /**
@@ -103,7 +148,12 @@ export async function getAiModel(): Promise<string> {
 }
 
 export async function setAiModel(id: string): Promise<void> {
-  if (!isValid(id)) throw new Error(`unknown model: ${id}`);
+  const valid = isBuiltinValid(id) || id.startsWith("custom:");
+  if (!valid) throw new Error(`unknown model: ${id}`);
+  if (id.startsWith("custom:")) {
+    const row = await getCustomModel(id);
+    if (!row || !row.enabled) throw new Error("自定义模型不存在或已禁用");
+  }
   const now = new Date();
   await getDb()
     .insert(schema.siteOverrides)
@@ -117,13 +167,18 @@ export async function setAiModel(id: string): Promise<void> {
 export function isProviderConfigured(provider: AiProvider): boolean {
   if (provider === "anthropic") return Boolean(process.env.ANTHROPIC_API_KEY);
   if (provider === "deepseek") return Boolean(process.env.DEEPSEEK_API_KEY);
+  // Custom providers carry their own keys in the DB row — handled by ai-client
+  // at dispatch time. We can't know from this synchronous helper alone, so
+  // optimistically return true; the actual fetch will surface auth errors.
+  if (provider.startsWith("custom:")) return true;
   return false;
 }
 
 /** True if the currently-selected model's provider has its key set. */
 export async function isAiKeyConfigured(): Promise<boolean> {
-  const m = await getActiveAiModel();
-  return isProviderConfigured(m.provider);
+  const { model, custom } = await resolveActiveModelWithRow();
+  if (custom) return Boolean(custom.apiKey);
+  return isProviderConfigured(model.provider);
 }
 
 export function maskKey(raw: string | undefined): string {

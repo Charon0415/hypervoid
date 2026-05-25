@@ -246,6 +246,55 @@ export const resources = pgTable("resources", {
 });
 
 /**
+ * Per-day AI token usage, broken down by provider. One row per (date,
+ * provider) tuple; counters incremented after each chat/chatStream call.
+ * `date` is a YYYY-MM-DD string in the server's local TZ so the same
+ * "day" lines up regardless of clock drift between Neon and Vercel.
+ */
+export const aiUsage = pgTable(
+  "ai_usage",
+  {
+    date: text("date").notNull(),
+    provider: text("provider").notNull(),
+    promptTokens: integer("prompt_tokens").notNull().default(0),
+    completionTokens: integer("completion_tokens").notNull().default(0),
+    totalTokens: integer("total_tokens").notNull().default(0),
+    requests: integer("requests").notNull().default(0),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.date, t.provider] })],
+);
+
+/**
+ * Admin-defined custom models (OpenAI-compatible or Anthropic-compatible
+ * endpoints). The built-in AI_MODELS list is still shipped; this table
+ * lets the operator plug in OpenRouter / SiliconFlow / Ollama / proxied
+ * Claude without touching code.
+ */
+export const aiCustomModels = pgTable("ai_custom_models", {
+  id: text("id").primaryKey(),
+  label: text("label").notNull(),
+  hint: text("hint"),
+  protocol: text("protocol").notNull().default("openai"),
+  baseUrl: text("base_url").notNull(),
+  upstreamId: text("upstream_id").notNull(),
+  apiKey: text("api_key").notNull(),
+  extraHeaders: jsonb("extra_headers")
+    .$type<Record<string, string>>()
+    .notNull()
+    .default({}),
+  enabled: boolean("enabled").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+/**
  * Incoming Webmentions (IndieWeb). Each row represents a verified external
  * source URL that links to a post on this site (target). Status flow:
  *   pending → verified  (source fetched and confirmed to contain target URL)

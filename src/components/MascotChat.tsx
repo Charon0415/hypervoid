@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 const STORAGE_KEY = "hypervoid:mascot-chat";
 const MAX_HISTORY = 12;
@@ -184,14 +184,14 @@ export function MascotChat({ onClose }: { onClose: () => void }) {
                     : "bg-background text-foreground"
                 }`}
               >
-                {m.content}
+                {m.role === "assistant" ? renderInline(m.content) : m.content}
               </span>
             </li>
           ))}
           {partial ? (
             <li className="flex justify-start">
               <span className="max-w-[80%] rounded-2xl bg-background px-2.5 py-1.5 text-xs leading-relaxed text-foreground">
-                {partial}
+                {renderInline(partial)}
                 <span className="ml-0.5 inline-block h-2 w-1 animate-pulse bg-primary align-middle" />
               </span>
             </li>
@@ -225,4 +225,45 @@ export function MascotChat({ onClose }: { onClose: () => void }) {
       </form>
     </div>
   );
+}
+
+/**
+ * Minimal inline renderer for Kanna's replies — turns
+ * `[label](/path)` and `[label](https://…)` into safe <a> tags.
+ * Anything else passes through as plain text.
+ */
+function renderInline(text: string): ReactNode {
+  const out: ReactNode[] = [];
+  const re = /\[([^\]]+)\]\(([^)\s]+)\)/g;
+  let last = 0;
+  let m: RegExpExecArray | null;
+  let key = 0;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) out.push(text.slice(last, m.index));
+    const label = m[1];
+    const href = m[2];
+    const safe =
+      href.startsWith("/") ||
+      href.startsWith("https://") ||
+      href.startsWith("http://");
+    if (safe) {
+      const external = /^https?:\/\//.test(href);
+      out.push(
+        <a
+          key={`l${key++}`}
+          href={href}
+          target={external ? "_blank" : undefined}
+          rel={external ? "noreferrer noopener" : undefined}
+          className="text-primary underline decoration-primary/40 underline-offset-2 hover:decoration-primary"
+        >
+          {label}
+        </a>,
+      );
+    } else {
+      out.push(m[0]);
+    }
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) out.push(text.slice(last));
+  return out;
 }

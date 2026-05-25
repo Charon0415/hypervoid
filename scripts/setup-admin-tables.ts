@@ -106,6 +106,33 @@ const STATEMENTS = [
   );`,
 
   `CREATE INDEX IF NOT EXISTS webmentions_target_slug_idx ON webmentions (target_slug);`,
+
+  `CREATE TABLE IF NOT EXISTS ai_usage (
+    date text NOT NULL,
+    provider text NOT NULL,
+    prompt_tokens integer NOT NULL DEFAULT 0,
+    completion_tokens integer NOT NULL DEFAULT 0,
+    total_tokens integer NOT NULL DEFAULT 0,
+    requests integer NOT NULL DEFAULT 0,
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    PRIMARY KEY (date, provider)
+  );`,
+
+  `CREATE INDEX IF NOT EXISTS ai_usage_date_idx ON ai_usage (date DESC);`,
+
+  `CREATE TABLE IF NOT EXISTS ai_custom_models (
+    id text PRIMARY KEY,
+    label text NOT NULL,
+    hint text,
+    protocol text NOT NULL DEFAULT 'openai',
+    base_url text NOT NULL,
+    upstream_id text NOT NULL,
+    api_key text NOT NULL,
+    extra_headers jsonb NOT NULL DEFAULT '{}'::jsonb,
+    enabled boolean NOT NULL DEFAULT true,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now()
+  );`,
 ];
 
 async function main() {

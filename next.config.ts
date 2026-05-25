@@ -22,6 +22,12 @@ const nextConfig: NextConfig = {
   experimental: {
     viewTransition: true,
   },
+  // Ensure README and handbook are included in serverless bundles so
+  // Kanna's blog-corpus reader can fs.readFile them at runtime on Vercel.
+  outputFileTracingIncludes: {
+    "/api/**/*": ["./README.md", "./docs/handbook.md"],
+    "/admin/**/*": ["./README.md", "./docs/handbook.md"],
+  },
   headers: async () => [
     {
       source: "/(.*)",

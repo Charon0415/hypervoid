@@ -4,13 +4,27 @@ import { auth } from "@/auth";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import {
   AI_MODELS,
-  PROVIDERS,
+  BUILTIN_PROVIDERS,
   getActiveAiModel,
   isProviderConfigured,
   providerKeyHint,
   type AiProvider,
 } from "@/lib/ai-config";
-import { updateModelAction } from "./actions";
+import {
+  listCustomModels,
+  customDisplayId,
+  maskCustomKey,
+} from "@/lib/ai-custom-models";
+import {
+  getProviderQuota,
+  getTodayUsage,
+} from "@/lib/ai-quota";
+import {
+  updateModelAction,
+  updateQuotaAction,
+  saveCustomModelAction,
+  deleteCustomModelAction,
+} from "./actions";
 
 export const metadata: Metadata = {
   title: "AI 配置",
@@ -19,12 +33,12 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-const ENV_NAME: Record<AiProvider, string> = {
+const ENV_NAME: Record<string, string> = {
   anthropic: "ANTHROPIC_API_KEY",
   deepseek: "DEEPSEEK_API_KEY",
 };
 
-const PROVIDER_DOCS: Record<AiProvider, { url: string; hint: string }> = {
+const PROVIDER_DOCS: Record<string, { url: string; hint: string }> = {
   anthropic: {
     url: "https://console.anthropic.com/",
     hint: "在 console.anthropic.com 创建 Key,需要绑卡。",
@@ -35,11 +49,30 @@ const PROVIDER_DOCS: Record<AiProvider, { url: string; hint: string }> = {
   },
 };
 
+function fmtNumber(n: number): string {
+  return n.toLocaleString("en-US");
+}
+
 export default async function AdminAiPage() {
   const session = await auth();
   if (!session?.user) redirect("/admin/sign-in");
 
   const current = await getActiveAiModel();
+  const customRows = await listCustomModels();
+  const usage = await getTodayUsage();
+  const usageByProvider = new Map(usage.map((u) => [u.provider, u]));
+
+  // Quota config covers built-in providers + each enabled custom model.
+  const quotaProviders: { key: string; label: string }[] = [
+    ...BUILTIN_PROVIDERS.map((p) => ({ key: p.id, label: p.label })),
+    ...customRows
+      .filter((c) => c.enabled)
+      .map((c) => ({ key: c.id, label: c.label })),
+  ];
+  const quotas: Record<string, number> = {};
+  for (const p of quotaProviders) {
+    quotas[p.key] = await getProviderQuota(p.key);
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -49,16 +82,14 @@ export default async function AdminAiPage() {
       </header>
 
       <p className="text-sm text-muted">
-        所有 AI 功能（文章摘要、标签建议、AskAI、康娜聊天、写作助手）共用这里选的模型。
+        所有 AI 功能(文章摘要、标签建议、AskAI、康娜聊天、写作助手)共用这里选的模型。
         当前生效:{" "}
         <span className="font-mono text-foreground">{current.label}</span>{" "}
-        <span className="text-[10px] text-muted">
-          ({current.upstreamId})
-        </span>
+        <span className="text-[10px] text-muted">({current.upstreamId})</span>
       </p>
 
       <section className="grid gap-3 sm:grid-cols-2">
-        {PROVIDERS.map((p) => {
+        {BUILTIN_PROVIDERS.map((p) => {
           const ok = isProviderConfigured(p.id);
           const masked = providerKeyHint(p.id);
           return (
@@ -108,6 +139,111 @@ export default async function AdminAiPage() {
       </section>
 
       <section className="rounded-2xl border border-border bg-card p-5">
+        <h2 className="mb-1 text-sm font-semibold tracking-tight">
+          今日用量(本地时区 0 点重置)
+        </h2>
+        <p className="mb-4 text-xs text-muted">
+          每次 AI 请求结束后会自动累加 token。超过限额的 provider 后续请求会被直接拒绝。
+        </p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {quotaProviders.map((p) => {
+            const u = usageByProvider.get(p.key);
+            const used = u?.totalTokens ?? 0;
+            const limit = quotas[p.key] ?? 0;
+            const pct = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
+            const over = limit > 0 && used >= limit;
+            const near = limit > 0 && used >= limit * 0.8 && !over;
+            return (
+              <div
+                key={p.key}
+                className={`rounded-xl border p-3 ${
+                  over
+                    ? "border-red-500/50 bg-red-500/5"
+                    : near
+                    ? "border-amber-500/50 bg-amber-500/5"
+                    : "border-border bg-background"
+                }`}
+              >
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="text-sm font-medium">{p.label}</span>
+                  <span className="font-mono text-[10px] text-muted">
+                    {u?.requests ?? 0} 次
+                  </span>
+                </div>
+                <div className="mt-1 font-mono text-xs">
+                  <span className={over ? "text-red-600 dark:text-red-400" : "text-foreground"}>
+                    {fmtNumber(used)}
+                  </span>{" "}
+                  <span className="text-muted">/</span>{" "}
+                  <span className="text-muted">{limit > 0 ? fmtNumber(limit) : "∞"}</span>{" "}
+                  <span className="text-muted">tokens</span>
+                </div>
+                {limit > 0 ? (
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-border/60">
+                    <div
+                      className={`h-full transition-all ${
+                        over
+                          ? "bg-red-500"
+                          : near
+                          ? "bg-amber-500"
+                          : "bg-primary"
+                      }`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                ) : null}
+                {u ? (
+                  <div className="mt-1 text-[10px] text-muted">
+                    in {fmtNumber(u.promptTokens)} · out {fmtNumber(u.completionTokens)}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-border bg-card p-5">
+        <h2 className="mb-1 text-sm font-semibold tracking-tight">每日 token 限额</h2>
+        <p className="mb-4 text-xs text-muted">
+          0 表示不限。限额累加到 token 总数(prompt+completion),达到后当日所有该 provider 的请求会被拒绝。
+        </p>
+        <form action={updateQuotaAction} className="flex flex-col gap-3">
+          <input
+            type="hidden"
+            name="providers"
+            value={quotaProviders.map((p) => p.key).join(",")}
+          />
+          <div className="grid gap-2 sm:grid-cols-2">
+            {quotaProviders.map((p) => (
+              <label
+                key={p.key}
+                className="flex flex-col gap-1 rounded-xl border border-border bg-background p-3"
+              >
+                <span className="text-xs font-medium">{p.label}</span>
+                <input
+                  type="number"
+                  name={`quota.${p.key}`}
+                  defaultValue={quotas[p.key] ?? 0}
+                  min={0}
+                  step={1000}
+                  className="w-full rounded-md border border-border bg-card px-2 py-1 font-mono text-sm"
+                  placeholder="0 = 不限"
+                />
+                <span className="text-[10px] text-muted">tokens / 天</span>
+              </label>
+            ))}
+          </div>
+          <button
+            type="submit"
+            className="self-start rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+          >
+            保存限额
+          </button>
+        </form>
+      </section>
+
+      <section className="rounded-2xl border border-border bg-card p-5">
         <h2 className="mb-1 text-sm font-semibold tracking-tight">模型选择</h2>
         <p className="mb-4 text-xs text-muted">
           换模型立即生效——下一次请求即用新模型。Pro 类模型更贵更慢但更聪明,Flash 类更快更便宜。
@@ -119,7 +255,7 @@ export default async function AdminAiPage() {
             return (
               <div key={provider} className="flex flex-col gap-2">
                 <p className="text-[10px] uppercase tracking-widest text-muted">
-                  {PROVIDERS.find((p) => p.id === provider)?.label}
+                  {BUILTIN_PROVIDERS.find((p) => p.id === provider)?.label}
                   {!providerOk ? (
                     <span className="ml-2 normal-case tracking-normal text-red-500">
                       ({ENV_NAME[provider]} 未配置 — 选了也不能用)
@@ -159,11 +295,208 @@ export default async function AdminAiPage() {
               </div>
             );
           })}
+
+          {customRows.length > 0 ? (
+            <div className="flex flex-col gap-2">
+              <p className="text-[10px] uppercase tracking-widest text-muted">
+                自定义模型
+              </p>
+              {customRows.map((row) => {
+                const active = row.id === current.id;
+                const disabled = !row.enabled;
+                return (
+                  <label
+                    key={row.id}
+                    className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${
+                      active
+                        ? "border-primary bg-primary/5"
+                        : "border-border bg-background hover:border-primary/40"
+                    } ${disabled ? "opacity-50" : ""}`}
+                  >
+                    <input
+                      type="radio"
+                      name="model"
+                      value={row.id}
+                      defaultChecked={active}
+                      disabled={disabled}
+                      className="mt-1 accent-primary"
+                    />
+                    <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <span className="flex flex-wrap items-center gap-2 text-sm font-medium">
+                        {row.label}
+                        <code className="rounded bg-card px-1.5 py-0.5 font-mono text-[10px] text-muted">
+                          {row.upstreamId}
+                        </code>
+                        <span className="rounded-full bg-border/60 px-1.5 py-0.5 text-[9px] uppercase tracking-widest">
+                          {row.protocol}
+                        </span>
+                        {disabled ? (
+                          <span className="text-[10px] text-red-500">(已禁用)</span>
+                        ) : null}
+                      </span>
+                      <span className="text-xs text-muted">
+                        {row.hint || row.baseUrl}
+                      </span>
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+          ) : null}
+
           <button
             type="submit"
             className="self-start rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
           >
-            保存
+            保存模型
+          </button>
+        </form>
+      </section>
+
+      <section className="rounded-2xl border border-border bg-card p-5">
+        <header className="mb-3 flex items-baseline justify-between gap-3">
+          <h2 className="text-sm font-semibold tracking-tight">
+            自定义模型({customRows.length})
+          </h2>
+          <span className="text-[10px] text-muted">
+            支持 OpenAI 兼容(/chat/completions) 与 Anthropic 兼容(/v1/messages) 两种协议
+          </span>
+        </header>
+
+        {customRows.length > 0 ? (
+          <ul className="mb-4 flex flex-col gap-2">
+            {customRows.map((row) => (
+              <li
+                key={row.id}
+                className="flex items-start gap-3 rounded-xl border border-border bg-background p-3 text-xs"
+              >
+                <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                  <p className="text-sm font-medium">
+                    {row.label}{" "}
+                    <code className="rounded bg-card px-1 py-0.5 font-mono text-[10px] text-muted">
+                      {customDisplayId(row.id)}
+                    </code>
+                    {!row.enabled ? (
+                      <span className="ml-2 text-red-500">(禁用)</span>
+                    ) : null}
+                  </p>
+                  <p className="font-mono text-[10px] text-muted">
+                    {row.protocol} · {row.baseUrl} · {row.upstreamId}
+                  </p>
+                  <p className="font-mono text-[10px] text-muted">
+                    key: {maskCustomKey(row.apiKey)}
+                  </p>
+                </div>
+                <form action={deleteCustomModelAction}>
+                  <input type="hidden" name="id" value={row.id} />
+                  <button
+                    type="submit"
+                    className="rounded-md border border-red-500/40 px-2 py-1 text-[10px] font-medium text-red-600 transition hover:bg-red-500/10 dark:text-red-300"
+                  >
+                    删除
+                  </button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mb-4 text-xs text-muted">还没有自定义模型。下面填表新增。</p>
+        )}
+
+        <form
+          action={saveCustomModelAction}
+          className="grid gap-3 rounded-xl border border-dashed border-border p-4 sm:grid-cols-2"
+        >
+          <label className="flex flex-col gap-1 text-xs">
+            <span className="font-medium">id (字母数字/-,2-40 位)</span>
+            <input
+              name="id"
+              required
+              placeholder="openrouter-sonnet"
+              className="rounded-md border border-border bg-background px-2 py-1 font-mono text-sm"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs">
+            <span className="font-medium">显示名称</span>
+            <input
+              name="label"
+              required
+              placeholder="OpenRouter · Claude 3.5 Sonnet"
+              className="rounded-md border border-border bg-background px-2 py-1 text-sm"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs">
+            <span className="font-medium">协议</span>
+            <select
+              name="protocol"
+              defaultValue="openai"
+              className="rounded-md border border-border bg-background px-2 py-1 text-sm"
+            >
+              <option value="openai">openai (兼容 /chat/completions)</option>
+              <option value="anthropic">anthropic (兼容 /v1/messages)</option>
+            </select>
+          </label>
+          <label className="flex flex-col gap-1 text-xs">
+            <span className="font-medium">Base URL (不带尾斜杠)</span>
+            <input
+              name="baseUrl"
+              required
+              placeholder="https://openrouter.ai/api/v1"
+              className="rounded-md border border-border bg-background px-2 py-1 font-mono text-sm"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs">
+            <span className="font-medium">Model ID (上游识别字符串)</span>
+            <input
+              name="upstreamId"
+              required
+              placeholder="anthropic/claude-3.5-sonnet"
+              className="rounded-md border border-border bg-background px-2 py-1 font-mono text-sm"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs">
+            <span className="font-medium">API Key</span>
+            <input
+              name="apiKey"
+              required
+              type="password"
+              placeholder="sk-or-..."
+              className="rounded-md border border-border bg-background px-2 py-1 font-mono text-sm"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs sm:col-span-2">
+            <span className="font-medium">备注 (可选,显示在模型选择列表)</span>
+            <input
+              name="hint"
+              placeholder="OpenRouter 的 Sonnet — 国内可达"
+              className="rounded-md border border-border bg-background px-2 py-1 text-sm"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs sm:col-span-2">
+            <span className="font-medium">额外 Headers (可选 JSON 对象)</span>
+            <input
+              name="extraHeaders"
+              placeholder={'{"HTTP-Referer": "https://hypervoid.top", "X-Title": "Hypervoid"}'}
+              className="rounded-md border border-border bg-background px-2 py-1 font-mono text-[11px]"
+            />
+            <span className="text-[10px] text-muted">
+              OpenRouter 推荐填 HTTP-Referer + X-Title;其它服务通常留空。
+            </span>
+          </label>
+          <label className="flex items-center gap-2 text-xs sm:col-span-2">
+            <input
+              type="checkbox"
+              name="enabled"
+              defaultChecked
+              className="accent-primary"
+            />
+            <span>启用</span>
+          </label>
+          <button
+            type="submit"
+            className="self-start rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 sm:col-span-2"
+          >
+            添加 / 更新自定义模型
           </button>
         </form>
       </section>
@@ -171,15 +504,12 @@ export default async function AdminAiPage() {
       <section className="rounded-2xl border border-border bg-card p-5">
         <h2 className="mb-3 text-sm font-semibold tracking-tight">使用范围</h2>
         <ul className="grid gap-2 sm:grid-cols-2 text-xs">
-          <FeatureCard
-            title="文章摘要"
-            hint="发布时自动生成 / 编辑页手动重生"
-          />
+          <FeatureCard title="文章摘要" hint="发布时自动生成 / 编辑页手动重生" />
           <FeatureCard title="标签建议" hint="编辑页「AI 建议标签」按钮" />
           <FeatureCard title="AskAI" hint="文章页访客提问,按文章内容回答" />
           <FeatureCard
             title="康娜聊天"
-            hint="看板娘的对话功能(角色扮演 prompt)"
+            hint="看板娘对话(已注入 README/手册,会给出路由链接)"
           />
           <FeatureCard
             title="写作助手"
