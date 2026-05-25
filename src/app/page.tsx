@@ -14,6 +14,7 @@ import { RecentGuestbook } from "@/components/RecentGuestbook";
 import { Greeting } from "@/components/Greeting";
 import { DailyPick } from "@/components/DailyPick";
 import { getAllPosts } from "@/lib/posts";
+import { getSiteOverride } from "@/lib/site-config-server";
 
 export const revalidate = 60;
 
@@ -24,7 +25,11 @@ function pickByDay<T>(arr: T[]): T | null {
 }
 
 export default async function Home() {
-  const all = await getAllPosts();
+  const [all, quote, quoteAuthor] = await Promise.all([
+    getAllPosts(),
+    getSiteOverride("home.quote"),
+    getSiteOverride("home.quoteAuthor"),
+  ]);
   const recent = all.slice(0, 6);
   const dailyPick = pickByDay(all);
 
@@ -44,12 +49,12 @@ export default async function Home() {
               The world is big, you have to go and see.
             </p>
             <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted sm:mt-5 sm:text-base md:text-lg">
-              <span className="text-foreground/80">
-                「我们都是星尘——也是宇宙了解自身的一种方式。」
-              </span>
-              <span className="ml-2 text-xs text-muted/80 sm:text-sm">
-                —— Carl Sagan
-              </span>
+              <span className="text-foreground/80">「{quote}」</span>
+              {quoteAuthor ? (
+                <span className="ml-2 text-xs text-muted/80 sm:text-sm">
+                  —— {quoteAuthor}
+                </span>
+              ) : null}
             </p>
             <div className="mt-5 flex flex-wrap gap-2 sm:mt-6 sm:gap-3">
               <Link

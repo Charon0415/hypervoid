@@ -20,6 +20,12 @@ export const postVisibility = pgEnum("post_visibility", [
   "private",
 ]);
 
+export const announcementSlot = pgEnum("announcement_slot", [
+  "top",
+  "sidebar",
+  "article_top",
+]);
+
 export const posts = pgTable("posts", {
   slug: text("slug").primaryKey(),
   title: text("title").notNull(),
@@ -134,6 +140,61 @@ export const siteOverrides = pgTable("site_overrides", {
   key: text("key").primaryKey(),
   value: text("value").notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+/** Custom theme — single-row table (id=1) holding light + dark color JSON */
+export const customTheme = pgTable("custom_theme", {
+  id: integer("id").primaryKey().default(1),
+  enabled: boolean("enabled").notNull().default(false),
+  light: jsonb("light").$type<Record<string, string>>().notNull().default({}),
+  dark: jsonb("dark").$type<Record<string, string>>().notNull().default({}),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+/** Slot-aware announcements with time-window and priority */
+export const announcements = pgTable("announcements", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  slot: announcementSlot("slot").notNull(),
+  message: text("message").notNull(),
+  link: text("link"),
+  linkText: text("link_text"),
+  startsAt: timestamp("starts_at", { withTimezone: true }),
+  endsAt: timestamp("ends_at", { withTimezone: true }),
+  priority: integer("priority").notNull().default(0),
+  active: boolean("active").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+/** Short-link redirects — /r/<code> → toUrl, with hit counter */
+export const redirects = pgTable("redirects", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  code: text("code").notNull().unique(),
+  toUrl: text("to_url").notNull(),
+  note: text("note"),
+  hits: integer("hits").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+/** Append-only audit log of admin actions */
+export const auditLog = pgTable("audit_log", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  actor: text("actor").notNull(),
+  action: text("action").notNull(),
+  targetType: text("target_type"),
+  targetId: text("target_id"),
+  details: jsonb("details").$type<Record<string, unknown>>(),
+  createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
 });

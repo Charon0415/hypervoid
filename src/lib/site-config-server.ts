@@ -24,7 +24,9 @@ export type OverridableFields =
   | "socials.steam"
   | "announcementMessage"
   | "announcementLink"
-  | "announcementLinkText";
+  | "announcementLinkText"
+  | "home.quote"
+  | "home.quoteAuthor";
 
 const DEFAULT_MAP: Record<OverridableFields, string> = {
   name: siteConfig.name,
@@ -47,6 +49,8 @@ const DEFAULT_MAP: Record<OverridableFields, string> = {
   announcementMessage: "",
   announcementLink: "",
   announcementLinkText: "",
+  "home.quote": "我们都是星尘——也是宇宙了解自身的一种方式。",
+  "home.quoteAuthor": "Carl Sagan",
 };
 
 const LABELS: Record<OverridableFields, string> = {
@@ -70,6 +74,8 @@ const LABELS: Record<OverridableFields, string> = {
   announcementMessage: "公告文本（留空则不显示）",
   announcementLink: "公告链接",
   announcementLinkText: "链接按钮文字",
+  "home.quote": "首页名句正文",
+  "home.quoteAuthor": "首页名句作者",
 };
 
 export const OVERRIDABLE_FIELDS = Object.entries(LABELS).map(
