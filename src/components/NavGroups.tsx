@@ -78,6 +78,7 @@ export function NavGroups() {
         { href: "/series", label: "系列", icon: "📚" },
         { href: "/tags", label: "标签", icon: "🏷️" },
         { href: "/resources", label: "资源库", icon: "🧰" },
+        { href: "/graph", label: "知识图谱", icon: "🕸️" },
         { href: "/year-in-review", label: "年度回顾", icon: "✨" },
         { href: "/posts/random", label: "随机一篇", icon: "🎲" },
       ],
