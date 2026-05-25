@@ -13,6 +13,13 @@ export async function listVisibleMessages(): Promise<GuestbookMessage[]> {
     .orderBy(desc(schema.guestbookMessages.createdAt));
 }
 
+export async function listAllMessages(): Promise<GuestbookMessage[]> {
+  return getDb()
+    .select()
+    .from(schema.guestbookMessages)
+    .orderBy(desc(schema.guestbookMessages.createdAt));
+}
+
 export async function postMessage(input: {
   githubLogin: string;
   githubName: string | null;
@@ -35,6 +42,13 @@ export async function hideMessage(id: string): Promise<void> {
   await getDb()
     .update(schema.guestbookMessages)
     .set({ hidden: true })
+    .where(eq(schema.guestbookMessages.id, id));
+}
+
+export async function unhideMessage(id: string): Promise<void> {
+  await getDb()
+    .update(schema.guestbookMessages)
+    .set({ hidden: false })
     .where(eq(schema.guestbookMessages.id, id));
 }
 

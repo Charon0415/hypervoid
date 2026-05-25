@@ -14,6 +14,8 @@ import { BackToTop } from "@/components/BackToTop";
 import { SettingsProvider } from "@/components/SettingsProvider";
 import { siteConfig } from "@/lib/site-config";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
+import { CommandPaletteHost } from "@/components/CommandPaletteHost";
+import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { getSiteOverride } from "@/lib/site-config-server";
 
 const geistSans = Geist({
@@ -117,6 +119,8 @@ export default function RootLayout({
         </SettingsProvider>
         <UmamiScript />
         <ServiceWorkerRegister />
+        <CommandPaletteHost />
+        <KeyboardShortcuts />
       </body>
     </html>
   );

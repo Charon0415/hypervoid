@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LocaleSwitch } from "@/components/LocaleSwitch";
@@ -12,21 +11,11 @@ import { useT } from "@/components/LocaleProvider";
 
 export function SiteHeader() {
   const t = useT();
-  const router = useRouter();
   const [isMac, setIsMac] = useState(false);
 
   useEffect(() => {
     setIsMac(/Mac|iPhone|iPad/.test(navigator.platform));
-
-    function onKey(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        router.push("/search");
-      }
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [router]);
+  }, []);
 
   return (
     <header

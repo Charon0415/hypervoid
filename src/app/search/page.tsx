@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { PostCard } from "@/components/PostCard";
+import { SearchHitCard } from "@/components/SearchHitCard";
 import { SearchBox } from "@/components/SearchBox";
 import { searchPosts, getAllTags } from "@/lib/posts";
 
@@ -197,7 +197,7 @@ export default async function SearchPage(props: {
           </p>
           <div className="grid gap-4 sm:grid-cols-2">
             {hits.map((hit) => (
-              <PostCard key={hit.slug} post={hit} />
+              <SearchHitCard key={hit.slug} post={hit} query={query} />
             ))}
           </div>
         </>

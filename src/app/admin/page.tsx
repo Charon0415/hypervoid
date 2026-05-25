@@ -166,6 +166,21 @@ export default async function AdminHome() {
             count={allPosts.length}
           />
           <NavTile
+            href="/admin/stats"
+            title="数据看板"
+            desc="月度发文趋势、热门文章排行、累计指标"
+          />
+          <NavTile
+            href="/admin/guestbook"
+            title="留言板管理"
+            desc="审核访客留言：隐藏、恢复、删除"
+          />
+          <NavTile
+            href="/admin/subscribers"
+            title="订阅者管理"
+            desc="查看邮箱订阅列表，手动退订/删除"
+          />
+          <NavTile
             href="/admin/friends"
             title="友链管理"
             desc="维护朋友的博客与个人站点链接"
