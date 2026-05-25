@@ -16,7 +16,8 @@ export type BackgroundKey =
   | "waves"
   | "particles"
   | "acg"
-  | "medieval";
+  | "medieval"
+  | "cyberpunk";
 
 export type FontKey = "geist" | "serif" | "handwriting";
 
@@ -47,6 +48,7 @@ export const BACKGROUND_OPTIONS: { key: BackgroundKey; label: string }[] = [
   { key: "paper", label: "纸质" },
   { key: "waves", label: "波纹" },
   { key: "plain", label: "纯净" },
+  { key: "cyberpunk", label: "赛博朋克" },
 ];
 
 export const FONT_OPTIONS: { key: FontKey; label: string }[] = [

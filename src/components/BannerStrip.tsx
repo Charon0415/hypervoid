@@ -72,6 +72,30 @@ export function BannerStrip() {
     );
   }
 
+  if (background === "cyberpunk") {
+    return (
+      <div className={stripClass}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/wallpapers/2.png"
+          alt=""
+          aria-hidden
+          loading="eager"
+          fetchPriority="high"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(0,200,255,0.12),transparent_50%),radial-gradient(ellipse_at_bottom_left,rgba(200,0,200,0.08),transparent_50%)]"
+        />
+      </div>
+    );
+  }
+
   if (background === "medieval") {
     return (
       <div className={stripClass}>
