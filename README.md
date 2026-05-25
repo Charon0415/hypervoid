@@ -32,7 +32,7 @@ _A personal coordinate carved out of `hyper` × `void` — "高维虚空" — Ch
 
 **Hypervoid** is the source of my personal blog & digital garden — built from an empty directory, no template, every line designed to grow with me.
 
-Articles live in **Postgres**, images in **Vercel Blob**, comments in **GitHub Discussions**, and the whole site auto-deploys on every push to `main`. The admin panel writes directly to the database; no rebuilds needed per post. AI summary and Q&A run on Claude Haiku 4.5.
+Articles live in **Postgres**, images in **Vercel Blob**, comments in **GitHub Discussions**, and the whole site auto-deploys on every push to `main`. The admin panel writes directly to the database; no rebuilds needed per post. AI features (summary, Q&A, mascot chat, writing helpers) speak to **DeepSeek V4 Flash/Pro**, **Claude Haiku/Sonnet/Opus**, or any **OpenAI-compatible / Anthropic-compatible** endpoint you plug in — switchable from `/admin/ai`, with **per-provider daily token quotas** so you never blow past your prepaid balance.
 
 ## ✦ Features
 
@@ -54,7 +54,7 @@ Articles live in **Postgres**, images in **Vercel Blob**, comments in **GitHub D
 - **RSS 2.0** feed + `sitemap.xml` + PWA manifest + apple-touch icon
 - **Comments** via [Giscus](https://giscus.app) (`mapping="pathname"`)
 - **View counter** + **like button** with localStorage-tracked toggle (atomic Postgres upserts)
-- **AI summary** + **AI Q&A** modal (Claude Haiku 4.5, streamed)
+- **AI summary** + **AI Q&A** modal (streaming) + **看板娘 Kanna chat** that reads README/handbook and answers "where do I…" with markdown links
 - **Bangumi** integration — **anime** (detail modal with rating histogram) · **movies** · **books** (subject types 2/6/1)
 - **Steam game library** — `/games`, recent-2-weeks + total playtime + search + sort
 - **Cosmic-themed 404** with random article recommendation
@@ -64,16 +64,30 @@ Articles live in **Postgres**, images in **Vercel Blob**, comments in **GitHub D
 - **Bilingual UI** (zh-CN / en) via custom React Context
 - **Mobile-first** responsive layout + hamburger drawer
 
+### Performance & safety
+
+- **ISR everywhere** — list pages on a 60s budget, `/posts/[slug]` cached 5min and invalidated by admin save + the publish-scheduled cron
+- **Request-scoped query dedup** via `React.cache` — a single article render does one full-posts fetch instead of 3-4 independent scans for adjacent/related/backlink
+- **Meta-only list queries** — `getAllPostMeta()` SELECTs metadata columns plus a precomputed `word_count`, so `/posts`, `/archive`, `/sitemap`, `/rss` never ship article bodies
+- **`<Image>` everywhere it matters** — covers, avatars, search thumbnails proxied through Vercel Image Optimization (AVIF/WebP at the display width)
+- **Postgres-backed rate limit** — atomic UPSERT against a shared table; survives Vercel's per-Lambda cold starts. Gates `/api/subscribe`, `/api/posts/[slug]/ask`, `/api/mascot/chat`, `/api/friends/apply`, `/api/webmention`, guestbook posts, and post reactions
+- **Defense-in-depth admin auth** — `/admin/*` and `/api/admin/*` both gated by the middleware authorized callback, every server action calls `requireAdmin()`
+- **Strict-ish CSP** — HSTS preload-grade, no `unsafe-eval`, frame ancestors locked down
+
 ### Author-facing
 
 - **Admin dashboard** at `/admin` — stats (posts/views/likes/subscribers) · recent published · pending counters (drafts / scheduled / private / missing-summary)
-- **GitHub-OAuth-gated** — only `ADMIN_GITHUB_LOGIN` may enter
+- **GitHub-OAuth-gated** — only `ADMIN_GITHUB_LOGIN` may enter; `/admin/*` and `/api/admin/*` both enforced at the middleware
 - **In-browser MDX editor** — title-driven slug · tags · category · cover · status · **public/private visibility** · **article series + order**
-- **AI tag suggestions** — Claude Haiku reads the draft and proposes 3-5 tags biased toward your existing taxonomy
+- **AI provider switching at `/admin/ai`** — pick DeepSeek V4 Flash/Pro, Claude Haiku/Sonnet/Opus, or add your own custom endpoint (OpenAI-compatible / Anthropic-compatible — OpenRouter, SiliconFlow, Groq, Ollama, etc.)
+- **Daily token quota per provider** — admin sets a cap, today's running total is shown with a progress bar, AI calls auto-reject when over (prevents balance drain)
+- **AI tag suggestions / outline / polish / TL;DR / title brainstorm** — built into the editor toolbar
 - **AI summary** — manual one-click + **auto-generated on first publish** via `next/server`'s `after()` (no editor wait)
 - **Draft / scheduled / published** workflow + **daily cron** at 04:00 UTC + **comment moderation** deep-link to the underlying GitHub Discussion
+- **Markdown import** — drag-and-drop `.md` files at `/admin/import`, gray-matter frontmatter parsed, drafts created
 - **One-click image upload** to Vercel Blob — markdown `![alt](url)` injected at cursor
-- **Friends / albums / guestbook** CRUD with pill-style admin nav
+- **Custom theme + multi-slot announcements + short-link redirects + media gallery + audit log** — all CRUD'd from the admin pill nav
+- **Friends / albums / guestbook** CRUD with pill-style admin nav; friend-link self-service with admin approval queue
 - **Email subscriber list** — confirmed-only via double opt-in, Resend backend
 - **Print-friendly stylesheet** — `Ctrl/⌘+P` strips chrome, keeps article body
 
@@ -102,9 +116,18 @@ Articles live in **Postgres**, images in **Vercel Blob**, comments in **GitHub D
 /search        全文搜索 (?q + ?tag + ?year)
 /series        文章系列索引
 /series/[name] 单个系列详情
+/resources     资源库
 /bookmarks     本地收藏夹 (localStorage)
+/reading-list  阅读队列 (localStorage)
 /donate        赞赏页 (默认隐藏，受 siteConfig.donate.enabled 控制)
 /admin         后台 dashboard (GitHub OAuth)
+/admin/ai      AI provider 切换 · 每日 token 限额 · 自定义模型
+/admin/themes  自定义主题 (调色板 + JSON 主题包)
+/admin/notes   公告 (top / sidebar / article_top 三个位点)
+/admin/redirects   短链 /r/<code>
+/admin/media   Vercel Blob 图库 + 引用计数
+/admin/audit   操作时间线
+/admin/import  Markdown 拖拽导入
 ```
 
 ## ✦ Tech stack
@@ -122,7 +145,7 @@ Articles live in **Postgres**, images in **Vercel Blob**, comments in **GitHub D
 | Comments | [Giscus](https://giscus.app) |
 | Email | [Resend](https://resend.com) |
 | Analytics | [Umami Cloud](https://umami.is) |
-| AI | [Anthropic SDK](https://docs.anthropic.com) (Claude Haiku 4.5, streamed) |
+| AI | [Anthropic SDK](https://docs.anthropic.com) (Claude Haiku/Sonnet/Opus) + DeepSeek V4 (OpenAI-compatible) + admin-configurable custom endpoints (OpenAI / Anthropic protocol) |
 | Hosting | [Vercel](https://vercel.com) (Hobby tier + daily cron) |
 
 ## ✦ Run locally
@@ -141,17 +164,22 @@ cp .env.example .env.local
 #   - NEXT_PUBLIC_GISCUS_*  (https://giscus.app)
 #   - BLOB_READ_WRITE_TOKEN (Vercel Blob)
 #   - RESEND_API_KEY        (optional, for newsletter)
-#   - ANTHROPIC_API_KEY     (optional, for AI summary/Q&A)
+#   - ANTHROPIC_API_KEY     (optional, Claude family)
+#   - DEEPSEEK_API_KEY      (optional, DeepSeek V4 Flash/Pro)
 #   - NEXT_PUBLIC_UMAMI_WEBSITE_ID (optional)
+# At least one of ANTHROPIC_API_KEY / DEEPSEEK_API_KEY is required for AI
+# features (summary, Q&A, mascot, writing helpers). Pick or add the
+# active provider from /admin/ai after first sign-in.
 
-# 2. Push schema, then rebuild full-text search indexes (db:push drops them)
+# 2. Push schema, create admin tables (idempotent), rebuild FTS indexes
 pnpm db:push
+pnpm exec tsx scripts/setup-admin-tables.ts
 pnpm exec tsx scripts/setup-search.ts
 
 # 3. Run
 pnpm build && pnpm start   # production preview (light on memory, recommended)
 # or
-pnpm dev                   # hot reload (heavier)
+pnpm dev                   # hot reload (heavier; auto-rebuilds Kanna corpus from README+handbook)
 ```
 
 > ⚠ If `pnpm dev` crashes the browser / IDE, switch to `pnpm build && pnpm start`. Shiki + Turbopack on Next 16 can eat RAM aggressively.
@@ -168,7 +196,11 @@ For day-to-day operation — how to write a post, customize the theme, manage DN
 - [x] **v0.4** — admin panel · MDX editor · draft & scheduled publishing · image upload
 - [x] **v0.5** — newsletter (Resend) · analytics (Umami Cloud) · full-text search (pg_trgm)
 - [x] **v1.0** — i18n · guestbook · friends · albums · AI summary & Q&A · live site-settings editor · 70+ features shipped
-- [ ] **v1.x** — article-level i18n · Resend custom domain · ACG wallpapers activation · donate QR codes
+- [x] **v1.4** — custom theme · multi-slot announcements · short-link redirects · media gallery · audit log
+- [x] **v1.5** — markdown import · friend-link self-service · security headers · rate limits
+- [x] **v1.6** — DeepSeek provider · daily AI token quota · custom AI endpoints · Kanna chat with blog corpus + link suggestions
+- [x] **v1.7** — ISR posts · meta-only list queries · Postgres rate limit · `<Image>` proxy · CSP eval drop · hot-path indexes
+- [ ] **v1.x** — article-level i18n · Resend custom domain · ACG wallpapers activation · donate QR codes · pixi v8 + drizzle 0.50 upgrades
 
 ## ✦ License
 

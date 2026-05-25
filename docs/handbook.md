@@ -2,7 +2,7 @@
 
 > 这是你将来独立维护 Hypervoid 的工具书。覆盖**日常运营**、**站点定制**、**部署运维**、**故障排查**、**扩展开发**——遇到任何"这该怎么做"的问题，先查这里。
 
-**最近更新：** 2026-05-25（v1.2 —— 字号默认 17.5px、公告 CLI 自动化、Steam 折行修复、全局交互打磨）
+**最近更新：** 2026-05-26（v1.7 —— ISR 文章页 · meta-only 列表查询 · Postgres rate limit · `<Image>` 代理 · CSP 收紧 · 热路径索引)
 **对应站点：** https://hypervoid.top
 
 ---
@@ -30,9 +30,9 @@
 **Hypervoid**（取自 *hyper* × *void*「高维虚空」）是一个完整的个人博客系统，从空目录手搓出来。它不只是"渲染 Markdown 的静态站"，更接近一个**带后台的内容管理系统 + 数据驱动的个人主页**：
 
 - **文章存数据库**，不在仓库里。无需 redeploy 即可发布
-- **后台 `/admin`** 是带 dashboard 的所见即所得 MDX 编辑器（统计 + 待办 + AI 标签建议）
-- **图片上传** 到 Vercel Blob，1GB 免费
-- **AI 摘要 / Q&A / 标签建议** 由 Claude Haiku 4.5 驱动，摘要保存时自动后台生成
+- **后台 `/admin`** 是带 dashboard 的所见即所得 MDX 编辑器（统计 + 待办 + AI 标签建议 + 写作助手 + Markdown 导入）
+- **图片上传** 到 Vercel Blob，1GB 免费；reader 侧封面/头像走 `<Image>` 自动转 WebP/AVIF
+- **AI 摘要 / Q&A / 标签建议 / 写作助手 / 看板娘聊天** —— provider 可在 `/admin/ai` 自由切换：DeepSeek V4 Flash/Pro、Claude Haiku/Sonnet/Opus、任意 OpenAI 兼容或 Anthropic 兼容自定义端点。**每个 provider 独立每日 token 限额**,防止预付费余额被刷穿
 - **可见性** 每篇文章可设 public / private，私密文章对匿名 404
 - **文章系列** 同系列文章互相联通，banner 显示当前序号
 - **评论** 接 GitHub Discussions（Giscus），admin 有「在 GitHub 管理」深链
@@ -71,7 +71,7 @@
 | 评论 | Giscus (GitHub Discussions) |
 | 邮件 | Resend |
 | 统计 | Umami Cloud |
-| AI | Anthropic SDK (Claude Haiku 4.5) |
+| AI | Anthropic SDK + DeepSeek (OpenAI 兼容) + 任意自定义端点 |
 | 部署 | Vercel Hobby |
 
 ### 1.3 数据流向
@@ -168,7 +168,8 @@ RESEND_FROM_EMAIL=onboarding@resend.dev
 RESEND_FROM_NAME=Hypervoid
 
 NEXT_PUBLIC_UMAMI_WEBSITE_ID=     # 没有 → 没统计
-ANTHROPIC_API_KEY=sk-ant-xxxxx    # 没有 → AI 摘要和 Q&A 不可用
+ANTHROPIC_API_KEY=sk-ant-xxxxx    # Claude 系列(Haiku/Sonnet/Opus)
+DEEPSEEK_API_KEY=sk-xxxxx          # DeepSeek V4 Flash/Pro,二者至少配一个 → AI 才可用
 ```
 
 **可选**：
@@ -333,17 +334,39 @@ $$
 
 直接拖图到 MDX 编辑器**没有**自动上传，必须点按钮。
 
-### 3.5 AI 摘要
+### 3.5 AI 功能
 
-在已发布文章后台编辑页，有个「生成 AI 摘要」按钮。点击：
+所有 AI 功能（摘要 / Q&A / 标签建议 / 写作助手 / 看板娘聊天）的 provider 和模型在 **`/admin/ai`** 统一切换,立即生效。
 
-1. 后端调 Claude Haiku 4.5
-2. 摘要保存到 `posts.summary` 字段
-3. 文章页头部显示「✦ AI 摘要」区块
+**支持的 provider：**
 
-**单次成本** 约 ¥0.0015（按 Haiku 当前定价 + 一篇 2000 字文章估算）。
+| Provider | 配置方式 | 模型 |
+|---|---|---|
+| **DeepSeek** | `DEEPSEEK_API_KEY` 环境变量 | DeepSeek V4 Flash(快、便宜)/ V4 Pro(强推理) |
+| **Anthropic** | `ANTHROPIC_API_KEY` 环境变量 | Claude Haiku 4.5 / Sonnet 4.6 / Opus 4.7 |
+| **自定义** | `/admin/ai` 后台填表(baseUrl + key + model id) | 任意 OpenAI 兼容(/chat/completions)或 Anthropic 兼容(/v1/messages)endpoint —— OpenRouter / SiliconFlow / Groq / Ollama / 中转代理 |
 
-**手动调用**，不是自动 —— 你可以让某些文章没有 AI 摘要。
+`/admin/ai` 三个核心面板：
+
+1. **今日用量** —— 按 provider 显示 prompt/completion/总 tokens + 请求次数,进度条,80% 转琥珀,100% 转红。本地时区 0 点重置。
+2. **每日 token 限额** —— 每个 provider 一个输入框,0 = 不限,达到上限当日所有调用直接拒绝(防止预付费余额被刷穿)。
+3. **模型选择 + 自定义模型 CRUD** —— 单选 radio 切换当前激活模型。自定义模型支持额外 headers(OpenRouter 推荐填 HTTP-Referer + X-Title)。
+
+**触发点：**
+
+- 编辑器侧栏：**生成摘要** / **标签建议** / **大纲** / **润色** / **起标题** / **TL;DR**
+- 文章页：**Ask AI** 浮动按钮（基于文章内容的 Q&A,流式）
+- 看板娘聊天框：康娜会读 README + handbook,问"在哪订阅"之类的会给 markdown 路由链接
+- 文章首次发布：`next/server` 的 `after()` 异步生成摘要,不阻塞编辑器
+
+**成本估算（DeepSeek V4 Flash 当前定价）：**
+| 操作 | 输入 tokens | 输出 tokens | 估算成本 |
+|---|---|---|---|
+| 摘要(2000 字文章) | ~3000 | ~200 | ~¥0.002 |
+| Ask AI 单轮(带 context) | ~4000 | ~500 | ~¥0.004 |
+| 康娜聊天单轮(带 README 注入) | ~16000 (大半命中 prompt cache) | ~300 | ~¥0.005 |
+
+Pro 模型约贵 5×。如果担心成本,在 **每日 token 限额** 面板给 DeepSeek 设 100 万 tokens/天 兜底。
 
 ### 3.6 标签和分类
 
@@ -860,11 +883,13 @@ curl -s 'https://dns.google/resolve?name=<域名>&type=TXT' | python3 -m json.to
 
 **症状：** 后台点「生成 AI 摘要」按钮没反应或报错。
 
-**排查：**
+**排查（按顺序排查最常见的几个）：**
 
-1. 检查 `ANTHROPIC_API_KEY` 是否设了，是不是过期了
-2. Anthropic Console（https://console.anthropic.com）看用量页，是不是欠费了
-3. 文章太长（> 100K tokens）会被截断或报错——把内容控制在合理长度
+1. **「今日 X provider token 已用 Y / Z,已超出每日限额」** —— 在 `/admin/ai` 调高额度,或等本地时区 0 点重置,或换另一个 provider。
+2. **当前激活的 provider 没配 key** —— `/admin/ai` 顶部会显示哪个 provider 是激活的;在「provider 状态」卡片确认对应的环境变量(`ANTHROPIC_API_KEY` / `DEEPSEEK_API_KEY`)已设。自定义模型的 key 直接存在 DB 里,在「自定义模型管理」卡片看 key 掩码。
+3. **provider 欠费 / key 失效** —— DeepSeek 看 [platform.deepseek.com](https://platform.deepseek.com) 余额,Anthropic 看 [console.anthropic.com](https://console.anthropic.com) usage 页。
+4. **文章太长(> 100K tokens)** —— 会被截断或报错,把内容控制在合理长度,或换 Claude Sonnet/Opus(更长 context)。
+5. **自定义 endpoint 报 4xx/5xx** —— Network 面板看 `/api/admin/...` 或 `/api/posts/[slug]/ask` 的响应,会带 `<provider> <status>: <body>` 错误信息。
 
 ---
 
