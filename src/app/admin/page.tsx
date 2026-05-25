@@ -196,6 +196,11 @@ export default async function AdminHome() {
             desc="调色板 + 实时预览 + JSON 主题包导入导出"
           />
           <NavTile
+            href="/admin/ai"
+            title="AI 配置"
+            desc="切换 Claude 模型、查看 API Key 状态、影响摘要/标签/Q&A/康娜"
+          />
+          <NavTile
             href="/admin/guestbook"
             title="留言板管理"
             desc="审核访客留言：隐藏、恢复、删除"

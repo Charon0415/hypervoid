@@ -26,10 +26,10 @@ export type FontSizeKey = "normal" | "large";
 export type DisplayMode = "fullscreen" | "banner" | "simple";
 
 export const DEFAULT_HUE = 215;
-export const DEFAULT_BACKGROUND: BackgroundKey = "cosmic";
+export const DEFAULT_BACKGROUND: BackgroundKey = "cyberpunk";
 export const DEFAULT_FONT: FontKey = "serif";
 export const DEFAULT_FONT_SIZE: FontSizeKey = "normal";
-export const DEFAULT_DISPLAY_MODE: DisplayMode = "simple";
+export const DEFAULT_DISPLAY_MODE: DisplayMode = "banner";
 
 export const HUE_PRESETS: { name: string; hue: number }[] = [
   { name: "Indigo", hue: 240 },

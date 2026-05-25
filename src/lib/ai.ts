@@ -1,6 +1,7 @@
 import "server-only";
 
 import Anthropic from "@anthropic-ai/sdk";
+import { getAiModel } from "@/lib/ai-config";
 
 let _client: Anthropic | null = null;
 
@@ -20,15 +21,14 @@ export function isAiConfigured(): boolean {
   return Boolean(process.env.ANTHROPIC_API_KEY);
 }
 
-const MODEL = "claude-haiku-4-5";
-
 export async function summarizePost(args: {
   title: string;
   content: string;
 }): Promise<string> {
   const client = getClient();
+  const model = await getAiModel();
   const response = await client.messages.create({
-    model: MODEL,
+    model,
     max_tokens: 400,
     system:
       "你是一位简明的中文博客文章摘要助手。给定一篇文章，用 2-3 句话提炼核心观点。直接陈述要点，不要用「本文」「文章」「作者」之类的字眼开头。语气与原文保持一致——技术文偏冷峻，随笔可以稍随性。",
@@ -54,12 +54,13 @@ export async function suggestTags(args: {
   existingTags: string[];
 }): Promise<string[]> {
   const client = getClient();
+  const model = await getAiModel();
   const existingList =
     args.existingTags.length > 0
       ? args.existingTags.slice(0, 60).join("、")
       : "（站内还没有现成标签）";
   const response = await client.messages.create({
-    model: MODEL,
+    model,
     max_tokens: 200,
     system: `你是博客文章标签推荐助手。给定一篇中文博客文章，返回 3-5 个最贴合主题的标签。
 
@@ -94,8 +95,9 @@ export async function streamAnswer(args: {
   question: string;
 }) {
   const client = getClient();
+  const model = await getAiModel();
   return client.messages.stream({
-    model: MODEL,
+    model,
     max_tokens: 1024,
     system: [
       {
