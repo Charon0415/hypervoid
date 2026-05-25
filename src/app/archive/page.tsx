@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getAllPosts } from "@/lib/posts";
+import { getAllPostMeta } from "@/lib/posts";
 import { ArchiveLayout } from "@/components/ArchiveLayout";
 
 export const revalidate = 60;
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ArchivePage() {
-  const posts = await getAllPosts();
+  const posts = await getAllPostMeta();
 
   const byYear = new Map<string, typeof posts>();
   for (const post of posts) {

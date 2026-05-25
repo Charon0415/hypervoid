@@ -1,7 +1,7 @@
 import Link from "next/link";
-import type { Post } from "@/lib/posts";
+import type { PostMeta } from "@/lib/posts";
 
-export function DailyPick({ post }: { post: Post }) {
+export function DailyPick({ post }: { post: PostMeta }) {
   const { slug, frontmatter } = post;
   return (
     <Link

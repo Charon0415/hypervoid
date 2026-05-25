@@ -156,6 +156,29 @@ const STATEMENTS = [
   // but standalone slug filters benefit from a slimmer secondary index.
   `CREATE INDEX IF NOT EXISTS post_reactions_slug_idx
     ON post_reactions (slug);`,
+
+  // Precomputed word_count on posts so list pages don't have to load the
+  // full content column just to display "X 字". Estimate: CJK chars count
+  // 1, runs of latin word chars count as 1. Backfill is best-effort.
+  `ALTER TABLE posts ADD COLUMN IF NOT EXISTS word_count integer NOT NULL DEFAULT 0;`,
+  `UPDATE posts SET word_count = (
+    coalesce(array_length(regexp_split_to_array(content, '[\\u4e00-\\u9fff]'), 1), 1) - 1
+    + coalesce(array_length(regexp_split_to_array(regexp_replace(content, '[\\u4e00-\\u9fff]', '', 'g'), '\\s+'), 1), 1)
+  )
+  WHERE word_count = 0;`,
+
+  // Cross-Lambda rate limit. The in-memory Map version was reset every
+  // cold start and unique per container; this row-per-(key,identifier)
+  // version is shared across instances.
+  `CREATE TABLE IF NOT EXISTS rate_limits (
+    key text NOT NULL,
+    identifier text NOT NULL,
+    window_start timestamp with time zone NOT NULL DEFAULT now(),
+    count integer NOT NULL DEFAULT 0,
+    PRIMARY KEY (key, identifier)
+  );`,
+  `CREATE INDEX IF NOT EXISTS rate_limits_window_idx
+    ON rate_limits (window_start);`,
 ];
 
 async function main() {

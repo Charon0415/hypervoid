@@ -13,7 +13,7 @@ import { TagCloud } from "@/components/TagCloud";
 import { RecentGuestbook } from "@/components/RecentGuestbook";
 import { Greeting } from "@/components/Greeting";
 import { DailyPick } from "@/components/DailyPick";
-import { getAllPosts } from "@/lib/posts";
+import { getAllPostMeta } from "@/lib/posts";
 import { getSiteOverride } from "@/lib/site-config-server";
 
 export const revalidate = 60;
@@ -26,7 +26,7 @@ function pickByDay<T>(arr: T[]): T | null {
 
 export default async function Home() {
   const [all, quote, quoteAuthor] = await Promise.all([
-    getAllPosts(),
+    getAllPostMeta(),
     getSiteOverride("home.quote"),
     getSiteOverride("home.quoteAuthor"),
   ]);

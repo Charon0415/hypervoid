@@ -92,7 +92,7 @@ function fallbackModel(): AiModel {
  */
 export async function listAllModels(): Promise<AiModel[]> {
   const custom = await listCustomModels();
-  return [...AI_MODELS, ...custom.filter((c) => c.enabled).map(customRowToModel)];
+  return [...AI_MODELS, ...custom.map(customRowToModel)];
 }
 
 /** Resolves to the stored selection (DB), or falls back to the default. */
@@ -112,7 +112,7 @@ export async function getActiveAiModel(): Promise<AiModel> {
       // Custom model lookup
       if (stored.startsWith("custom:")) {
         const row = await getCustomModel(stored);
-        if (row && row.enabled) return customRowToModel(row);
+        if (row) return customRowToModel(row);
       }
     }
   } catch {
@@ -133,7 +133,7 @@ export async function resolveActiveModelWithRow(): Promise<{
   const model = await getActiveAiModel();
   if (model.id.startsWith("custom:")) {
     const custom = await getCustomModel(model.id);
-    return { model, custom: custom?.enabled ? custom : null };
+    return { model, custom };
   }
   return { model, custom: null };
 }
@@ -152,7 +152,7 @@ export async function setAiModel(id: string): Promise<void> {
   if (!valid) throw new Error(`unknown model: ${id}`);
   if (id.startsWith("custom:")) {
     const row = await getCustomModel(id);
-    if (!row || !row.enabled) throw new Error("自定义模型不存在或已禁用");
+    if (!row) throw new Error("自定义模型不存在");
   }
   const now = new Date();
   await getDb()

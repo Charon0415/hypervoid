@@ -1,4 +1,4 @@
-import { getAllPosts } from "@/lib/posts";
+import { getAllPostMeta } from "@/lib/posts";
 import { siteConfig } from "@/lib/site-config";
 
 export const dynamic = "force-static";
@@ -13,7 +13,7 @@ function escapeXml(input: string): string {
 }
 
 export async function GET() {
-  const posts = await getAllPosts();
+  const posts = await getAllPostMeta();
   const buildDate = new Date().toUTCString();
 
   const items = posts

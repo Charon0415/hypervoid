@@ -16,7 +16,7 @@ function getIp(request: Request): string {
 }
 
 export async function POST(request: Request) {
-  const rl = rateLimit(getIp(request), {
+  const rl = await rateLimit(getIp(request), {
     key: "friend-apply",
     limit: 2,
     windowSec: 3600,

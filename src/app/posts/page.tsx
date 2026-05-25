@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PostCard } from "@/components/PostCard";
 import { PostsGrid } from "@/components/PostsGrid";
-import { getAllPosts } from "@/lib/posts";
+import { getAllPostMeta } from "@/lib/posts";
 
 export const revalidate = 60;
 
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function PostsIndex() {
-  const posts = await getAllPosts();
+  const posts = await getAllPostMeta();
   return (
     <div className="flex flex-col gap-4">
       <header className="flex items-baseline justify-between gap-3">

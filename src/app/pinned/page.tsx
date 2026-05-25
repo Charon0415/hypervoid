@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PostCard } from "@/components/PostCard";
-import { getAllPosts } from "@/lib/posts";
+import { getAllPostMeta } from "@/lib/posts";
 
 export const revalidate = 60;
 
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function PinnedPage() {
-  const posts = await getAllPosts();
+  const posts = await getAllPostMeta();
   const pinned = posts.filter((p) => p.frontmatter.pinned);
 
   return (

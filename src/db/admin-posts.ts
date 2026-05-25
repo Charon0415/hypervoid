@@ -2,6 +2,7 @@ import "server-only";
 
 import { desc, eq, inArray } from "drizzle-orm";
 import { getDb, schema } from "@/db/client";
+import { estimateReadingTime } from "@/lib/reading-time";
 
 export type AdminPost = typeof schema.posts.$inferSelect;
 export type AdminPostInput = {
@@ -40,6 +41,7 @@ export async function getPostForEditing(
 
 export async function createPost(input: AdminPostInput): Promise<void> {
   const now = new Date();
+  const { words } = estimateReadingTime(input.content);
   await getDb()
     .insert(schema.posts)
     .values({
@@ -55,6 +57,7 @@ export async function createPost(input: AdminPostInput): Promise<void> {
       visibility: input.visibility,
       series: input.series ?? null,
       seriesOrder: input.seriesOrder ?? null,
+      wordCount: words,
       publishAt: input.publishAt,
       createdAt: now,
       updatedAt: now,
@@ -65,6 +68,7 @@ export async function updatePost(
   slug: string,
   input: Omit<AdminPostInput, "slug">,
 ): Promise<void> {
+  const { words } = estimateReadingTime(input.content);
   await getDb()
     .update(schema.posts)
     .set({
@@ -79,6 +83,7 @@ export async function updatePost(
       visibility: input.visibility,
       series: input.series ?? null,
       seriesOrder: input.seriesOrder ?? null,
+      wordCount: words,
       publishAt: input.publishAt,
       updatedAt: new Date(),
     })

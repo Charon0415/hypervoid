@@ -67,7 +67,6 @@ async function resolveEndpoint(model: AiModel): Promise<EndpointConfig | null> {
   if (model.id.startsWith("custom:")) {
     const row = await getCustomModel(model.id);
     if (!row) throw new Error(`custom model not found: ${model.id}`);
-    if (!row.enabled) throw new Error(`custom model disabled: ${row.label}`);
     return {
       protocol: row.protocol,
       baseUrl: row.baseUrl,

@@ -63,7 +63,6 @@ export async function saveCustomModelAction(form: FormData): Promise<void> {
   const upstreamId = String(form.get("upstreamId") ?? "").trim();
   const apiKey = String(form.get("apiKey") ?? "").trim();
   const extraHeadersRaw = String(form.get("extraHeaders") ?? "").trim();
-  const enabled = form.get("enabled") === "on";
 
   let extraHeaders: Record<string, string> = {};
   if (extraHeadersRaw) {
@@ -90,7 +89,7 @@ export async function saveCustomModelAction(form: FormData): Promise<void> {
     upstreamId,
     apiKey,
     extraHeaders,
-    enabled,
+    enabled: true,
   });
   await recordAudit({
     action: "ai.custom.save",

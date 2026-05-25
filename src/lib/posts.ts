@@ -3,7 +3,10 @@ import "server-only";
 import { cache } from "react";
 import { and, desc, eq, lte, ne, or, sql } from "drizzle-orm";
 import { getDb, schema } from "@/db/client";
-import { estimateReadingTime } from "@/lib/reading-time";
+import {
+  estimateReadingTime,
+  readingMinutesFromWordCount,
+} from "@/lib/reading-time";
 import { formatDateCN } from "@/lib/datetime";
 
 export type PostFrontmatter = {
@@ -55,7 +58,10 @@ function visibleClause(isAdmin: boolean) {
 
 function toPost(row: typeof schema.posts.$inferSelect): Post {
   const dateSource = row.publishAt ?? row.createdAt;
-  const { minutes, words } = estimateReadingTime(row.content);
+  // Prefer the stored word_count column; fall back to live estimation for
+  // rows where the backfill hasn't run yet.
+  const words = row.wordCount > 0 ? row.wordCount : estimateReadingTime(row.content).words;
+  const minutes = readingMinutesFromWordCount(words);
   return {
     slug: row.slug,
     content: row.content,
@@ -77,6 +83,83 @@ function toPost(row: typeof schema.posts.$inferSelect): Post {
       seriesOrder: row.seriesOrder,
     },
   };
+}
+
+/**
+ * Lightweight projection of a post used by list pages — same shape as
+ * Post but with `content` omitted. List queries SELECT only the
+ * metadata columns so we don't ship multi-MB of article body bytes
+ * from Neon → Vercel just to render PostCard.
+ */
+export type PostMeta = Omit<Post, "content">;
+
+type PostMetaRow = Omit<typeof schema.posts.$inferSelect, "content">;
+
+function toPostMeta(row: PostMetaRow): PostMeta {
+  const dateSource = row.publishAt ?? row.createdAt;
+  const words = row.wordCount;
+  const minutes = readingMinutesFromWordCount(words);
+  return {
+    slug: row.slug,
+    frontmatter: {
+      title: row.title,
+      description: row.description,
+      date: formatDateCN(dateSource),
+      updatedDate: formatDateCN(row.updatedAt),
+      tags: row.tags ?? [],
+      category: row.category,
+      cover: row.cover,
+      summary: row.summary,
+      pinned: row.pinned,
+      wordCount: words,
+      readingMinutes: minutes,
+      draft: row.status === "draft",
+      visibility: row.visibility,
+      series: row.series,
+      seriesOrder: row.seriesOrder,
+    },
+  };
+}
+
+const META_COLS = {
+  slug: schema.posts.slug,
+  title: schema.posts.title,
+  description: schema.posts.description,
+  category: schema.posts.category,
+  tags: schema.posts.tags,
+  cover: schema.posts.cover,
+  summary: schema.posts.summary,
+  pinned: schema.posts.pinned,
+  status: schema.posts.status,
+  visibility: schema.posts.visibility,
+  series: schema.posts.series,
+  seriesOrder: schema.posts.seriesOrder,
+  wordCount: schema.posts.wordCount,
+  publishAt: schema.posts.publishAt,
+  notifiedAt: schema.posts.notifiedAt,
+  createdAt: schema.posts.createdAt,
+  updatedAt: schema.posts.updatedAt,
+} as const;
+
+const _getAllPostMetaCached = cache(
+  async (isAdmin: boolean): Promise<PostMeta[]> => {
+    const rows = await getDb()
+      .select(META_COLS)
+      .from(schema.posts)
+      .where(visibleClause(isAdmin))
+      .orderBy(
+        desc(schema.posts.pinned),
+        desc(schema.posts.publishAt),
+        desc(schema.posts.createdAt),
+      );
+    return rows.map(toPostMeta);
+  },
+);
+
+export async function getAllPostMeta(
+  opts: ViewerOpts = {},
+): Promise<PostMeta[]> {
+  return _getAllPostMetaCached(opts.isAdmin === true);
 }
 
 /**

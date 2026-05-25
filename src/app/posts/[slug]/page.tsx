@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
+// KaTeX stylesheet — scoped to article pages so the ~50KB of CSS isn't
+// pulled in on /posts, /tags, /home etc. when no math is rendered.
+import "katex/dist/katex.min.css";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { remarkAlert } from "remark-github-blockquote-alert";
@@ -42,7 +45,20 @@ import { isAiConfigured } from "@/lib/ai";
 
 type Params = { slug: string };
 
-export const dynamic = "force-dynamic";
+/**
+ * ISR — cache rendered HTML for 5 minutes, invalidate via revalidatePath
+ * from admin save / publish-scheduled cron. This is the highest-volume
+ * route on the site and was previously force-dynamic, hitting Postgres
+ * for full content + adjacent + related + backlinks + webmentions on
+ * every visit. Trade-offs:
+ *   - Admin-only UI affordances (e.g. "manage comments on GitHub" deep
+ *     link) won't appear in cached pages because auth() doesn't run
+ *     during SSG. Admin can still use /admin/posts/[slug]/edit.
+ *   - View counter is client-side via recordView, unaffected by ISR.
+ *   - Private/draft posts: SSG renders them as 404; admin previewing
+ *     them must use the admin route.
+ */
+export const revalidate = 300;
 
 export async function generateStaticParams(): Promise<Params[]> {
   const slugs = await getAllPostSlugs();

@@ -299,11 +299,10 @@ export default async function AdminAiPage() {
           {customRows.length > 0 ? (
             <div className="flex flex-col gap-2">
               <p className="text-[10px] uppercase tracking-widest text-muted">
-                自定义模型
+                自定义模型({customRows.length})
               </p>
               {customRows.map((row) => {
                 const active = row.id === current.id;
-                const disabled = !row.enabled;
                 return (
                   <label
                     key={row.id}
@@ -311,14 +310,13 @@ export default async function AdminAiPage() {
                       active
                         ? "border-primary bg-primary/5"
                         : "border-border bg-background hover:border-primary/40"
-                    } ${disabled ? "opacity-50" : ""}`}
+                    }`}
                   >
                     <input
                       type="radio"
                       name="model"
                       value={row.id}
                       defaultChecked={active}
-                      disabled={disabled}
                       className="mt-1 accent-primary"
                     />
                     <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -330,9 +328,6 @@ export default async function AdminAiPage() {
                         <span className="rounded-full bg-border/60 px-1.5 py-0.5 text-[9px] uppercase tracking-widest">
                           {row.protocol}
                         </span>
-                        {disabled ? (
-                          <span className="text-[10px] text-red-500">(已禁用)</span>
-                        ) : null}
                       </span>
                       <span className="text-xs text-muted">
                         {row.hint || row.baseUrl}
@@ -354,50 +349,62 @@ export default async function AdminAiPage() {
       </section>
 
       <section className="rounded-2xl border border-border bg-card p-5">
-        <header className="mb-3 flex items-baseline justify-between gap-3">
+        <header className="mb-1 flex items-baseline justify-between gap-3">
           <h2 className="text-sm font-semibold tracking-tight">
-            自定义模型({customRows.length})
+            自定义模型管理({customRows.length})
           </h2>
           <span className="text-[10px] text-muted">
-            支持 OpenAI 兼容(/chat/completions) 与 Anthropic 兼容(/v1/messages) 两种协议
+            OpenAI 兼容 / Anthropic 兼容两种协议
           </span>
         </header>
+        <p className="mb-3 text-xs text-muted">
+          按需添加多个,到上面的「模型选择」单选要启用的那个。删除不影响其它模型,正在使用的那个删了之后会自动回退到默认 DeepSeek Flash。
+        </p>
 
         {customRows.length > 0 ? (
           <ul className="mb-4 flex flex-col gap-2">
-            {customRows.map((row) => (
-              <li
-                key={row.id}
-                className="flex items-start gap-3 rounded-xl border border-border bg-background p-3 text-xs"
-              >
-                <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <p className="text-sm font-medium">
-                    {row.label}{" "}
-                    <code className="rounded bg-card px-1 py-0.5 font-mono text-[10px] text-muted">
-                      {customDisplayId(row.id)}
-                    </code>
-                    {!row.enabled ? (
-                      <span className="ml-2 text-red-500">(禁用)</span>
-                    ) : null}
-                  </p>
-                  <p className="font-mono text-[10px] text-muted">
-                    {row.protocol} · {row.baseUrl} · {row.upstreamId}
-                  </p>
-                  <p className="font-mono text-[10px] text-muted">
-                    key: {maskCustomKey(row.apiKey)}
-                  </p>
-                </div>
-                <form action={deleteCustomModelAction}>
-                  <input type="hidden" name="id" value={row.id} />
-                  <button
-                    type="submit"
-                    className="rounded-md border border-red-500/40 px-2 py-1 text-[10px] font-medium text-red-600 transition hover:bg-red-500/10 dark:text-red-300"
-                  >
-                    删除
-                  </button>
-                </form>
-              </li>
-            ))}
+            {customRows.map((row) => {
+              const active = row.id === current.id;
+              return (
+                <li
+                  key={row.id}
+                  className={`flex items-start gap-3 rounded-xl border p-3 text-xs ${
+                    active
+                      ? "border-primary bg-primary/5"
+                      : "border-border bg-background"
+                  }`}
+                >
+                  <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <p className="text-sm font-medium">
+                      {row.label}{" "}
+                      <code className="rounded bg-card px-1 py-0.5 font-mono text-[10px] text-muted">
+                        {customDisplayId(row.id)}
+                      </code>
+                      {active ? (
+                        <span className="ml-2 rounded-full bg-primary/15 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-widest text-primary">
+                          当前启用
+                        </span>
+                      ) : null}
+                    </p>
+                    <p className="font-mono text-[10px] text-muted">
+                      {row.protocol} · {row.baseUrl} · {row.upstreamId}
+                    </p>
+                    <p className="font-mono text-[10px] text-muted">
+                      key: {maskCustomKey(row.apiKey)}
+                    </p>
+                  </div>
+                  <form action={deleteCustomModelAction}>
+                    <input type="hidden" name="id" value={row.id} />
+                    <button
+                      type="submit"
+                      className="rounded-md border border-red-500/40 px-2 py-1 text-[10px] font-medium text-red-600 transition hover:bg-red-500/10 dark:text-red-300"
+                    >
+                      删除
+                    </button>
+                  </form>
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p className="mb-4 text-xs text-muted">还没有自定义模型。下面填表新增。</p>
@@ -482,15 +489,6 @@ export default async function AdminAiPage() {
             <span className="text-[10px] text-muted">
               OpenRouter 推荐填 HTTP-Referer + X-Title;其它服务通常留空。
             </span>
-          </label>
-          <label className="flex items-center gap-2 text-xs sm:col-span-2">
-            <input
-              type="checkbox"
-              name="enabled"
-              defaultChecked
-              className="accent-primary"
-            />
-            <span>启用</span>
           </label>
           <button
             type="submit"

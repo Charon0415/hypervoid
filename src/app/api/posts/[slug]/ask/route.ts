@@ -27,7 +27,7 @@ export async function POST(
     );
   }
 
-  const rl = rateLimit(getIp(request), {
+  const rl = await rateLimit(getIp(request), {
     key: "ask",
     limit: 10,
     windowSec: 300,

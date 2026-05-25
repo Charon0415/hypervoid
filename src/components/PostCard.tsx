@@ -1,8 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
-import type { Post } from "@/lib/posts";
+import type { PostMeta } from "@/lib/posts";
 import { ReadBadge } from "@/components/ReadBadge";
 
-export function PostCard({ post }: { post: Post }) {
+export function PostCard({ post }: { post: PostMeta }) {
   const { slug, frontmatter } = post;
   return (
     <Link
@@ -10,12 +11,13 @@ export function PostCard({ post }: { post: Post }) {
       className="group flex flex-col gap-3 overflow-hidden rounded-2xl border border-border bg-card p-4 transition hover:border-primary/40 hover:shadow-md sm:flex-row sm:items-start sm:gap-5 sm:p-5"
     >
       {frontmatter.cover ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={frontmatter.cover}
           alt=""
+          width={256}
+          height={192}
+          sizes="(min-width: 640px) 128px, 100vw"
           loading="lazy"
-          decoding="async"
           className="aspect-[4/3] w-full shrink-0 rounded-xl object-cover sm:h-24 sm:w-32 sm:aspect-auto"
         />
       ) : null}

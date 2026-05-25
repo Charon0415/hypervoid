@@ -1,24 +1,38 @@
 import Link from "next/link";
+import { inArray } from "drizzle-orm";
 import { getDb, schema } from "@/db/client";
-import { eq } from "drizzle-orm";
 import { getActiveAnnouncement } from "@/db/announcements";
 
-async function getAnnouncement(key: string): Promise<string> {
+const LEGACY_KEYS = [
+  "announcementMessage",
+  "announcementLink",
+  "announcementLinkText",
+] as const;
+
+async function getLegacyOverrides(): Promise<Record<string, string>> {
   try {
     const rows = await getDb()
-      .select({ value: schema.siteOverrides.value })
+      .select({
+        key: schema.siteOverrides.key,
+        value: schema.siteOverrides.value,
+      })
       .from(schema.siteOverrides)
-      .where(eq(schema.siteOverrides.key, key))
-      .limit(1);
-    return rows[0]?.value ?? "";
+      .where(inArray(schema.siteOverrides.key, [...LEGACY_KEYS]));
+    return Object.fromEntries(rows.map((r) => [r.key, r.value]));
   } catch {
-    return "";
+    return {};
   }
 }
 
 export async function AnnouncementWidget() {
+  // Multi-slot + legacy keys fetched in parallel — previously these were
+  // 4 sequential Neon HTTP round-trips on every home-page render.
+  const [slotEntry, legacy] = await Promise.all([
+    getActiveAnnouncement("sidebar").catch(() => null),
+    getLegacyOverrides(),
+  ]);
+
   // 1) Multi-slot: prefer DB-managed sidebar slot
-  const slotEntry = await getActiveAnnouncement("sidebar").catch(() => null);
   if (slotEntry) {
     return (
       <div className="rounded-3xl border border-border bg-card p-5">
@@ -38,19 +52,13 @@ export async function AnnouncementWidget() {
 
   // 2) Legacy override / env fallback
   const message =
-    (await getAnnouncement("announcementMessage")) ||
-    process.env.ANNOUNCEMENT_MESSAGE ||
-    "";
+    legacy.announcementMessage || process.env.ANNOUNCEMENT_MESSAGE || "";
   if (!message) return null;
 
   const linkHref =
-    (await getAnnouncement("announcementLink")) ||
-    process.env.ANNOUNCEMENT_LINK ||
-    "";
+    legacy.announcementLink || process.env.ANNOUNCEMENT_LINK || "";
   const linkText =
-    (await getAnnouncement("announcementLinkText")) ||
-    process.env.ANNOUNCEMENT_LINK_TEXT ||
-    "";
+    legacy.announcementLinkText || process.env.ANNOUNCEMENT_LINK_TEXT || "";
 
   return (
     <div className="rounded-3xl border border-border bg-card p-5">

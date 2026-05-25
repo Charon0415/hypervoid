@@ -18,7 +18,7 @@ function getIp(request: Request): string {
 }
 
 export async function POST(request: Request) {
-  const rl = rateLimit(getIp(request), {
+  const rl = await rateLimit(getIp(request), {
     key: "subscribe",
     limit: 3,
     windowSec: 900,

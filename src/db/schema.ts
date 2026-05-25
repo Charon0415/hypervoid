@@ -41,6 +41,12 @@ export const posts = pgTable("posts", {
   visibility: postVisibility("visibility").notNull().default("public"),
   series: text("series"),
   seriesOrder: integer("series_order"),
+  /**
+   * Precomputed length of `content` (CJK-aware estimate). Stored so list
+   * pages can show "X 字" + reading time without SELECTing the full
+   * content column. Backfilled by setup-admin-tables.ts on first run.
+   */
+  wordCount: integer("word_count").notNull().default(0),
   publishAt: timestamp("publish_at", { withTimezone: true }),
   notifiedAt: timestamp("notified_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -244,6 +250,30 @@ export const resources = pgTable("resources", {
     .notNull()
     .defaultNow(),
 });
+
+/**
+ * Postgres-backed rate limit counters. Replaces the in-memory Map that
+ * was per-Lambda (and therefore useless under Vercel's serverless model
+ * where each cold container has its own counter, letting attackers
+ * bypass by rotating across instances).
+ *
+ * One row per (key, identifier) tuple. Each row tracks the current
+ * window's start time and request count. A sliding-window approximation
+ * — when the window ages out, the next call resets it atomically in the
+ * UPSERT statement.
+ */
+export const rateLimits = pgTable(
+  "rate_limits",
+  {
+    key: text("key").notNull(),
+    identifier: text("identifier").notNull(),
+    windowStart: timestamp("window_start", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    count: integer("count").notNull().default(0),
+  },
+  (t) => [primaryKey({ columns: [t.key, t.identifier] })],
+);
 
 /**
  * Per-day AI token usage, broken down by provider. One row per (date,

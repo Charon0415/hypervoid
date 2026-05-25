@@ -16,7 +16,7 @@ function rateKey(req: Request): string {
 }
 
 export async function POST(req: Request): Promise<NextResponse> {
-  const rl = rateLimit(rateKey(req), {
+  const rl = await rateLimit(rateKey(req), {
     key: "webmention",
     limit: 12,
     windowSec: 60 * 60,

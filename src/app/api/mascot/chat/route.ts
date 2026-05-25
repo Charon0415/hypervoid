@@ -15,7 +15,7 @@ export async function POST(req: Request): Promise<Response> {
     return NextResponse.json({ error: "AI 未配置" }, { status: 503 });
   }
 
-  const rl = rateLimit(clientIp(req), {
+  const rl = await rateLimit(clientIp(req), {
     key: "mascot-chat",
     limit: 30,
     windowSec: 10 * 60,

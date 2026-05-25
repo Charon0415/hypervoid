@@ -9,6 +9,7 @@ import {
 } from "@/db/guestbook";
 import { notifyAdmin } from "@/lib/email";
 import { parseMentions } from "@/lib/mentions";
+import { rateLimit } from "@/lib/rate-limit";
 import { siteConfig } from "@/lib/site-config";
 
 export async function postGuestbookAction(formData: FormData) {
@@ -16,6 +17,20 @@ export async function postGuestbookAction(formData: FormData) {
   if (!session?.user) throw new Error("请先用 GitHub 登录");
   const login = (session.user as { login?: string }).login;
   if (!login) throw new Error("Missing GitHub login on session");
+
+  // 6 messages per 10 minutes per GitHub account — admin is unmetered.
+  if (login !== ADMIN_LOGIN) {
+    const rl = await rateLimit(login, {
+      key: "guestbook:post",
+      limit: 6,
+      windowSec: 10 * 60,
+    });
+    if (!rl.ok) {
+      throw new Error(
+        `留言太快了,${rl.resetInSec} 秒后再试。`,
+      );
+    }
+  }
 
   const raw = String(formData.get("message") ?? "").trim();
   if (!raw) throw new Error("内容不能为空");

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAllPosts, getAllTags } from "@/lib/posts";
+import { getAllPostMeta, getAllTags } from "@/lib/posts";
 import { siteConfig } from "@/lib/site-config";
 
 const STATIC_ROUTES: {
@@ -34,7 +34,7 @@ const STATIC_ROUTES: {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const [allPosts, allTags] = await Promise.all([
-    getAllPosts(),
+    getAllPostMeta(),
     getAllTags(),
   ]);
 

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { listVisibleMessages } from "@/db/guestbook";
 import { formatDateCN } from "@/lib/datetime";
@@ -50,12 +51,13 @@ export async function RecentGuestbook() {
         {messages.map((m) => (
           <li key={m.id} className="flex items-start gap-2.5">
             {m.avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={m.avatarUrl}
                 alt=""
                 width={28}
                 height={28}
+                sizes="28px"
+                loading="lazy"
                 className="mt-0.5 h-7 w-7 shrink-0 rounded-full border border-border object-cover"
               />
             ) : (
