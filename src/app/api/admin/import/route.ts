@@ -1,7 +1,7 @@
 /**
  * POST /api/admin/import — import .md files as posts (admin only).
  */
-import { auth } from "@/auth";
+import { requireAdmin } from "@/auth";
 import { createPost } from "@/db/admin-posts";
 import matter from "gray-matter";
 
@@ -19,8 +19,9 @@ const MAX_FILE_BYTES = 2 * 1024 * 1024; // 2MB per file
 const MAX_FILES = 20;
 
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user) {
+  try {
+    await requireAdmin();
+  } catch {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 

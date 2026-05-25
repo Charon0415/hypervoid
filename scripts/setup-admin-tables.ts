@@ -133,6 +133,29 @@ const STATEMENTS = [
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     updated_at timestamp with time zone NOT NULL DEFAULT now()
   );`,
+
+  // Hot-path indexes — every list page filters posts by (status, visibility,
+  // publish_at) and orders by (pinned desc, publish_at desc). Without these,
+  // Neon does a full table scan; with them, the planner can hit a covered
+  // bitmap. Indexes are idempotent so re-runs are safe.
+  `CREATE INDEX IF NOT EXISTS posts_status_visibility_publish_idx
+    ON posts (status, visibility, publish_at DESC NULLS LAST);`,
+  `CREATE INDEX IF NOT EXISTS posts_pinned_publish_idx
+    ON posts (pinned DESC, publish_at DESC NULLS LAST, created_at DESC);`,
+
+  // Guestbook public list: WHERE hidden=false ORDER BY created_at DESC.
+  `CREATE INDEX IF NOT EXISTS guestbook_hidden_created_idx
+    ON guestbook_messages (hidden, created_at DESC);`,
+
+  // Webmentions public list: WHERE target_slug=$1 AND status='verified' AND hidden=false.
+  // The existing target_slug-only index can't cover the status/hidden filter.
+  `CREATE INDEX IF NOT EXISTS webmentions_target_status_hidden_idx
+    ON webmentions (target_slug, status, hidden);`,
+
+  // post_reactions PK is (slug, emoji) which is fine for slug-prefix queries,
+  // but standalone slug filters benefit from a slimmer secondary index.
+  `CREATE INDEX IF NOT EXISTS post_reactions_slug_idx
+    ON post_reactions (slug);`,
 ];
 
 async function main() {

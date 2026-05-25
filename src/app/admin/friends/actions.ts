@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { auth } from "@/auth";
+import { requireAdmin } from "@/auth";
 import {
   approveApplication,
   createFriend,
@@ -13,8 +13,7 @@ import {
 } from "@/db/friends";
 
 async function requireAuth() {
-  const session = await auth();
-  if (!session?.user) throw new Error("Unauthorized");
+  await requireAdmin();
 }
 
 function parseForm(formData: FormData): FriendInput {

@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { requireAdmin } from "@/auth";
 import { isBlobConfigured, uploadImage } from "@/lib/blob";
 
 export const dynamic = "force-dynamic";
@@ -16,8 +16,9 @@ const ALLOWED_MIME = new Set([
 const MAX_BYTES = 5 * 1024 * 1024;
 
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user) {
+  try {
+    await requireAdmin();
+  } catch {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 

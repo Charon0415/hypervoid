@@ -3,7 +3,7 @@
 import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
-import { auth } from "@/auth";
+import { requireAdmin } from "@/auth";
 import {
   bulkDelete,
   bulkSetPinned,
@@ -31,10 +31,7 @@ import { getAllTags } from "@/lib/posts";
 import { recordAudit } from "@/lib/audit";
 
 async function requireAuth() {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error("Unauthorized");
-  }
+  await requireAdmin();
 }
 
 /**

@@ -27,7 +27,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async authorized({ auth, request }) {
       const { pathname } = request.nextUrl;
-      if (pathname.startsWith("/admin")) {
+      if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
         if (pathname === "/admin/sign-in") return true;
         const login = (auth?.user as { login?: string } | undefined)?.login;
         return login === ADMIN_GITHUB_LOGIN;
@@ -38,4 +38,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 });
 
 export const ADMIN_LOGIN = ADMIN_GITHUB_LOGIN;
+
+/**
+ * Defense-in-depth gate for server actions and route handlers. Middleware
+ * already blocks unauthorized requests to /admin/* and /api/admin/*, but
+ * server actions can be invoked from any page in the app, so each one
+ * must verify isAdmin itself. Throws — callers don't need to handle.
+ */
+export async function requireAdmin(): Promise<void> {
+  const session = await auth();
+  const user = session?.user as
+    | { isAdmin?: boolean; login?: string }
+    | undefined;
+  if (!user?.isAdmin) {
+    throw new Error("Not authorized");
+  }
+}
 

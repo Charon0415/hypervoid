@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { and, desc, eq, lte, ne, or, sql } from "drizzle-orm";
 import { getDb, schema } from "@/db/client";
 import { estimateReadingTime } from "@/lib/reading-time";
@@ -78,25 +79,43 @@ function toPost(row: typeof schema.posts.$inferSelect): Post {
   };
 }
 
-export async function getAllPostSlugs(opts: ViewerOpts = {}): Promise<string[]> {
-  const rows = await getDb()
-    .select({ slug: schema.posts.slug })
-    .from(schema.posts)
-    .where(visibleClause(opts.isAdmin === true));
-  return rows.map((r) => r.slug);
-}
-
-export async function getAllPosts(opts: ViewerOpts = {}): Promise<Post[]> {
+/**
+ * Request-scoped cache. `getAllPosts` is called from the home page, the
+ * sitemap, related-posts logic, tag/series resolvers, search, etc. — in
+ * the worst case a single /posts/[slug] request would trigger 3-4
+ * independent full-table reads. React.cache dedupes by argument identity,
+ * so we key on a primitive (isAdmin: boolean) instead of the opts object,
+ * which otherwise allocates a fresh reference per call site.
+ */
+const _getAllPostsCached = cache(async (isAdmin: boolean): Promise<Post[]> => {
   const rows = await getDb()
     .select()
     .from(schema.posts)
-    .where(visibleClause(opts.isAdmin === true))
+    .where(visibleClause(isAdmin))
     .orderBy(
       desc(schema.posts.pinned),
       desc(schema.posts.publishAt),
       desc(schema.posts.createdAt),
     );
   return rows.map(toPost);
+});
+
+const _getAllPostSlugsCached = cache(
+  async (isAdmin: boolean): Promise<string[]> => {
+    const rows = await getDb()
+      .select({ slug: schema.posts.slug })
+      .from(schema.posts)
+      .where(visibleClause(isAdmin));
+    return rows.map((r) => r.slug);
+  },
+);
+
+export async function getAllPostSlugs(opts: ViewerOpts = {}): Promise<string[]> {
+  return _getAllPostSlugsCached(opts.isAdmin === true);
+}
+
+export async function getAllPosts(opts: ViewerOpts = {}): Promise<Post[]> {
+  return _getAllPostsCached(opts.isAdmin === true);
 }
 
 export type PopularPost = {
@@ -152,27 +171,22 @@ export async function getAdjacentPosts(
   prev: AdjacentPost | null;
   next: AdjacentPost | null;
 }> {
-  const rows = await getDb()
-    .select({
-      slug: schema.posts.slug,
-      title: schema.posts.title,
-      cover: schema.posts.cover,
-      content: schema.posts.content,
-    })
-    .from(schema.posts)
-    .where(visibleClause(opts.isAdmin === true))
-    .orderBy(desc(schema.posts.publishAt), desc(schema.posts.createdAt));
-  const i = rows.findIndex((r) => r.slug === slug);
+  // Reuses the request-scoped cached fetch; ordering matches getAllPosts
+  // (pinned desc, publish desc, created desc) which differs from the
+  // previous standalone query — pinned-first reads better as "next post"
+  // when the active post is also pinned.
+  const all = await getAllPosts(opts);
+  const i = all.findIndex((r) => r.slug === slug);
   if (i < 0) return { prev: null, next: null };
-  const toAdjacent = (r: (typeof rows)[number]): AdjacentPost => ({
-    slug: r.slug,
-    title: r.title,
-    cover: r.cover,
-    readingMinutes: estimateReadingTime(r.content).minutes,
+  const toAdjacent = (p: Post): AdjacentPost => ({
+    slug: p.slug,
+    title: p.frontmatter.title,
+    cover: p.frontmatter.cover ?? null,
+    readingMinutes: p.frontmatter.readingMinutes,
   });
   return {
-    prev: i > 0 ? toAdjacent(rows[i - 1]) : null,
-    next: i < rows.length - 1 ? toAdjacent(rows[i + 1]) : null,
+    prev: i > 0 ? toAdjacent(all[i - 1]) : null,
+    next: i < all.length - 1 ? toAdjacent(all[i + 1]) : null,
   };
 }
 
@@ -182,32 +196,17 @@ export async function getRelatedPosts(
   opts: ViewerOpts = {},
 ): Promise<Post[]> {
   if (tags.length === 0) return [];
-  const db = getDb();
-  const likePatterns = tags.map((t) => `%${t}%`);
-  const all = await db
-    .select()
-    .from(schema.posts)
-    .where(
-      and(
-        visibleClause(opts.isAdmin === true),
-        ne(schema.posts.slug, slug),
-      ),
-    )
-    .orderBy(
-      desc(schema.posts.pinned),
-      desc(schema.posts.publishAt),
-      desc(schema.posts.createdAt),
-    );
-  // Rank by shared-tag overlap, take top 3
-  const scored = all
-    .map((row) => ({
-      ...row,
-      score: row.tags?.filter((t) => tags.includes(t)).length ?? 0,
+  const all = await getAllPosts(opts);
+  return all
+    .filter((p) => p.slug !== slug)
+    .map((p) => ({
+      post: p,
+      score: p.frontmatter.tags.filter((t) => tags.includes(t)).length,
     }))
     .filter((r) => r.score > 0)
     .sort((a, b) => b.score - a.score)
-    .slice(0, 3);
-  return scored.map((r) => toPost(r));
+    .slice(0, 3)
+    .map((r) => r.post);
 }
 
 /**

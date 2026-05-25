@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { auth } from "@/auth";
+import { requireAdmin } from "@/auth";
 import {
   addPhoto,
   createAlbum,
@@ -14,8 +14,7 @@ import {
 } from "@/db/albums";
 
 async function requireAuth() {
-  const session = await auth();
-  if (!session?.user) throw new Error("Unauthorized");
+  await requireAdmin();
 }
 
 function parseAlbumForm(formData: FormData): AlbumInput {
