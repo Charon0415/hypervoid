@@ -1,6 +1,6 @@
 import "server-only";
 
-import { desc } from "drizzle-orm";
+import { and, desc, eq, like } from "drizzle-orm";
 import { getDb, schema } from "@/db/client";
 import { auth } from "@/auth";
 
@@ -37,10 +37,56 @@ export async function recordAudit(input: {
   }
 }
 
-export async function listAuditLog(limit = 200): Promise<AuditLogRow[]> {
+export async function listAuditLog(
+  limit = 200,
+  filters?: {
+    actor?: string;
+    actionPrefix?: string;
+    targetType?: string;
+  },
+): Promise<AuditLogRow[]> {
+  const conds = [];
+  if (filters?.actor) conds.push(eq(schema.auditLog.actor, filters.actor));
+  if (filters?.actionPrefix) {
+    conds.push(like(schema.auditLog.action, `${filters.actionPrefix}%`));
+  }
+  if (filters?.targetType) {
+    conds.push(eq(schema.auditLog.targetType, filters.targetType));
+  }
   return getDb()
     .select()
     .from(schema.auditLog)
+    .where(conds.length > 0 ? and(...conds) : undefined)
     .orderBy(desc(schema.auditLog.createdAt))
     .limit(limit);
+}
+
+/** Distinct actor / action-prefix / targetType values, for filter dropdowns. */
+export async function getAuditFacets(): Promise<{
+  actors: string[];
+  actionPrefixes: string[];
+  targetTypes: string[];
+}> {
+  const rows = await getDb()
+    .select({
+      actor: schema.auditLog.actor,
+      action: schema.auditLog.action,
+      targetType: schema.auditLog.targetType,
+    })
+    .from(schema.auditLog)
+    .limit(5000);
+  const actors = new Set<string>();
+  const actionPrefixes = new Set<string>();
+  const targetTypes = new Set<string>();
+  for (const r of rows) {
+    actors.add(r.actor);
+    const prefix = r.action.split(".")[0];
+    if (prefix) actionPrefixes.add(prefix);
+    if (r.targetType) targetTypes.add(r.targetType);
+  }
+  return {
+    actors: [...actors].sort(),
+    actionPrefixes: [...actionPrefixes].sort(),
+    targetTypes: [...targetTypes].sort(),
+  };
 }

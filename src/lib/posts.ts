@@ -347,7 +347,13 @@ export type SearchHit = Post & { score: number };
 
 export async function searchPosts(
   query: string,
-  opts: ViewerOpts & { tag?: string; year?: string } = {},
+  opts: ViewerOpts & {
+    tag?: string;
+    tags?: string[];
+    year?: string;
+    from?: string;
+    to?: string;
+  } = {},
 ): Promise<SearchHit[]> {
   const q = query.trim();
   if (!q) return [];
@@ -377,11 +383,27 @@ export async function searchPosts(
     return { ...post, score: 0 };
   });
 
-  if (opts.tag) {
-    hits = hits.filter((h) => h.frontmatter.tags.includes(opts.tag!));
+  // Tag filter: legacy single-tag plus new multi-tag intersection.
+  const tagSet = new Set<string>();
+  if (opts.tag) tagSet.add(opts.tag);
+  for (const t of opts.tags ?? []) if (t) tagSet.add(t);
+  if (tagSet.size > 0) {
+    hits = hits.filter((h) => {
+      for (const want of tagSet) {
+        if (!h.frontmatter.tags.includes(want)) return false;
+      }
+      return true;
+    });
   }
+
   if (opts.year) {
     hits = hits.filter((h) => h.frontmatter.date.startsWith(opts.year!));
+  }
+  if (opts.from) {
+    hits = hits.filter((h) => h.frontmatter.date >= opts.from!);
+  }
+  if (opts.to) {
+    hits = hits.filter((h) => h.frontmatter.date <= opts.to!);
   }
 
   return hits;

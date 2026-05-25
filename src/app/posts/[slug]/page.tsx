@@ -30,6 +30,7 @@ import { ReadingProgress } from "@/components/ReadingProgress";
 import { ReadingMode } from "@/components/ReadingMode";
 import { ShareButtons } from "@/components/ShareButtons";
 import { BookmarkButton } from "@/components/BookmarkButton";
+import { ReadLaterButton } from "@/components/ReadLaterButton";
 import { SeriesBanner } from "@/components/SeriesBanner";
 import { ReadTracker } from "@/components/ReadTracker";
 import { ArticleTopAnnouncement } from "@/components/ArticleTopAnnouncement";
@@ -138,6 +139,11 @@ export default async function PostPage(props: { params: Promise<Params> }) {
           <div className="flex items-center gap-1">
             <ReadingMode />
             <BookmarkButton
+              slug={slug}
+              title={frontmatter.title}
+              description={frontmatter.description}
+            />
+            <ReadLaterButton
               slug={slug}
               title={frontmatter.title}
               description={frontmatter.description}
