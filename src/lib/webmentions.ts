@@ -90,6 +90,30 @@ export async function listForSlug(slug: string): Promise<Webmention[]> {
     .orderBy(desc(schema.webmentions.verifiedAt));
 }
 
+/** Admin listing — every row, newest first, regardless of status / hidden. */
+export async function listAllWebmentions(): Promise<Webmention[]> {
+  return getDb()
+    .select()
+    .from(schema.webmentions)
+    .orderBy(desc(schema.webmentions.createdAt));
+}
+
+export async function setWebmentionHidden(
+  id: string,
+  hidden: boolean,
+): Promise<void> {
+  await getDb()
+    .update(schema.webmentions)
+    .set({ hidden })
+    .where(eq(schema.webmentions.id, id));
+}
+
+export async function deleteWebmention(id: string): Promise<void> {
+  await getDb()
+    .delete(schema.webmentions)
+    .where(eq(schema.webmentions.id, id));
+}
+
 const PRIVATE_HOST_RE =
   /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.|169\.254\.|::1|fc[0-9a-f]{2}:|fe[89ab][0-9a-f]:)/i;
 

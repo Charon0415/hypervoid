@@ -181,6 +181,11 @@ export default async function AdminHome() {
             desc="/r/<码> 跳转 + 命中计数"
           />
           <NavTile
+            href="/admin/webmentions"
+            title="Webmention 审核"
+            desc="外站引用的留痕，隐藏/删除可疑来源"
+          />
+          <NavTile
             href="/admin/resources"
             title="资源库"
             desc="收藏的链接、软件、工具，按分类分组展示在 /resources"

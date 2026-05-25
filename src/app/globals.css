@@ -166,6 +166,14 @@ html[data-display="simple"] body::before {
   display: none;
 }
 
+/* Mobile bottom tab bar — reserve space at the end of the document so the
+   bar doesn't cover footer / BackToTop. Desktop has no tab bar. */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 /* Medieval — the <Backdrop /> renders the image; body::before adds a
    subtle parchment-ish warm vignette in light mode and an amber haze in
    dark mode to glue the surface chrome into the theme. */

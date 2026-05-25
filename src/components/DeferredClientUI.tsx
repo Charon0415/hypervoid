@@ -43,6 +43,12 @@ const PwaInstallController = dynamic(
   { ssr: false },
 );
 
+const BottomTabBar = dynamic(
+  () =>
+    import("@/components/BottomTabBar").then((m) => m.BottomTabBar),
+  { ssr: false },
+);
+
 export function DeferredClientUI() {
   return (
     <>
@@ -51,6 +57,7 @@ export function DeferredClientUI() {
       <KeyboardShortcuts />
       <Live2DMascot />
       <PwaInstallController />
+      <BottomTabBar />
     </>
   );
 }
