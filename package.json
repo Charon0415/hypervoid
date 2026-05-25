@@ -26,6 +26,8 @@
     "next-auth": "5.0.0-beta.31",
     "next-mdx-remote": "^6.0.0",
     "next-themes": "^0.4.6",
+    "pixi-live2d-display": "0.5.0-beta",
+    "pixi.js": "^7.4.3",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-medium-image-zoom": "^5.4.5",

@@ -17,6 +17,7 @@ import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { CommandPaletteHost } from "@/components/CommandPaletteHost";
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { CustomThemeStyles, CustomWallpaper } from "@/components/CustomThemeStyles";
+import { Live2DMascot } from "@/components/Live2DMascot";
 import { getSiteOverride } from "@/lib/site-config-server";
 
 const geistSans = Geist({
@@ -125,6 +126,7 @@ export default function RootLayout({
         <ServiceWorkerRegister />
         <CommandPaletteHost />
         <KeyboardShortcuts />
+        <Live2DMascot />
       </body>
     </html>
   );

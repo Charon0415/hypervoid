@@ -13,6 +13,7 @@ import {
   useSettings,
   type BackgroundKey,
 } from "@/components/SettingsProvider";
+import { isMascotEnabled, setMascotEnabled } from "@/components/Live2DMascot";
 
 function BgThumb({ bg }: { bg: BackgroundKey }) {
   const base = "h-10 w-full overflow-hidden rounded";
@@ -102,6 +103,7 @@ export function SiteSettings() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [mascot, setMascot] = useState(false);
   const {
     hue,
     background,
@@ -119,6 +121,7 @@ export function SiteSettings() {
 
   useEffect(() => {
     setMounted(true);
+    setMascot(isMascotEnabled());
     const mql = window.matchMedia("(max-width: 767px)");
     const sync = () => setIsMobile(mql.matches);
     sync();
@@ -397,6 +400,40 @@ export function SiteSettings() {
                 </div>
                 <p className="mt-1.5 text-[10px] text-muted">
                   {FONT_SIZE_OPTIONS.find((o) => o.key === fontSize)?.hint}
+                </p>
+              </section>
+
+              <section className="mt-5 md:mt-4">
+                <p className="mb-2 text-xs uppercase tracking-wider text-muted">
+                  看板娘
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = !mascot;
+                    setMascot(next);
+                    setMascotEnabled(next);
+                  }}
+                  className={`${pillBase} flex items-center gap-2 ${
+                    mascot ? pillActive : pillIdle
+                  }`}
+                  style={{ width: "100%" }}
+                >
+                  <span
+                    className={`inline-block h-4 w-7 rounded-full transition-colors ${
+                      mascot ? "bg-primary" : "bg-border"
+                    }`}
+                  >
+                    <span
+                      className={`mt-0.5 inline-block h-3 w-3 rounded-full bg-white shadow-sm transition-transform ${
+                        mascot ? "translate-x-3.5" : "translate-x-0.5"
+                      }`}
+                    />
+                  </span>
+                  {mascot ? "已开启" : "已关闭"}
+                </button>
+                <p className="mt-1.5 text-[10px] text-muted">
+                  在页面右下角显示 Live2D 看板娘（默认关闭）
                 </p>
               </section>
 
