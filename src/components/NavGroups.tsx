@@ -35,6 +35,7 @@ export function NavGroups() {
     gitee: "🍒",
     codeberg: "🦫",
     steam: "🎯",
+    douyin: "🎵",
   };
 
   const groups: NavGroup[] = [
@@ -76,6 +77,7 @@ export function NavGroups() {
         { href: "/pinned", label: "置顶文章", icon: "📌" },
         { href: "/series", label: "系列", icon: "📚" },
         { href: "/tags", label: "标签", icon: "🏷️" },
+        { href: "/resources", label: "资源库", icon: "🧰" },
         { href: "/posts/random", label: "随机一篇", icon: "🎲" },
       ],
     },

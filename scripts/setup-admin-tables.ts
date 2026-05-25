@@ -57,6 +57,21 @@ const STATEMENTS = [
   );`,
 
   `CREATE INDEX IF NOT EXISTS audit_log_created_at_idx ON audit_log (created_at DESC);`,
+
+  `CREATE TABLE IF NOT EXISTS resources (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    title text NOT NULL,
+    description text,
+    url text NOT NULL,
+    category text NOT NULL DEFAULT '其他',
+    icon text,
+    hidden boolean NOT NULL DEFAULT false,
+    sort_order integer NOT NULL DEFAULT 0,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now()
+  );`,
+
+  `CREATE INDEX IF NOT EXISTS resources_category_sort_idx ON resources (category, sort_order);`,
 ];
 
 async function main() {

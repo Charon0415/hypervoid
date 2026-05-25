@@ -181,6 +181,11 @@ export default async function AdminHome() {
             desc="/r/<码> 跳转 + 命中计数"
           />
           <NavTile
+            href="/admin/resources"
+            title="资源库"
+            desc="收藏的链接、软件、工具，按分类分组展示在 /resources"
+          />
+          <NavTile
             href="/admin/media"
             title="图库管理"
             desc="查看 Vercel Blob 全部图片、复制URL、孤儿图清理"

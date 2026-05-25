@@ -20,6 +20,7 @@ export const siteConfig = {
     { name: "Gitee", url: "https://gitee.com/charon0415", icon: "gitee" as const },
     { name: "Codeberg", url: "https://codeberg.org/Charon0415", icon: "codeberg" as const },
     { name: "Steam", url: "https://steamcommunity.com/id/Charon0415/", icon: "steam" as const },
+    { name: "抖音 @Charon2005", url: "https://www.douyin.com/search/Charon2005?type=user", icon: "douyin" as const },
   ],
   rss: {
     title: "Hypervoid",

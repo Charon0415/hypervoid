@@ -204,3 +204,24 @@ export const auditLog = pgTable("audit_log", {
     .notNull()
     .defaultNow(),
 });
+
+/**
+ * Curated resource library — shared links, software, tools. Grouped by
+ * free-text `category` on the public /resources page.
+ */
+export const resources = pgTable("resources", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: text("title").notNull(),
+  description: text("description"),
+  url: text("url").notNull(),
+  category: text("category").notNull().default("其他"),
+  icon: text("icon"),
+  hidden: boolean("hidden").notNull().default(false),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});

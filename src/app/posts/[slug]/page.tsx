@@ -9,6 +9,7 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeKatex from "rehype-katex";
 import rehypeShiki from "@shikijs/rehype";
+import { remarkVideoEmbed } from "@/lib/remark-video-embed";
 import { getAllPostSlugs, getAdjacentPosts, getPostBySlug, getRelatedPosts } from "@/lib/posts";
 import { mdxComponents } from "@/lib/mdx-components";
 import { extractTOC } from "@/lib/toc";
@@ -209,7 +210,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             components={mdxComponents}
             options={{
               mdxOptions: {
-                remarkPlugins: [remarkGfm, remarkMath, remarkAlert],
+                remarkPlugins: [remarkGfm, remarkMath, remarkAlert, remarkVideoEmbed],
                 rehypePlugins: [
                   rehypeSlug,
                   [
