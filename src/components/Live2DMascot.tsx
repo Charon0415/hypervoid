@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const STORAGE_KEY = "hypervoid:mascot";
-const DEFAULT_MODEL = "/live2d/haru01/haru01.model.json";
+const DEFAULT_MODEL = "/live2d/kobayaxi/Kobayaxi.model.json";
 const CUBISM2_RUNTIME = "/live2d/live2d.min.js";
 const MASCOT_W = 220;
 const MASCOT_H = 260;
@@ -307,22 +307,33 @@ export function Live2DMascot() {
         <button
           type="button"
           onClick={show}
-          className="fixed bottom-4 right-4 z-[998] flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-muted shadow-lg transition hover:border-primary hover:text-primary hover:shadow-xl"
-          aria-label="开启看板娘"
-          title="看板娘"
+          aria-label="呼出看板娘"
+          title="呼出看板娘"
+          style={{
+            bottom: "max(5.25rem, env(safe-area-inset-bottom, 0px) + 4.75rem)",
+            right: "max(1.5rem, env(safe-area-inset-right, 0px) + 1rem)",
+          }}
+          className="group fixed z-40 inline-flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card/90 text-muted shadow-lg backdrop-blur transition-all duration-200 hover:scale-110 hover:border-primary/60 hover:text-primary hover:shadow-xl"
         >
+          <span
+            aria-hidden
+            className="absolute inset-0 rounded-full bg-primary/0 transition group-hover:bg-primary/5"
+          />
           <svg
-            className="h-5 w-5"
+            className="relative h-5 w-5"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="1.8"
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden
           >
-            <circle cx="12" cy="10" r="3" />
-            <path d="M12 2a8 8 0 0 0-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 0 0-8-8z" />
+            <path d="M5 11a7 7 0 1 1 14 0v3.5a2.5 2.5 0 0 1-5 0V12" />
+            <path d="M5 11v3.5a2.5 2.5 0 0 0 5 0V12" />
+            <circle cx="9" cy="11" r="0.6" fill="currentColor" stroke="none" />
+            <circle cx="15" cy="11" r="0.6" fill="currentColor" stroke="none" />
+            <path d="M10.5 14.5c.4.4 1 .6 1.5.6s1.1-.2 1.5-.6" />
           </svg>
         </button>
       )}
@@ -345,11 +356,23 @@ export function Live2DMascot() {
           <button
             type="button"
             onClick={close}
-            className="absolute right-0 top-0 z-10 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-xs text-muted shadow-sm transition hover:border-primary hover:text-primary"
-            aria-label="关闭看板娘"
-            title="关闭"
+            aria-label="收起看板娘"
+            title="收起 · 还可在站点设置中重新打开"
+            className="absolute right-1 top-1 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card text-base font-medium text-muted opacity-0 shadow-md transition-all duration-150 hover:border-primary hover:text-primary group-hover/mascot:opacity-100 focus-visible:opacity-100"
           >
-            ×
+            <svg
+              className="h-3.5 w-3.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <line x1="6" y1="6" x2="18" y2="18" />
+              <line x1="6" y1="18" x2="18" y2="6" />
+            </svg>
           </button>
 
           {(dialog || loadError) && (

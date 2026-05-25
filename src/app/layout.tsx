@@ -10,15 +10,11 @@ import { UmamiScript } from "@/components/UmamiScript";
 import { AnnouncementWrapper } from "@/components/AnnouncementWrapper";
 import { Backdrop } from "@/components/Backdrop";
 import { BannerStrip } from "@/components/BannerStrip";
-import { BackToTop } from "@/components/BackToTop";
 import { SettingsProvider } from "@/components/SettingsProvider";
 import { siteConfig } from "@/lib/site-config";
-import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { CommandPaletteHost } from "@/components/CommandPaletteHost";
-import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { CustomThemeStyles, CustomWallpaper } from "@/components/CustomThemeStyles";
-import { Live2DMascot } from "@/components/Live2DMascot";
-import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
+import { DeferredClientUI } from "@/components/DeferredClientUI";
 import { getSiteOverride } from "@/lib/site-config-server";
 
 const geistSans = Geist({
@@ -122,14 +118,10 @@ export default function RootLayout({
             </main>
             <SiteFooter />
           </Providers>
-          <BackToTop />
         </SettingsProvider>
         <UmamiScript />
-        <ServiceWorkerRegister />
         <CommandPaletteHost />
-        <KeyboardShortcuts />
-        <Live2DMascot />
-        <PwaInstallPrompt />
+        <DeferredClientUI />
       </body>
     </html>
   );

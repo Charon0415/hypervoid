@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { auth } from "@/auth";
@@ -146,6 +146,7 @@ export async function createPostAction(formData: FormData) {
   revalidatePath("/tags");
   revalidatePath("/");
   revalidatePath(`/posts/${slug}`);
+  updateTag("posts");
   after(() => autoSummarize(slug, input.title, input.content, input.status, false));
   redirect(`/admin/posts/${slug}/edit`);
 }
@@ -169,6 +170,7 @@ export async function updatePostAction(originalSlug: string, formData: FormData)
   revalidatePath("/");
   revalidatePath(`/posts/${originalSlug}`);
   revalidatePath(`/admin/posts/${originalSlug}/edit`);
+  updateTag("posts");
   after(() =>
     autoSummarize(originalSlug, input.title, input.content, input.status, hadSummary),
   );
@@ -186,6 +188,7 @@ export async function deletePostAction(slug: string) {
   revalidatePath("/tags");
   revalidatePath("/");
   revalidatePath(`/posts/${slug}`);
+  updateTag("posts");
   redirect("/admin/posts");
 }
 
