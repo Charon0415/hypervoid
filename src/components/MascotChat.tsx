@@ -1,13 +1,28 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 
 const STORAGE_KEY = "hypervoid:mascot-chat";
 const MAX_HISTORY = 12;
 
 export type ChatMessage = { role: "user" | "assistant"; content: string };
 
-function loadHistory(): ChatMessage[] {
+/**
+ * External store for Kanna's chat history.
+ *
+ * localStorage is the source of truth; React reads via useSyncExternalStore,
+ * which is the React-19-idiomatic way to consume an external mutable store
+ * without tripping the set-state-in-effect lint. Side benefit: two browser
+ * tabs share the same history because the `storage` event refreshes both.
+ */
+
+function readFromStorage(): ChatMessage[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -26,16 +41,59 @@ function loadHistory(): ChatMessage[] {
   }
 }
 
-function saveHistory(messages: ChatMessage[]) {
+const EMPTY_SNAPSHOT: ChatMessage[] = [];
+let snapshot: ChatMessage[] = EMPTY_SNAPSHOT;
+let initialized = false;
+const subscribers = new Set<() => void>();
+
+function ensureInit() {
+  if (initialized || typeof window === "undefined") return;
+  initialized = true;
+  snapshot = readFromStorage();
+}
+
+function getSnapshot(): ChatMessage[] {
+  ensureInit();
+  return snapshot;
+}
+
+function getServerSnapshot(): ChatMessage[] {
+  return EMPTY_SNAPSHOT;
+}
+
+function subscribe(cb: () => void): () => void {
+  subscribers.add(cb);
+  const handler = (e: StorageEvent) => {
+    if (e.key === STORAGE_KEY) {
+      snapshot = readFromStorage();
+      subscribers.forEach((s) => s());
+    }
+  };
+  window.addEventListener("storage", handler);
+  return () => {
+    subscribers.delete(cb);
+    window.removeEventListener("storage", handler);
+  };
+}
+
+function writeMessages(messages: ChatMessage[]): ChatMessage[] {
+  const trimmed = messages.slice(-MAX_HISTORY);
+  snapshot = trimmed;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-MAX_HISTORY)));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
   } catch {
     /* noop */
   }
+  subscribers.forEach((cb) => cb());
+  return trimmed;
 }
 
 export function MascotChat({ onClose }: { onClose: () => void }) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const messages = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot,
+  );
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [partial, setPartial] = useState("");
@@ -43,8 +101,8 @@ export function MascotChat({ onClose }: { onClose: () => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setMessages(loadHistory());
-    setTimeout(() => inputRef.current?.focus(), 100);
+    const id = window.setTimeout(() => inputRef.current?.focus(), 100);
+    return () => window.clearTimeout(id);
   }, []);
 
   useEffect(() => {
@@ -56,12 +114,7 @@ export function MascotChat({ onClose }: { onClose: () => void }) {
   const send = async () => {
     const text = input.trim();
     if (!text || streaming) return;
-    const next: ChatMessage[] = [
-      ...messages,
-      { role: "user", content: text },
-    ];
-    setMessages(next);
-    saveHistory(next);
+    const next = writeMessages([...messages, { role: "user", content: text }]);
     setInput("");
     setStreaming(true);
     setPartial("");
@@ -83,13 +136,10 @@ export function MascotChat({ onClose }: { onClose: () => void }) {
               }
             })()
           : errBody || "出错了";
-        const fail: ChatMessage = {
-          role: "assistant",
-          content: `……（${errMsg}）`,
-        };
-        const after = [...next, fail];
-        setMessages(after);
-        saveHistory(after);
+        writeMessages([
+          ...next,
+          { role: "assistant", content: `……（${errMsg}）` },
+        ]);
         return;
       }
       const reader = res.body.getReader();
@@ -101,28 +151,24 @@ export function MascotChat({ onClose }: { onClose: () => void }) {
         acc += decoder.decode(value, { stream: true });
         setPartial(acc);
       }
-      const reply: ChatMessage = { role: "assistant", content: acc || "……" };
-      const after = [...next, reply];
-      setMessages(after);
-      saveHistory(after);
+      writeMessages([
+        ...next,
+        { role: "assistant", content: acc || "……" },
+      ]);
       setPartial("");
     } catch (e) {
       console.error("[mascot-chat]", e);
-      const fail: ChatMessage = {
-        role: "assistant",
-        content: "……（卡姆依走神了）",
-      };
-      const after = [...next, fail];
-      setMessages(after);
-      saveHistory(after);
+      writeMessages([
+        ...next,
+        { role: "assistant", content: "……（卡姆依走神了）" },
+      ]);
     } finally {
       setStreaming(false);
     }
   };
 
   const clear = () => {
-    setMessages([]);
-    saveHistory([]);
+    writeMessages([]);
     setPartial("");
   };
 

@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "tsx scripts/build-blog-corpus.ts",
     "dev": "next dev",
+    "prebuild": "tsx scripts/build-blog-corpus.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "blog-corpus": "tsx scripts/build-blog-corpus.ts",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio"
