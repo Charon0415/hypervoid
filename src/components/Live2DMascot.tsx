@@ -267,7 +267,12 @@ export function Live2DMascot() {
     (e: React.PointerEvent<HTMLDivElement>) => {
       if (!pos) return;
       const target = e.target as HTMLElement;
-      if (target.closest("button")) return;
+      // Don't start a drag when the user is interacting with anything
+      // clickable inside the mascot — buttons, links (康娜's chat replies
+      // contain markdown links), form fields. Otherwise setPointerCapture
+      // swallows the click that would have navigated.
+      if (target.closest("button, a, input, textarea, select, [data-no-drag]"))
+        return;
       dragOffsetRef.current = { x: e.clientX - pos.x, y: e.clientY - pos.y };
       setDragging(true);
       e.currentTarget.setPointerCapture(e.pointerId);
@@ -401,7 +406,11 @@ export function Live2DMascot() {
           </button>
 
           {chatOpen ? (
-            <div className="absolute right-full top-0 z-10 mr-2">
+            <div
+              data-no-drag
+              className="absolute right-full top-0 z-10 mr-2"
+              onPointerDown={(e) => e.stopPropagation()}
+            >
               <MascotChat onClose={() => setChatOpen(false)} />
             </div>
           ) : null}

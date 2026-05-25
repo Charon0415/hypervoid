@@ -30,14 +30,14 @@ export const AI_MODELS: AiModel[] = [
     provider: "deepseek",
     label: "DeepSeek V4 Flash",
     hint: "默认。极快、极便宜，适合摘要 / 标签 / 闲聊。",
-    upstreamId: "deepseek-chat",
+    upstreamId: "deepseek-v4-flash",
   },
   {
     id: "deepseek-v4-pro",
     provider: "deepseek",
     label: "DeepSeek V4 Pro",
     hint: "更强的推理与文笔。适合长文与复杂分析。",
-    upstreamId: "deepseek-reasoner",
+    upstreamId: "deepseek-v4-pro",
   },
   {
     id: "claude-haiku-4-5",
