@@ -85,6 +85,8 @@ export const friends = pgTable("friends", {
   url: text("url").notNull(),
   avatar: text("avatar"),
   description: text("description"),
+  email: text("email"),
+  status: text("status").notNull().default("approved"),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()

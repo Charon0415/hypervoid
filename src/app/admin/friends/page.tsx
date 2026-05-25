@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { listFriends } from "@/db/friends";
+import { listFriends, listPendingApplications } from "@/db/friends";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
+import { PendingApplications } from "@/components/admin/PendingApplications";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,10 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminFriendsList() {
-  const friends = await listFriends();
+  const [friends, pending] = await Promise.all([
+    listFriends(),
+    listPendingApplications().catch(() => []),
+  ]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -28,6 +32,8 @@ export default async function AdminFriendsList() {
           + 添加友链
         </Link>
       </header>
+
+      {pending.length > 0 && <PendingApplications applications={pending} />}
 
       {friends.length === 0 ? (
         <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">

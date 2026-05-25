@@ -4,8 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import {
+  approveApplication,
   createFriend,
   deleteFriend,
+  rejectApplication,
   updateFriend,
   type FriendInput,
 } from "@/db/friends";
@@ -66,4 +68,18 @@ export async function deleteFriendAction(id: string) {
   revalidatePath("/friends");
   revalidatePath("/admin/friends");
   redirect("/admin/friends");
+}
+
+export async function approveApplicationAction(id: string) {
+  await requireAuth();
+  await approveApplication(id);
+  revalidatePath("/friends");
+  revalidatePath("/admin/friends");
+}
+
+export async function rejectApplicationAction(id: string) {
+  await requireAuth();
+  await rejectApplication(id);
+  revalidatePath("/friends");
+  revalidatePath("/admin/friends");
 }

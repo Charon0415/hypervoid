@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { listFriends } from "@/db/friends";
+import { FriendApplyForm } from "@/components/FriendApplyForm";
 
 export const revalidate = 60;
 
@@ -53,9 +54,7 @@ export default async function FriendsPage() {
           ))}
         </div>
       )}
-      <p className="rounded-md border border-dashed border-border p-4 text-sm text-muted">
-        想交换友链？在 GitHub 提 issue 或邮件联系。
-      </p>
+      <FriendApplyForm />
     </div>
   );
 }

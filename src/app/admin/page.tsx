@@ -211,6 +211,11 @@ export default async function AdminHome() {
             desc="创建相册、上传照片、添加说明"
           />
           <NavTile
+            href="/admin/import"
+            title="导入文章"
+            desc="批量导入 Markdown 文件，自动解析 frontmatter"
+          />
+          <NavTile
             href="/admin/audit"
             title="操作审计"
             desc="所有后台动作的只读时间线"
