@@ -6,8 +6,12 @@ import { auth, ADMIN_LOGIN } from "@/auth";
  *
  * 1. Fixes a Next.js 16 bug where the browser sends
  *    Next-Router-State-Tree: [""] which fails server-side schema validation.
+ *    Must bypass the `auth(handler)` wrapper because next-auth's
+ *    `new Response(body, response)` (lib/index.js:166) drops the internal
+ *    `request` field that `NextResponse.next({ request: { headers } })` uses
+ *    to signal a request-header override — wiping out the rewrite silently.
  * 2. Applies per-request nonce CSP on admin/search/cron routes.
- * 3. Gates admin routes behind auth.
+ * 3. Gates admin routes behind auth (called directly, no wrapper).
  */
 
 const COMMON_DIRECTIVES = [
@@ -26,16 +30,26 @@ const COMMON_DIRECTIVES = [
 const SCRIPT_HOSTS =
   "https://giscus.app https://cloud.umami.is https://umami.hypervoid.top";
 
-type AuthProxyRequest = NextRequest & {
-  auth?: {
-    user?: {
-      login?: string | null;
-      isAdmin?: boolean | null;
-    };
-  } | null;
-};
+function fixRouterStateTree(srcHeaders: Headers): Headers {
+  const out = new Headers(srcHeaders);
+  const stateTree = out.get("next-router-state-tree");
+  if (!stateTree) return out;
+  try {
+    const parsed = JSON.parse(decodeURIComponent(stateTree));
+    if (Array.isArray(parsed) && parsed.length === 1) {
+      parsed.push({});
+      out.set(
+        "next-router-state-tree",
+        encodeURIComponent(JSON.stringify(parsed)),
+      );
+    }
+  } catch {
+    // Parsing failed — leave as-is and let Next.js handle it.
+  }
+  return out;
+}
 
-function denyUnauthorized(req: AuthProxyRequest) {
+async function denyUnauthorized(req: NextRequest): Promise<NextResponse | null> {
   const { pathname } = req.nextUrl;
   const isAdminPath = pathname.startsWith("/admin");
   const isAdminApi = pathname.startsWith("/api/admin");
@@ -43,7 +57,10 @@ function denyUnauthorized(req: AuthProxyRequest) {
     return null;
   }
 
-  const user = req.auth?.user;
+  const session = await auth();
+  const user = session?.user as
+    | { login?: string | null; isAdmin?: boolean | null }
+    | undefined;
   const allowed = user?.isAdmin === true || user?.login === ADMIN_LOGIN;
   if (allowed) return null;
 
@@ -51,14 +68,15 @@ function denyUnauthorized(req: AuthProxyRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const url = req.nextUrl.clone();
-  const signInUrl = new URL("/admin/sign-in", url);
-  signInUrl.searchParams.set("callbackUrl", url.pathname + url.search);
+  const signInUrl = new URL("/admin/sign-in", req.nextUrl);
+  signInUrl.searchParams.set("callbackUrl", req.nextUrl.pathname + req.nextUrl.search);
   if (user) signInUrl.searchParams.set("error", "AccessDenied");
   return NextResponse.redirect(signInUrl);
 }
 
-function withStrictHeaders(req: AuthProxyRequest) {
+export default async function proxy(req: NextRequest): Promise<NextResponse> {
+  const requestHeaders = fixRouterStateTree(req.headers);
+
   const { pathname } = req.nextUrl;
   const isAdminOrSearch =
     pathname.startsWith("/admin") ||
@@ -66,31 +84,8 @@ function withStrictHeaders(req: AuthProxyRequest) {
     pathname.startsWith("/api/cron") ||
     pathname === "/search";
 
-  // Fix malformed Next-Router-State-Tree header (Next.js 16 bug).
-  // The browser sometimes sends [""] which fails schema validation;
-  // the server requires ["", {}] at minimum.
-  const requestHeaders = new Headers(req.headers);
-  const stateTree = requestHeaders.get("Next-Router-State-Tree");
-  if (stateTree) {
-    try {
-      const decoded = decodeURIComponent(stateTree);
-      const parsed = JSON.parse(decoded);
-      if (Array.isArray(parsed) && parsed.length === 1) {
-        // Bare segment like [""] — add empty parallel routes object
-        parsed.push({});
-        requestHeaders.set(
-          "Next-Router-State-Tree",
-          encodeURIComponent(JSON.stringify(parsed)),
-        );
-      }
-    } catch {
-      // If parsing fails, leave as-is and let Next.js handle it
-    }
-  }
-
-  // Admin/search/cron routes get strict nonce CSP + auth gate.
   if (isAdminOrSearch) {
-    const unauthorized = denyUnauthorized(req);
+    const unauthorized = await denyUnauthorized(req);
     if (unauthorized) return unauthorized;
 
     if (process.env.VERCEL_ENV === "preview") {
@@ -115,17 +110,13 @@ function withStrictHeaders(req: AuthProxyRequest) {
     return response;
   }
 
-  // Public routes — pass through with fixed headers, no CSP override.
   return NextResponse.next({
     request: { headers: requestHeaders },
   });
 }
 
-export default auth((req) => withStrictHeaders(req as AuthProxyRequest));
-
 export const config = {
   matcher: [
-    // Match all routes so we can fix the router state tree header everywhere.
     "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
 };
