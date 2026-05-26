@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { usePlayer } from "@/components/PlayerProvider";
+import { useStateCtx, useTimeCtx, useActions } from "@/components/PlayerProvider";
 
 function formatTime(ms: number): string {
   const s = Math.floor(ms / 1000);
@@ -12,27 +12,31 @@ function formatTime(ms: number): string {
 
 export function FloatingPlayer() {
   const {
-    current,
-    playing,
-    currentTime,
-    duration,
+    tracks,
+    currentIdx,
     volume,
     muted,
     shuffle,
     repeatMode,
-    tracks,
-    currentIdx,
     tracksLoaded,
+  } = useStateCtx();
+  const {
+    current,
+    playing,
+    currentTime,
+    duration,
     togglePlay,
     next,
     prev,
     seek,
+  } = useTimeCtx();
+  const {
     setVolume,
     toggleMute,
     toggleShuffle,
     cycleRepeat,
     playAt,
-  } = usePlayer();
+  } = useActions();
 
   const [expanded, setExpanded] = useState(false);
   const [showPlaylist, setShowPlaylist] = useState(false);

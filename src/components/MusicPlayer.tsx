@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { usePlayer, type Track } from "@/components/PlayerProvider";
+import { useStateCtx, useTimeCtx, useActions, type Track } from "@/components/PlayerProvider";
 
 type LyricLine = { t: number; text: string };
 
@@ -16,10 +16,6 @@ export function MusicPlayer({ initialTracks }: { initialTracks: Track[] }) {
   const {
     tracks,
     currentIdx,
-    current,
-    playing,
-    currentTime,
-    duration,
     volume,
     muted,
     repeatMode,
@@ -27,18 +23,26 @@ export function MusicPlayer({ initialTracks }: { initialTracks: Track[] }) {
     tracksLoaded,
     loading,
     error,
-    setTracks,
-    ensureTracksLoaded,
-    playAt,
+  } = useStateCtx();
+  const {
+    current,
+    playing,
+    currentTime,
+    duration,
+    seek,
     togglePlay,
     next,
     prev,
-    seek,
+  } = useTimeCtx();
+  const {
+    setTracks,
+    ensureTracksLoaded,
+    playAt,
     setVolume,
     toggleMute,
     cycleRepeat,
     toggleShuffle,
-  } = usePlayer();
+  } = useActions();
 
   const progressRef = useRef<HTMLDivElement>(null);
 
@@ -201,7 +205,7 @@ export function MusicPlayer({ initialTracks }: { initialTracks: Track[] }) {
                 className="group/progress relative h-1.5 flex-1 cursor-pointer rounded-full bg-border/60"
               >
                 <div
-                  className="absolute left-0 top-0 h-full rounded-full bg-primary transition-[width] duration-100"
+                  className="absolute left-0 top-0 h-full rounded-full bg-primary transition-[width] duration-200"
                   style={{ width: `${progressPct}%` }}
                 />
                 <div

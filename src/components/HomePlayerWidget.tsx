@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { usePlayer } from "@/components/PlayerProvider";
+import { useStateCtx, useTimeCtx, useActions } from "@/components/PlayerProvider";
 
 const OPEN_KEY = "hypervoid:home-player:open";
 
@@ -34,19 +34,17 @@ function formatTime(ms: number): string {
 }
 
 export function HomePlayerWidget() {
+  const { loading, tracksLoaded, error } = useStateCtx();
   const {
     current,
     playing,
     currentTime,
     duration,
-    loading,
-    tracksLoaded,
-    error,
-    ensureTracksLoaded,
     togglePlay,
     next,
     prev,
-  } = usePlayer();
+  } = useTimeCtx();
+  const { ensureTracksLoaded } = useActions();
 
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -205,7 +203,7 @@ export function HomePlayerWidget() {
                 </span>
                 <div className="relative h-1 flex-1 rounded-full bg-border">
                   <div
-                    className="absolute left-0 top-0 h-full rounded-full bg-primary transition-[width] duration-100"
+                    className="absolute left-0 top-0 h-full rounded-full bg-primary transition-[width] duration-200"
                     style={{
                       width:
                         duration > 0

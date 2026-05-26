@@ -21,13 +21,12 @@ export type Track = {
 
 export type RepeatMode = "off" | "all" | "one";
 
+/* ─── State context (stable — tracks, settings, loading) ─── */
+
 type PlayerState = {
   tracks: Track[];
   currentIdx: number;
-  playing: boolean;
-  currentTime: number; // ms
-  duration: number; // ms
-  volume: number; // 0..1
+  volume: number;
   muted: boolean;
   repeatMode: RepeatMode;
   shuffle: boolean;
@@ -35,6 +34,25 @@ type PlayerState = {
   loading: boolean;
   error: string | null;
 };
+
+const StateCtx = createContext<PlayerState | null>(null);
+
+/* ─── Time context (updates every ~200 ms while playing) ─── */
+
+type PlayerTime = {
+  current: Track | null;
+  playing: boolean;
+  currentTime: number; // ms
+  duration: number; // ms
+  seek: (ms: number) => void;
+  togglePlay: () => void;
+  next: () => void;
+  prev: () => void;
+};
+
+const TimeCtx = createContext<PlayerTime | null>(null);
+
+/* ─── Actions context (stable — all callbacks) ─── */
 
 type PlayerActions = {
   ensureTracksLoaded: () => Promise<void>;
@@ -50,11 +68,14 @@ type PlayerActions = {
   cycleRepeat: () => void;
 };
 
-type PlayerContextValue = PlayerState & PlayerActions & {
-  current: Track | null;
-};
+const ActionsCtx = createContext<PlayerActions | null>(null);
 
+/* ─── Legacy combined hook (use sparingly) ─── */
+
+type PlayerContextValue = PlayerState & PlayerTime & PlayerActions;
 const PlayerContext = createContext<PlayerContextValue | null>(null);
+
+/* ─── Persistence helpers ─── */
 
 const VOLUME_KEY = "hypervoid:player:volume";
 const MUTED_KEY = "hypervoid:player:muted";
@@ -93,10 +114,13 @@ function loadRepeat(): RepeatMode {
   }
 }
 
+/* ─── Provider ─── */
+
 export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const shuffleOrderRef = useRef<number[]>([]);
   const shuffleCursorRef = useRef(0);
+  const lastTimeUpdateRef = useRef(0);
 
   const [tracks, setTracksState] = useState<Track[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -258,8 +282,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const seek = useCallback((ms: number) => {
     const a = audioRef.current;
     if (!a || !Number.isFinite(ms)) return;
-    a.currentTime = Math.max(0, ms / 1000);
-    setCurrentTime(a.currentTime * 1000);
+    const sec = Math.max(0, ms / 1000);
+    a.currentTime = sec;
+    setCurrentTime(sec * 1000);
   }, []);
 
   const setVolume = useCallback((v: number) => {
@@ -297,7 +322,6 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   }, [current?.id, current?.url]);
 
   // Toggle play/pause when `playing` state flips externally (e.g. via togglePlay)
-  // Audio is the source of truth, but we sync if there's a mismatch.
   useEffect(() => {
     const a = audioRef.current;
     if (!a || !current?.url) return;
@@ -312,10 +336,20 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const a = audioRef.current;
     if (!a) return;
-    const onTime = () => setCurrentTime(a.currentTime * 1000);
+
+    // Throttle timeupdate to ~200 ms to avoid excessive re-renders.
+    // CSS transitions on the progress bar smooth out the discrete jumps.
+    const onTime = () => {
+      const now = performance.now();
+      if (now - lastTimeUpdateRef.current >= 200) {
+        lastTimeUpdateRef.current = now;
+        setCurrentTime(a.currentTime * 1000);
+      }
+    };
     const onMeta = () => setDuration((a.duration || 0) * 1000);
     const onPause = () => setPlaying(false);
     const onPlay = () => setPlaying(true);
+    const onSeeked = () => setCurrentTime(a.currentTime * 1000);
     const onEnded = () => {
       if (repeatMode === "one") {
         a.currentTime = 0;
@@ -336,11 +370,13 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       }
       next();
     };
+
     a.addEventListener("timeupdate", onTime);
     a.addEventListener("loadedmetadata", onMeta);
     a.addEventListener("durationchange", onMeta);
     a.addEventListener("pause", onPause);
     a.addEventListener("play", onPlay);
+    a.addEventListener("seeked", onSeeked);
     a.addEventListener("ended", onEnded);
     return () => {
       a.removeEventListener("timeupdate", onTime);
@@ -348,11 +384,12 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       a.removeEventListener("durationchange", onMeta);
       a.removeEventListener("pause", onPause);
       a.removeEventListener("play", onPlay);
+      a.removeEventListener("seeked", onSeeked);
       a.removeEventListener("ended", onEnded);
     };
   }, [repeatMode, shuffle, currentIdx, tracks.length, next]);
 
-  // Media Session API — lets the OS show track info and respond to media keys
+  // Media Session API
   useEffect(() => {
     if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
     if (!current) return;
@@ -367,13 +404,12 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     navigator.mediaSession.setActionHandler("previoustrack", () => prev());
   }, [current, togglePlay, next, prev]);
 
-  const value = useMemo<PlayerContextValue>(
+  /* ─── Memoized context values ─── */
+
+  const stateValue = useMemo<PlayerState>(
     () => ({
       tracks,
       currentIdx,
-      playing,
-      currentTime,
-      duration,
       volume,
       muted,
       repeatMode,
@@ -381,7 +417,26 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       tracksLoaded,
       loading,
       error,
+    }),
+    [tracks, currentIdx, volume, muted, repeatMode, shuffle, tracksLoaded, loading, error],
+  );
+
+  const timeValue = useMemo<PlayerTime>(
+    () => ({
       current,
+      playing,
+      currentTime,
+      duration,
+      seek,
+      togglePlay,
+      next,
+      prev,
+    }),
+    [current, playing, currentTime, duration, seek, togglePlay, next, prev],
+  );
+
+  const actionsValue = useMemo<PlayerActions>(
+    () => ({
       ensureTracksLoaded,
       setTracks,
       playAt,
@@ -394,52 +449,62 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       toggleShuffle,
       cycleRepeat,
     }),
-    [
-      tracks,
-      currentIdx,
-      playing,
-      currentTime,
-      duration,
-      volume,
-      muted,
-      repeatMode,
-      shuffle,
-      tracksLoaded,
-      loading,
-      error,
-      current,
-      ensureTracksLoaded,
-      setTracks,
-      playAt,
-      togglePlay,
-      next,
-      prev,
-      seek,
-      setVolume,
-      toggleMute,
-      toggleShuffle,
-      cycleRepeat,
-    ],
+    [ensureTracksLoaded, setTracks, playAt, togglePlay, next, prev, seek, setVolume, toggleMute, toggleShuffle, cycleRepeat],
+  );
+
+  const legacyValue = useMemo<PlayerContextValue>(
+    () => ({
+      ...stateValue,
+      ...timeValue,
+      ...actionsValue,
+    }),
+    [stateValue, timeValue, actionsValue],
   );
 
   return (
-    <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>
+    <StateCtx.Provider value={stateValue}>
+      <TimeCtx.Provider value={timeValue}>
+        <ActionsCtx.Provider value={actionsValue}>
+          <PlayerContext.Provider value={legacyValue}>
+            {children}
+          </PlayerContext.Provider>
+        </ActionsCtx.Provider>
+      </TimeCtx.Provider>
+    </StateCtx.Provider>
   );
 }
 
-export function usePlayer(): PlayerContextValue {
-  const ctx = useContext(PlayerContext);
-  if (!ctx) {
-    throw new Error("usePlayer must be used within PlayerProvider");
-  }
+/* ─── Hooks ─── */
+
+/** State that changes infrequently: tracks, settings, loading. */
+export function useStateCtx(): PlayerState {
+  const ctx = useContext(StateCtx);
+  if (!ctx) throw new Error("useStateCtx must be used within PlayerProvider");
   return ctx;
 }
 
-/**
- * Same as usePlayer but returns null when outside the provider, so
- * components can render gracefully if mounted before the provider
- * (or used in pages where the provider isn't wrapping yet).
- */
+/** Time-sensitive state that updates every ~200 ms while playing. */
+export function useTimeCtx(): PlayerTime {
+  const ctx = useContext(TimeCtx);
+  if (!ctx) throw new Error("useTimeCtx must be used within PlayerProvider");
+  return ctx;
+}
+
+/** Stable action callbacks — never triggers re-renders on their own. */
+export function useActions(): PlayerActions {
+  const ctx = useContext(ActionsCtx);
+  if (!ctx) throw new Error("useActions must be used within PlayerProvider");
+  return ctx;
+}
+
+/** Legacy combined hook — subscribes to ALL changes. Use the split hooks instead. */
+export function usePlayer(): PlayerContextValue {
+  const ctx = useContext(PlayerContext);
+  if (!ctx) throw new Error("usePlayer must be used within PlayerProvider");
+  return ctx;
+}
+
+/** Returns null when outside the provider. */
 export function usePlayerOptional(): PlayerContextValue | null {
   return useContext(PlayerContext);
 }
