@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import type { Metadata } from "next";
 import { auth } from "@/auth";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";

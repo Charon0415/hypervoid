@@ -1,25 +1,19 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { auth } from "@/auth";
 
 /**
- * Per-request CSP + auth gate.
+ * Per-request CSP nonce + preview-deployment gate.
  *
- * Two CSP regimes:
- *   - **Strict** for routes that aren't ISR-cached (/admin/*, /api/*,
- *     /search). These get a per-request nonce and drop 'unsafe-inline'
- *     from script-src. Next.js auto-applies the nonce to framework
- *     inline scripts when middleware sets `x-nonce` on the request
- *     headers.
- *   - **Permissive** for everything else. Public ISR-cached pages still
- *     allow 'unsafe-inline' because cached HTML can't carry a matching
- *     per-request nonce — a strict CSP would block scripts on every
- *     cache hit.
+ * Only runs on routes that are never ISR-cached (/admin/*, /api/admin/*,
+ * /api/cron/*, /search). These get a per-request nonce-based CSP and drop
+ * 'unsafe-inline' from script-src.
  *
- * Side effects:
- *   - Generates the nonce once per request via crypto.randomUUID.
- *   - Mirrors the CSP on the response (browser enforces) and on the
- *     request (server components read via headers()).
- *   - Preserves the existing preview-deployment block for admin routes.
+ * Public pages get their CSP from next.config.ts static headers so ISR
+ * caching works — cached HTML can't carry a matching per-request nonce.
+ *
+ * The `auth()` wrapper was previously applied globally here, which forced
+ * every route (including public ISR pages) to be fully dynamic. Auth is
+ * now checked per-route via requireAdmin() / auth() in the route handler
+ * or server component instead.
  */
 
 const COMMON_DIRECTIVES = [
@@ -38,53 +32,20 @@ const COMMON_DIRECTIVES = [
 const SCRIPT_HOSTS =
   "https://giscus.app https://cloud.umami.is https://umami.hypervoid.top";
 
-function isStrictRoute(pathname: string): boolean {
-  return (
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/api/admin") ||
-    pathname.startsWith("/api/cron") ||
-    pathname === "/search"
-  );
-}
-
-function buildCsp(opts: { nonce: string; strict: boolean }): string {
-  // 'unsafe-eval' on permissive routes only — pixi.js v7's batch renderer
-  // generates batched-draw shader functions via `new Function(...)`. Without
-  // this the Live2D mascot init throws ("看板娘初始化失败"). Strict routes
-  // (/admin, /api/admin, /api/cron, /search) don't run pixi, so they keep
-  // the nonce-only policy.
-  const scriptSrc = opts.strict
-    ? `script-src 'self' 'nonce-${opts.nonce}' ${SCRIPT_HOSTS}`
-    : `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${SCRIPT_HOSTS}`;
-  return [...COMMON_DIRECTIVES, scriptSrc].join("; ");
-}
-
-export default auth(async (req: NextRequest) => {
-  const { pathname } = req.nextUrl;
-
-  // Preview-deployment guard — unchanged from v1.5.
+export default function middleware(req: NextRequest) {
+  // Preview-deployment guard.
   if (process.env.VERCEL_ENV === "preview") {
     const previewSecret = process.env.PREVIEW_SECRET;
     const cookie = req.cookies.get("__hypervoid_preview")?.value;
     if (cookie !== previewSecret || !previewSecret) {
-      if (
-        pathname.startsWith("/admin") ||
-        pathname.startsWith("/api/admin") ||
-        pathname.startsWith("/api/cron")
-      ) {
-        return new NextResponse("Preview — admin disabled", { status: 403 });
-      }
+      return new NextResponse("Preview — admin disabled", { status: 403 });
     }
   }
 
-  // Per-request nonce. Base64 is cheaper than full UUID for header weight.
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
-  const strict = isStrictRoute(pathname);
-  const csp = buildCsp({ nonce, strict });
+  const scriptSrc = `script-src 'self' 'nonce-${nonce}' ${SCRIPT_HOSTS}`;
+  const csp = [...COMMON_DIRECTIVES, scriptSrc].join("; ");
 
-  // Propagate nonce to RSC via the request headers so server components
-  // can read it from `headers().get('x-nonce')` and attach to inline
-  // <script> tags they emit.
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set("x-nonce", nonce);
   requestHeaders.set("Content-Security-Policy", csp);
@@ -94,12 +55,13 @@ export default auth(async (req: NextRequest) => {
   });
   response.headers.set("Content-Security-Policy", csp);
   return response;
-});
+}
 
 export const config = {
-  // Run on everything except Next.js static asset paths. Includes /admin,
-  // /api/*, public pages, and the strict /search route.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|icon.svg|apple-icon|opengraph-image|manifest.webmanifest|sw.js).*)",
+    "/admin/:path*",
+    "/api/admin/:path*",
+    "/api/cron/:path*",
+    "/search",
   ],
 };

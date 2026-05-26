@@ -5,7 +5,6 @@ import { auth } from "@/auth";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { getSiteOverride } from "@/lib/site-config-server";
 import { getDb, schema } from "@/db/client";
-import { eq } from "drizzle-orm";
 
 export const metadata: Metadata = {
   title: "看板娘设置",

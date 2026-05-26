@@ -1,10 +1,9 @@
 import type { NextConfig } from "next";
 import path from "node:path";
 
-// CSP is now set per-request by src/middleware.ts so admin/api routes
-// get a stricter nonce-based policy without 'unsafe-inline', while
-// ISR-cached routes keep 'unsafe-inline' (cached HTML can't carry a
-// matching per-request nonce). Other security headers stay here.
+// CSP: strict routes (/admin, /api/admin, /api/cron, /search) get a
+// per-request nonce-based policy from src/middleware.ts. Public ISR-cached
+// routes get a static permissive policy below so they can still be cached.
 
 const nextConfig: NextConfig = {
   turbopack: {
@@ -26,6 +25,28 @@ const nextConfig: NextConfig = {
     ],
   },
   headers: async () => [
+    {
+      // Public permissive CSP — excludes strict routes handled by middleware.
+      source: "/((?!admin|api/admin|api/cron|search).*)",
+      headers: [
+        {
+          key: "Content-Security-Policy",
+          value: [
+            "default-src 'self'",
+            "style-src 'self' 'unsafe-inline' https://giscus.app",
+            "img-src 'self' data: blob: https:",
+            "font-src 'self' data:",
+            "frame-src https://giscus.app https://www.youtube.com https://player.bilibili.com",
+            "connect-src 'self' https://cloud.umami.is https://umami.hypervoid.top https://giscus.app https://api.bgm.tv https://api.anthropic.com https://api.deepseek.com https://api.iconify.design",
+            "media-src 'self'",
+            "object-src 'none'",
+            "base-uri 'self'",
+            "form-action 'self'",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://giscus.app https://cloud.umami.is https://umami.hypervoid.top",
+          ].join("; "),
+        },
+      ],
+    },
     {
       source: "/(.*)",
       headers: [

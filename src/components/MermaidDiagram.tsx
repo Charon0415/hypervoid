@@ -9,7 +9,7 @@ let mermaidInitializedTheme = "";
 export function MermaidDiagram({ code }: { code: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const idRef = useRef(
-    `mermaid-${Math.random().toString(36).slice(2, 10)}`,
+    `mermaid-${crypto.randomUUID().slice(0, 8)}`,
   );
   const [error, setError] = useState<string | null>(null);
   const { resolvedTheme } = useTheme();

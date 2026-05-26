@@ -8,6 +8,7 @@ config({ path: ".env" });
 
 import { getDb, schema } from "@/db/client";
 import * as fs from "node:fs";
+import { dirname } from "node:path";
 
 const outIdx = process.argv.indexOf("--out");
 const outPath = outIdx >= 0 ? process.argv[outIdx + 1] : "";
@@ -55,7 +56,7 @@ async function main() {
     2,
   );
 
-  fs.mkdirSync(require("node:path").dirname(outPath), { recursive: true });
+  fs.mkdirSync(dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, json, "utf-8");
   console.log(`Exported ${Object.keys(tables).length} tables to ${outPath}`);
 }

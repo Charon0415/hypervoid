@@ -35,7 +35,7 @@ export default async function PinnedPage() {
             📌
           </p>
           <p className="mt-3 text-muted">
-            管理员可以在文章编辑器中勾选"置顶"。
+            管理员可以在文章编辑器中勾选&ldquo;置顶&rdquo;。
           </p>
         </div>
       ) : (

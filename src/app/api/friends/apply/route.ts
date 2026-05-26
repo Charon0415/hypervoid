@@ -61,7 +61,7 @@ export async function POST(request: Request) {
   try {
     await createFriend({ name, url, description: description || null, email: email || null }, "pending");
     return Response.json({ ok: true, message: "申请已提交，审核通过后会出现在友链列表。" });
-  } catch (e) {
+  } catch {
     return Response.json(
       { error: "提交失败，请稍后重试" },
       { status: 500 },

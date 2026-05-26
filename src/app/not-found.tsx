@@ -19,7 +19,10 @@ function pickRandom<T>(arr: T[]): T | null {
 export default async function NotFound() {
   const all = await getAllPosts();
   const recommendation = pickRandom(all);
-  const hint = HINTS[Math.floor(Math.random() * HINTS.length)];
+  // Deterministic hint index from current hour so it changes occasionally
+  // but is stable within a given render.
+  const hintIdx = new Date().getHours() % HINTS.length;
+  const hint = HINTS[hintIdx];
 
   return (
     <div className="relative flex min-h-[60vh] flex-col items-center justify-center gap-8 overflow-hidden py-12 text-center">

@@ -8,13 +8,6 @@ import matter from "gray-matter";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const ALLOWED_MIME = new Set([
-  "text/markdown",
-  "text/x-markdown",
-  "text/plain",
-  "application/octet-stream",
-]);
-
 const MAX_FILE_BYTES = 2 * 1024 * 1024; // 2MB per file
 const MAX_FILES = 20;
 
@@ -72,7 +65,6 @@ export async function POST(request: Request) {
         ? parsed.data.tags.split(",").map((t: string) => t.trim()).filter(Boolean)
         : [];
     const description = (parsed.data.description as string) || undefined;
-    const date = parsed.data.date ? new Date(parsed.data.date) : new Date();
 
     try {
       await createPost({
