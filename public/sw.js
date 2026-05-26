@@ -5,22 +5,33 @@ const STATIC = [
   "/offline",
 ];
 
-self.addEventListener("install", (e) => {
-  e.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(STATIC)).catch(() => {}),
-  );
+self.addEventListener("install", () => {
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (e) => {
   e.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
+    (async () => {
+      // Purge old caches
+      const keys = await caches.keys();
+      await Promise.all(
         keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)),
-      ),
-    ),
+      );
+      // Take control of all clients and tell them to reload
+      await self.clients.claim();
+      const clients = await self.clients.matchAll({ type: "window" });
+      for (const client of clients) {
+        client.postMessage("reload");
+      }
+    })(),
   );
-  self.clients.claim();
+});
+
+// Handle skip-waiting message from the page
+self.addEventListener("message", (event) => {
+  if (event.data === "skip-waiting") {
+    self.skipWaiting();
+  }
 });
 
 /**

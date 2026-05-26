@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "remark-github-blockquote-alert/alert.css";
@@ -100,6 +101,10 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://media.steampowered.com" crossOrigin="anonymous" />
         <link rel="webmention" href="/api/webmention" />
+        <Script
+          id="sw-cleanup"
+          strategy="beforeInteractive"
+        >{`!function(){if(!("serviceWorker"in navigator))return;var v=null;try{v=localStorage.getItem("sw_v")}catch(e){}if("4"===v)return;navigator.serviceWorker.getRegistrations().then(function(r){return Promise.all(r.map(function(s){return s.unregister()}))})}()`}</Script>
         <CustomThemeStyles />
       </head>
       <body className="min-h-full flex flex-col">
