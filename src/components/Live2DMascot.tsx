@@ -171,13 +171,13 @@ export function Live2DMascot() {
     dialogTimerRef.current = setTimeout(() => setDialog(null), 3500);
   }, []);
 
-  const scheduleIdle = useCallback(() => {
+  const scheduleIdle = useCallback(function queueIdle() {
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     idleTimerRef.current = setTimeout(
       () => {
         const msgs = MESSAGES.idle;
         showDialog(msgs[Math.floor(Math.random() * msgs.length)]);
-        scheduleIdle();
+        queueIdle();
       },
       30000 + Math.random() * 60000,
     );

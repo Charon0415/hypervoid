@@ -101,7 +101,7 @@ export function NotificationBell() {
     };
   }, []);
 
-  const notifications = data?.notifications ?? [];
+  const notifications = useMemo(() => data?.notifications ?? [], [data?.notifications]);
   const isAdmin = data?.isAdmin ?? false;
 
   useEffect(() => {

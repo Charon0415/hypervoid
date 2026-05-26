@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useT } from "@/components/LocaleProvider";
@@ -95,24 +95,27 @@ export function NavGroups() {
     },
   ];
 
-  function clearCloseTimer() {
+  const clearCloseTimer = useCallback(() => {
     if (closeTimer.current) {
       clearTimeout(closeTimer.current);
       closeTimer.current = null;
     }
-  }
-  function openGroup(key: string) {
+  }, []);
+
+  const openGroup = useCallback((key: string) => {
     clearCloseTimer();
     setOpenKey(key);
-  }
-  function scheduleClose() {
+  }, [clearCloseTimer]);
+
+  const scheduleClose = useCallback(() => {
     clearCloseTimer();
     closeTimer.current = setTimeout(() => setOpenKey(null), CLOSE_DELAY);
-  }
-  function closeNow() {
+  }, [clearCloseTimer]);
+
+  const closeNow = useCallback(() => {
     clearCloseTimer();
     setOpenKey(null);
-  }
+  }, [clearCloseTimer]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -128,7 +131,7 @@ export function NavGroups() {
       document.removeEventListener("keydown", onKey);
       document.removeEventListener("mousedown", onClickOutside);
     };
-  }, []);
+  }, [closeNow]);
 
   useEffect(() => {
     setOpenKey(null);

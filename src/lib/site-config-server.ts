@@ -98,8 +98,13 @@ async function loadOverrides(): Promise<Map<string, string>> {
   const now = Date.now();
   if (_cache && now - _cacheTs < 60_000) return _cache;
 
-  const rows = await getDb().select().from(schema.siteOverrides);
-  _cache = new Map(rows.map((r) => [r.key, r.value]));
+  try {
+    const rows = await getDb().select().from(schema.siteOverrides);
+    _cache = new Map(rows.map((r) => [r.key, r.value]));
+  } catch (error) {
+    console.warn("[site-config] failed to load overrides, using defaults:", error instanceof Error ? error.message : error);
+    _cache = new Map();
+  }
   _cacheTs = now;
   return _cache;
 }

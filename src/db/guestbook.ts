@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, desc, eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { getDb, schema } from "@/db/client";
 
 export type GuestbookMessage = typeof schema.guestbookMessages.$inferSelect;

@@ -30,7 +30,10 @@ function pickByDay<T>(arr: T[]): T | null {
 
 export default async function Home() {
   const [all, quote, quoteAuthor] = await Promise.all([
-    getAllPostMeta(),
+    getAllPostMeta().catch((error) => {
+      console.warn("[home] failed to load posts:", error instanceof Error ? error.message : error);
+      return [];
+    }),
     getSiteOverride("home.quote"),
     getSiteOverride("home.quoteAuthor"),
   ]);

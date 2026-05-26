@@ -1,12 +1,16 @@
-const CACHE = "hypervoid-v5";
+const CACHE = "hypervoid-v6";
 // Pre-cache the offline page only — HTML pages must NOT be pre-cached
 // because their JS chunk references change with every deploy.
 const STATIC = [
   "/offline",
 ];
 
-self.addEventListener("install", () => {
-  self.skipWaiting();
+self.addEventListener("install", (e) => {
+  e.waitUntil(
+    caches.open(CACHE).then((cache) => cache.addAll(STATIC)).finally(() => {
+      self.skipWaiting();
+    }),
+  );
 });
 
 self.addEventListener("activate", (e) => {
@@ -37,8 +41,9 @@ self.addEventListener("message", (event) => {
 /**
  * Routing:
  *   - /api/*           → network-first (fresh DB data; cache fallback when offline)
- *   - HTML pages       → network-first (JS chunk references change every deploy;
- *                        caching stale HTML causes "page couldn't load")
+ *   - HTML pages       → network-only + offline fallback (JS chunk references
+ *                        change every deploy; stale HTML causes page load
+ *                        failures after client-side navigation)
  *   - /_next/static/*, fonts, images → cache-first (versioned by content hash)
  */
 self.addEventListener("fetch", (e) => {
@@ -47,12 +52,15 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // API + HTML: always network-first
-  if (
-    url.pathname.startsWith("/api/") ||
-    request.headers.get("Accept")?.includes("text/html")
-  ) {
+  // API: network-first, with cache fallback for offline reads.
+  if (url.pathname.startsWith("/api/")) {
     e.respondWith(networkFirst(request));
+    return;
+  }
+
+  // HTML must not be cached. Old HTML can reference deleted Next chunks.
+  if (request.headers.get("Accept")?.includes("text/html")) {
+    e.respondWith(networkOnlyPage(request));
     return;
   }
 
@@ -80,6 +88,15 @@ async function networkFirst(request) {
     const cached = await cache.match(request);
     if (cached) return cached;
     throw err;
+  }
+}
+
+async function networkOnlyPage(request) {
+  try {
+    return await fetch(request);
+  } catch {
+    const cache = await caches.open(CACHE);
+    return (await cache.match("/offline")) || Response.error();
   }
 }
 

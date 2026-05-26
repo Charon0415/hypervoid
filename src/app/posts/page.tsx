@@ -12,7 +12,10 @@ export const metadata: Metadata = {
 };
 
 export default async function PostsIndex() {
-  const posts = await getAllPostMeta();
+  const posts = await getAllPostMeta().catch((error) => {
+    console.warn("[posts] failed to load post list:", error instanceof Error ? error.message : error);
+    return [];
+  });
   return (
     <div className="flex flex-col gap-4">
       <header className="flex items-baseline justify-between gap-3">

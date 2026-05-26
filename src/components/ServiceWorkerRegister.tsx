@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
-const SW_VERSION = "5";
+const SW_VERSION = "6";
 
 export function ServiceWorkerRegister() {
-  const reloaded = useRef(false);
-
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
 
@@ -17,7 +15,7 @@ export function ServiceWorkerRegister() {
 
     async function register() {
       try {
-        const reg = await navigator.serviceWorker.register("/sw.js?v=5", {
+        const reg = await navigator.serviceWorker.register("/sw.js?v=6", {
           scope: "/",
         });
 

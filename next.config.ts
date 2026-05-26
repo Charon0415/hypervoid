@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 import path from "node:path";
 
 // CSP: strict routes (/admin, /api/admin, /api/cron, /search) get a
-// per-request nonce-based policy from src/middleware.ts. Public ISR-cached
+// per-request nonce-based policy from src/proxy.ts. Public ISR-cached
 // routes get a static permissive policy below so they can still be cached.
 
 const nextConfig: NextConfig = {
@@ -26,7 +26,7 @@ const nextConfig: NextConfig = {
   },
   headers: async () => [
     {
-      // Public permissive CSP — excludes strict routes handled by middleware.
+      // Public permissive CSP — excludes strict routes handled by proxy.
       source: "/((?!admin|api/admin|api/cron|search).*)",
       headers: [
         {

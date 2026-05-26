@@ -5,6 +5,7 @@ const ADMIN_GITHUB_LOGIN =
   process.env.ADMIN_GITHUB_LOGIN?.trim() || "HyperCharon";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   providers: [GitHub],
   pages: {
     signIn: "/admin/sign-in",

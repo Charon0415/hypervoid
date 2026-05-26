@@ -59,7 +59,7 @@ export async function createBackup(): Promise<DbBackupRow> {
       const rows = await db.select().from(t as any);
       tables[name] = rows;
       counts[name] = rows.length;
-    } catch (e) {
+    } catch {
       counts[name] = -1;
       // skip silently — partial backups still valuable
     }

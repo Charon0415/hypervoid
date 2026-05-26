@@ -88,6 +88,7 @@ export function FloatingPlayer() {
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden shadow-md shrink-0 border border-white/30"
               style={{ animation: playing ? "spin 8s linear infinite" : "none" }}
             >
+              {/* eslint-disable-next-line @next/next/no-img-element -- NCM cover hosts vary; this tiny animated artwork should not go through image optimization. */}
               <img
                 src={current.cover}
                 alt={current.title}
@@ -277,6 +278,7 @@ export function FloatingPlayer() {
             className="w-9 h-9 rounded-full overflow-hidden shadow-sm border border-white/30 shrink-0"
             style={{ animation: playing ? "spin 6s linear infinite" : "none" }}
           >
+            {/* eslint-disable-next-line @next/next/no-img-element -- NCM cover hosts vary; this tiny animated artwork should not go through image optimization. */}
             <img src={current.cover} alt="" className="w-full h-full object-cover" />
           </div>
           <div className="hidden sm:block min-w-0 pr-1">
