@@ -104,7 +104,7 @@ export default async function RootLayout({
         <Script
           id="sw-cleanup"
           strategy="beforeInteractive"
-        >{`!function(){if(!("serviceWorker"in navigator))return;var v=null;try{v=localStorage.getItem("sw_v")}catch(e){}if("4"===v)return;navigator.serviceWorker.getRegistrations().then(function(r){return Promise.all(r.map(function(s){return s.unregister()}))})}()`}</Script>
+        >{`!function(){if(!("serviceWorker"in navigator))return;var v=null;try{v=localStorage.getItem("sw_v")}catch(e){}if("5"===v)return;navigator.serviceWorker.getRegistrations().then(function(r){return Promise.all(r.map(function(s){return s.unregister()}))})}()`}</Script>
         <CustomThemeStyles />
       </head>
       <body className="min-h-full flex flex-col">

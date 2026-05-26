@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-const SW_VERSION = "4";
+const SW_VERSION = "5";
 
 export function ServiceWorkerRegister() {
   const reloaded = useRef(false);
@@ -17,7 +17,7 @@ export function ServiceWorkerRegister() {
 
     async function register() {
       try {
-        const reg = await navigator.serviceWorker.register("/sw.js", {
+        const reg = await navigator.serviceWorker.register("/sw.js?v=5", {
           scope: "/",
         });
 

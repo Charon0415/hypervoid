@@ -1,4 +1,4 @@
-const CACHE = "hypervoid-v4";
+const CACHE = "hypervoid-v5";
 // Pre-cache the offline page only — HTML pages must NOT be pre-cached
 // because their JS chunk references change with every deploy.
 const STATIC = [
