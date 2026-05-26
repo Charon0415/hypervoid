@@ -48,9 +48,14 @@ function isStrictRoute(pathname: string): boolean {
 }
 
 function buildCsp(opts: { nonce: string; strict: boolean }): string {
+  // 'unsafe-eval' on permissive routes only — pixi.js v7's batch renderer
+  // generates batched-draw shader functions via `new Function(...)`. Without
+  // this the Live2D mascot init throws ("看板娘初始化失败"). Strict routes
+  // (/admin, /api/admin, /api/cron, /search) don't run pixi, so they keep
+  // the nonce-only policy.
   const scriptSrc = opts.strict
     ? `script-src 'self' 'nonce-${opts.nonce}' ${SCRIPT_HOSTS}`
-    : `script-src 'self' 'unsafe-inline' ${SCRIPT_HOSTS}`;
+    : `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${SCRIPT_HOSTS}`;
   return [...COMMON_DIRECTIVES, scriptSrc].join("; ");
 }
 

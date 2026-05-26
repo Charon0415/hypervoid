@@ -236,6 +236,26 @@ export default async function AdminHome() {
             desc="批量导入 Markdown 文件，自动解析 frontmatter"
           />
           <NavTile
+            href="/admin/tags"
+            title="标签管理"
+            desc="跨文章重命名 / 合并 / 删除标签，一处生效全站"
+          />
+          <NavTile
+            href="/admin/link-check"
+            title="失效链接巡检"
+            desc="扫描已发布文章外链，并标记 404 / 超时 / SSL 错误"
+          />
+          <NavTile
+            href="/admin/search-log"
+            title="搜索分析"
+            desc="站内搜索查询 + 命中数；零结果查询单独高亮"
+          />
+          <NavTile
+            href="/admin/backup"
+            title="数据备份"
+            desc="一键导出整库 JSON 到 Vercel Blob，下载或删除历史快照"
+          />
+          <NavTile
             href="/admin/audit"
             title="操作审计"
             desc="所有后台动作的只读时间线"

@@ -1,7 +1,8 @@
 import { getSiteStats } from "@/lib/stats";
 
 function formatNumber(n: number): string {
-  if (n >= 10000) return `${(n / 1000).toFixed(1)}k`;
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 10_000) return `${(n / 1000).toFixed(1)}k`;
   return n.toLocaleString();
 }
 
@@ -67,7 +68,7 @@ export async function SiteStats() {
     },
     {
       label: "运行",
-      value: `${stats.daysOnline} 天`,
+      value: `${stats.daysOnline.toLocaleString()} 天`,
       icon: (
         <svg
           aria-hidden
@@ -100,11 +101,14 @@ export async function SiteStats() {
             <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary/15 text-primary">
               {item.icon}
             </span>
-            <div className="min-w-0">
-              <p className="font-mono text-sm font-semibold leading-tight text-foreground">
+            <div className="min-w-0 flex-1">
+              <p
+                className="truncate font-mono text-sm font-semibold leading-tight text-foreground"
+                title={item.value}
+              >
                 {item.value}
               </p>
-              <p className="text-[11px] leading-tight text-muted">
+              <p className="truncate text-[11px] leading-tight text-muted">
                 {item.label}
               </p>
             </div>

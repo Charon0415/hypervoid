@@ -348,3 +348,50 @@ export const webmentions = pgTable("webmentions", {
     .defaultNow(),
   verifiedAt: timestamp("verified_at", { withTimezone: true }),
 });
+
+/**
+ * Crawl results for outbound links in published posts. status: HTTP code
+ * (200..599) when reachable, or null when the probe itself failed —
+ * errorMessage carries the reason. postSlugs lists every post that links
+ * to this URL so admin can click straight to the offending source.
+ */
+export const linkChecks = pgTable("link_checks", {
+  url: text("url").primaryKey(),
+  status: integer("status"),
+  errorMessage: text("error_message"),
+  postSlugs: jsonb("post_slugs").$type<string[]>().notNull().default([]),
+  lastCheckedAt: timestamp("last_checked_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+/**
+ * One row per /search query. ipHash is a salted SHA-256 prefix so we can
+ * count uniques without storing PII. resultCount lets us flag queries
+ * that returned nothing — those are the most interesting signal.
+ */
+export const searchLog = pgTable("search_log", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  query: text("query").notNull(),
+  resultCount: integer("result_count").notNull().default(0),
+  ipHash: text("ip_hash"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+/**
+ * Metadata for DB snapshots uploaded to Vercel Blob. The actual JSON
+ * payload lives at `url`; this table just keeps the index so admin
+ * can list / download / delete past snapshots without iterating Blob.
+ */
+export const dbBackups = pgTable("db_backups", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  url: text("url").notNull(),
+  pathname: text("pathname").notNull(),
+  sizeBytes: integer("size_bytes").notNull().default(0),
+  tableCounts: jsonb("table_counts").$type<Record<string, number>>(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});

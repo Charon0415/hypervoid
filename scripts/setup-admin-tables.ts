@@ -183,6 +183,40 @@ const STATEMENTS = [
   );`,
   `CREATE INDEX IF NOT EXISTS rate_limits_window_idx
     ON rate_limits (window_start);`,
+
+  // v1.9 — link-check, search-log, db-backup tables.
+  `CREATE TABLE IF NOT EXISTS link_checks (
+    url text PRIMARY KEY,
+    status integer,
+    error_message text,
+    post_slugs jsonb NOT NULL DEFAULT '[]'::jsonb,
+    last_checked_at timestamp with time zone NOT NULL DEFAULT now()
+  );`,
+  `CREATE INDEX IF NOT EXISTS link_checks_status_idx
+    ON link_checks (status, last_checked_at DESC);`,
+
+  `CREATE TABLE IF NOT EXISTS search_log (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    query text NOT NULL,
+    result_count integer NOT NULL DEFAULT 0,
+    ip_hash text,
+    created_at timestamp with time zone NOT NULL DEFAULT now()
+  );`,
+  `CREATE INDEX IF NOT EXISTS search_log_created_at_idx
+    ON search_log (created_at DESC);`,
+  `CREATE INDEX IF NOT EXISTS search_log_zero_idx
+    ON search_log (result_count, created_at DESC) WHERE result_count = 0;`,
+
+  `CREATE TABLE IF NOT EXISTS db_backups (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    url text NOT NULL,
+    pathname text NOT NULL,
+    size_bytes integer NOT NULL DEFAULT 0,
+    table_counts jsonb,
+    created_at timestamp with time zone NOT NULL DEFAULT now()
+  );`,
+  `CREATE INDEX IF NOT EXISTS db_backups_created_at_idx
+    ON db_backups (created_at DESC);`,
 ];
 
 async function main() {

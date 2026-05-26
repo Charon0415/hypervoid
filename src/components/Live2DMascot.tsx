@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { MascotChat } from "@/components/MascotChat";
 
 const STORAGE_KEY = "hypervoid:mascot";
@@ -110,6 +111,12 @@ function defaultPos(): Pos {
 }
 
 export function Live2DMascot() {
+  const pathname = usePathname();
+  // Strict-CSP routes (no 'unsafe-eval') can't run pixi.js's batch renderer —
+  // mounting the mascot there would just surface a load error. Skip entirely.
+  const onStrictRoute =
+    pathname?.startsWith("/admin") || pathname === "/search";
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const appRef = useRef<unknown>(null);
   const dialogTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -177,7 +184,7 @@ export function Live2DMascot() {
   }, [showDialog]);
 
   useEffect(() => {
-    if (!visible || mobile) return;
+    if (!visible || mobile || onStrictRoute) return;
     let disposed = false;
     setLoadError(null);
 
@@ -250,7 +257,7 @@ export function Live2DMascot() {
       }
       appRef.current = null;
     };
-  }, [visible, mobile, scheduleIdle, showDialog]);
+  }, [visible, mobile, onStrictRoute, scheduleIdle, showDialog]);
 
   const show = useCallback(() => {
     setMascotEnabled(true);
@@ -306,7 +313,7 @@ export function Live2DMascot() {
     [dragging],
   );
 
-  if (!mounted || mobile) return null;
+  if (!mounted || mobile || onStrictRoute) return null;
 
   return (
     <>

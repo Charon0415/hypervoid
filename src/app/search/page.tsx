@@ -1,9 +1,11 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import { headers } from "next/headers";
 import type { Metadata } from "next";
 import { SearchHitCard } from "@/components/SearchHitCard";
 import { SearchBox } from "@/components/SearchBox";
 import { searchPosts, getAllTags } from "@/lib/posts";
+import { logSearchQuery } from "@/db/search-log";
 
 export const dynamic = "force-dynamic";
 
@@ -77,6 +79,16 @@ export default async function SearchPage(props: {
       : Promise.resolve([]),
     getAllTags(),
   ]);
+
+  if (params.q) {
+    const h = await headers();
+    const ip =
+      h.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+      h.get("x-real-ip") ??
+      null;
+    // Best-effort, never awaited blocking the response render.
+    void logSearchQuery({ query: params.q, resultCount: hits.length, ip });
+  }
 
   // Chips reflect what the base query *could* match — compute pre-filter set
   const baseHits = params.q ? await searchPosts(params.q, {}) : [];
