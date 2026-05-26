@@ -99,12 +99,6 @@ function BgThumb({ bg }: { bg: BackgroundKey }) {
           }}
         />
       );
-    case "aurora":
-      return (
-        <div
-          className={`${base} bg-gradient-to-tr from-[rgba(120,60,220,0.4)] via-[rgba(40,180,200,0.3)] to-[rgba(180,60,160,0.3)]`}
-        />
-      );
     case "cyberpunk":
       return (
         <div
@@ -151,7 +145,6 @@ export function SiteSettings() {
     displayMode,
     clickEffect,
     sparkleEffect,
-    cursorEffect,
     setHue,
     setBackground,
     setFont,
@@ -159,7 +152,6 @@ export function SiteSettings() {
     setDisplayMode,
     setClickEffect,
     setSparkleEffect,
-    setCursorEffect,
     applyPreset,
     reset,
   } = useSettings();
@@ -566,28 +558,8 @@ export function SiteSettings() {
                   </span>
                   文字选中火花
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setCursorEffect(!cursorEffect)}
-                  className={`${pillBase} flex items-center gap-2 w-full mt-1.5 ${
-                    cursorEffect ? pillActive : pillIdle
-                  }`}
-                >
-                  <span
-                    className={`relative inline-block h-4 w-7 shrink-0 rounded-full transition-colors ${
-                      cursorEffect ? "bg-primary" : "bg-border"
-                    }`}
-                  >
-                    <span
-                      className={`absolute top-0.5 inline-block h-3 w-3 rounded-full bg-white shadow-sm transition-all ${
-                        cursorEffect ? "left-3.5" : "left-0.5"
-                      }`}
-                    />
-                  </span>
-                  动态追踪光标
-                </button>
                 <p className="mt-1.5 text-[10px] text-muted">
-                  点击时产生粒子爆炸 · 选中文字时洒落星光 · 动态追踪光标特效
+                  点击时产生粒子爆炸 · 选中文字时洒落星光
                 </p>
               </section>
 

@@ -17,7 +17,6 @@ type Particle = {
 
 function CanvasParticles({ density }: { density: "normal" | "dense" }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const mouseRef = useRef<{ x: number; y: number; active: boolean }>({ x: 0, y: 0, active: false });
   const { resolvedTheme } = useTheme();
 
   useEffect(() => {
@@ -88,16 +87,6 @@ function CanvasParticles({ density }: { density: "normal" | "dense" }) {
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy * p.z;
-
-        const dx = p.x - mouseRef.current.x;
-        const dy = p.y - mouseRef.current.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 120 && dist > 0 && mouseRef.current.active) {
-          const force = (120 - dist) / 120 * 0.6;
-          p.x += (dx / dist) * force;
-          p.y += (dy / dist) * force;
-        }
-
         if (p.y > height + 4) {
           p.y = -4;
           p.x = Math.random() * width;
@@ -123,28 +112,10 @@ function CanvasParticles({ density }: { density: "normal" | "dense" }) {
     const onResize = () => resize();
     window.addEventListener("resize", onResize);
 
-    const isDesktop = window.matchMedia("(pointer: fine)").matches;
-    const onMouseMove = (e: MouseEvent) => {
-      mouseRef.current.x = e.clientX;
-      mouseRef.current.y = e.clientY;
-      mouseRef.current.active = true;
-    };
-    const onMouseLeave = () => {
-      mouseRef.current.active = false;
-    };
-    if (isDesktop) {
-      window.addEventListener("mousemove", onMouseMove);
-      document.addEventListener("mouseleave", onMouseLeave);
-    }
-
     return () => {
       mounted = false;
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", onResize);
-      if (isDesktop) {
-        window.removeEventListener("mousemove", onMouseMove);
-        document.removeEventListener("mouseleave", onMouseLeave);
-      }
     };
   }, [resolvedTheme, density]);
 

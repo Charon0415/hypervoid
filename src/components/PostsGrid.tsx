@@ -12,7 +12,7 @@ export function PostsGrid({ children }: { children: ReactNode }) {
         <ColumnToggleButton twoCol={twoCol} onChange={setLayout} />
       </div>
       <div
-        className={`card-stagger grid gap-4 ${twoCol ? "sm:grid-cols-2" : "grid-cols-1"}`}
+        className={`grid gap-4 ${twoCol ? "sm:grid-cols-2" : "grid-cols-1"}`}
       >
         {children}
       </div>
