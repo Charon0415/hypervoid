@@ -18,7 +18,9 @@ export default async function AdminSettingsPage() {
   const session = await auth();
   if (!session?.user) redirect("/admin/sign-in");
 
-  const fields = await getAllOverrides();
+  const allFields = await getAllOverrides();
+  // mascot.character has its own dedicated page at /admin/mascot
+  const fields = allFields.filter((f) => f.key !== "mascot.character");
 
   return (
     <div className="flex flex-col gap-6">

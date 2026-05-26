@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
-import { isActiveProviderConfigured, streamKannaChat } from "@/lib/ai";
+import {
+  isActiveProviderConfigured,
+  streamKannaChat,
+  streamRemChat,
+} from "@/lib/ai";
 import type { ChatMessage } from "@/lib/ai-client";
 import { siteConfig } from "@/lib/site-config";
 
@@ -73,7 +77,7 @@ export async function POST(req: Request): Promise<Response> {
   });
   if (!burst.ok) {
     return NextResponse.json(
-      { error: "康娜想休息一下…稍后再聊" },
+      { error: "想休息一下……稍后再聊吧" },
       { status: 429 },
     );
   }
@@ -86,17 +90,20 @@ export async function POST(req: Request): Promise<Response> {
   });
   if (!daily.ok) {
     return NextResponse.json(
-      { error: "今天聊得太多啦,明天再来~" },
+      { error: "今天聊得太多啦，明天再来吧" },
       { status: 429 },
     );
   }
 
-  let body: { messages?: unknown };
+  let body: { messages?: unknown; character?: unknown };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "invalid body" }, { status: 400 });
   }
+
+  const character =
+    body.character === "rem" ? "rem" : "kanna";
 
   if (!Array.isArray(body.messages) || body.messages.length === 0) {
     return NextResponse.json({ error: "no messages" }, { status: 400 });
@@ -129,18 +136,21 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   const encoder = new TextEncoder();
+  const streamFn = character === "rem" ? streamRemChat : streamKannaChat;
+  const errorMsg = character === "rem"
+    ? "……(雷姆走神了，请再试一次)"
+    : "……(康娜走神了,再试一次)";
+
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        const events = await streamKannaChat({ messages });
+        const events = await streamFn({ messages });
         for await (const delta of events) {
           controller.enqueue(encoder.encode(delta));
         }
         controller.close();
       } catch (e) {
-        controller.enqueue(
-          encoder.encode("……(康娜走神了,再试一次)"),
-        );
+        controller.enqueue(encoder.encode(errorMsg));
         controller.close();
         // Log the error type only — never the message content/headers.
         console.error("[mascot/chat]", e instanceof Error ? e.name : "error");

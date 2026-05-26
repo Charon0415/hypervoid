@@ -26,7 +26,9 @@ export type OverridableFields =
   | "announcementLink"
   | "announcementLinkText"
   | "home.quote"
-  | "home.quoteAuthor";
+  | "home.quoteAuthor"
+  | "mascot.character"
+  | "music.playlistId";
 
 const DEFAULT_MAP: Record<OverridableFields, string> = {
   name: siteConfig.name,
@@ -51,6 +53,8 @@ const DEFAULT_MAP: Record<OverridableFields, string> = {
   announcementLinkText: "",
   "home.quote": "我们都是星尘——也是宇宙了解自身的一种方式。",
   "home.quoteAuthor": "Carl Sagan",
+  "mascot.character": "kanna",
+  "music.playlistId": "",
 };
 
 const LABELS: Record<OverridableFields, string> = {
@@ -76,6 +80,8 @@ const LABELS: Record<OverridableFields, string> = {
   announcementLinkText: "链接按钮文字",
   "home.quote": "首页名句正文",
   "home.quoteAuthor": "首页名句作者",
+  "mascot.character": "看板娘角色 (kanna / rem)",
+  "music.playlistId": "网易云歌单 ID",
 };
 
 export const OVERRIDABLE_FIELDS = Object.entries(LABELS).map(

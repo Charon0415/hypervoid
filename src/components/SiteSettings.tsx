@@ -14,6 +14,8 @@ import {
   type BackgroundKey,
 } from "@/components/SettingsProvider";
 import { isMascotEnabled, setMascotEnabled } from "@/components/Live2DMascot";
+
+const MASCOT_CHAR_KEY = "hypervoid:mascot-char";
 import { useInstallPrompt } from "@/components/PwaInstallController";
 
 function BgThumb({ bg }: { bg: BackgroundKey }) {
@@ -470,8 +472,40 @@ export function SiteSettings() {
                     {mascot ? "已开启" : "已关闭"}
                   </button>
                   <p className="mt-1.5 text-[10px] text-muted">
-                    在页面右下角显示 Live2D 看板娘（默认关闭）
+                    在页面右下角显示看板娘（默认关闭）
                   </p>
+                  {mascot ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try {
+                          const cur = localStorage.getItem(MASCOT_CHAR_KEY);
+                          const next = cur === "rem" ? "kanna" : "rem";
+                          localStorage.setItem(MASCOT_CHAR_KEY, next);
+                          window.dispatchEvent(
+                            new CustomEvent("hypervoid:mascot-changed", {
+                              detail: true,
+                            }),
+                          );
+                          // Force reload to apply the new mascot
+                          window.location.reload();
+                        } catch {
+                          /* noop */
+                        }
+                      }}
+                      className={`${pillBase} ${pillIdle} mt-2 flex w-full items-center justify-center gap-1.5 text-xs`}
+                    >
+                      切换为{(() => {
+                        try {
+                          return localStorage.getItem(MASCOT_CHAR_KEY) === "rem"
+                            ? "康娜"
+                            : "雷姆";
+                        } catch {
+                          return "雷姆";
+                        }
+                      })()}
+                    </button>
+                  ) : null}
                 </section>
               ) : null}
 

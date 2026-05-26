@@ -89,7 +89,13 @@ function writeMessages(messages: ChatMessage[]): ChatMessage[] {
   return trimmed;
 }
 
-export function MascotChat({ onClose }: { onClose: () => void }) {
+export function MascotChat({
+  character = "kanna",
+  onClose,
+}: {
+  character?: "kanna" | "rem";
+  onClose: () => void;
+}) {
   const messages = useSyncExternalStore(
     subscribe,
     getSnapshot,
@@ -145,7 +151,7 @@ export function MascotChat({ onClose }: { onClose: () => void }) {
       const res = await fetch("/api/mascot/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next }),
+        body: JSON.stringify({ messages: next, character }),
       });
       if (!res.ok || !res.body) {
         const errBody = await res.text();
@@ -182,7 +188,7 @@ export function MascotChat({ onClose }: { onClose: () => void }) {
       console.error("[mascot-chat]", e);
       writeMessages([
         ...next,
-        { role: "assistant", content: "……（卡姆依走神了）" },
+        { role: "assistant", content: character === "rem" ? "……（雷姆走神了）" : "……（卡姆依走神了）" },
       ]);
     } finally {
       setStreaming(false);
@@ -201,7 +207,7 @@ export function MascotChat({ onClose }: { onClose: () => void }) {
       }`}
     >
       <header className="flex items-center justify-between gap-2 border-b border-border px-3 py-2 text-xs">
-        <span className="font-semibold">和康娜说话</span>
+        <span className="font-semibold">和{character === "rem" ? "雷姆" : "康娜"}说话</span>
         <div className="flex items-center gap-1.5">
           {messages.length > 0 ? (
             <button
@@ -277,7 +283,7 @@ export function MascotChat({ onClose }: { onClose: () => void }) {
         }`}
       >
         {messages.length === 0 && !partial ? (
-          <p className="text-xs text-muted">康娜在偷瞄你…说点什么吧。</p>
+          <p className="text-xs text-muted">{character === "rem" ? "雷姆在等你开口呢……说点什么吧。" : "康娜在偷瞄你……说点什么吧。"}</p>
         ) : null}
         <ul className="flex flex-col gap-2.5">
           {messages.map((m, i) => (

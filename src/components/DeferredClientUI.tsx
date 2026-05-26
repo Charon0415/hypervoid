@@ -30,8 +30,8 @@ const KeyboardShortcuts = dynamic(
   { ssr: false },
 );
 
-const Live2DMascot = dynamic(
-  () => import("@/components/Live2DMascot").then((m) => m.Live2DMascot),
+const MascotRouter = dynamic(
+  () => import("@/components/MascotRouter").then((m) => m.MascotRouter),
   { ssr: false },
 );
 
@@ -55,7 +55,7 @@ export function DeferredClientUI() {
       <BackToTop />
       <ServiceWorkerRegister />
       <KeyboardShortcuts />
-      <Live2DMascot />
+      <MascotRouter />
       <PwaInstallController />
       <BottomTabBar />
     </>

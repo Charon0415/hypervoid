@@ -7,6 +7,9 @@ import {
   PLAYLISTS,
   type MusicPlaylist,
 } from "@/lib/music";
+import { MusicPlayer } from "@/components/MusicPlayer";
+import { getSiteOverride } from "@/lib/site-config-server";
+import { getPlaylistWithUrls } from "@/lib/ncm";
 
 export const metadata: Metadata = {
   title: "音乐",
@@ -31,7 +34,18 @@ const PLATFORM_COLOR: Record<MusicPlaylist["platform"], string> = {
   other: "text-primary",
 };
 
-export default function MusicPage() {
+export default async function MusicPage() {
+  // Try to fetch playlist data server-side
+  let initialTracks: { id: number; title: string; artist: string; cover: string; duration: number; url: string | null }[] = [];
+  const playlistId = await getSiteOverride("music.playlistId");
+  if (playlistId?.trim()) {
+    try {
+      initialTracks = await getPlaylistWithUrls(playlistId.trim());
+    } catch {
+      /* NCM API not available, client will fetch via API route */
+    }
+  }
+
   return (
     <div className="flex flex-col gap-10">
       <header>
@@ -46,6 +60,8 @@ export default function MusicPage() {
           音乐是另一种穿过虚空的方式。
         </p>
       </header>
+
+      <MusicPlayer initialTracks={initialTracks} />
 
       <section>
         <div className="mb-4 flex items-baseline justify-between gap-3">
@@ -188,8 +204,8 @@ export default function MusicPage() {
       </section>
 
       <p className="rounded-xl border border-dashed border-border p-4 text-xs text-muted">
-        想接 last.fm / 网易云正在播放？回头可以在 <code>src/app/music/page.tsx</code>{" "}
-        加入 fetch；或在留言板 [
+        播放器已接入网易云音乐 API。在后台「站点设置」中配置歌单 ID 即可显示曲目。
+        也可在留言板 [
         <Link href="/guestbook" className="text-primary hover:underline">
           点这
         </Link>
