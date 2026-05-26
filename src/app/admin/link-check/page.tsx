@@ -111,8 +111,8 @@ export default async function AdminLinkCheckPage() {
           还没有扫描记录。点上面「立即扫描」开始。
         </p>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-border">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-xl border border-border">
+          <table className="w-full min-w-[640px] text-sm">
             <thead className="border-b border-border bg-card text-left">
               <tr>
                 <th className="px-3 py-3 font-medium w-16">状态</th>

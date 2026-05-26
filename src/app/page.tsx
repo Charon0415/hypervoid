@@ -7,6 +7,7 @@ import { SiteStats } from "@/components/SiteStats";
 import { AnnouncementWidget } from "@/components/AnnouncementWidget";
 import { ProfileCard } from "@/components/ProfileCard";
 import { MiniCalendar } from "@/components/MiniCalendar";
+import { MiniTerminal } from "@/components/MiniTerminal";
 import { PostActivityHeatmap } from "@/components/PostActivityHeatmap";
 import { PopularPosts } from "@/components/PopularPosts";
 import { TagCloud } from "@/components/TagCloud";
@@ -32,6 +33,26 @@ export default async function Home() {
   ]);
   const recent = all.slice(0, 6);
   const dailyPick = pickByDay(all);
+
+  // Server-side snapshot for the MiniTerminal — only ships titles+slugs
+  // for the latest 20 posts and top 10 tag counts to the client, so the
+  // terminal can navigate without making its own API calls. We don't
+  // call auth() here on purpose: this page is ISR (`revalidate = 60`),
+  // and reading cookies would bust the static cache for every visitor.
+  // The terminal's `whoami` falls back to "guest".
+  const terminalPosts = all
+    .slice(0, 20)
+    .map((p) => ({ slug: p.slug, title: p.frontmatter.title }));
+  const tagCounts = new Map<string, number>();
+  for (const p of all) {
+    for (const t of p.frontmatter.tags) {
+      tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
+    }
+  }
+  const terminalTags = [...tagCounts.entries()]
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
 
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-10">
@@ -124,6 +145,9 @@ export default async function Home() {
           <ProfileCard />
           <SiteStats />
           <AnnouncementWidget />
+          <div className="hidden lg:block">
+            <MiniTerminal posts={terminalPosts} tags={terminalTags} me={null} />
+          </div>
           <div className="hidden md:contents">
             <MiniCalendar />
           </div>

@@ -143,7 +143,8 @@ function QueryTable({
       {rows.length === 0 ? (
         <p className="p-6 text-center text-xs text-muted">{emptyHint}</p>
       ) : (
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[480px] text-sm">
           <thead className="text-left text-xs text-muted">
             <tr>
               <th className="px-4 py-2 font-medium">查询</th>
@@ -179,6 +180,7 @@ function QueryTable({
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </div>
   );

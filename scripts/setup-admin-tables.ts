@@ -217,6 +217,19 @@ const STATEMENTS = [
   );`,
   `CREATE INDEX IF NOT EXISTS db_backups_created_at_idx
     ON db_backups (created_at DESC);`,
+
+  // v1.10 — visitor login tracking. One row per unique GitHub account.
+  // auth.ts events.signIn UPSERTs on every login.
+  `CREATE TABLE IF NOT EXISTS visitor_logins (
+    github_login text PRIMARY KEY,
+    github_name text,
+    avatar_url text,
+    login_count integer NOT NULL DEFAULT 0,
+    first_seen_at timestamp with time zone NOT NULL DEFAULT now(),
+    last_seen_at timestamp with time zone NOT NULL DEFAULT now()
+  );`,
+  `CREATE INDEX IF NOT EXISTS visitor_logins_last_seen_idx
+    ON visitor_logins (last_seen_at DESC);`,
 ];
 
 async function main() {

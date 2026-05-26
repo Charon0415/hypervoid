@@ -21,6 +21,14 @@ export const siteConfig = {
     { name: "Codeberg", url: "https://codeberg.org/Charon0415", icon: "codeberg" as const },
     { name: "Steam", url: "https://steamcommunity.com/id/Charon0415/", icon: "steam" as const },
     { name: "TikTok", url: "https://www.douyin.com/search/Charon2005?type=user", icon: "douyin" as const },
+    {
+      name: "CSDN",
+      url: "https://blog.csdn.net/HyperCharon",
+      icon: "csdn" as const,
+      // Only show in the nav drawer / pill nav — not in the ProfileCard
+      // avatar block. Author explicitly asked to keep that area uncrowded.
+      hideFromProfile: true,
+    },
   ],
   rss: {
     title: "Hypervoid",

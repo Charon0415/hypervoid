@@ -119,8 +119,8 @@ export default async function AdminTagsPage() {
           还没有标签。
         </p>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-border">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-xl border border-border">
+          <table className="w-full min-w-[480px] text-sm">
             <thead className="border-b border-border bg-card text-left">
               <tr>
                 <th className="px-4 py-3 font-medium w-10"></th>

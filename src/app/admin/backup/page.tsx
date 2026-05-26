@@ -73,8 +73,8 @@ export default async function AdminBackupPage() {
           {blobReady ? "还没有快照。" : ""}
         </p>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-border">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-xl border border-border">
+          <table className="w-full min-w-[560px] text-sm">
             <thead className="border-b border-border bg-card text-left">
               <tr>
                 <th className="px-4 py-3 font-medium">时间</th>

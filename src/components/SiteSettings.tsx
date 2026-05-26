@@ -434,40 +434,46 @@ export function SiteSettings() {
                 </p>
               </section>
 
-              <section className="mt-5 md:mt-4">
-                <p className="mb-2 text-xs uppercase tracking-wider text-muted">
-                  看板娘
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const next = !mascot;
-                    setMascot(next);
-                    setMascotEnabled(next);
-                  }}
-                  className={`${pillBase} flex items-center gap-2 ${
-                    mascot ? pillActive : pillIdle
-                  }`}
-                  style={{ width: "100%" }}
-                >
-                  <span
-                    aria-hidden
-                    className={`relative inline-block h-4 w-7 shrink-0 rounded-full transition-colors ${
-                      mascot ? "bg-primary" : "bg-border"
+              {/* 看板娘 — desktop only. The mascot canvas itself also
+                  bails on mobile (Live2DMascot.tsx returns null), so the
+                  toggle would have no effect there; hide it to keep the
+                  panel tidy on small screens. */}
+              {!isMobile ? (
+                <section className="mt-5 md:mt-4">
+                  <p className="mb-2 text-xs uppercase tracking-wider text-muted">
+                    看板娘
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = !mascot;
+                      setMascot(next);
+                      setMascotEnabled(next);
+                    }}
+                    className={`${pillBase} flex items-center gap-2 ${
+                      mascot ? pillActive : pillIdle
                     }`}
+                    style={{ width: "100%" }}
                   >
                     <span
-                      className={`absolute top-0.5 inline-block h-3 w-3 rounded-full bg-white shadow-sm transition-all ${
-                        mascot ? "left-3.5" : "left-0.5"
+                      aria-hidden
+                      className={`relative inline-block h-4 w-7 shrink-0 rounded-full transition-colors ${
+                        mascot ? "bg-primary" : "bg-border"
                       }`}
-                    />
-                  </span>
-                  {mascot ? "已开启" : "已关闭"}
-                </button>
-                <p className="mt-1.5 text-[10px] text-muted">
-                  在页面右下角显示 Live2D 看板娘（默认关闭）
-                </p>
-              </section>
+                    >
+                      <span
+                        className={`absolute top-0.5 inline-block h-3 w-3 rounded-full bg-white shadow-sm transition-all ${
+                          mascot ? "left-3.5" : "left-0.5"
+                        }`}
+                      />
+                    </span>
+                    {mascot ? "已开启" : "已关闭"}
+                  </button>
+                  <p className="mt-1.5 text-[10px] text-muted">
+                    在页面右下角显示 Live2D 看板娘（默认关闭）
+                  </p>
+                </section>
+              ) : null}
 
               {installAvailable ? (
                 <section className="mt-5 md:mt-4">

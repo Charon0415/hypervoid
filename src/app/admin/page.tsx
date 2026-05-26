@@ -41,9 +41,9 @@ export default async function AdminHome() {
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="flex items-center justify-between gap-3">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">管理后台</h1>
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">管理后台</h1>
           <p className="mt-1 text-sm text-muted">
             登录身份：<span className="font-medium">@{login}</span>
           </p>
@@ -51,7 +51,7 @@ export default async function AdminHome() {
         <div className="flex items-center gap-2">
           <Link
             href="/admin/posts/new"
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+            className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 sm:px-4"
           >
             + 新文章
           </Link>

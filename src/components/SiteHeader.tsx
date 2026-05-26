@@ -24,10 +24,10 @@ export function SiteHeader() {
       style={{ viewTransitionName: "site-header" }}
       className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/85 backdrop-blur-md supports-[backdrop-filter]:bg-background/65"
     >
-      <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
+      <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-3 sm:gap-3 sm:px-4">
         <Link
           href="/"
-          className="group flex shrink-0 items-center gap-2.5 font-bold tracking-tight"
+          className="group flex shrink-0 items-center gap-2 font-bold tracking-tight sm:gap-2.5"
         >
           <span aria-hidden className="inline-flex h-7 w-7 items-center justify-center text-primary transition-transform group-hover:rotate-12">
             <svg
@@ -77,12 +77,12 @@ export function SiteHeader() {
           <NavGroups />
         </div>
 
-        <div className="flex shrink-0 items-center gap-1.5 md:gap-2">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-1.5 md:gap-2">
           <Link
             href="/search"
             aria-label={t.common.search}
             title={`${t.common.search} (${isMac ? "⌘" : "Ctrl"}+K)`}
-            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border/60 bg-card/70 px-2.5 text-muted backdrop-blur-sm transition hover:border-primary hover:bg-card hover:text-primary"
+            className="inline-flex h-9 w-9 items-center justify-center gap-1.5 rounded-full border border-border/60 bg-card/70 text-muted backdrop-blur-sm transition hover:border-primary hover:bg-card hover:text-primary sm:w-auto sm:px-2.5"
           >
             <svg
               aria-hidden="true"
@@ -99,7 +99,7 @@ export function SiteHeader() {
               {isMac ? "⌘K" : "Ctrl K"}
             </kbd>
           </Link>
-          <div className="flex items-center gap-1.5 md:gap-2">
+          <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
             <LocaleSwitch />
             <SiteSettings />
             <NotificationBell />

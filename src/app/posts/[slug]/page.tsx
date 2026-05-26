@@ -132,7 +132,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
       <ReadingProgress />
       <ReadTracker slug={slug} />
       <article className="mx-auto w-full max-w-3xl">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
           <Link
             href="/posts"
             className="group inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium text-foreground/80 transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary"

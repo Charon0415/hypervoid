@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -8,9 +9,14 @@ import {
   listTopPostsByLikes,
   listTopPostsByViews,
 } from "@/db/analytics";
+import {
+  countVisitorLogins,
+  listVisitorLogins,
+  type VisitorLogin,
+} from "@/db/visitor-logins";
 import { getSiteStats } from "@/lib/stats";
 import { countActiveSubscribers } from "@/lib/newsletter";
-import { formatDateCN } from "@/lib/datetime";
+import { formatDateCN, formatDateTimeCN } from "@/lib/datetime";
 
 export const metadata: Metadata = {
   title: "数据看板",
@@ -23,13 +29,16 @@ export default async function AdminStatsPage() {
   const session = await auth();
   if (!session?.user) redirect("/admin/sign-in");
 
-  const [stats, subs, topViews, topLikes, monthly] = await Promise.all([
-    getSiteStats({ isAdmin: true }),
-    countActiveSubscribers(),
-    listTopPostsByViews(10),
-    listTopPostsByLikes(10),
-    listMonthlyPostCounts(12),
-  ]);
+  const [stats, subs, topViews, topLikes, monthly, visitors, visitorCount] =
+    await Promise.all([
+      getSiteStats({ isAdmin: true }),
+      countActiveSubscribers(),
+      listTopPostsByViews(10),
+      listTopPostsByLikes(10),
+      listMonthlyPostCounts(12),
+      listVisitorLogins(50),
+      countVisitorLogins(),
+    ]);
 
   const maxMonthly = Math.max(1, ...monthly.map((m) => m.count));
 
@@ -40,7 +49,7 @@ export default async function AdminStatsPage() {
         <h1 className="text-2xl font-bold tracking-tight">数据看板</h1>
       </header>
 
-      <section className="grid gap-3 grid-cols-2 sm:grid-cols-5">
+      <section className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
         <BigStat label="已发布" value={stats.posts} />
         <BigStat label="总浏览" value={stats.views} />
         <BigStat label="总点赞" value={stats.likes} />
@@ -49,11 +58,11 @@ export default async function AdminStatsPage() {
       </section>
 
       {/* Monthly bar chart — pure CSS */}
-      <section className="rounded-2xl border border-border bg-card p-5">
+      <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
         <h2 className="text-sm font-semibold tracking-tight">
           近 12 个月发文趋势
         </h2>
-        <div className="mt-5 flex h-44 items-end gap-2">
+        <div className="mt-4 flex h-36 items-end gap-1 sm:mt-5 sm:h-44 sm:gap-2">
           {monthly.map((m) => {
             const heightPct = (m.count / maxMonthly) * 100;
             const isThisMonth =
@@ -75,7 +84,7 @@ export default async function AdminStatsPage() {
                   }`}
                   style={{ height: `${Math.max(2, heightPct)}%` }}
                 />
-                <span className="text-[9px] font-mono text-muted">
+                <span className="text-[8px] font-mono text-muted sm:text-[9px]">
                   {m.month.slice(5)}
                 </span>
                 <span className="absolute -top-5 hidden font-mono text-[10px] text-foreground/80 group-hover:block">
@@ -102,6 +111,8 @@ export default async function AdminStatsPage() {
         />
       </section>
 
+      <VisitorList rows={visitors} total={visitorCount} />
+
       <p className="text-xs text-muted">
         实时从数据库读取。访问量来自服务端计数（每次完整渲染 +1），点赞来自访客手动操作。
       </p>
@@ -109,13 +120,87 @@ export default async function AdminStatsPage() {
   );
 }
 
+function VisitorList({
+  rows,
+  total,
+}: {
+  rows: VisitorLogin[];
+  total: number;
+}) {
+  return (
+    <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-1.5">
+        <h2 className="text-sm font-semibold tracking-tight">
+          访客记录
+          <span className="ml-2 font-mono text-xs font-normal text-muted">
+            共 {total} 个 GitHub 账号
+          </span>
+        </h2>
+        <p className="text-[10px] text-muted">按最近登录时间排序 · 上限 50</p>
+      </div>
+
+      {rows.length === 0 ? (
+        <p className="mt-4 text-sm text-muted">
+          还没有访客登录过博客。
+        </p>
+      ) : (
+        <ul className="mt-3 flex flex-col gap-1">
+          {rows.map((v) => (
+            <li
+              key={v.githubLogin}
+              className="flex items-center gap-3 rounded-md px-2 py-2 transition hover:bg-background sm:py-1.5"
+            >
+              {v.avatarUrl ? (
+                <Image
+                  src={v.avatarUrl}
+                  alt={`${v.githubLogin}的头像`}
+                  width={72}
+                  height={72}
+                  sizes="36px"
+                  loading="lazy"
+                  className="h-9 w-9 shrink-0 rounded-full sm:h-7 sm:w-7"
+                />
+              ) : (
+                <div className="h-9 w-9 shrink-0 rounded-full bg-muted/20 sm:h-7 sm:w-7" />
+              )}
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2">
+                <span className="truncate text-sm">
+                  {v.githubName ?? v.githubLogin}
+                </span>
+                <Link
+                  href={`https://github.com/${v.githubLogin}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="shrink-0 truncate font-mono text-[11px] text-muted hover:text-primary sm:text-xs"
+                >
+                  @{v.githubLogin}
+                </Link>
+                <time className="font-mono text-[10px] text-muted/80 sm:hidden">
+                  {formatDateTimeCN(v.lastSeenAt)}
+                </time>
+              </div>
+              <span className="shrink-0 font-mono text-xs">
+                <span className="font-bold">{v.loginCount}</span>
+                <span className="ml-0.5 text-muted">次</span>
+              </span>
+              <time className="hidden shrink-0 font-mono text-[10px] text-muted sm:inline">
+                {formatDateTimeCN(v.lastSeenAt)}
+              </time>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 function BigStat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-4">
-      <p className="text-[11px] uppercase tracking-wider text-muted">
+    <div className="rounded-2xl border border-border bg-card p-3 sm:p-4">
+      <p className="text-[10px] uppercase tracking-wider text-muted sm:text-[11px]">
         {label}
       </p>
-      <p className="mt-1 font-mono text-2xl font-bold leading-tight sm:text-3xl">
+      <p className="mt-1 font-mono text-xl font-bold leading-tight sm:text-2xl lg:text-3xl">
         {value.toLocaleString("en-US")}
       </p>
     </div>
@@ -140,7 +225,7 @@ function TopList({
   metricLabel: string;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
       <h2 className="text-sm font-semibold tracking-tight">{title}</h2>
       {rows.length === 0 ? (
         <p className="mt-3 text-sm text-muted">还没有数据。</p>
@@ -149,7 +234,7 @@ function TopList({
           {rows.map((r, i) => (
             <li
               key={r.slug}
-              className="flex items-baseline gap-3 rounded-md px-2 py-1.5 transition hover:bg-background"
+              className="flex items-baseline gap-2 rounded-md px-2 py-1.5 transition hover:bg-background sm:gap-3"
             >
               <span className="w-5 shrink-0 text-right font-mono text-xs text-muted">
                 {i + 1}

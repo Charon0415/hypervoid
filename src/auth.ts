@@ -35,6 +35,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
   },
+  events: {
+    // Fires after a successful sign-in. Records the GitHub account so the
+    // admin dashboard can list everyone who has ever logged into the blog.
+    async signIn({ user, profile }) {
+      const login = (profile as { login?: string } | undefined)?.login;
+      if (!login) return;
+      try {
+        const { recordVisitorLogin } = await import("@/db/visitor-logins");
+        await recordVisitorLogin({
+          githubLogin: login,
+          githubName: user.name ?? null,
+          avatarUrl: user.image ?? null,
+        });
+      } catch (e) {
+        console.warn("[auth] visitor-login record failed:", e);
+      }
+    },
+  },
 });
 
 export const ADMIN_LOGIN = ADMIN_GITHUB_LOGIN;

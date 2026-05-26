@@ -10,7 +10,9 @@ export async function ProfileCard() {
     getSiteOverride("author.bio"),
     getSiteOverride("author.avatar"),
   ]);
-  const { socials } = siteConfig;
+  const socials = siteConfig.socials.filter(
+    (s) => !("hideFromProfile" in s && s.hideFromProfile),
+  );
   return (
     <aside className="rounded-3xl border border-border bg-card p-6 text-center">
       <div className="relative mx-auto h-24 w-24">

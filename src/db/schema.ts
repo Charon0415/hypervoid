@@ -381,6 +381,24 @@ export const searchLog = pgTable("search_log", {
 });
 
 /**
+ * One row per unique GitHub account that has signed in. The `events.signIn`
+ * hook in auth.ts UPSERTs this on every login — incrementing `loginCount`
+ * and bumping `lastSeenAt`. Admin /stats reads it for the visitor section.
+ */
+export const visitorLogins = pgTable("visitor_logins", {
+  githubLogin: text("github_login").primaryKey(),
+  githubName: text("github_name"),
+  avatarUrl: text("avatar_url"),
+  loginCount: integer("login_count").notNull().default(0),
+  firstSeenAt: timestamp("first_seen_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  lastSeenAt: timestamp("last_seen_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+/**
  * Metadata for DB snapshots uploaded to Vercel Blob. The actual JSON
  * payload lives at `url`; this table just keeps the index so admin
  * can list / download / delete past snapshots without iterating Blob.
