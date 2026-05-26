@@ -96,22 +96,23 @@ export async function SiteStats() {
         {items.map((item) => (
           <div
             key={item.label}
-            className="flex items-center gap-2 rounded-2xl bg-primary/5 px-3 py-2"
+            className="relative overflow-hidden rounded-2xl bg-primary/5 px-3 py-2.5"
           >
-            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary/15 text-primary">
+            <span
+              aria-hidden
+              className="absolute right-2 top-2 grid h-5 w-5 place-items-center rounded-full bg-primary/15 text-primary"
+            >
               {item.icon}
             </span>
-            <div className="min-w-0 flex-1">
-              <p
-                className="truncate font-mono text-sm font-semibold leading-tight text-foreground"
-                title={item.value}
-              >
-                {item.value}
-              </p>
-              <p className="truncate text-[11px] leading-tight text-muted">
-                {item.label}
-              </p>
-            </div>
+            <p
+              className="whitespace-nowrap font-mono text-base font-semibold leading-tight text-foreground pr-6"
+              title={item.value}
+            >
+              {item.value}
+            </p>
+            <p className="mt-0.5 text-[11px] leading-tight text-muted">
+              {item.label}
+            </p>
           </div>
         ))}
       </div>
