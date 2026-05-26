@@ -124,7 +124,7 @@ export default async function Home() {
             </Link>
           </div>
           {recent.length ? (
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="card-stagger grid gap-4 sm:grid-cols-2">
               {recent.map((post) => (
                 <PostCard key={post.slug} post={post} />
               ))}

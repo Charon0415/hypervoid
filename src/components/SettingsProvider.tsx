@@ -17,7 +17,8 @@ export type BackgroundKey =
   | "particles"
   | "acg"
   | "medieval"
-  | "cyberpunk";
+  | "cyberpunk"
+  | "aurora";
 
 export type FontKey = "geist" | "serif" | "handwriting";
 
@@ -48,6 +49,7 @@ export const BACKGROUND_OPTIONS: { key: BackgroundKey; label: string }[] = [
   { key: "paper", label: "纸质" },
   { key: "waves", label: "波纹" },
   { key: "plain", label: "纯净" },
+  { key: "aurora", label: "极光" },
   { key: "cyberpunk", label: "赛博朋克" },
 ];
 
@@ -133,6 +135,7 @@ const FONT_SIZE_KEY = "hypervoid:font-size";
 const DISPLAY_MODE_KEY = "hypervoid:display";
 const CLICK_EFFECT_KEY = "hypervoid:click-effect";
 const SPARKLE_EFFECT_KEY = "hypervoid:sparkle-effect";
+const CURSOR_EFFECT_KEY = "hypervoid:cursor-effect";
 
 type SettingsValue = {
   hue: number;
@@ -142,6 +145,7 @@ type SettingsValue = {
   displayMode: DisplayMode;
   clickEffect: boolean;
   sparkleEffect: boolean;
+  cursorEffect: boolean;
   setHue: (v: number) => void;
   setBackground: (v: BackgroundKey) => void;
   setFont: (v: FontKey) => void;
@@ -149,6 +153,7 @@ type SettingsValue = {
   setDisplayMode: (v: DisplayMode) => void;
   setClickEffect: (v: boolean) => void;
   setSparkleEffect: (v: boolean) => void;
+  setCursorEffect: (v: boolean) => void;
   applyPreset: (preset: ThemePreset) => void;
   reset: () => void;
 };
@@ -161,6 +166,7 @@ const SettingsContext = createContext<SettingsValue>({
   displayMode: DEFAULT_DISPLAY_MODE,
   clickEffect: true,
   sparkleEffect: true,
+  cursorEffect: false,
   setHue: () => {},
   setBackground: () => {},
   setFont: () => {},
@@ -168,6 +174,7 @@ const SettingsContext = createContext<SettingsValue>({
   setDisplayMode: () => {},
   setClickEffect: () => {},
   setSparkleEffect: () => {},
+  setCursorEffect: () => {},
   applyPreset: () => {},
   reset: () => {},
 });
@@ -216,6 +223,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   );
   const [clickEffect, setClickEffectState] = useState(true);
   const [sparkleEffect, setSparkleEffectState] = useState(true);
+  const [cursorEffect, setCursorEffectState] = useState(false);
 
   useEffect(() => {
     try {
@@ -272,6 +280,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       const storedSparkleEffect = localStorage.getItem(SPARKLE_EFFECT_KEY);
       if (storedSparkleEffect !== null) {
         setSparkleEffectState(storedSparkleEffect === "true");
+      }
+      const storedCursorEffect = localStorage.getItem(CURSOR_EFFECT_KEY);
+      if (storedCursorEffect !== null) {
+        setCursorEffectState(storedCursorEffect === "true");
       }
     } catch {
       // ignore
@@ -362,6 +374,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     try { localStorage.setItem(SPARKLE_EFFECT_KEY, String(v)); } catch {}
   }, []);
 
+  const setCursorEffect = useCallback((v: boolean) => {
+    setCursorEffectState(v);
+    try { localStorage.setItem(CURSOR_EFFECT_KEY, String(v)); } catch {}
+  }, []);
+
   const reset = useCallback(() => {
     setHue(DEFAULT_HUE);
     setBackground(DEFAULT_BACKGROUND);
@@ -370,6 +387,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     setDisplayMode(DEFAULT_DISPLAY_MODE);
     setClickEffectState(true);
     setSparkleEffectState(true);
+    setCursorEffectState(false);
     try {
       localStorage.removeItem(HUE_KEY);
       localStorage.removeItem(BG_KEY);
@@ -378,6 +396,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem(DISPLAY_MODE_KEY);
       localStorage.removeItem(CLICK_EFFECT_KEY);
       localStorage.removeItem(SPARKLE_EFFECT_KEY);
+      localStorage.removeItem(CURSOR_EFFECT_KEY);
     } catch {
       /* ignore */
     }
@@ -393,6 +412,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         displayMode,
         clickEffect,
         sparkleEffect,
+        cursorEffect,
         setHue,
         setBackground,
         setFont,
@@ -400,6 +420,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         setDisplayMode,
         setClickEffect,
         setSparkleEffect,
+        setCursorEffect,
         applyPreset,
         reset,
       }}

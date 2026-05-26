@@ -39,7 +39,7 @@ export default async function PinnedPage() {
           </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="card-stagger flex flex-col gap-4">
           {pinned.map((post) => (
             <PostCard key={post.slug} post={post} />
           ))}

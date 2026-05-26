@@ -59,6 +59,11 @@ const SparkleEffect = dynamic(
   { ssr: false },
 );
 
+const CursorEffect = dynamic(
+  () => import("@/components/CursorEffect").then((m) => m.CursorEffect),
+  { ssr: false },
+);
+
 const FloatingPlayer = dynamic(
   () => import("@/components/FloatingPlayer").then((m) => m.FloatingPlayer),
   { ssr: false },
@@ -75,6 +80,7 @@ export function DeferredClientUI() {
       <BottomTabBar />
       <ClickEffect />
       <SparkleEffect />
+      <CursorEffect />
       <FloatingPlayer />
     </>
   );

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 import { useSettings } from "@/components/SettingsProvider";
 import { siteConfig } from "@/lib/site-config";
 
@@ -43,6 +44,7 @@ function AcgCarouselInline({ wallpapers }: { wallpapers: string[] }) {
 
 export function BannerStrip() {
   const { background, displayMode } = useSettings();
+  const { resolvedTheme } = useTheme();
 
   if (displayMode !== "banner") return null;
   if (background === "plain") return null;
@@ -122,12 +124,30 @@ export function BannerStrip() {
       </div>
     );
   }
+  if (background === "aurora") {
+    return (
+      <div className={stripClass}>
+        <div
+          className="absolute inset-0 animate-[auroraShift_15s_ease-in-out_infinite]"
+          style={{
+            background: resolvedTheme === "dark"
+              ? "linear-gradient(-45deg, rgba(20, 0, 60, 0.9), rgba(40, 10, 100, 0.7), rgba(0, 80, 120, 0.6), rgba(60, 0, 80, 0.7), rgba(0, 100, 80, 0.5), rgba(30, 0, 90, 0.8))"
+              : "linear-gradient(-45deg, color-mix(in srgb, var(--primary) 22%, transparent), rgba(120, 60, 220, 0.15), rgba(40, 180, 200, 0.12), color-mix(in srgb, var(--primary) 18%, transparent), rgba(180, 60, 160, 0.12), rgba(60, 200, 140, 0.10))",
+            backgroundSize: "400% 400%",
+          }}
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-b from-transparent via-background/40 to-background"
+        />
+      </div>
+    );
+  }
 
   return null;
 }
 
 import { useEffect as useFx, useRef } from "react";
-import { useTheme } from "next-themes";
 
 type Particle = {
   x: number;
@@ -140,6 +160,7 @@ type Particle = {
 
 function BannerParticles({ density }: { density: "normal" | "dense" }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const mouseRef = useRef<{ x: number; y: number; active: boolean }>({ x: 0, y: 0, active: false });
   const { resolvedTheme } = useTheme();
 
   useFx(() => {
@@ -188,6 +209,16 @@ function BannerParticles({ density }: { density: "normal" | "dense" }) {
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy * p.z;
+
+        const dx = p.x - mouseRef.current.x;
+        const dy = p.y - mouseRef.current.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120 && dist > 0 && mouseRef.current.active) {
+          const force = (120 - dist) / 120 * 0.6;
+          p.x += (dx / dist) * force;
+          p.y += (dy / dist) * force;
+        }
+
         if (p.y > height + 4) { p.y = -4; p.x = Math.random() * width; }
         if (p.x < -4) p.x = width + 4;
         else if (p.x > width + 4) p.x = -4;
@@ -204,7 +235,30 @@ function BannerParticles({ density }: { density: "normal" | "dense" }) {
     draw();
     const onResize = () => resize();
     window.addEventListener("resize", onResize);
-    return () => { mounted = false; cancelAnimationFrame(raf); window.removeEventListener("resize", onResize); };
+
+    const isDesktop = window.matchMedia("(pointer: fine)").matches;
+    const onMouseMove = (e: MouseEvent) => {
+      mouseRef.current.x = e.clientX;
+      mouseRef.current.y = e.clientY;
+      mouseRef.current.active = true;
+    };
+    const onMouseLeave = () => {
+      mouseRef.current.active = false;
+    };
+    if (isDesktop) {
+      window.addEventListener("mousemove", onMouseMove);
+      document.addEventListener("mouseleave", onMouseLeave);
+    }
+
+    return () => {
+      mounted = false;
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", onResize);
+      if (isDesktop) {
+        window.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseleave", onMouseLeave);
+      }
+    };
   }, [resolvedTheme, density]);
 
   return (

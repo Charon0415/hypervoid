@@ -18,7 +18,7 @@ export async function ProfileCard() {
       <div className="relative mx-auto h-24 w-24">
         <div
           aria-hidden
-          className="absolute -inset-2 rounded-full bg-primary/15 blur-xl"
+          className="avatar-glow absolute -inset-2 rounded-full bg-primary/15 blur-xl"
         />
         <Avatar
           src={avatar}
@@ -40,7 +40,7 @@ export async function ProfileCard() {
             rel="noreferrer noopener"
             title={s.name}
             aria-label={s.name}
-            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-background text-muted transition hover:border-primary hover:bg-primary/10 hover:text-primary"
+            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-background text-muted transition hover:border-primary hover:bg-primary/10 hover:text-primary hover:shadow-[0_0_10px_-2px_var(--primary)]"
           >
             <SocialIcon name={s.icon} className="h-3 w-3" />
           </a>
