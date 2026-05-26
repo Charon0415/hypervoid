@@ -5,10 +5,10 @@ import { usePathname } from "next/navigation";
 import { MascotChat } from "@/components/MascotChat";
 
 const STORAGE_KEY = "hypervoid:mascot";
-const MASCOT_W = 200;
-const MASCOT_H = 200;
+const MASCOT_W = 240;
+const MASCOT_H = 300;
 
-const GIFS = ["/mascot/rem/1.gif", "/mascot/rem/2.gif"];
+const FRAMES = ["/mascot/rem/1.webp", "/mascot/rem/2.webp"];
 
 const MESSAGES = {
   tap: [
@@ -82,8 +82,10 @@ export function GifMascot() {
 
   const dialogTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const gifTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const frameTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dragOffsetRef = useRef<Pos>({ x: 0, y: 0 });
+  const dragStartRef = useRef<Pos>({ x: 0, y: 0 });
+  const draggedRef = useRef(false);
 
   const [mounted, setMounted] = useState(false);
   const [mobile, setMobile] = useState(false);
@@ -92,8 +94,8 @@ export function GifMascot() {
   const [dragging, setDragging] = useState(false);
   const [dialog, setDialog] = useState<string | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
-  const [gifIndex, setGifIndex] = useState(() =>
-    Math.floor(Math.random() * GIFS.length),
+  const [frameIndex, setFrameIndex] = useState(() =>
+    Math.floor(Math.random() * FRAMES.length),
   );
 
   useEffect(() => {
@@ -147,27 +149,27 @@ export function GifMascot() {
     );
   }, [showDialog]);
 
-  // Randomly switch GIFs every 30-60 seconds
+  // Randomly switch animations every 30-60 seconds
   useEffect(() => {
     if (!visible || mobile || onStrictRoute) return;
     scheduleIdle();
 
-    const switchGif = () => {
-      setGifIndex((prev) => {
+    const switchFrame = () => {
+      setFrameIndex((prev) => {
         let next = prev;
-        if (GIFS.length > 1) {
-          while (next === prev) next = Math.floor(Math.random() * GIFS.length);
+        if (FRAMES.length > 1) {
+          while (next === prev) next = Math.floor(Math.random() * FRAMES.length);
         }
         return next;
       });
-      gifTimerRef.current = setTimeout(switchGif, 30000 + Math.random() * 30000);
+      frameTimerRef.current = setTimeout(switchFrame, 30000 + Math.random() * 30000);
     };
-    gifTimerRef.current = setTimeout(switchGif, 30000 + Math.random() * 30000);
+    frameTimerRef.current = setTimeout(switchFrame, 30000 + Math.random() * 30000);
 
     return () => {
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
       if (dialogTimerRef.current) clearTimeout(dialogTimerRef.current);
-      if (gifTimerRef.current) clearTimeout(gifTimerRef.current);
+      if (frameTimerRef.current) clearTimeout(frameTimerRef.current);
     };
   }, [visible, mobile, onStrictRoute, scheduleIdle]);
 
@@ -189,6 +191,8 @@ export function GifMascot() {
       if (target.closest("button, a, input, textarea, select, [data-no-drag]"))
         return;
       dragOffsetRef.current = { x: e.clientX - pos.x, y: e.clientY - pos.y };
+      dragStartRef.current = { x: e.clientX, y: e.clientY };
+      draggedRef.current = false;
       setDragging(true);
       e.currentTarget.setPointerCapture(e.pointerId);
     },
@@ -198,6 +202,11 @@ export function GifMascot() {
   const onPointerMove = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
       if (!dragging) return;
+      const dx = e.clientX - dragStartRef.current.x;
+      const dy = e.clientY - dragStartRef.current.y;
+      if (!draggedRef.current && dx * dx + dy * dy > 16) {
+        draggedRef.current = true;
+      }
       setPos(
         clampPos({
           x: e.clientX - dragOffsetRef.current.x,
@@ -217,8 +226,15 @@ export function GifMascot() {
       } catch {
         /* noop */
       }
+      if (!draggedRef.current) {
+        const target = e.target as HTMLElement;
+        if (!target.closest("button, a, input, textarea, select, [data-no-drag]")) {
+          const msgs = MESSAGES.tap;
+          showDialog(msgs[Math.floor(Math.random() * msgs.length)]);
+        }
+      }
     },
-    [dragging],
+    [dragging, showDialog],
   );
 
   if (!mounted || mobile || onStrictRoute) return null;
@@ -345,10 +361,10 @@ export function GifMascot() {
 
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={GIFS[gifIndex]}
+            src={FRAMES[frameIndex]}
             alt="雷姆"
             draggable={false}
-            className="pointer-events-none h-full w-full rounded-lg object-contain"
+            className="pointer-events-none h-full w-full object-contain"
             style={{ imageRendering: "auto" }}
           />
         </div>

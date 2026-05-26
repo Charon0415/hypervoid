@@ -40,8 +40,8 @@ const MASCOTS: {
     nameJa: "レム",
     source: "Re:Zero 从零开始的异世界生活",
     desc: "鬼族少女，蓝发女仆。温柔、忠诚、勤劳，偶尔自卑。对主人非常尊敬和依赖。",
-    avatar: "/mascot/rem/1.gif",
-    tech: "GIF 动图",
+    avatar: "/mascot/rem/1.webp",
+    tech: "WebP 动图（透明背景）",
   },
 ];
 
