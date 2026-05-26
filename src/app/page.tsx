@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { PostCard } from "@/components/PostCard";
 import { SubscribeForm } from "@/components/SubscribeForm";
@@ -17,6 +18,7 @@ import { DailyPick } from "@/components/DailyPick";
 import { HomePlayerWidget } from "@/components/HomePlayerWidget";
 import { getAllPostMeta } from "@/lib/posts";
 import { getSiteOverride } from "@/lib/site-config-server";
+import { Skeleton } from "@/components/Skeleton";
 
 export const revalidate = 60;
 
@@ -143,21 +145,35 @@ export default async function Home() {
 
       <aside className="lg:order-2">
         <div className="flex flex-col gap-6 lg:sticky lg:top-20">
-          <ProfileCard />
-          <SiteStats />
-          <AnnouncementWidget />
+          <Suspense fallback={<Skeleton className="h-48 w-full" />}>
+            <ProfileCard />
+          </Suspense>
+          <Suspense fallback={<Skeleton className="h-24 w-full" />}>
+            <SiteStats />
+          </Suspense>
+          <Suspense fallback={null}>
+            <AnnouncementWidget />
+          </Suspense>
           <div className="hidden lg:block">
             <MiniTerminal posts={terminalPosts} tags={terminalTags} me={null} />
           </div>
           <div className="hidden md:contents">
-            <MiniCalendar />
+            <Suspense fallback={<Skeleton className="h-44 w-full" />}>
+              <MiniCalendar />
+            </Suspense>
           </div>
-          <PopularPosts />
+          <Suspense fallback={<Skeleton className="h-56 w-full" />}>
+            <PopularPosts />
+          </Suspense>
           <HomePlayerWidget />
           <div className="hidden md:contents">
-            <TagCloud />
+            <Suspense fallback={<Skeleton className="h-32 w-full" />}>
+              <TagCloud />
+            </Suspense>
           </div>
-          <RecentGuestbook />
+          <Suspense fallback={<Skeleton className="h-40 w-full" />}>
+            <RecentGuestbook />
+          </Suspense>
         </div>
       </aside>
     </div>
