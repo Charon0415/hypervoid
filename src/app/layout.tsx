@@ -126,11 +126,11 @@ export default async function RootLayout({
               {children}
             </main>
             <SiteFooter />
+            <DeferredClientUI />
           </Providers>
         </SettingsProvider>
         <UmamiScript />
         <CommandPaletteHost />
-        <DeferredClientUI />
       </body>
     </html>
   );
