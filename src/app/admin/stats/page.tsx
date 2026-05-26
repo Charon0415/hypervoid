@@ -29,16 +29,25 @@ export default async function AdminStatsPage() {
   const session = await auth();
   if (!session?.user) redirect("/admin/sign-in");
 
-  const [stats, subs, topViews, topLikes, monthly, visitors, visitorCount] =
-    await Promise.all([
-      getSiteStats({ isAdmin: true }),
-      countActiveSubscribers(),
-      listTopPostsByViews(10),
-      listTopPostsByLikes(10),
-      listMonthlyPostCounts(12),
-      listVisitorLogins(50),
-      countVisitorLogins(),
-    ]);
+  const [
+    stats,
+    subs,
+    topViews,
+    topLikes,
+    monthly,
+    visitors,
+    visitorCount,
+  ] = await Promise.all([
+    getSiteStats({ isAdmin: true }).catch(() => ({
+      posts: 0, views: 0, likes: 0, daysOnline: 1,
+    })),
+    countActiveSubscribers().catch(() => 0),
+    listTopPostsByViews(10).catch(() => []),
+    listTopPostsByLikes(10).catch(() => []),
+    listMonthlyPostCounts(12).catch(() => []),
+    listVisitorLogins(50).catch(() => []),
+    countVisitorLogins().catch(() => 0),
+  ]);
 
   const maxMonthly = Math.max(1, ...monthly.map((m) => m.count));
 

@@ -31,7 +31,7 @@ export default async function Home() {
     getSiteOverride("home.quote"),
     getSiteOverride("home.quoteAuthor"),
   ]);
-  const recent = all.slice(0, 6);
+  const recent = all.slice(0, 10);
   const dailyPick = pickByDay(all);
 
   // Server-side snapshot for the MiniTerminal — only ships titles+slugs

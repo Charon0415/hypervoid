@@ -1,6 +1,6 @@
 import "server-only";
 
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, sql } from "drizzle-orm";
 import { getDb, schema } from "@/db/client";
 
 export type TopPostRow = {
@@ -16,15 +16,24 @@ export async function listTopPostsByViews(limit = 10): Promise<TopPostRow[]> {
     .select({
       slug: schema.posts.slug,
       title: schema.posts.title,
-      views: sql<number>`COALESCE(${schema.postViews.count}, 0)::int`,
-      likes: sql<number>`COALESCE(${schema.postLikes.count}, 0)::int`,
+      views: sql<number>`COALESCE(v.count, 0)::int`,
+      likes: sql<number>`COALESCE(r.total, 0)::int`,
       publishAt: schema.posts.publishAt,
     })
     .from(schema.posts)
-    .leftJoin(schema.postViews, eq(schema.posts.slug, schema.postViews.slug))
-    .leftJoin(schema.postLikes, eq(schema.posts.slug, schema.postLikes.slug))
+    .leftJoin(
+      sql`(SELECT slug, count FROM ${schema.postViews}) v`,
+      sql`v.slug = ${schema.posts.slug}`,
+    )
+    .leftJoin(
+      sql`(SELECT slug, SUM(count)::int AS total FROM ${schema.postReactions} GROUP BY slug) r`,
+      sql`r.slug = ${schema.posts.slug}`,
+    )
+    .where(
+      sql`(status = 'published' OR (status = 'scheduled' AND publish_at <= NOW()))`,
+    )
     .orderBy(
-      desc(sql`COALESCE(${schema.postViews.count}, 0)`),
+      desc(sql`COALESCE(v.count, 0)`),
       desc(schema.posts.publishAt),
     )
     .limit(limit);
@@ -35,15 +44,24 @@ export async function listTopPostsByLikes(limit = 10): Promise<TopPostRow[]> {
     .select({
       slug: schema.posts.slug,
       title: schema.posts.title,
-      views: sql<number>`COALESCE(${schema.postViews.count}, 0)::int`,
-      likes: sql<number>`COALESCE(${schema.postLikes.count}, 0)::int`,
+      views: sql<number>`COALESCE(v.count, 0)::int`,
+      likes: sql<number>`COALESCE(r.total, 0)::int`,
       publishAt: schema.posts.publishAt,
     })
     .from(schema.posts)
-    .leftJoin(schema.postViews, eq(schema.posts.slug, schema.postViews.slug))
-    .leftJoin(schema.postLikes, eq(schema.posts.slug, schema.postLikes.slug))
+    .leftJoin(
+      sql`(SELECT slug, count FROM ${schema.postViews}) v`,
+      sql`v.slug = ${schema.posts.slug}`,
+    )
+    .leftJoin(
+      sql`(SELECT slug, SUM(count)::int AS total FROM ${schema.postReactions} GROUP BY slug) r`,
+      sql`r.slug = ${schema.posts.slug}`,
+    )
+    .where(
+      sql`(status = 'published' OR (status = 'scheduled' AND publish_at <= NOW()))`,
+    )
     .orderBy(
-      desc(sql`COALESCE(${schema.postLikes.count}, 0)`),
+      desc(sql`COALESCE(r.total, 0)`),
       desc(schema.posts.publishAt),
     )
     .limit(limit);
