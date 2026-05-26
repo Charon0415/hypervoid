@@ -19,8 +19,14 @@ export default async function AdminSettingsPage() {
   if (!session?.user) redirect("/admin/sign-in");
 
   const allFields = await getAllOverrides();
-  // mascot.character has its own dedicated page at /admin/mascot
-  const fields = allFields.filter((f) => f.key !== "mascot.character");
+  // These keys have dedicated admin pages and are filtered out from the
+  // generic settings form so they don't appear twice.
+  const dedicated = new Set([
+    "mascot.character",
+    "music.playlistId",
+    "music.savedPlaylists",
+  ]);
+  const fields = allFields.filter((f) => !dedicated.has(f.key));
 
   return (
     <div className="flex flex-col gap-6">

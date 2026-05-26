@@ -266,6 +266,11 @@ export default async function AdminHome() {
             desc="选择看板娘角色：康娜(Live2D)、雷姆(GIF)——支持扩展"
           />
           <NavTile
+            href="/admin/music"
+            title="音乐设置"
+            desc="添加/切换网易云歌单 · 预览封面 · 查看 Cookie 状态"
+          />
+          <NavTile
             href="/admin/settings"
             title="站点设置"
             desc="作者名、头像、简介、首页名句、公告——在线可改"

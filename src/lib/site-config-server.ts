@@ -28,7 +28,8 @@ export type OverridableFields =
   | "home.quote"
   | "home.quoteAuthor"
   | "mascot.character"
-  | "music.playlistId";
+  | "music.playlistId"
+  | "music.savedPlaylists";
 
 const DEFAULT_MAP: Record<OverridableFields, string> = {
   name: siteConfig.name,
@@ -55,6 +56,7 @@ const DEFAULT_MAP: Record<OverridableFields, string> = {
   "home.quoteAuthor": "Carl Sagan",
   "mascot.character": "kanna",
   "music.playlistId": "",
+  "music.savedPlaylists": "[]",
 };
 
 const LABELS: Record<OverridableFields, string> = {
@@ -82,6 +84,7 @@ const LABELS: Record<OverridableFields, string> = {
   "home.quoteAuthor": "首页名句作者",
   "mascot.character": "看板娘角色 (kanna / rem)",
   "music.playlistId": "网易云歌单 ID",
+  "music.savedPlaylists": "已保存歌单（JSON）",
 };
 
 export const OVERRIDABLE_FIELDS = Object.entries(LABELS).map(

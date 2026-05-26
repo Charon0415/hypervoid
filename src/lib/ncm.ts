@@ -3,11 +3,38 @@ import "server-only";
 /**
  * Lightweight NetEase Cloud Music API client.
  * Calls NCM's internal web API directly — no third-party package needed.
+ *
+ * Audio bytes are NEVER proxied through this server: the `<audio>` element
+ * loads URLs directly from NCM's CDN, so Vercel bandwidth/storage is
+ * unaffected by playback. We only proxy small JSON (playlist meta, song
+ * url metadata, lyrics).
  */
 
 const BASE = "https://music.163.com";
 const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36";
+
+/**
+ * Normalize whatever the user pasted into NCM_COOKIE so common copy-paste
+ * mistakes (header prefix, wrapped quotes, stray newlines) don't break the
+ * upstream request silently.
+ */
+function getCookie(): string | undefined {
+  let v = process.env.NCM_COOKIE;
+  if (!v) return undefined;
+  v = v.trim();
+  // Strip "Cookie:" prefix if pasted from devtools' Headers panel.
+  if (/^cookie:\s*/i.test(v)) v = v.replace(/^cookie:\s*/i, "");
+  // Strip wrapping quotes that some env-var UIs add.
+  if (
+    (v.startsWith('"') && v.endsWith('"')) ||
+    (v.startsWith("'") && v.endsWith("'"))
+  ) {
+    v = v.slice(1, -1);
+  }
+  v = v.replace(/[\r\n]/g, "");
+  return v.trim() || undefined;
+}
 
 function headers(): Record<string, string> {
   const h: Record<string, string> = {
@@ -16,9 +43,31 @@ function headers(): Record<string, string> {
     Origin: BASE,
     "Content-Type": "application/x-www-form-urlencoded",
   };
-  const cookie = process.env.NCM_COOKIE;
+  const cookie = getCookie();
   if (cookie) h.Cookie = cookie;
   return h;
+}
+
+/**
+ * NCM API returns HTTP 200 even on logical errors, with `{code, message}` in
+ * the body. Treat anything other than `code === 200` as a failure so the
+ * caller surfaces a useful error instead of silently returning empty data.
+ */
+function assertNcmOk(
+  data: unknown,
+  ctx: string,
+): asserts data is Record<string, unknown> {
+  if (!data || typeof data !== "object") {
+    throw new Error(`NCM ${ctx}: malformed response`);
+  }
+  const d = data as { code?: number; message?: string };
+  if (typeof d.code === "number" && d.code !== 200) {
+    throw new Error(`NCM ${ctx}: code=${d.code} ${d.message ?? ""}`);
+  }
+}
+
+export function ncmCookieConfigured(): boolean {
+  return Boolean(getCookie());
 }
 
 export type NcmTrack = {
@@ -31,6 +80,49 @@ export type NcmTrack = {
 
 export type NcmTrackWithUrl = NcmTrack & { url: string | null };
 
+export type NcmPlaylistMeta = {
+  id: string;
+  name: string;
+  cover: string;
+  trackCount: number;
+  description: string;
+  creator: string;
+};
+
+/**
+ * Fetch a playlist's metadata (name/cover/trackCount/description) without
+ * pulling the full track list. Throws on network errors or invalid IDs.
+ */
+export async function getPlaylistMeta(
+  playlistId: string,
+): Promise<NcmPlaylistMeta> {
+  const res = await fetch(`${BASE}/api/v6/playlist/detail`, {
+    method: "POST",
+    headers: headers(),
+    body: `id=${encodeURIComponent(playlistId)}&n=0&s=0`,
+    next: { revalidate: 600 },
+  });
+
+  if (!res.ok) throw new Error(`NCM playlist HTTP ${res.status}`);
+  const data = await res.json();
+  assertNcmOk(data, `playlist ${playlistId}`);
+  const p = (data as { playlist?: Record<string, unknown> }).playlist;
+  if (!p || typeof p.id === "undefined") {
+    throw new Error("NCM playlist not found");
+  }
+
+  const rawCover = (p.coverImgUrl as string | undefined) || (p.picUrl as string | undefined);
+  const creator = p.creator as { nickname?: string } | undefined;
+  return {
+    id: String(p.id),
+    name: String(p.name ?? "未命名歌单"),
+    cover: rawCover ? `${rawCover}?param=300y300` : "",
+    trackCount: Number(p.trackCount ?? 0),
+    description: String(p.description ?? ""),
+    creator: String(creator?.nickname ?? ""),
+  };
+}
+
 /**
  * Get all tracks from a playlist.
  */
@@ -40,13 +132,14 @@ export async function getPlaylistTracks(
   const res = await fetch(`${BASE}/api/v6/playlist/detail`, {
     method: "POST",
     headers: headers(),
-    body: `id=${playlistId}&n=100000&s=0`,
+    body: `id=${encodeURIComponent(playlistId)}&n=100000&s=0`,
     next: { revalidate: 300 },
   });
 
-  if (!res.ok) throw new Error(`NCM playlist ${res.status}`);
+  if (!res.ok) throw new Error(`NCM playlist HTTP ${res.status}`);
   const data = await res.json();
-  const playlist = data?.playlist;
+  assertNcmOk(data, `playlist ${playlistId}`);
+  const playlist = (data as { playlist?: { tracks?: unknown[] } }).playlist;
   if (!playlist?.tracks) throw new Error("NCM no tracks");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -68,6 +161,8 @@ export async function getSongUrls(
   const map = new Map<number, string | null>();
   if (ids.length === 0) return map;
 
+  // NCM CDN URLs typically expire in ~20 min; cache for 5 to balance refresh
+  // and load.
   const res = await fetch(`${BASE}/api/song/enhance/player/url/v1`, {
     method: "POST",
     headers: headers(),
@@ -75,8 +170,15 @@ export async function getSongUrls(
     next: { revalidate: 300 },
   });
 
-  if (!res.ok) return map;
+  if (!res.ok) {
+    console.warn(`[NCM] song urls HTTP ${res.status}`);
+    return map;
+  }
   const data = await res.json();
+  // Logical-error: returns code !== 200 (often happens without a valid cookie)
+  if (data?.code && data.code !== 200) {
+    console.warn(`[NCM] song urls code=${data.code} message=${data.message ?? ""}`);
+  }
   if (data?.data) {
     for (const d of data.data as { id: number; url: string | null }[]) {
       map.set(d.id, d.url || null);
@@ -113,12 +215,20 @@ export async function getLyrics(songId: number): Promise<LyricLine[]> {
     {
       method: "GET",
       headers: headers(),
-      next: { revalidate: 3600 },
+      // Lyrics almost never change for a given song id, so 1 day is safe.
+      next: { revalidate: 86400 },
     },
   );
 
-  if (!res.ok) return [];
+  if (!res.ok) {
+    console.warn(`[NCM] lyrics HTTP ${res.status}`);
+    return [];
+  }
   const data = await res.json();
+  if (data?.code && data.code !== 200) {
+    console.warn(`[NCM] lyrics code=${data.code} for song ${songId}`);
+    return [];
+  }
   const lrc: string | undefined = data?.lrc?.lyric;
   if (!lrc) return [];
   return parseLrc(lrc);
