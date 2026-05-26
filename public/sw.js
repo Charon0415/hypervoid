@@ -1,8 +1,7 @@
-const CACHE = "hypervoid-v3";
+const CACHE = "hypervoid-v4";
+// Pre-cache the offline page only — HTML pages must NOT be pre-cached
+// because their JS chunk references change with every deploy.
 const STATIC = [
-  "/",
-  "/posts",
-  "/rss.xml",
   "/offline",
 ];
 
@@ -26,9 +25,10 @@ self.addEventListener("activate", (e) => {
 
 /**
  * Routing:
- *   - /api/*   → network-first (always fresh DB data; fall back to cache offline)
- *   - /_next/static/*, fonts, images → cache-first (versioned by build, safe to keep)
- *   - HTML / everything else → stale-while-revalidate (instant first paint, refresh in bg)
+ *   - /api/*           → network-first (fresh DB data; cache fallback when offline)
+ *   - HTML pages       → network-first (JS chunk references change every deploy;
+ *                        caching stale HTML causes "page couldn't load")
+ *   - /_next/static/*, fonts, images → cache-first (versioned by content hash)
  */
 self.addEventListener("fetch", (e) => {
   const { request } = e;
@@ -36,11 +36,16 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  if (url.pathname.startsWith("/api/")) {
+  // API + HTML: always network-first
+  if (
+    url.pathname.startsWith("/api/") ||
+    request.headers.get("Accept")?.includes("text/html")
+  ) {
     e.respondWith(networkFirst(request));
     return;
   }
 
+  // Versioned static assets: cache-first
   if (
     url.pathname.startsWith("/_next/static/") ||
     url.pathname.startsWith("/fonts/") ||
@@ -50,6 +55,7 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
+  // Everything else: stale-while-revalidate
   e.respondWith(staleWhileRevalidate(request));
 });
 
