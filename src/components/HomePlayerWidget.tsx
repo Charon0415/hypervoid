@@ -1,10 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { usePlayer } from "@/components/PlayerProvider";
 
 const OPEN_KEY = "hypervoid:home-player:open";
+
+const SAYINGS = [
+  "音乐是灵魂的避难所。",
+  "每一个音符都是星辰。",
+  "闭上眼睛，世界就安静了。",
+  "在旋律中遇见另一个自己。",
+  "耳机是通往另一个世界的入口。",
+  "听见风的声音，也听见自己。",
+  "无需言语，只需聆听。",
+  "音乐是时间的艺术。",
+];
 
 function loadOpen(): boolean {
   if (typeof window === "undefined") return false;
@@ -39,11 +50,19 @@ export function HomePlayerWidget() {
 
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [saying, setSaying] = useState("");
+
+  const refreshSaying = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const day = Math.floor(Date.now() / 86_400_000);
+    setSaying(SAYINGS[day % SAYINGS.length]);
+  }, []);
 
   useEffect(() => {
     setOpen(loadOpen());
     setMounted(true);
-  }, []);
+    refreshSaying();
+  }, [refreshSaying]);
 
   const toggleOpen = () => {
     setOpen((prevOpen) => {
@@ -115,6 +134,16 @@ export function HomePlayerWidget() {
         </div>
       </div>
 
+      {!open ? (
+        <p
+          onClick={toggleOpen}
+          className="mt-3 cursor-pointer text-center text-xs text-muted/70 leading-relaxed transition-colors hover:text-muted"
+          style={{ fontFamily: "Georgia, 'Noto Serif SC', serif" }}
+        >
+          {saying || "音乐是灵魂的避难所。"}
+        </p>
+      ) : null}
+
       {open ? (
         <div className="mt-3">
           {loading && !tracksLoaded ? (
@@ -126,9 +155,16 @@ export function HomePlayerWidget() {
               {error}
             </p>
           ) : !current ? (
-            <p className="rounded-2xl border border-dashed border-border px-3 py-4 text-center text-xs text-muted">
-              暂无可播放曲目。
-            </p>
+            <div className="rounded-2xl border border-dashed border-border px-3 py-4 text-center">
+              <p className="text-xs text-muted mb-2">
+                暂无可播放曲目。
+              </p>
+              <p className="text-[11px] text-muted/60 leading-relaxed"
+                style={{ fontFamily: "Georgia, 'Noto Serif SC', serif" }}
+              >
+                {saying}
+              </p>
+            </div>
           ) : (
             <>
               <div className="flex items-center gap-3">

@@ -49,6 +49,21 @@ const BottomTabBar = dynamic(
   { ssr: false },
 );
 
+const ClickEffect = dynamic(
+  () => import("@/components/ClickEffect").then((m) => m.ClickEffect),
+  { ssr: false },
+);
+
+const SparkleEffect = dynamic(
+  () => import("@/components/SparkleEffect").then((m) => m.SparkleEffect),
+  { ssr: false },
+);
+
+const FloatingPlayer = dynamic(
+  () => import("@/components/FloatingPlayer").then((m) => m.FloatingPlayer),
+  { ssr: false },
+);
+
 export function DeferredClientUI() {
   return (
     <>
@@ -58,6 +73,9 @@ export function DeferredClientUI() {
       <MascotRouter />
       <PwaInstallController />
       <BottomTabBar />
+      <ClickEffect />
+      <SparkleEffect />
+      <FloatingPlayer />
     </>
   );
 }
