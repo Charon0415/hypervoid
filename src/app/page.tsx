@@ -14,6 +14,7 @@ import { TagCloud } from "@/components/TagCloud";
 import { RecentGuestbook } from "@/components/RecentGuestbook";
 import { Greeting } from "@/components/Greeting";
 import { DailyPick } from "@/components/DailyPick";
+import { HomePlayerWidget } from "@/components/HomePlayerWidget";
 import { getAllPostMeta } from "@/lib/posts";
 import { getSiteOverride } from "@/lib/site-config-server";
 
@@ -152,6 +153,7 @@ export default async function Home() {
             <MiniCalendar />
           </div>
           <PopularPosts />
+          <HomePlayerWidget />
           <div className="hidden md:contents">
             <TagCloud />
           </div>

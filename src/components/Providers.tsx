@@ -3,6 +3,7 @@
 import { ThemeProvider } from "next-themes";
 import type { ReactNode } from "react";
 import { LocaleProvider } from "@/components/LocaleProvider";
+import { PlayerProvider } from "@/components/PlayerProvider";
 
 export function Providers({
   children,
@@ -19,7 +20,9 @@ export function Providers({
       disableTransitionOnChange
       nonce={nonce}
     >
-      <LocaleProvider>{children}</LocaleProvider>
+      <LocaleProvider>
+        <PlayerProvider>{children}</PlayerProvider>
+      </LocaleProvider>
     </ThemeProvider>
   );
 }

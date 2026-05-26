@@ -99,3 +99,56 @@ export async function getPlaylistWithUrls(
     url: urlMap.get(t.id) ?? null,
   }));
 }
+
+export type LyricLine = { t: number; text: string };
+
+/**
+ * Get lyrics for a song. Returns time-tagged lines parsed from LRC.
+ * Lines without timestamps (or lyrics-not-available responses) yield an
+ * empty array.
+ */
+export async function getLyrics(songId: number): Promise<LyricLine[]> {
+  const res = await fetch(
+    `${BASE}/api/song/lyric?os=pc&id=${songId}&lv=-1&kv=-1&tv=-1`,
+    {
+      method: "GET",
+      headers: headers(),
+      next: { revalidate: 3600 },
+    },
+  );
+
+  if (!res.ok) return [];
+  const data = await res.json();
+  const lrc: string | undefined = data?.lrc?.lyric;
+  if (!lrc) return [];
+  return parseLrc(lrc);
+}
+
+function parseLrc(lrc: string): LyricLine[] {
+  const out: LyricLine[] = [];
+  // Matches [mm:ss.xx] or [mm:ss] at the start of each timestamp tag.
+  // A single line can carry multiple timestamps (e.g. "[00:01.00][00:30.00]text").
+  const tagRe = /\[(\d+):(\d+)(?:[.:](\d+))?\]/g;
+  for (const rawLine of lrc.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line) continue;
+    const tags: number[] = [];
+    let lastEnd = 0;
+    tagRe.lastIndex = 0;
+    let m: RegExpExecArray | null;
+    while ((m = tagRe.exec(line)) !== null) {
+      const min = Number(m[1]);
+      const sec = Number(m[2]);
+      const fracRaw = m[3] ?? "0";
+      const frac = Number(fracRaw.padEnd(3, "0").slice(0, 3)) / 1000;
+      tags.push(min * 60_000 + sec * 1000 + Math.round(frac * 1000));
+      lastEnd = tagRe.lastIndex;
+    }
+    if (tags.length === 0) continue;
+    const text = line.slice(lastEnd).trim();
+    if (!text) continue; // skip metadata-only lines like [ti:...]
+    for (const t of tags) out.push({ t, text });
+  }
+  out.sort((a, b) => a.t - b.t);
+  return out;
+}
