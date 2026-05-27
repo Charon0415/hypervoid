@@ -1,9 +1,13 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
+import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
-import { getSiteOverride } from "@/lib/site-config-server";
-import { getDb, schema } from "@/db/client";
+import {
+  getSiteOverride,
+  setSiteOverrides,
+  type OverridableFields,
+} from "@/lib/site-config-server";
 
 export const metadata: Metadata = {
   title: "看板娘设置",
@@ -13,6 +17,8 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 type MascotId = "kanna" | "rem" | "ram";
+
+type PolicyKey = "mascot.allowUserSwitch" | "mascot.showSwitchButton";
 
 const MASCOTS: {
   id: MascotId;
@@ -24,41 +30,80 @@ const MASCOTS: {
   tech: string;
 }[] = [
   {
-    id: "kanna",
-    name: "康娜·卡姆依",
-    nameJa: "カンナ・カムイ",
-    source: "小林家的龙女仆",
-    desc: "活了几千年的小龙女，看起来 7-8 岁。安静、慢热、偶尔毒舌。喜欢零食和鱼。",
-    preview: "live2d",
-    tech: "Live2D (PixiJS + Cubism2)",
+    id: "ram",
+    name: "拉姆",
+    nameJa: "ラム",
+    source: "Re:Zero 从零开始的异世界生活",
+    desc: "鬼族少女，粉发女仆。默认看板娘，前台用户可在本地切换角色。",
+    preview: "spine",
+    tech: "Official Spine 3.6 WebGL (json/atlas/texture)",
   },
   {
     id: "rem",
     name: "雷姆",
     nameJa: "レム",
     source: "Re:Zero 从零开始的异世界生活",
-    desc: "鬼族少女，蓝发女仆。温柔、忠诚、勤劳，偶尔自卑。对主人非常尊敬和依赖。",
-    preview: "spine",
-    tech: "Spine (legacy skel/atlas/texture)",
-  },
-  {
-    id: "ram",
-    name: "拉姆",
-    nameJa: "ラム",
-    source: "Re:Zero 从零开始的异世界生活",
-    desc: "鬼族少女，粉发女仆。先用官方 Spine 3.6 runtime 独立验证模型，再迁移雷姆。",
+    desc: "鬼族少女，蓝发女仆。温柔、忠诚、勤劳，对话与聊天记录独立于其他角色。",
     preview: "spine",
     tech: "Official Spine 3.6 WebGL (json/atlas/texture)",
   },
+  {
+    id: "kanna",
+    name: "康娜·卡姆依",
+    nameJa: "カンナ・カムイ",
+    source: "小林家的龙女仆",
+    desc: "活了几千年的小龙女，看起来 7-8 岁。安静、慢热、偶尔毒舌。",
+    preview: "live2d",
+    tech: "Live2D (PixiJS + Cubism2)",
+  },
 ];
+
+const POLICIES: {
+  key: PolicyKey;
+  title: string;
+  desc: string;
+  onText: string;
+  offText: string;
+}[] = [
+  {
+    key: "mascot.allowUserSwitch",
+    title: "允许用户切换角色",
+    desc: "开启后，访客可以在看板娘旁边的列表里选择拉姆、雷姆或康娜；关闭后保留当前本地角色，不再接受新的切换操作。",
+    onText: "允许切换",
+    offText: "禁止切换",
+  },
+  {
+    key: "mascot.showSwitchButton",
+    title: "显示角色切换按钮",
+    desc: "控制看板娘旁边的角色列表按钮是否出现在前台。关闭后站点设置面板仍只保留看板娘开关。",
+    onText: "显示按钮",
+    offText: "隐藏按钮",
+  },
+];
+
+function isOn(value: string): boolean {
+  return value !== "off";
+}
+
+async function setMascotPolicy(key: PolicyKey, enabled: boolean) {
+  "use server";
+  const session = await auth();
+  if (!session?.user) redirect("/admin/sign-in");
+  await setSiteOverrides([
+    { key: key as OverridableFields, value: enabled ? "on" : "off" },
+  ]);
+  revalidatePath("/admin/mascot");
+  revalidatePath("/api/mascot/policy");
+}
 
 export default async function AdminMascotPage() {
   const session = await auth();
   if (!session?.user) redirect("/admin/sign-in");
 
-  const current = await getSiteOverride("mascot.character");
-  const activeId: MascotId =
-    current === "rem" || current === "ram" ? current : "kanna";
+  const values = await Promise.all(POLICIES.map((p) => getSiteOverride(p.key)));
+  const policyState = new Map(
+    POLICIES.map((p, i) => [p.key, isOn(values[i] ?? "on")]),
+  );
 
   return (
     <div className="flex flex-col gap-8">
@@ -68,108 +113,122 @@ export default async function AdminMascotPage() {
       </header>
 
       <p className="text-sm text-muted">
-        选择在页面右下角显示的看板娘角色。切换后刷新前端即可生效。
-        未来会加入更多角色。
+        后台只管理前台策略，不再指定某个全站角色，避免覆盖访客自己的本地选择。新访客默认看到拉姆。
       </p>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {MASCOTS.map((m) => {
-          const isActive = m.id === activeId;
+      <div className="grid gap-4 md:grid-cols-2">
+        {POLICIES.map((policy) => {
+          const enabled = policyState.get(policy.key) ?? true;
           return (
-            <form key={m.id} action={async () => {
-              "use server";
-              const s = await auth();
-              if (!s?.user) redirect("/admin/sign-in");
-              const db = getDb();
-              const now = new Date();
-              await db
-                .insert(schema.siteOverrides)
-                .values({ key: "mascot.character", value: m.id, updatedAt: now })
-                .onConflictDoUpdate({
-                  target: schema.siteOverrides.key,
-                  set: { value: m.id, updatedAt: now },
-                });
-              // Invalidate cache
-              const { revalidatePath } = await import("next/cache");
-              revalidatePath("/admin/mascot");
-            }}>
-              <button
-                type="submit"
-                className={`group flex h-full w-full flex-col gap-4 rounded-2xl border p-5 text-left transition ${
-                  isActive
-                    ? "border-primary bg-primary/5 shadow-md"
-                    : "border-border bg-card hover:border-primary/40 hover:shadow-sm"
-                }`}
-              >
-                <div className="flex items-start gap-4">
-                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-muted/20">
-                    {m.preview === "live2d" ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src="/live2d/kobayaxi/Kobayaxi.2048/texture_00.png"
-                        alt={m.name}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full flex-col items-center justify-center gap-1 text-muted">
-                        <svg
-                          className="h-7 w-7"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          aria-hidden
-                        >
-                          <path d="M12 3 4 7v10l8 4 8-4V7l-8-4Z" />
-                          <path d="m4 7 8 4 8-4" />
-                          <path d="M12 11v10" />
-                        </svg>
-                        <span className="text-[10px] font-medium">Spine</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-lg font-bold tracking-tight">
-                        {m.name}
-                      </h2>
-                      {isActive ? (
-                        <span className="shrink-0 rounded-full bg-primary px-2 py-0.5 text-[10px] font-medium text-primary-foreground">
-                          当前
-                        </span>
-                      ) : null}
-                    </div>
-                    <p className="font-mono text-xs text-muted">
-                      {m.nameJa} · {m.source}
-                    </p>
-                    <p className="mt-2 text-sm leading-relaxed text-muted">
-                      {m.desc}
-                    </p>
-                    <p className="mt-2 font-mono text-[10px] text-muted/80">
-                      渲染: {m.tech}
-                    </p>
-                  </div>
+            <section
+              key={policy.key}
+              className="rounded-2xl border border-border bg-card p-5 shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-base font-bold tracking-tight">
+                    {policy.title}
+                  </h2>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">
+                    {policy.desc}
+                  </p>
                 </div>
-                {!isActive ? (
-                  <span className="mt-auto w-full rounded-lg border border-border bg-background px-3 py-1.5 text-center text-sm font-medium transition group-hover:border-primary group-hover:text-primary">
-                    切换为 {m.name}
-                  </span>
-                ) : null}
-              </button>
-            </form>
+                <span
+                  className={
+                    "shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium " +
+                    (enabled
+                      ? "bg-primary/10 text-primary"
+                      : "bg-muted/20 text-muted")
+                  }
+                >
+                  {enabled ? "ON" : "OFF"}
+                </span>
+              </div>
+              <form
+                action={async () => {
+                  "use server";
+                  await setMascotPolicy(policy.key, !enabled);
+                }}
+                className="mt-4"
+              >
+                <button
+                  type="submit"
+                  className="rounded-md border border-border bg-background px-4 py-2 text-sm font-medium transition hover:border-primary hover:text-primary"
+                >
+                  {enabled ? policy.offText : policy.onText}
+                </button>
+              </form>
+            </section>
           );
         })}
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {MASCOTS.map((m) => (
+          <article
+            key={m.id}
+            className="flex h-full flex-col gap-4 rounded-2xl border border-border bg-card p-5 text-left"
+          >
+            <div className="flex items-start gap-4">
+              <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-muted/20">
+                {m.preview === "live2d" ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src="/live2d/kobayaxi/Kobayaxi.2048/texture_00.png"
+                    alt={m.name}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full flex-col items-center justify-center gap-1 text-muted">
+                    <svg
+                      className="h-7 w-7"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden
+                    >
+                      <path d="M12 3 4 7v10l8 4 8-4V7l-8-4Z" />
+                      <path d="m4 7 8 4 8-4" />
+                      <path d="M12 11v10" />
+                    </svg>
+                    <span className="text-[10px] font-medium">Spine</span>
+                  </div>
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-bold tracking-tight">{m.name}</h2>
+                  {m.id === "ram" ? (
+                    <span className="shrink-0 rounded-full bg-primary px-2 py-0.5 text-[10px] font-medium text-primary-foreground">
+                      默认
+                    </span>
+                  ) : null}
+                </div>
+                <p className="font-mono text-xs text-muted">
+                  {m.nameJa} · {m.source}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-muted">
+                  {m.desc}
+                </p>
+                <p className="mt-2 font-mono text-[10px] text-muted/80">
+                  渲染: {m.tech}
+                </p>
+              </div>
+            </div>
+          </article>
+        ))}
       </div>
 
       <div className="text-xs text-muted">
         <p className="font-medium">说明</p>
         <ul className="mt-1.5 list-disc space-y-0.5 pl-5">
-          <li>角色设置保存在数据库的 site_overrides 表中。</li>
-          <li>切换角色后，前端需要刷新页面才能看到新的看板娘。</li>
+          <li>角色本身由访客浏览器 localStorage 保存，后台不会覆盖。</li>
+          <li>关闭“显示角色切换按钮”后，前台只保留看板娘开关和角色自身功能。</li>
+          <li>关闭“允许用户切换角色”后，按钮可见时也不会执行角色切换。</li>
           <li>看板娘在移动端和管理后台页面默认隐藏。</li>
-          <li>访客可在站点设置面板中开关看板娘、切换角色。</li>
         </ul>
       </div>
     </div>

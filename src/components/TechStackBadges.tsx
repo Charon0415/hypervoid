@@ -174,14 +174,24 @@ function BadgeChip({ badge }: { badge: Badge }) {
   );
 }
 
+const BADGE_ROWS = [
+  BADGES.slice(0, 4),
+  BADGES.slice(4, 7),
+  BADGES.slice(7),
+];
+
 export function TechStackBadges() {
   return (
-    <div
-      aria-label="技术栈"
-      className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2"
-    >
-      {BADGES.map((b) => (
-        <BadgeChip key={b.label} badge={b} />
+    <div aria-label="技术栈" className="flex flex-col items-center gap-1.5 sm:gap-2">
+      {BADGE_ROWS.map((row, index) => (
+        <div
+          key={index}
+          className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2"
+        >
+          {row.map((b) => (
+            <BadgeChip key={b.label} badge={b} />
+          ))}
+        </div>
       ))}
     </div>
   );

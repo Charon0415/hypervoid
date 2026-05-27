@@ -27,7 +27,8 @@ export type OverridableFields =
   | "announcementLinkText"
   | "home.quote"
   | "home.quoteAuthor"
-  | "mascot.character"
+  | "mascot.allowUserSwitch"
+  | "mascot.showSwitchButton"
   | "music.playlistId"
   | "music.savedPlaylists"
   | "effects.playerWidget"
@@ -59,7 +60,8 @@ const DEFAULT_MAP: Record<OverridableFields, string> = {
   announcementLinkText: "",
   "home.quote": "我们都是星尘——也是宇宙了解自身的一种方式。",
   "home.quoteAuthor": "Carl Sagan",
-  "mascot.character": "kanna",
+  "mascot.allowUserSwitch": "on",
+  "mascot.showSwitchButton": "on",
   "music.playlistId": "",
   "music.savedPlaylists": "[]",
   "effects.playerWidget": "off",
@@ -92,7 +94,8 @@ const LABELS: Record<OverridableFields, string> = {
   announcementLinkText: "链接按钮文字",
   "home.quote": "首页名句正文",
   "home.quoteAuthor": "首页名句作者",
-  "mascot.character": "看板娘角色 (kanna / rem / ram)",
+  "mascot.allowUserSwitch": "允许访客切换看板娘 (on / off)",
+  "mascot.showSwitchButton": "显示角色旁切换按钮 (on / off)",
   "music.playlistId": "网易云歌单 ID",
   "music.savedPlaylists": "已保存歌单（JSON）",
   "effects.playerWidget": "播放器小组件视觉特效",

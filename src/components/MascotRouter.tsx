@@ -39,14 +39,18 @@ function readStoredChar(): MascotChar | null {
 
 export function MascotRouter() {
   const [character, setCharacter] = useState<MascotChar>(() =>
-    readStoredChar() ?? "kanna",
+    readStoredChar() ?? "ram",
   );
 
   useEffect(() => {
-    const applyStored = () => setCharacter(readStoredChar() ?? "kanna");
+    const applyStored = () => setCharacter(readStoredChar() ?? "ram");
     const onCharacterChanged = (e: Event) => {
       const detail = (e as CustomEvent<{ character?: unknown }>).detail;
-      setCharacter(isMascotChar(detail?.character) ? detail.character : readStoredChar() ?? "kanna");
+      setCharacter(
+        isMascotChar(detail?.character)
+          ? detail.character
+          : (readStoredChar() ?? "ram"),
+      );
     };
     const onStorage = (e: StorageEvent) => {
       if (e.key === CHAR_KEY) applyStored();
@@ -59,23 +63,6 @@ export function MascotRouter() {
     };
   }, []);
 
-  useEffect(() => {
-    if (readStoredChar()) return;
-
-    let cancelled = false;
-    fetch("/api/mascot/character")
-      .then((r) => r.json())
-      .then((data) => {
-        if (cancelled) return;
-        setCharacter(isMascotChar(data.character) ? data.character : "kanna");
-      })
-      .catch(() => {
-        /* use initial value */
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   if (character === "rem") return <GifMascot key="rem" />;
   if (character === "ram") return <RamMascot key="ram" />;

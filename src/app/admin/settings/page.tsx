@@ -21,7 +21,8 @@ export default async function AdminSettingsPage() {
   // These keys have dedicated admin pages and are filtered out from the
   // generic settings form so they don't appear twice.
   const dedicated = new Set([
-    "mascot.character",
+    "mascot.allowUserSwitch",
+    "mascot.showSwitchButton",
     "music.playlistId",
     "music.savedPlaylists",
     "effects.playerWidget",

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { applySpineWidgetFocus } from "@/lib/spine-widget-focus";
 import { MascotChat } from "@/components/MascotChat";
+import { MascotCharacterSwitcher } from "@/components/MascotCharacterSwitcher";
 
 const STORAGE_KEY = "hypervoid:mascot";
 const MASCOT_W = 300;
@@ -116,7 +117,7 @@ function clampPos(p: Pos): Pos {
 function defaultPos(): Pos {
   if (typeof window === "undefined") return { x: 0, y: 0 };
   return clampPos({
-    x: window.innerWidth - MASCOT_W - 16,
+    x: 16,
     y: window.innerHeight - MASCOT_H - 16,
   });
 }
@@ -195,6 +196,7 @@ export function RamMascot() {
   const [dialog, setDialog] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
+  const hasPos = pos !== null;
 
   useEffect(() => {
     setMounted(true);
@@ -221,13 +223,17 @@ export function RamMascot() {
   useEffect(() => {
     const handler = (e: Event) => {
       const enabled = (e as CustomEvent<boolean>).detail;
-      setVisible(enabled);
+      setVisible(typeof enabled === "boolean" ? enabled : isMascotEnabled());
       if (!enabled) setDialog(null);
     };
     window.addEventListener("hypervoid:mascot-changed", handler);
     return () =>
       window.removeEventListener("hypervoid:mascot-changed", handler);
   }, []);
+
+  useEffect(() => {
+    setVisible(isMascotEnabled());
+  }, [pathname]);
 
   const showDialog = useCallback((msg: string) => {
     setDialog(msg);
@@ -248,7 +254,8 @@ export function RamMascot() {
   }, [showDialog]);
 
   useEffect(() => {
-    if (!visible || mobile || onStrictRoute || !hostRef.current) return;
+    if (!visible || mobile || onStrictRoute || !hasPos || !hostRef.current)
+      return;
     let disposed = false;
     const host = hostRef.current;
     setLoadError(null);
@@ -298,7 +305,7 @@ export function RamMascot() {
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
       if (dialogTimerRef.current) clearTimeout(dialogTimerRef.current);
     };
-  }, [visible, mobile, onStrictRoute, scheduleIdle]);
+  }, [visible, mobile, onStrictRoute, hasPos, scheduleIdle]);
 
   const show = useCallback(() => {
     setMascotEnabled(true);
@@ -423,7 +430,7 @@ export function RamMascot() {
             onClick={close}
             aria-label="收起看板娘"
             title="收起 · 还可在站点设置中重新打开"
-            className="absolute right-1 top-1 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card text-base font-medium text-muted opacity-0 shadow-md transition-all duration-150 hover:border-primary hover:text-primary group-hover/mascot:opacity-100 focus-visible:opacity-100"
+            className="absolute -right-8 top-1 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card text-base font-medium text-muted opacity-0 shadow-md transition-all duration-150 hover:border-primary hover:text-primary group-hover/mascot:opacity-100 focus-visible:opacity-100"
           >
             <svg
               className="h-3.5 w-3.5"
@@ -445,7 +452,7 @@ export function RamMascot() {
             onClick={() => setChatOpen((v) => !v)}
             aria-label={chatOpen ? "收起对话" : "和拉姆说话"}
             title={chatOpen ? "收起对话" : "和拉姆说话"}
-            className={`absolute left-1 top-1 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card text-muted opacity-0 shadow-md transition-all duration-150 hover:border-primary hover:text-primary group-hover/mascot:opacity-100 focus-visible:opacity-100 ${
+            className={`absolute -right-8 top-9 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card text-muted opacity-0 shadow-md transition-all duration-150 hover:border-primary hover:text-primary group-hover/mascot:opacity-100 focus-visible:opacity-100 ${
               chatOpen ? "!opacity-100" : ""
             }`}
           >
@@ -463,10 +470,17 @@ export function RamMascot() {
             </svg>
           </button>
 
+
+          <MascotCharacterSwitcher
+            current="ram"
+            className="-right-8 top-[4.25rem]"
+            menuClassName="left-full top-0 ml-2"
+          />
+
           {chatOpen ? (
             <div
               data-no-drag
-              className="absolute right-full top-0 z-10 mr-2"
+              className="absolute left-full top-0 z-10 ml-2"
               onPointerDown={(e) => e.stopPropagation()}
             >
               <MascotChat
@@ -477,11 +491,11 @@ export function RamMascot() {
           ) : null}
 
           {!chatOpen && dialog ? (
-            <div className="absolute -top-2 left-1/2 max-w-[220px] -translate-x-1/2 -translate-y-full rounded-lg border border-border bg-card px-3 py-2 text-xs leading-relaxed text-foreground shadow-lg">
+            <div className="absolute left-full top-8 z-10 ml-2 max-w-[220px] rounded-lg border border-border bg-card px-3 py-2 text-xs leading-relaxed text-foreground shadow-lg">
               {dialog}
               <span
                 aria-hidden
-                className="absolute left-1/2 top-full -ml-1.5 h-3 w-3 -translate-y-1/2 rotate-45 border-b border-r border-border bg-card"
+                className="absolute right-full top-4 -mr-1.5 h-3 w-3 rotate-45 border-b border-l border-border bg-card"
               />
             </div>
           ) : null}
@@ -496,7 +510,7 @@ export function RamMascot() {
           />
 
           {loadError ? (
-            <div className="pointer-events-none flex h-full w-full items-center justify-center rounded-2xl border border-dashed border-border bg-card/80 px-4 text-center text-xs leading-relaxed text-muted shadow-lg backdrop-blur">
+            <div className="pointer-events-none absolute left-full top-8 ml-2 flex w-44 items-center justify-center rounded-lg border border-dashed border-border bg-card/80 px-4 py-3 text-center text-xs leading-relaxed text-muted shadow-lg backdrop-blur">
               {loadError}
             </div>
           ) : null}

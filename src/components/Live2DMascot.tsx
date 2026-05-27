@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { MascotChat } from "@/components/MascotChat";
+import { MascotCharacterSwitcher } from "@/components/MascotCharacterSwitcher";
 
 const STORAGE_KEY = "hypervoid:mascot";
 const DEFAULT_MODEL = "/live2d/kobayaxi/Kobayaxi.model.json";
@@ -131,6 +132,7 @@ export function Live2DMascot() {
   const [dialog, setDialog] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
+  const hasPos = pos !== null;
 
   useEffect(() => {
     setMounted(true);
@@ -157,13 +159,17 @@ export function Live2DMascot() {
   useEffect(() => {
     const handler = (e: Event) => {
       const enabled = (e as CustomEvent<boolean>).detail;
-      setVisible(enabled);
+      setVisible(typeof enabled === "boolean" ? enabled : isMascotEnabled());
       if (!enabled) setDialog(null);
     };
     window.addEventListener("hypervoid:mascot-changed", handler);
     return () =>
       window.removeEventListener("hypervoid:mascot-changed", handler);
   }, []);
+
+  useEffect(() => {
+    setVisible(isMascotEnabled());
+  }, [pathname]);
 
   const showDialog = useCallback((msg: string) => {
     setDialog(msg);
@@ -184,7 +190,8 @@ export function Live2DMascot() {
   }, [showDialog]);
 
   useEffect(() => {
-    if (!visible || mobile || onStrictRoute) return;
+    if (!visible || mobile || onStrictRoute || !hasPos || !canvasRef.current)
+      return;
     let disposed = false;
     setLoadError(null);
 
@@ -257,7 +264,7 @@ export function Live2DMascot() {
       }
       appRef.current = null;
     };
-  }, [visible, mobile, onStrictRoute, scheduleIdle, showDialog]);
+  }, [visible, mobile, onStrictRoute, hasPos, scheduleIdle, showDialog]);
 
   const show = useCallback(() => {
     setMascotEnabled(true);
@@ -411,6 +418,13 @@ export function Live2DMascot() {
               <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
             </svg>
           </button>
+
+
+          <MascotCharacterSwitcher
+            current="kanna"
+            className="left-1 top-9"
+            menuClassName="right-full top-0 mr-2"
+          />
 
           {chatOpen ? (
             <div
