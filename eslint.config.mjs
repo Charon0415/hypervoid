@@ -23,6 +23,7 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Vendor / third-party minified files
     "public/live2d/**",
+    "public/vendor/**",
   ]),
 ]);
 

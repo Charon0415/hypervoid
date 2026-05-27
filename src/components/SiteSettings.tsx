@@ -14,9 +14,31 @@ import {
   type BackgroundKey,
 } from "@/components/SettingsProvider";
 import { isMascotEnabled, setMascotEnabled } from "@/components/Live2DMascot";
+import { useInstallPrompt } from "@/components/PwaInstallController";
 
 const MASCOT_CHAR_KEY = "hypervoid:mascot-char";
-import { useInstallPrompt } from "@/components/PwaInstallController";
+const MASCOT_CHAR_EVENT = "hypervoid:mascot-character-changed";
+
+function readMascotChar(): "kanna" | "rem" | "ram" {
+  try {
+    const value = localStorage.getItem(MASCOT_CHAR_KEY);
+    return value === "rem" || value === "ram" ? value : "kanna";
+  } catch {
+    return "kanna";
+  }
+}
+
+function nextMascotChar(cur: "kanna" | "rem" | "ram"): "kanna" | "rem" | "ram" {
+  if (cur === "kanna") return "rem";
+  if (cur === "rem") return "ram";
+  return "kanna";
+}
+
+function mascotCharLabel(char: "kanna" | "rem" | "ram"): string {
+  if (char === "rem") return "雷姆";
+  if (char === "ram") return "拉姆";
+  return "康娜";
+}
 
 function BgThumb({ bg }: { bg: BackgroundKey }) {
   const base = "h-10 w-full overflow-hidden rounded";
@@ -136,6 +158,7 @@ export function SiteSettings() {
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mascot, setMascot] = useState(false);
+  const [mascotChar, setMascotChar] = useState<"kanna" | "rem" | "ram">("kanna");
   const { available: installAvailable, install } = useInstallPrompt();
   const {
     hue,
@@ -155,11 +178,19 @@ export function SiteSettings() {
   useEffect(() => {
     setMounted(true);
     setMascot(isMascotEnabled());
+    setMascotChar(readMascotChar());
     const mql = window.matchMedia("(max-width: 767px)");
     const sync = () => setIsMobile(mql.matches);
     sync();
     mql.addEventListener("change", sync);
-    return () => mql.removeEventListener("change", sync);
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === MASCOT_CHAR_KEY) setMascotChar(readMascotChar());
+    };
+    window.addEventListener("storage", onStorage);
+    return () => {
+      mql.removeEventListener("change", sync);
+      window.removeEventListener("storage", onStorage);
+    };
   }, []);
 
   // Lock body scroll while the mobile bottom-sheet is open.
@@ -479,31 +510,21 @@ export function SiteSettings() {
                       type="button"
                       onClick={() => {
                         try {
-                          const cur = localStorage.getItem(MASCOT_CHAR_KEY);
-                          const next = cur === "rem" ? "kanna" : "rem";
+                          const next = nextMascotChar(mascotChar);
                           localStorage.setItem(MASCOT_CHAR_KEY, next);
+                          setMascotChar(next);
                           window.dispatchEvent(
-                            new CustomEvent("hypervoid:mascot-changed", {
-                              detail: true,
+                            new CustomEvent(MASCOT_CHAR_EVENT, {
+                              detail: { character: next },
                             }),
                           );
-                          // Force reload to apply the new mascot
-                          window.location.reload();
                         } catch {
                           /* noop */
                         }
                       }}
                       className={`${pillBase} ${pillIdle} mt-2 flex w-full items-center justify-center gap-1.5 text-xs`}
                     >
-                      切换为{(() => {
-                        try {
-                          return localStorage.getItem(MASCOT_CHAR_KEY) === "rem"
-                            ? "康娜"
-                            : "雷姆";
-                        } catch {
-                          return "雷姆";
-                        }
-                      })()}
+                      当前：{mascotCharLabel(mascotChar)} · 切换为{mascotCharLabel(nextMascotChar(mascotChar))}
                     </button>
                   ) : null}
                 </section>

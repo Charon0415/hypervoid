@@ -623,6 +623,12 @@ export const siteConfig = {
 
 ---
 
+### 4.15 Spine 3.6 看板娘资源
+
+当前雷姆/拉姆看板娘使用 Spine `3.6.39` 资源：`.skel` 先通过 `SpineSkeletonDataConverter` 转为 `.json`，前台再用 `public/vendor/spine-3.6/spine-widget.js` 渲染。不要再维护手写 `.skel` parser。
+
+后续新增同格式角色，按 `docs/mascot-spine36-workflow.md` 操作：放入 `skel/atlas/png` → 转换 JSON → 注册角色 key → 调 `applySpineWidgetFocus` 裁掉骨架空白 → 跑 lint/build。转换器资源包在 `public/resources/tools/spine-skeleton-data-converter-v3.7-hypervoid.zip`。
+
 ## 五、部署与运维
 
 ### 5.1 Vercel 部署流程

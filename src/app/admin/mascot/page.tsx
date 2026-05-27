@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-type MascotId = "kanna" | "rem";
+type MascotId = "kanna" | "rem" | "ram";
 
 const MASCOTS: {
   id: MascotId;
@@ -39,7 +39,16 @@ const MASCOTS: {
     source: "Re:Zero 从零开始的异世界生活",
     desc: "鬼族少女，蓝发女仆。温柔、忠诚、勤劳，偶尔自卑。对主人非常尊敬和依赖。",
     preview: "spine",
-    tech: "Spine (PixiJS + skel/atlas/texture)",
+    tech: "Spine (legacy skel/atlas/texture)",
+  },
+  {
+    id: "ram",
+    name: "拉姆",
+    nameJa: "ラム",
+    source: "Re:Zero 从零开始的异世界生活",
+    desc: "鬼族少女，粉发女仆。先用官方 Spine 3.6 runtime 独立验证模型，再迁移雷姆。",
+    preview: "spine",
+    tech: "Official Spine 3.6 WebGL (json/atlas/texture)",
   },
 ];
 
@@ -48,7 +57,8 @@ export default async function AdminMascotPage() {
   if (!session?.user) redirect("/admin/sign-in");
 
   const current = await getSiteOverride("mascot.character");
-  const activeId: MascotId = current === "rem" ? "rem" : "kanna";
+  const activeId: MascotId =
+    current === "rem" || current === "ram" ? current : "kanna";
 
   return (
     <div className="flex flex-col gap-8">
@@ -62,7 +72,7 @@ export default async function AdminMascotPage() {
         未来会加入更多角色。
       </p>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {MASCOTS.map((m) => {
           const isActive = m.id === activeId;
           return (

@@ -3,6 +3,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import {
   isActiveProviderConfigured,
   streamKannaChat,
+  streamRamChat,
   streamRemChat,
 } from "@/lib/ai";
 import type { ChatMessage } from "@/lib/ai-client";
@@ -103,7 +104,9 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   const character =
-    body.character === "rem" ? "rem" : "kanna";
+    body.character === "rem" || body.character === "ram"
+      ? body.character
+      : "kanna";
 
   if (!Array.isArray(body.messages) || body.messages.length === 0) {
     return NextResponse.json({ error: "no messages" }, { status: 400 });
@@ -136,10 +139,18 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   const encoder = new TextEncoder();
-  const streamFn = character === "rem" ? streamRemChat : streamKannaChat;
-  const errorMsg = character === "rem"
-    ? "……(雷姆走神了，请再试一次)"
-    : "……(康娜走神了,再试一次)";
+  const streamFn =
+    character === "rem"
+      ? streamRemChat
+      : character === "ram"
+        ? streamRamChat
+        : streamKannaChat;
+  const errorMsg =
+    character === "rem"
+      ? "……(雷姆走神了，请再试一次)"
+      : character === "ram"
+        ? "……(拉姆暂时没有回应。再试一次。)"
+        : "……(康娜走神了,再试一次)";
 
   const stream = new ReadableStream({
     async start(controller) {

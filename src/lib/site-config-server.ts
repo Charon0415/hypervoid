@@ -92,7 +92,7 @@ const LABELS: Record<OverridableFields, string> = {
   announcementLinkText: "链接按钮文字",
   "home.quote": "首页名句正文",
   "home.quoteAuthor": "首页名句作者",
-  "mascot.character": "看板娘角色 (kanna / rem)",
+  "mascot.character": "看板娘角色 (kanna / rem / ram)",
   "music.playlistId": "网易云歌单 ID",
   "music.savedPlaylists": "已保存歌单（JSON）",
   "effects.playerWidget": "播放器小组件视觉特效",

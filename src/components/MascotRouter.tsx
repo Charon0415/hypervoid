@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
 const CHAR_KEY = "hypervoid:mascot-char";
+const CHAR_EVENT = "hypervoid:mascot-character-changed";
 
 const Live2DMascot = dynamic(
   () => import("@/components/Live2DMascot").then((m) => m.Live2DMascot),
@@ -15,13 +16,22 @@ const GifMascot = dynamic(
   { ssr: false },
 );
 
-type MascotChar = "kanna" | "rem";
+const RamMascot = dynamic(
+  () => import("@/components/RamMascot").then((m) => m.RamMascot),
+  { ssr: false },
+);
+
+type MascotChar = "kanna" | "rem" | "ram";
+
+function isMascotChar(value: unknown): value is MascotChar {
+  return value === "kanna" || value === "rem" || value === "ram";
+}
 
 function readStoredChar(): MascotChar | null {
   if (typeof window === "undefined") return null;
   try {
     const v = localStorage.getItem(CHAR_KEY);
-    return v === "rem" || v === "kanna" ? v : null;
+    return isMascotChar(v) ? v : null;
   } catch {
     return null;
   }
@@ -33,6 +43,23 @@ export function MascotRouter() {
   );
 
   useEffect(() => {
+    const applyStored = () => setCharacter(readStoredChar() ?? "kanna");
+    const onCharacterChanged = (e: Event) => {
+      const detail = (e as CustomEvent<{ character?: unknown }>).detail;
+      setCharacter(isMascotChar(detail?.character) ? detail.character : readStoredChar() ?? "kanna");
+    };
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === CHAR_KEY) applyStored();
+    };
+    window.addEventListener(CHAR_EVENT, onCharacterChanged);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener(CHAR_EVENT, onCharacterChanged);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
+
+  useEffect(() => {
     if (readStoredChar()) return;
 
     let cancelled = false;
@@ -40,7 +67,7 @@ export function MascotRouter() {
       .then((r) => r.json())
       .then((data) => {
         if (cancelled) return;
-        setCharacter(data.character === "rem" ? "rem" : "kanna");
+        setCharacter(isMascotChar(data.character) ? data.character : "kanna");
       })
       .catch(() => {
         /* use initial value */
@@ -50,5 +77,7 @@ export function MascotRouter() {
     };
   }, []);
 
-  return character === "rem" ? <GifMascot /> : <Live2DMascot />;
+  if (character === "rem") return <GifMascot />;
+  if (character === "ram") return <RamMascot />;
+  return <Live2DMascot />;
 }

@@ -10,15 +10,15 @@ const MASCOT_W = 300;
 const MASCOT_H = 380;
 
 const RUNTIME_SRC = "/vendor/spine-3.6/spine-widget.js";
-const REM_JSON = "/mascot/rem/1.json";
-const REM_ATLAS = "/mascot/rem/1.atlas";
-const REM_PNG = "/mascot/rem/1.png";
+const RAM_JSON = "/mascot/ram/ram.json";
+const RAM_ATLAS = "/mascot/ram/ram.atlas";
+const RAM_PNG = "/mascot/ram/ram.png";
 const PREFERRED_ANIMATION = "24_idle";
-const REM_FOCUS = {
-  centerX: 44,
-  centerY: 198,
-  width: 440,
-  height: 550,
+const RAM_FOCUS = {
+  centerX: -25,
+  centerY: 165,
+  width: 470,
+  height: 590,
   padding: 1.02,
 };
 
@@ -60,18 +60,18 @@ type Pos = { x: number; y: number };
 
 const MESSAGES = {
   tap: [
-    "主人，有什么吩咐吗？",
-    "雷姆在这里呢。",
-    "主人，请不要乱碰……",
-    "有什么可以帮您的吗？",
-    "主人，今天也要加油呢。",
-    "雷姆会一直陪着主人的。",
+    "有什么事？拉姆在听。",
+    "别戳了，拉姆会自己看。",
+    "主人又在折腾网站吗？",
+    "需要拉姆帮你检查一下吗？",
+    "雷姆不在的时候，就由拉姆看着这里。",
+    "你的操作还算可以。",
   ],
   idle: [
-    "主人，休息一下吧。",
-    "雷姆在呢，主人。",
-    "今天也要努力呢。",
-    "主人，要喝水吗？",
+    "休息一下。效率不是靠硬撑出来的。",
+    "拉姆在。网站没有乱跑。",
+    "主人最好记得保存。",
+    "如果找不到东西，就去搜索。别硬猜。",
   ],
 } as const;
 
@@ -80,7 +80,7 @@ function isMobileViewport(): boolean {
   return window.matchMedia("(max-width: 767px)").matches;
 }
 
-export function isGifMascotEnabled(): boolean {
+function isMascotEnabled(): boolean {
   if (typeof window === "undefined") return false;
   if (isMobileViewport()) return false;
   try {
@@ -92,7 +92,7 @@ export function isGifMascotEnabled(): boolean {
   }
 }
 
-export function setGifMascotEnabled(enabled: boolean) {
+function setMascotEnabled(enabled: boolean) {
   try {
     localStorage.setItem(STORAGE_KEY, String(enabled));
     window.dispatchEvent(
@@ -134,7 +134,7 @@ async function readJson(src: string): Promise<unknown> {
 }
 
 function normalizeAtlasPage(atlasText: string): string {
-  return atlasText.replace(/^(\s*)1\.png/m, "$1" + REM_PNG);
+  return atlasText.replace(/^(\s*)ram\.png/m, "$1" + RAM_PNG);
 }
 
 function selectAnimation(json: unknown): string {
@@ -174,7 +174,7 @@ function loadSpine36(): Promise<SpineGlobal> {
   return w.__hypervoidSpine36;
 }
 
-export function GifMascot() {
+export function RamMascot() {
   const pathname = usePathname();
   const onStrictRoute =
     pathname?.startsWith("/admin") || pathname === "/search";
@@ -202,7 +202,7 @@ export function GifMascot() {
     const sync = () => setMobile(mql.matches);
     sync();
     mql.addEventListener("change", sync);
-    if (isGifMascotEnabled()) setVisible(true);
+    if (isMascotEnabled()) setVisible(true);
     return () => mql.removeEventListener("change", sync);
   }, []);
 
@@ -259,15 +259,15 @@ export function GifMascot() {
       try {
         const [spine, jsonContent, atlasText] = await Promise.all([
           loadSpine36(),
-          readJson(REM_JSON),
-          readText(REM_ATLAS),
+          readJson(RAM_JSON),
+          readText(RAM_ATLAS),
         ]);
         if (disposed) return;
         const animation = selectAnimation(jsonContent);
         widgetRef.current = new spine.SpineWidget(host, {
           jsonContent,
           atlasContent: normalizeAtlasPage(atlasText),
-          atlasPages: [REM_PNG],
+          atlasPages: [RAM_PNG],
           animation,
           loop: true,
           fitToCanvas: true,
@@ -275,7 +275,7 @@ export function GifMascot() {
           backgroundColor: "#00000000",
           premultipliedAlpha: false,
           success: (widget) => {
-            applySpineWidgetFocus(widget, REM_FOCUS);
+            applySpineWidgetFocus(widget, RAM_FOCUS);
             widgetRef.current = widget;
           },
           error: (_widget, message) => {
@@ -284,8 +284,8 @@ export function GifMascot() {
         });
       } catch (e) {
         if (!disposed) {
-          console.warn("[mascot/rem-spine36] load failed:", e);
-          setLoadError("雷姆模型加载失败");
+          console.warn("[mascot/ram-spine36] load failed:", e);
+          setLoadError("拉姆模型加载失败");
         }
       }
     })();
@@ -301,12 +301,12 @@ export function GifMascot() {
   }, [visible, mobile, onStrictRoute, scheduleIdle]);
 
   const show = useCallback(() => {
-    setGifMascotEnabled(true);
+    setMascotEnabled(true);
     setVisible(true);
   }, []);
 
   const close = useCallback(() => {
-    setGifMascotEnabled(false);
+    setMascotEnabled(false);
     setVisible(false);
     setDialog(null);
   }, []);
@@ -443,8 +443,8 @@ export function GifMascot() {
           <button
             type="button"
             onClick={() => setChatOpen((v) => !v)}
-            aria-label={chatOpen ? "收起对话" : "和雷姆说话"}
-            title={chatOpen ? "收起对话" : "和雷姆说话"}
+            aria-label={chatOpen ? "收起对话" : "和拉姆说话"}
+            title={chatOpen ? "收起对话" : "和拉姆说话"}
             className={`absolute left-1 top-1 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card text-muted opacity-0 shadow-md transition-all duration-150 hover:border-primary hover:text-primary group-hover/mascot:opacity-100 focus-visible:opacity-100 ${
               chatOpen ? "!opacity-100" : ""
             }`}
@@ -470,7 +470,7 @@ export function GifMascot() {
               onPointerDown={(e) => e.stopPropagation()}
             >
               <MascotChat
-                character="rem"
+                character="ram"
                 onClose={() => setChatOpen(false)}
               />
             </div>
@@ -488,7 +488,7 @@ export function GifMascot() {
 
           <div
             ref={hostRef}
-            aria-label="雷姆"
+            aria-label="拉姆"
             role="img"
             className={`pointer-events-none h-full w-full overflow-hidden transition-transform duration-200 [&_canvas]:block ${
               dragging ? "scale-[0.98]" : ""

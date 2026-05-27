@@ -7,6 +7,6 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const character = await getSiteOverride("mascot.character");
   return NextResponse.json({
-    character: character === "rem" ? "rem" : "kanna",
+    character: character === "rem" || character === "ram" ? character : "kanna",
   });
 }
