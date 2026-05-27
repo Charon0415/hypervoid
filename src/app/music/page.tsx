@@ -7,9 +7,13 @@ import {
   PLAYLISTS,
   type MusicPlaylist,
 } from "@/lib/music";
-import { MusicPlayer } from "@/components/MusicPlayer";
-import { getSiteOverride } from "@/lib/site-config-server";
-import { getPlaylistWithUrls } from "@/lib/ncm";
+import { APlayerMusicPlayer } from "@/components/APlayerMusicPlayer";
+import {
+  getConfiguredMusicTracks,
+  getMusicSourceConfig,
+  MUSIC_SOURCE_LABEL,
+} from "@/lib/music-sources";
+import type { MusicTrack } from "@/lib/music-types";
 
 export const metadata: Metadata = {
   title: "音乐",
@@ -35,22 +39,19 @@ const PLATFORM_COLOR: Record<MusicPlaylist["platform"], string> = {
 };
 
 export default async function MusicPage() {
-  // Try to fetch playlist data server-side
-  let initialTracks: { id: number; title: string; artist: string; cover: string; duration: number; url: string | null }[] = [];
-  const playlistId = await getSiteOverride("music.playlistId");
-  if (playlistId?.trim()) {
-    try {
-      initialTracks = await getPlaylistWithUrls(playlistId.trim());
-    } catch {
-      /* NCM API not available, client will fetch via API route */
-    }
+  let initialTracks: MusicTrack[] = [];
+  const config = await getMusicSourceConfig();
+  try {
+    initialTracks = await getConfiguredMusicTracks();
+  } catch {
+    // Client component retries through the API route and surfaces the error.
   }
 
   return (
     <div className="flex flex-col gap-10">
       <header>
         <p className="text-xs uppercase tracking-widest text-primary">
-          ✦ Music · 音乐
+          Music · 音乐
         </p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
           在循环里
@@ -61,7 +62,10 @@ export default async function MusicPage() {
         </p>
       </header>
 
-      <MusicPlayer initialTracks={initialTracks} />
+      <APlayerMusicPlayer
+        initialTracks={initialTracks}
+        sourceLabel={MUSIC_SOURCE_LABEL[config.mode]}
+      />
 
       <section>
         <div className="mb-4 flex items-baseline justify-between gap-3">
@@ -167,7 +171,7 @@ export default async function MusicPage() {
                       {p.title}
                     </span>
                     <span
-                      className={`shrink-0 font-mono text-[11px] ${PLATFORM_COLOR[p.platform]}`}
+                      className={"shrink-0 font-mono text-[11px] " + PLATFORM_COLOR[p.platform]}
                     >
                       {PLATFORM_LABEL[p.platform]}
                     </span>
@@ -204,7 +208,7 @@ export default async function MusicPage() {
       </section>
 
       <p className="rounded-xl border border-dashed border-border p-4 text-xs text-muted">
-        播放器已接入网易云音乐 API。在后台「站点设置」中配置歌单 ID 即可显示曲目。
+        播放器已升级为 APlayer。音源由后台「音乐设置」统一切换，支持已部署音源、LX API 和本地 JSON 歌单。
         也可在留言板 [
         <Link href="/guestbook" className="text-primary hover:underline">
           点这

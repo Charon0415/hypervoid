@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "aplayer/dist/APlayer.min.css";
 import "remark-github-blockquote-alert/alert.css";
 import { Providers } from "@/components/Providers";
 import { SiteHeader } from "@/components/SiteHeader";

@@ -646,3 +646,42 @@ html[data-display="fullscreen"] select {
   }
 }
 
+
+
+/* APlayer — align the third-party player with the site palette. */
+.hypervoid-aplayer .aplayer {
+  margin: 0;
+  border-radius: 0.75rem;
+  background: transparent;
+  box-shadow: none;
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+.hypervoid-aplayer .aplayer .aplayer-body,
+.hypervoid-aplayer .aplayer .aplayer-list,
+.hypervoid-aplayer .aplayer .aplayer-list ol li {
+  border-color: var(--border);
+}
+.hypervoid-aplayer .aplayer .aplayer-info {
+  border-bottom-color: var(--border);
+}
+.hypervoid-aplayer .aplayer .aplayer-title,
+.hypervoid-aplayer .aplayer .aplayer-list ol li .aplayer-list-title {
+  color: var(--foreground);
+}
+.hypervoid-aplayer .aplayer .aplayer-author,
+.hypervoid-aplayer .aplayer .aplayer-list ol li .aplayer-list-author,
+.hypervoid-aplayer .aplayer .aplayer-time {
+  color: var(--muted);
+}
+.hypervoid-aplayer .aplayer .aplayer-list ol li {
+  background: transparent;
+}
+.hypervoid-aplayer .aplayer .aplayer-list ol li:hover,
+.hypervoid-aplayer .aplayer .aplayer-list ol li.aplayer-list-light {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+.hypervoid-aplayer .aplayer .aplayer-pic,
+.hypervoid-aplayer .aplayer .aplayer-pic img {
+  border-radius: 999px;
+}

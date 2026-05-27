@@ -241,7 +241,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     setTracksLoaded(true);
     setCurrentIdx(firstPlayableIndex(next));
     if (next.length > 0 && !next.some((t) => t.url)) {
-      setError("歌单曲目信息已获取，但没有可播放音源。请在后台配置有效 NCM_COOKIE，或换公开可播放歌单。");
+      setError("曲目信息已获取，但没有可播放音源。请在后台音乐设置切换音源，或检查 Cookie / 本地 JSON 配置。");
     }
   }, []);
 

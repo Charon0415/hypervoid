@@ -33,9 +33,7 @@ export default function AboutPage() {
 
       <h2>现在在做什么</h2>
       <p className="text-muted">
-        {/* TODO: 这里手动填一段近期在折腾的内容 */}
-        近期主要在搭建和打磨这个博客本身，慢慢把碎片想法和过往笔记搬过来。
-        其他在做的事还在整理，过段时间再列。
+        近期主要在打磨博客后台、看板娘和音乐播放器，把长期维护会反复用到的流程固化下来。
       </p>
 
       <h2>这个博客</h2>
@@ -43,7 +41,7 @@ export default function AboutPage() {
         <li>用 Next.js 16 + React 19 + Tailwind v4 从零搭建，无模板</li>
         <li>文章存 Postgres（Neon），图片走 Vercel Blob</li>
         <li>评论由 GitHub Discussions（Giscus）承载</li>
-        <li>AI 摘要 / Q&A 跑在 Claude Haiku 4.5 上</li>
+        <li>AI 摘要 / Q&A 支持 DeepSeek、Claude 和自定义兼容端点</li>
         <li>部署在 Vercel · 域名 hypervoid.top</li>
         <li>
           源码：

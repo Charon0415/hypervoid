@@ -56,6 +56,7 @@ Articles live in **Postgres**, images in **Vercel Blob**, comments in **GitHub D
 - **View counter** + **like button** with localStorage-tracked toggle (atomic Postgres upserts)
 - **AI summary** + **AI Q&A** modal (streaming) + **看板娘 Kanna chat** that reads README/handbook and answers "where do I…" with markdown links
 - **Bangumi** integration — **anime** (detail modal with rating histogram) · **movies** · **books** (subject types 2/6/1)
+- **Music page powered by APlayer** — `/music` uses APlayer UI and a unified backend source switcher: deployed NCM route, LX JSON API, or local JSON tracks
 - **Steam game library** — `/games`, recent-2-weeks + total playtime + search + sort
 - **Cosmic-themed 404** with random article recommendation
 - **Back-to-top** floating button + page fade-in transition
@@ -76,7 +77,7 @@ Articles live in **Postgres**, images in **Vercel Blob**, comments in **GitHub D
 
 ### Author-facing
 
-- **Admin dashboard** at `/admin` — stats (posts/views/likes/subscribers) · recent published · pending counters (drafts / scheduled / private / missing-summary)
+- **Admin dashboard** at `/admin` — grouped by content, interaction, appearance, tools, and other modules; stats + recent published + pending counters stay visible up top
 - **GitHub-OAuth-gated** — only `ADMIN_GITHUB_LOGIN` may enter; `/admin/*` and `/api/admin/*` both enforced at the middleware
 - **In-browser MDX editor** — title-driven slug · tags · category · cover · status · **public/private visibility** · **article series + order**
 - **AI provider switching at `/admin/ai`** — pick DeepSeek V4 Flash/Pro, Claude Haiku/Sonnet/Opus, or add your own custom endpoint (OpenAI-compatible / Anthropic-compatible — OpenRouter, SiliconFlow, Groq, Ollama, etc.)
@@ -86,7 +87,7 @@ Articles live in **Postgres**, images in **Vercel Blob**, comments in **GitHub D
 - **Draft / scheduled / published** workflow + **daily cron** at 04:00 UTC + **comment moderation** deep-link to the underlying GitHub Discussion
 - **Markdown import** — drag-and-drop `.md` files at `/admin/import`, gray-matter frontmatter parsed, drafts created
 - **One-click image upload** to Vercel Blob — markdown `![alt](url)` injected at cursor
-- **Custom theme + multi-slot announcements + short-link redirects + media gallery + audit log** — all CRUD'd from the admin pill nav
+- **Custom theme + multi-slot announcements + short-link redirects + media gallery + audit log** — all CRUD'd from grouped admin sections
 - **Friends / albums / guestbook** CRUD with pill-style admin nav; friend-link self-service with admin approval queue
 - **Email subscriber list** — confirmed-only via double opt-in, Resend backend
 - **Print-friendly stylesheet** — `Ctrl/⌘+P` strips chrome, keeps article body
@@ -122,6 +123,7 @@ Articles live in **Postgres**, images in **Vercel Blob**, comments in **GitHub D
 /donate        赞赏页 (默认隐藏，受 siteConfig.donate.enabled 控制)
 /admin         后台 dashboard (GitHub OAuth)
 /admin/ai      AI provider 切换 · 每日 token 限额 · 自定义模型
+/admin/music   APlayer 音乐设置 · 已部署/LX/本地三类音源
 /admin/themes  自定义主题 (调色板 + JSON 主题包)
 /admin/notes   公告 (top / sidebar / article_top 三个位点)
 /admin/redirects   短链 /r/<code>
@@ -135,7 +137,7 @@ Articles live in **Postgres**, images in **Vercel Blob**, comments in **GitHub D
 | Layer | Choice |
 |---|---|
 | Framework | [Next.js 16](https://nextjs.org) (App Router, Turbopack) |
-| UI | [React 19](https://react.dev) + [Tailwind CSS v4](https://tailwindcss.com) + [@tailwindcss/typography](https://tailwindcss.com/docs/typography-plugin) |
+| UI | [React 19](https://react.dev) + [Tailwind CSS v4](https://tailwindcss.com) + [@tailwindcss/typography](https://tailwindcss.com/docs/typography-plugin) + [APlayer](https://github.com/DIYgod/APlayer) |
 | Content | [`next-mdx-remote`](https://github.com/hashicorp/next-mdx-remote) + `remark-gfm` + `remark-math` + `remark-github-blockquote-alert` + `rehype-katex` + `rehype-slug` + `rehype-autolink-headings` |
 | Syntax | [Shiki](https://shiki.style) via `@shikijs/rehype` (custom transformer for filename/lang meta) |
 | Data | [Postgres](https://www.postgresql.org) on [Neon](https://neon.tech) + [Drizzle ORM](https://orm.drizzle.team) |
@@ -167,6 +169,7 @@ cp .env.example .env.local
 #   - ANTHROPIC_API_KEY     (optional, Claude family)
 #   - DEEPSEEK_API_KEY      (optional, DeepSeek V4 Flash/Pro)
 #   - NEXT_PUBLIC_UMAMI_WEBSITE_ID (optional)
+#   - NCM_COOKIE            (optional, for deployed NetEase music source)
 # At least one of ANTHROPIC_API_KEY / DEEPSEEK_API_KEY is required for AI
 # features (summary, Q&A, mascot, writing helpers). Pick or add the
 # active provider from /admin/ai after first sign-in.
@@ -200,6 +203,7 @@ For day-to-day operation — how to write a post, customize the theme, manage DN
 - [x] **v1.5** — markdown import · friend-link self-service · security headers · rate limits
 - [x] **v1.6** — DeepSeek provider · daily AI token quota · custom AI endpoints · Kanna chat with blog corpus + link suggestions
 - [x] **v1.7** — ISR posts · meta-only list queries · Postgres rate limit · `<Image>` proxy · CSP eval drop · hot-path indexes
+- [x] **v1.8** — grouped admin dashboard · APlayer music page · deployed/LX/local music source switcher
 - [ ] **v1.x** — article-level i18n · Resend custom domain · ACG wallpapers activation · donate QR codes · pixi v8 + drizzle 0.50 upgrades
 
 ## ✦ License

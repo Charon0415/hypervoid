@@ -2,7 +2,7 @@
 
 > 这是你将来独立维护 Hypervoid 的工具书。覆盖**日常运营**、**站点定制**、**部署运维**、**故障排查**、**扩展开发**——遇到任何"这该怎么做"的问题，先查这里。
 
-**最近更新：** 2026-05-26（v1.7 —— ISR 文章页 · meta-only 列表查询 · Postgres rate limit · `<Image>` 代理 · CSP 收紧 · 热路径索引)
+**最近更新：** 2026-05-27（v1.8 —— 后台分组 · APlayer 音乐页 · 已部署/LX/本地三类音源）
 **对应站点：** https://hypervoid.top
 
 ---
@@ -38,6 +38,7 @@
 - **评论** 接 GitHub Discussions（Giscus），admin 有「在 GitHub 管理」深链
 - **订阅邮件** 走 Resend，新文章自动通知订阅者
 - **统计分析** 用 Umami Cloud，无 Cookie 合规
+- **音乐页** 使用 APlayer，后台可在已部署音源、LX JSON API、本地 JSON 三种来源间切换
 - **追番 / 阅读 / 影视** 接入 Bangumi (bgm.tv) API，自动同步
 - **游戏库** 接入 Steam Web API，公开 profile 同步
 - **站点设置面板**：6 预设调色板、7 种背景（含 ACG 轮播 + 中世纪壁纸）、3 种显示模式、3 种字体 + 2 档字号（标准 17.5px / 舒适 19.5px）、5 套一键主题预设
@@ -168,6 +169,7 @@ RESEND_FROM_EMAIL=onboarding@resend.dev
 RESEND_FROM_NAME=Hypervoid
 
 NEXT_PUBLIC_UMAMI_WEBSITE_ID=     # 没有 → 没统计
+NCM_COOKIE=                         # 可选：已部署网易云音源需要，过期后刷新
 ANTHROPIC_API_KEY=sk-ant-xxxxx    # Claude 系列(Haiku/Sonnet/Opus)
 DEEPSEEK_API_KEY=sk-xxxxx          # DeepSeek V4 Flash/Pro,二者至少配一个 → AI 才可用
 ```
@@ -629,6 +631,47 @@ export const siteConfig = {
 
 后续新增同格式角色，按 `docs/mascot-spine36-workflow.md` 操作：放入 `skel/atlas/png` → 转换 JSON → 注册角色 key → 调 `applySpineWidgetFocus` 裁掉骨架空白 → 跑 lint/build。转换器资源包在 `public/resources/tools/spine-skeleton-data-converter-v3.7-hypervoid.zip`。
 
+### 4.16 音乐播放器与三类音源
+
+`/music` 页使用 APlayer 渲染完整播放器。播放器本身不解析曲库，只消费 `/api/music/playlist` 返回的统一曲目结构：
+
+```ts
+{
+  id: number;
+  title: string;
+  artist: string;
+  cover: string;
+  duration: number;
+  url: string | null;
+  lrc?: string;
+}
+```
+
+后台入口：`/admin/music`。
+
+| 模式 | 配置项 | 适用场景 |
+|---|---|---|
+| 已部署音源 | `music.playlistId` + `NCM_COOKIE` | 沿用现有网易云歌单链路，可能受版权、地区、Cookie 过期影响 |
+| LX 音源 | `music.lxApiUrl` | 填一个返回 JSON 曲目列表的 API URL，可用 `{playlistId}` 占位 |
+| 本地音源 | `music.localTracks` | 少量稳定歌曲，URL 指向 `public/` 里的音频或可直连外链 |
+
+LX 注意：不要把第三方混淆的 `latest.js` 直接放进站点执行。这里接受的是可审计的 JSON API 输出。支持返回数组，或包含 `tracks` / `list` / `songs` / `data` / `result` / `playlist` 等常见字段；每首至少要有 `title` 或 `name`，以及 `url`。
+
+本地 JSON 示例：
+
+```json
+[
+  {
+    "title": "Song title",
+    "artist": "Artist",
+    "url": "/music/song.mp3",
+    "cover": "/music/cover.jpg",
+    "duration": 210000
+  }
+]
+```
+
+如果 APlayer 显示曲目少于后台曲目数，说明部分曲目没有 `url`，会被前台隐藏。已部署音源常见原因是 `NCM_COOKIE` 过期、歌曲版权限制或地区限制；LX/本地模式则通常是 JSON 字段缺失。
 ## 五、部署与运维
 
 ### 5.1 Vercel 部署流程

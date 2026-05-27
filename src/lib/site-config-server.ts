@@ -30,8 +30,11 @@ export type OverridableFields =
   | "mascot.allowUserSwitch"
   | "mascot.showSwitchButton"
   | "mascot.defaultCharacter"
+  | "music.sourceMode"
   | "music.playlistId"
   | "music.savedPlaylists"
+  | "music.lxApiUrl"
+  | "music.localTracks"
   | "effects.playerWidget"
   | "effects.clickParticles"
   | "effects.textSparkle"
@@ -64,8 +67,11 @@ const DEFAULT_MAP: Record<OverridableFields, string> = {
   "mascot.allowUserSwitch": "on",
   "mascot.showSwitchButton": "on",
   "mascot.defaultCharacter": "ram",
+  "music.sourceMode": "deployed",
   "music.playlistId": "",
   "music.savedPlaylists": "[]",
+  "music.lxApiUrl": "",
+  "music.localTracks": "[]",
   "effects.playerWidget": "off",
   "effects.clickParticles": "off",
   "effects.textSparkle": "off",
@@ -99,8 +105,11 @@ const LABELS: Record<OverridableFields, string> = {
   "mascot.allowUserSwitch": "允许访客切换看板娘 (on / off)",
   "mascot.showSwitchButton": "显示角色旁切换按钮 (on / off)",
   "mascot.defaultCharacter": "新访客默认看板娘 (ram / rem / kanna)",
-  "music.playlistId": "网易云歌单 ID",
+  "music.sourceMode": "音乐音源模式 (deployed / lx / local)",
+  "music.playlistId": "已部署音源歌单 ID",
   "music.savedPlaylists": "已保存歌单（JSON）",
+  "music.lxApiUrl": "LX 音源 API URL 模板",
+  "music.localTracks": "本地音源曲目（JSON）",
   "effects.playerWidget": "播放器小组件视觉特效",
   "effects.clickParticles": "点击粒子",
   "effects.textSparkle": "文字选中火花",
