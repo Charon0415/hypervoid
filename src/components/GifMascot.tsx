@@ -8,12 +8,156 @@ const STORAGE_KEY = "hypervoid:mascot";
 const MASCOT_W = 240;
 const MASCOT_H = 300;
 
-const SPINE_SKEL = "/mascot/rem/1.skel";
 const SPINE_ATLAS = "/mascot/rem/1.atlas";
+const SPINE_IMAGE = "/mascot/rem/1.png";
 const CANVAS_W = 240;
 const CANVAS_H = 300;
-const SPINE_DATA_KEY = "hypervoid-rem-spine-data";
-const SPINE_ATLAS_KEY = "hypervoid-rem-spine-atlas";
+const SOURCE_W = 455;
+const SOURCE_H = 456;
+
+const BODY_PARTS = [
+  "shadow",
+  "weaponMain",
+  "legB_back",
+  "thighB_back",
+  "legF_back",
+  "thighF_back",
+  "skirtB",
+  "skirtF_back",
+  "body_back",
+  "body",
+  "armB_back",
+  "handB_back",
+  "armF_back",
+  "handF_back",
+  "head_back",
+  "hairB",
+  "headB",
+  "head",
+  "faceNormal",
+  "hairF",
+  "acce02_back",
+  "acce02Ex0001",
+  "acce01",
+] as const;
+
+type AtlasRegion = {
+  name: string;
+  rotate: boolean;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  offsetX: number;
+  offsetY: number;
+};
+
+async function readAssetText(src: string): Promise<string> {
+  const res = await fetch(src, { cache: "force-cache" });
+  if (!res.ok) {
+    throw new Error("failed to load " + src + ": " + res.status);
+  }
+  return res.text();
+}
+
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.decoding = "async";
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("failed to load " + src));
+    image.src = src;
+  });
+}
+
+function parseAtlas(text: string): Map<string, AtlasRegion> {
+  const regions = new Map<string, AtlasRegion>();
+  const lines = text.split(/\r?\n/);
+  for (let i = 0; i < lines.length; i += 1) {
+    const name = lines[i]?.trim();
+    if (!name || name.endsWith(".png")) continue;
+
+    const region: AtlasRegion = {
+      name,
+      rotate: false,
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+      offsetX: 0,
+      offsetY: 0,
+    };
+
+    for (let j = i + 1; j < Math.min(i + 7, lines.length); j += 1) {
+      const line = lines[j]?.trim();
+      if (!line) break;
+      const [key, rawValue] = line.split(":");
+      if (!key || rawValue === undefined) continue;
+      const values = rawValue.split(",").map((v) => v.trim());
+      if (key === "rotate") region.rotate = values[0] === "true";
+      if (key === "xy") {
+        region.x = Number(values[0]);
+        region.y = Number(values[1]);
+      }
+      if (key === "size") {
+        region.width = Number(values[0]);
+        region.height = Number(values[1]);
+      }
+      if (key === "offset") {
+        region.offsetX = Number(values[0]);
+        region.offsetY = Number(values[1]);
+      }
+    }
+
+    if (region.width > 1 && region.height > 1) regions.set(name, region);
+  }
+  return regions;
+}
+
+function drawAtlasRegion(
+  ctx: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  region: AtlasRegion,
+  scale: number,
+  originX: number,
+  originY: number,
+) {
+  const destX = originX + region.offsetX * scale;
+  const destY = originY + (SOURCE_H - region.offsetY - region.height) * scale;
+  const destW = region.width * scale;
+  const destH = region.height * scale;
+
+  ctx.save();
+  ctx.translate(destX, destY);
+  if (region.rotate) {
+    ctx.translate(0, destH);
+    ctx.rotate(-Math.PI / 2);
+    ctx.drawImage(
+      image,
+      region.x,
+      region.y,
+      region.height,
+      region.width,
+      0,
+      0,
+      destH,
+      destW,
+    );
+  } else {
+    ctx.drawImage(
+      image,
+      region.x,
+      region.y,
+      region.width,
+      region.height,
+      0,
+      0,
+      destW,
+      destH,
+    );
+  }
+  ctx.restore();
+}
 
 const MESSAGES = {
   tap: [
@@ -86,7 +230,6 @@ export function GifMascot() {
     pathname?.startsWith("/admin") || pathname === "/search";
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const appRef = useRef<unknown>(null);
   const dialogTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dragOffsetRef = useRef<Pos>({ x: 0, y: 0 });
@@ -159,67 +302,54 @@ export function GifMascot() {
     setLoadError(null);
     scheduleIdle();
 
+    let frameId = 0;
+
     (async () => {
       try {
-        const PIXI = await import("pixi.js");
-        await import("@esotericsoftware/spine-pixi-v7");
-        const { Spine, SetupPoseBoundsProvider } = await import(
-          "@esotericsoftware/spine-pixi-v7"
-        );
-
+        const [atlasText, image] = await Promise.all([
+          readAssetText(SPINE_ATLAS),
+          loadImage(SPINE_IMAGE),
+        ]);
         if (disposed || !canvasRef.current) return;
 
-        const app = new PIXI.Application({
-          view: canvasRef.current,
-          width: CANVAS_W,
-          height: CANVAS_H,
-          backgroundAlpha: 0,
-          antialias: true,
-          resolution: Math.min(window.devicePixelRatio || 1, 2),
-          autoDensity: true,
-        });
-        appRef.current = app;
+        const canvas = canvasRef.current;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = CANVAS_W * dpr;
+        canvas.height = CANVAS_H * dpr;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("2d canvas unavailable");
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
 
-        try {
-          PIXI.Assets.add(SPINE_DATA_KEY, SPINE_SKEL);
-        } catch {
-          /* asset already registered */
-        }
-        try {
-          PIXI.Assets.add(SPINE_ATLAS_KEY, SPINE_ATLAS);
-        } catch {
-          /* asset already registered */
-        }
-        await PIXI.Assets.load([SPINE_DATA_KEY, SPINE_ATLAS_KEY]);
-        if (disposed) return;
+        const atlas = parseAtlas(atlasText);
+        const scale = Math.min(CANVAS_W / SOURCE_W, CANVAS_H / SOURCE_H) * 0.94;
+        const originX = (CANVAS_W - SOURCE_W * scale) / 2;
+        const originY = (CANVAS_H - SOURCE_H * scale) / 2 + 8;
 
-        const model = Spine.from({
-          skeleton: SPINE_DATA_KEY,
-          atlas: SPINE_ATLAS_KEY,
-          autoUpdate: true,
-          ticker: app.ticker,
-          boundsProvider: new SetupPoseBoundsProvider(false),
-        });
+        const draw = (time: number) => {
+          if (disposed) return;
+          ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+          const bob = Math.sin(time / 900) * 2;
+          ctx.save();
+          ctx.translate(0, bob);
+          for (const name of BODY_PARTS) {
+            if (name === "faceNormal") {
+              const blink = Math.floor(time / 3200) % 2 === 1 && time % 3200 < 180;
+              const face = atlas.get(blink ? "faceBlink" : "faceNormal");
+              if (face) drawAtlasRegion(ctx, image, face, scale, originX, originY);
+              continue;
+            }
+            const region = atlas.get(name);
+            if (region) drawAtlasRegion(ctx, image, region, scale, originX, originY);
+          }
+          ctx.restore();
+          frameId = window.requestAnimationFrame(draw);
+        };
 
-        const animations = model.skeleton.data.animations.map((a) => a.name);
-        const idle =
-          animations.find((name) => /idle|wait|stand|loop/i.test(name)) ??
-          animations[0];
-        if (idle) model.state.setAnimation(0, idle, true);
-
-        model.update(0);
-        const bounds = model.getLocalBounds();
-        const scale =
-          bounds.width > 0 && bounds.height > 0
-            ? Math.min(CANVAS_W / bounds.width, CANVAS_H / bounds.height) * 0.92
-            : 1;
-        model.scale.set(scale);
-        model.x = CANVAS_W / 2 - (bounds.x + bounds.width / 2) * scale;
-        model.y = CANVAS_H / 2 - (bounds.y + bounds.height / 2) * scale;
-
-        app.stage.addChild(model);
+        frameId = window.requestAnimationFrame(draw);
       } catch (e) {
-        console.warn("[mascot/rem-spine] load failed:", e);
+        console.warn("[mascot/rem-atlas] load failed:", e);
         setLoadError("雷姆模型加载失败");
       }
     })();
@@ -228,15 +358,7 @@ export function GifMascot() {
       disposed = true;
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
       if (dialogTimerRef.current) clearTimeout(dialogTimerRef.current);
-      const app = appRef.current as {
-        destroy?: (removeView: boolean, stageOptions: unknown) => void;
-      } | null;
-      try {
-        app?.destroy?.(true, { children: true, texture: true });
-      } catch {
-        /* noop */
-      }
-      appRef.current = null;
+      if (frameId) window.cancelAnimationFrame(frameId);
     };
   }, [visible, mobile, onStrictRoute, scheduleIdle]);
 

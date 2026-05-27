@@ -1,6 +1,6 @@
 # 雷姆看板娘重制参考
 
-这次重制改为使用项目内提供的 Spine 三件套资源：`public/mascot/rem/1.skel`、`1.atlas`、`1.png`，前台通过 PixiJS + `@esotericsoftware/spine-pixi-v7` 渲染。
+这次重制使用项目内提供的 `public/mascot/rem/1.atlas` 与 `1.png`，前台会按 atlas 坐标切分纹理并在 2D canvas 上重建雷姆小人。上传的 `1.skel` 是 Spine `3.6.39` binary，当前前端运行时无法稳定兼容，因此不再直接加载它，避免再次触发模型加载失败。
 
 ## 网络参考
 

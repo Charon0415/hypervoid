@@ -18,7 +18,6 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.98.0",
     "@auth/core": "^0.34.3",
-    "@esotericsoftware/spine-pixi-v7": "~4.2.119",
     "@giscus/react": "^3.1.0",
     "@neondatabase/serverless": "^1.1.0",
     "@shikijs/rehype": "^4.1.0",
