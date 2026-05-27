@@ -24,6 +24,9 @@ export default async function AdminSettingsPage() {
     "mascot.character",
     "music.playlistId",
     "music.savedPlaylists",
+    "effects.playerWidget",
+    "effects.particles",
+    "effects.glow",
   ]);
   const fields = allFields.filter((f) => !dedicated.has(f.key));
 

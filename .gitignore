@@ -46,5 +46,6 @@ next-env.d.ts
 *.png
 !public/live2d/**/*.png
 !public/wallpapers/*.png
+!public/mascot/**/*.png
 1.md
 1.ts

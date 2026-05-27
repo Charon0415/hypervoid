@@ -33,13 +33,12 @@ function formatTime(ms: number): string {
   return `${m}:${String(sec).padStart(2, "0")}`;
 }
 
-/** Seed a simple pseudo-random height array from a number. */
+/** Seed a deterministic pseudo-random height array from a number. */
 function waveformBars(seed: number, count: number): number[] {
   const bars: number[] = [];
   let s = seed || 1;
   for (let i = 0; i < count; i++) {
     s = (s * 16807 + 12345) % 2147483647;
-    // Heights between 30% and 100%
     bars.push(0.3 + (s % 71) / 100);
   }
   return bars;
@@ -64,6 +63,7 @@ export function HomePlayerWidget() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [saying, setSaying] = useState("");
+  const [fxEnabled, setFxEnabled] = useState(false);
 
   const refreshSaying = useCallback(() => {
     if (typeof window === "undefined") return;
@@ -75,6 +75,10 @@ export function HomePlayerWidget() {
     setOpen(loadOpen());
     setMounted(true);
     refreshSaying();
+    fetch("/api/effects")
+      .then((r) => r.json())
+      .then((d) => setFxEnabled(Boolean(d.playerWidget)))
+      .catch(() => {});
   }, [refreshSaying]);
 
   const toggleOpen = () => {
@@ -109,9 +113,15 @@ export function HomePlayerWidget() {
   if (!mounted) return null;
 
   return (
-    <aside className="relative overflow-hidden rounded-3xl border border-border/50 bg-card">
-      {/* Ambient blurred cover backdrop */}
-      {open && current?.cover ? (
+    <aside
+      className={
+        fxEnabled
+          ? "relative overflow-hidden rounded-3xl border border-border/50 bg-card"
+          : "rounded-3xl border border-border bg-card p-5"
+      }
+    >
+      {/* Ambient blurred cover backdrop — only when effects enabled */}
+      {fxEnabled && open && current?.cover ? (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -125,7 +135,7 @@ export function HomePlayerWidget() {
       ) : null}
 
       {/* Content */}
-      <div className="relative z-10 p-5">
+      <div className={fxEnabled ? "relative z-10 p-5" : undefined}>
         {/* Header */}
         <div className="flex items-baseline justify-between">
           <h3 className="text-sm font-semibold tracking-tight text-foreground/80">
@@ -220,20 +230,32 @@ export function HomePlayerWidget() {
                       <img
                         src={current.cover}
                         alt={current.title}
-                        className={`h-14 w-14 rounded-xl object-cover shadow-lg ring-1 ring-black/5 dark:ring-white/10 ${
-                          playing ? "animate-[spin_20s_linear_infinite]" : ""
+                        className={`object-cover shadow-sm ${
+                          fxEnabled
+                            ? `h-14 w-14 rounded-xl shadow-lg ring-1 ring-black/5 dark:ring-white/10 ${
+                                playing ? "animate-[spin_20s_linear_infinite]" : ""
+                              }`
+                            : `h-12 w-12 rounded-lg ${
+                                playing ? "animate-[spin_20s_linear_infinite]" : ""
+                              }`
                         }`}
                         style={{
                           animationPlayState: playing ? "running" : "paused",
                         }}
                       />
-                      {/* Glow effect under the cover */}
-                      {playing ? (
+                      {/* Glow effect — only when effects enabled */}
+                      {fxEnabled && playing ? (
                         <div className="absolute -inset-1 -z-10 rounded-2xl bg-primary/15 blur-md" />
                       ) : null}
                     </div>
                   ) : (
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 text-2xl shadow-lg ring-1 ring-black/5 dark:ring-white/10">
+                    <div
+                      className={`flex shrink-0 items-center justify-center bg-gradient-to-br from-primary/15 to-primary/5 ${
+                        fxEnabled
+                          ? "h-14 w-14 rounded-xl text-2xl shadow-lg ring-1 ring-black/5 dark:ring-white/10"
+                          : "h-12 w-12 rounded-lg text-xl"
+                      }`}
+                    >
                       ♪
                     </div>
                   )}
@@ -253,46 +275,65 @@ export function HomePlayerWidget() {
                   </div>
                 </div>
 
-                {/* Waveform progress bar */}
-                <div className="mt-3">
-                  <div
-                    className="flex h-8 cursor-pointer items-end gap-[2px]"
-                    onClick={handleBarClick}
-                    role="slider"
-                    aria-label="播放进度"
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-valuenow={Math.round(progressPct)}
-                  >
-                    {bars.map((h, i) => {
-                      const barPct = ((i + 0.5) / BAR_COUNT) * 100;
-                      const filled = barPct <= progressPct;
-                      return (
-                        <div
-                          key={i}
-                          className={`flex-1 rounded-full transition-colors duration-150 ${
-                            filled
-                              ? "bg-primary"
-                              : "bg-border/60"
-                          }`}
-                          style={{ height: `${h * 100}%` }}
-                        />
-                      );
-                    })}
+                {/* Progress bar — waveform when effects on, simple when off */}
+                {fxEnabled ? (
+                  <div className="mt-3">
+                    <div
+                      className="flex h-8 cursor-pointer items-end gap-[2px]"
+                      onClick={handleBarClick}
+                      role="slider"
+                      aria-label="播放进度"
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={Math.round(progressPct)}
+                    >
+                      {bars.map((h, i) => {
+                        const barPct = ((i + 0.5) / BAR_COUNT) * 100;
+                        const filled = barPct <= progressPct;
+                        return (
+                          <div
+                            key={i}
+                            className={`flex-1 rounded-full transition-colors duration-150 ${
+                              filled ? "bg-primary" : "bg-border/60"
+                            }`}
+                            style={{ height: `${h * 100}%` }}
+                          />
+                        );
+                      })}
+                    </div>
+                    <div className="mt-1 flex items-center justify-between">
+                      <span className="font-mono text-[10px] text-muted/70">
+                        {formatTime(currentTime)}
+                      </span>
+                      <span className="font-mono text-[10px] text-muted/70">
+                        {formatTime(duration)}
+                      </span>
+                    </div>
                   </div>
-                  {/* Time labels */}
-                  <div className="mt-1 flex items-center justify-between">
-                    <span className="font-mono text-[10px] text-muted/70">
+                ) : (
+                  <div className="mt-3 flex items-center gap-2">
+                    <span className="w-8 text-right font-mono text-[10px] text-muted">
                       {formatTime(currentTime)}
                     </span>
-                    <span className="font-mono text-[10px] text-muted/70">
+                    <div className="relative h-1 flex-1 rounded-full bg-border">
+                      <div
+                        className="absolute left-0 top-0 h-full rounded-full bg-primary transition-[width] duration-200"
+                        style={{
+                          width:
+                            duration > 0
+                              ? `${Math.min(100, (currentTime / duration) * 100)}%`
+                              : "0%",
+                        }}
+                      />
+                    </div>
+                    <span className="w-8 font-mono text-[10px] text-muted">
                       {formatTime(duration)}
                     </span>
                   </div>
-                </div>
+                )}
 
                 {/* Controls */}
-                <div className="mt-2 flex items-center justify-center gap-1">
+                <div className="mt-3 flex items-center justify-center gap-1">
                   <button
                     type="button"
                     onClick={prev}

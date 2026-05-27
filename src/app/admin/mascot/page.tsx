@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Image from "next/image";
 import type { Metadata } from "next";
 import { auth } from "@/auth";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
@@ -21,7 +20,7 @@ const MASCOTS: {
   nameJa: string;
   source: string;
   desc: string;
-  avatar: string;
+  preview: "live2d" | "spine";
   tech: string;
 }[] = [
   {
@@ -30,7 +29,7 @@ const MASCOTS: {
     nameJa: "カンナ・カムイ",
     source: "小林家的龙女仆",
     desc: "活了几千年的小龙女，看起来 7-8 岁。安静、慢热、偶尔毒舌。喜欢零食和鱼。",
-    avatar: "/live2d/kobayaxi/Kobayaxi.2048/texture_00.png",
+    preview: "live2d",
     tech: "Live2D (PixiJS + Cubism2)",
   },
   {
@@ -39,8 +38,8 @@ const MASCOTS: {
     nameJa: "レム",
     source: "Re:Zero 从零开始的异世界生活",
     desc: "鬼族少女，蓝发女仆。温柔、忠诚、勤劳，偶尔自卑。对主人非常尊敬和依赖。",
-    avatar: "/mascot/rem/1.webp",
-    tech: "WebP 动图（透明背景）",
+    preview: "spine",
+    tech: "Spine (PixiJS + skel/atlas/texture)",
   },
 ];
 
@@ -94,14 +93,32 @@ export default async function AdminMascotPage() {
               >
                 <div className="flex items-start gap-4">
                   <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-muted/20">
-                    <Image
-                      src={m.avatar}
-                      alt={m.name}
-                      fill
-                      sizes="80px"
-                      className="object-cover"
-                      unoptimized
-                    />
+                    {m.preview === "live2d" ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src="/live2d/kobayaxi/Kobayaxi.2048/texture_00.png"
+                        alt={m.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full flex-col items-center justify-center gap-1 text-muted">
+                        <svg
+                          className="h-7 w-7"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden
+                        >
+                          <path d="M12 3 4 7v10l8 4 8-4V7l-8-4Z" />
+                          <path d="m4 7 8 4 8-4" />
+                          <path d="M12 11v10" />
+                        </svg>
+                        <span className="text-[10px] font-medium">Spine</span>
+                      </div>
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">

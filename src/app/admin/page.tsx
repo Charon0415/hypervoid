@@ -271,6 +271,11 @@ export default async function AdminHome() {
             desc="添加/切换网易云歌单 · 预览封面 · 查看 Cookie 状态"
           />
           <NavTile
+            href="/admin/effects"
+            title="视觉特效"
+            desc="开关播放器小组件背景、粒子、光晕等视觉增强效果"
+          />
+          <NavTile
             href="/admin/settings"
             title="站点设置"
             desc="作者名、头像、简介、首页名句、公告——在线可改"

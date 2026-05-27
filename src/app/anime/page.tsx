@@ -3,6 +3,7 @@ import { fetchAllAnime } from "@/lib/bangumi";
 import { siteConfig } from "@/lib/site-config";
 import { AnimeBrowser } from "@/components/AnimeBrowser";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {

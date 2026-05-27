@@ -8,7 +8,12 @@ const STORAGE_KEY = "hypervoid:mascot";
 const MASCOT_W = 240;
 const MASCOT_H = 300;
 
-const FRAMES = ["/mascot/rem/1.webp", "/mascot/rem/2.webp"];
+const SPINE_SKEL = "/mascot/rem/1.skel";
+const SPINE_ATLAS = "/mascot/rem/1.atlas";
+const CANVAS_W = 240;
+const CANVAS_H = 300;
+const SPINE_DATA_KEY = "hypervoid-rem-spine-data";
+const SPINE_ATLAS_KEY = "hypervoid-rem-spine-atlas";
 
 const MESSAGES = {
   tap: [
@@ -80,9 +85,10 @@ export function GifMascot() {
   const onStrictRoute =
     pathname?.startsWith("/admin") || pathname === "/search";
 
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const appRef = useRef<unknown>(null);
   const dialogTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const frameTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dragOffsetRef = useRef<Pos>({ x: 0, y: 0 });
   const dragStartRef = useRef<Pos>({ x: 0, y: 0 });
   const draggedRef = useRef(false);
@@ -93,10 +99,8 @@ export function GifMascot() {
   const [pos, setPos] = useState<Pos | null>(null);
   const [dragging, setDragging] = useState(false);
   const [dialog, setDialog] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
-  const [frameIndex, setFrameIndex] = useState(() =>
-    Math.floor(Math.random() * FRAMES.length),
-  );
 
   useEffect(() => {
     setMounted(true);
@@ -149,27 +153,90 @@ export function GifMascot() {
     );
   }, [showDialog]);
 
-  // Randomly switch animations every 30-60 seconds
   useEffect(() => {
     if (!visible || mobile || onStrictRoute) return;
+    let disposed = false;
+    setLoadError(null);
     scheduleIdle();
 
-    const switchFrame = () => {
-      setFrameIndex((prev) => {
-        let next = prev;
-        if (FRAMES.length > 1) {
-          while (next === prev) next = Math.floor(Math.random() * FRAMES.length);
+    (async () => {
+      try {
+        const PIXI = await import("pixi.js");
+        await import("@esotericsoftware/spine-pixi-v7");
+        const { Spine, SetupPoseBoundsProvider } = await import(
+          "@esotericsoftware/spine-pixi-v7"
+        );
+
+        if (disposed || !canvasRef.current) return;
+
+        const app = new PIXI.Application({
+          view: canvasRef.current,
+          width: CANVAS_W,
+          height: CANVAS_H,
+          backgroundAlpha: 0,
+          antialias: true,
+          resolution: Math.min(window.devicePixelRatio || 1, 2),
+          autoDensity: true,
+        });
+        appRef.current = app;
+
+        try {
+          PIXI.Assets.add(SPINE_DATA_KEY, SPINE_SKEL);
+        } catch {
+          /* asset already registered */
         }
-        return next;
-      });
-      frameTimerRef.current = setTimeout(switchFrame, 30000 + Math.random() * 30000);
-    };
-    frameTimerRef.current = setTimeout(switchFrame, 30000 + Math.random() * 30000);
+        try {
+          PIXI.Assets.add(SPINE_ATLAS_KEY, SPINE_ATLAS);
+        } catch {
+          /* asset already registered */
+        }
+        await PIXI.Assets.load([SPINE_DATA_KEY, SPINE_ATLAS_KEY]);
+        if (disposed) return;
+
+        const model = Spine.from({
+          skeleton: SPINE_DATA_KEY,
+          atlas: SPINE_ATLAS_KEY,
+          autoUpdate: true,
+          ticker: app.ticker,
+          boundsProvider: new SetupPoseBoundsProvider(false),
+        });
+
+        const animations = model.skeleton.data.animations.map((a) => a.name);
+        const idle =
+          animations.find((name) => /idle|wait|stand|loop/i.test(name)) ??
+          animations[0];
+        if (idle) model.state.setAnimation(0, idle, true);
+
+        model.update(0);
+        const bounds = model.getLocalBounds();
+        const scale =
+          bounds.width > 0 && bounds.height > 0
+            ? Math.min(CANVAS_W / bounds.width, CANVAS_H / bounds.height) * 0.92
+            : 1;
+        model.scale.set(scale);
+        model.x = CANVAS_W / 2 - (bounds.x + bounds.width / 2) * scale;
+        model.y = CANVAS_H / 2 - (bounds.y + bounds.height / 2) * scale;
+
+        app.stage.addChild(model);
+      } catch (e) {
+        console.warn("[mascot/rem-spine] load failed:", e);
+        setLoadError("雷姆模型加载失败");
+      }
+    })();
 
     return () => {
+      disposed = true;
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
       if (dialogTimerRef.current) clearTimeout(dialogTimerRef.current);
-      if (frameTimerRef.current) clearTimeout(frameTimerRef.current);
+      const app = appRef.current as {
+        destroy?: (removeView: boolean, stageOptions: unknown) => void;
+      } | null;
+      try {
+        app?.destroy?.(true, { children: true, texture: true });
+      } catch {
+        /* noop */
+      }
+      appRef.current = null;
     };
   }, [visible, mobile, onStrictRoute, scheduleIdle]);
 
@@ -359,14 +426,20 @@ export function GifMascot() {
             </div>
           ) : null}
 
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={FRAMES[frameIndex]}
-            alt="雷姆"
-            draggable={false}
-            className="pointer-events-none h-full w-full object-contain"
-            style={{ imageRendering: "auto" }}
-          />
+          {loadError ? (
+            <div className="pointer-events-none flex h-full w-full items-center justify-center rounded-2xl border border-dashed border-border bg-card/80 px-4 text-center text-xs leading-relaxed text-muted shadow-lg backdrop-blur">
+              {loadError}
+            </div>
+          ) : (
+            <canvas
+              ref={canvasRef}
+              aria-label="雷姆"
+              role="img"
+              className={`pointer-events-none h-full w-full transition-transform duration-200 ${
+                dragging ? "scale-[0.98]" : ""
+              }`}
+            />
+          )}
         </div>
       )}
     </>

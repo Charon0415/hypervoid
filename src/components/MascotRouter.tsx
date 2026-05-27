@@ -15,35 +15,35 @@ const GifMascot = dynamic(
   { ssr: false },
 );
 
-function readCachedChar(): "kanna" | "rem" {
-  if (typeof window === "undefined") return "kanna";
+type MascotChar = "kanna" | "rem";
+
+function readStoredChar(): MascotChar | null {
+  if (typeof window === "undefined") return null;
   try {
     const v = localStorage.getItem(CHAR_KEY);
-    return v === "rem" ? "rem" : "kanna";
+    return v === "rem" || v === "kanna" ? v : null;
   } catch {
-    return "kanna";
+    return null;
   }
 }
 
 export function MascotRouter() {
-  const [character, setCharacter] = useState<"kanna" | "rem">(readCachedChar);
+  const [character, setCharacter] = useState<MascotChar>(() =>
+    readStoredChar() ?? "kanna",
+  );
 
   useEffect(() => {
+    if (readStoredChar()) return;
+
     let cancelled = false;
     fetch("/api/mascot/character")
       .then((r) => r.json())
       .then((data) => {
         if (cancelled) return;
-        const ch = data.character === "rem" ? "rem" : "kanna";
-        setCharacter(ch);
-        try {
-          localStorage.setItem(CHAR_KEY, ch);
-        } catch {
-          /* noop */
-        }
+        setCharacter(data.character === "rem" ? "rem" : "kanna");
       })
       .catch(() => {
-        /* use cached value */
+        /* use initial value */
       });
     return () => {
       cancelled = true;

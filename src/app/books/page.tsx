@@ -4,6 +4,7 @@ import { STATUS_LABEL_BOOK } from "@/lib/bangumi-types";
 import { siteConfig } from "@/lib/site-config";
 import { AnimeBrowser } from "@/components/AnimeBrowser";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {

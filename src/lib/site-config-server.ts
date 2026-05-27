@@ -29,7 +29,10 @@ export type OverridableFields =
   | "home.quoteAuthor"
   | "mascot.character"
   | "music.playlistId"
-  | "music.savedPlaylists";
+  | "music.savedPlaylists"
+  | "effects.playerWidget"
+  | "effects.particles"
+  | "effects.glow";
 
 const DEFAULT_MAP: Record<OverridableFields, string> = {
   name: siteConfig.name,
@@ -57,6 +60,9 @@ const DEFAULT_MAP: Record<OverridableFields, string> = {
   "mascot.character": "kanna",
   "music.playlistId": "",
   "music.savedPlaylists": "[]",
+  "effects.playerWidget": "off",
+  "effects.particles": "off",
+  "effects.glow": "off",
 };
 
 const LABELS: Record<OverridableFields, string> = {
@@ -85,6 +91,9 @@ const LABELS: Record<OverridableFields, string> = {
   "mascot.character": "看板娘角色 (kanna / rem)",
   "music.playlistId": "网易云歌单 ID",
   "music.savedPlaylists": "已保存歌单（JSON）",
+  "effects.playerWidget": "播放器小组件视觉特效",
+  "effects.particles": "粒子背景",
+  "effects.glow": "光晕效果",
 };
 
 export const OVERRIDABLE_FIELDS = Object.entries(LABELS).map(
@@ -94,9 +103,19 @@ export const OVERRIDABLE_FIELDS = Object.entries(LABELS).map(
 let _cache: Map<string, string> | null = null;
 let _cacheTs = 0;
 
+function isProductionBuild(): boolean {
+  return process.env.NEXT_PHASE === "phase-production-build";
+}
+
 async function loadOverrides(): Promise<Map<string, string>> {
   const now = Date.now();
   if (_cache && now - _cacheTs < 60_000) return _cache;
+
+  if (isProductionBuild()) {
+    _cache = new Map();
+    _cacheTs = now;
+    return _cache;
+  }
 
   try {
     const rows = await getDb().select().from(schema.siteOverrides);
