@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { useSettings } from "@/components/SettingsProvider";
+import { useEffect, useRef, useState } from "react";
 
 interface Particle {
   x: number;
@@ -15,13 +14,20 @@ interface Particle {
 }
 
 export function ClickEffect() {
-  const { clickEffect } = useSettings();
+  const [enabled, setEnabled] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particles = useRef<Particle[]>([]);
   const animFrame = useRef<number>(0);
 
   useEffect(() => {
-    if (!clickEffect) return;
+    fetch("/api/effects")
+      .then((r) => r.json())
+      .then((d) => setEnabled(Boolean(d.clickParticles)))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!enabled) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -82,9 +88,9 @@ export function ClickEffect() {
       window.removeEventListener("click", onClick);
       cancelAnimationFrame(animFrame.current);
     };
-  }, [clickEffect]);
+  }, [enabled]);
 
-  if (!clickEffect) return null;
+  if (!enabled) return null;
 
   return (
     <canvas

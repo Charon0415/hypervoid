@@ -143,15 +143,11 @@ export function SiteSettings() {
     font,
     fontSize,
     displayMode,
-    clickEffect,
-    sparkleEffect,
     setHue,
     setBackground,
     setFont,
     setFontSize,
     setDisplayMode,
-    setClickEffect,
-    setSparkleEffect,
     applyPreset,
     reset,
   } = useSettings();
@@ -512,56 +508,6 @@ export function SiteSettings() {
                   ) : null}
                 </section>
               ) : null}
-
-              {/* 视觉特效 */}
-              <section className="mt-5 md:mt-4">
-                <p className="mb-2 text-xs uppercase tracking-wider text-muted">
-                  视觉特效
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setClickEffect(!clickEffect)}
-                  className={`${pillBase} flex items-center gap-2 w-full ${
-                    clickEffect ? pillActive : pillIdle
-                  }`}
-                >
-                  <span
-                    className={`relative inline-block h-4 w-7 shrink-0 rounded-full transition-colors ${
-                      clickEffect ? "bg-primary" : "bg-border"
-                    }`}
-                  >
-                    <span
-                      className={`absolute top-0.5 inline-block h-3 w-3 rounded-full bg-white shadow-sm transition-all ${
-                        clickEffect ? "left-3.5" : "left-0.5"
-                      }`}
-                    />
-                  </span>
-                  点击粒子
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSparkleEffect(!sparkleEffect)}
-                  className={`${pillBase} flex items-center gap-2 w-full mt-1.5 ${
-                    sparkleEffect ? pillActive : pillIdle
-                  }`}
-                >
-                  <span
-                    className={`relative inline-block h-4 w-7 shrink-0 rounded-full transition-colors ${
-                      sparkleEffect ? "bg-primary" : "bg-border"
-                    }`}
-                  >
-                    <span
-                      className={`absolute top-0.5 inline-block h-3 w-3 rounded-full bg-white shadow-sm transition-all ${
-                        sparkleEffect ? "left-3.5" : "left-0.5"
-                      }`}
-                    />
-                  </span>
-                  文字选中火花
-                </button>
-                <p className="mt-1.5 text-[10px] text-muted">
-                  点击时产生粒子爆炸 · 选中文字时洒落星光
-                </p>
-              </section>
 
               {installAvailable ? (
                 <section className="mt-5 md:mt-4">

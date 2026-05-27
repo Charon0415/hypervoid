@@ -24,6 +24,16 @@ const EFFECTS: EffectDef[] = [
     desc: "模糊封面背景 + 波形进度条 + 封面光晕。开启后首页音乐小组件会显示更丰富的视觉效果。",
   },
   {
+    key: "effects.clickParticles",
+    name: "点击粒子",
+    desc: "点击页面任意位置时产生粒子爆炸效果。",
+  },
+  {
+    key: "effects.textSparkle",
+    name: "文字选中火花",
+    desc: "选中文字时在选区位置洒落星光火花。",
+  },
+  {
     key: "effects.particles",
     name: "粒子背景",
     desc: "页面背景粒子动画效果（预留，即将支持）。",

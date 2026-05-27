@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { useSettings } from "@/components/SettingsProvider";
+import { useEffect, useRef, useState } from "react";
 
 interface Sparkle {
   x: number;
@@ -18,13 +17,20 @@ interface Sparkle {
 }
 
 export function SparkleEffect() {
-  const { sparkleEffect } = useSettings();
+  const [enabled, setEnabled] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sparkles = useRef<Sparkle[]>([]);
   const animFrame = useRef<number>(0);
 
   useEffect(() => {
-    if (!sparkleEffect) return;
+    fetch("/api/effects")
+      .then((r) => r.json())
+      .then((d) => setEnabled(Boolean(d.textSparkle)))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!enabled) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -126,9 +132,9 @@ export function SparkleEffect() {
       window.removeEventListener("touchend", onMouseUp);
       cancelAnimationFrame(animFrame.current);
     };
-  }, [sparkleEffect]);
+  }, [enabled]);
 
-  if (!sparkleEffect) return null;
+  if (!enabled) return null;
 
   return (
     <canvas

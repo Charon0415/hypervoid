@@ -31,6 +31,8 @@ export type OverridableFields =
   | "music.playlistId"
   | "music.savedPlaylists"
   | "effects.playerWidget"
+  | "effects.clickParticles"
+  | "effects.textSparkle"
   | "effects.particles"
   | "effects.glow";
 
@@ -61,6 +63,8 @@ const DEFAULT_MAP: Record<OverridableFields, string> = {
   "music.playlistId": "",
   "music.savedPlaylists": "[]",
   "effects.playerWidget": "off",
+  "effects.clickParticles": "off",
+  "effects.textSparkle": "off",
   "effects.particles": "off",
   "effects.glow": "off",
 };
@@ -92,6 +96,8 @@ const LABELS: Record<OverridableFields, string> = {
   "music.playlistId": "网易云歌单 ID",
   "music.savedPlaylists": "已保存歌单（JSON）",
   "effects.playerWidget": "播放器小组件视觉特效",
+  "effects.clickParticles": "点击粒子",
+  "effects.textSparkle": "文字选中火花",
   "effects.particles": "粒子背景",
   "effects.glow": "光晕效果",
 };

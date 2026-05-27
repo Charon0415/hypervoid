@@ -131,8 +131,6 @@ const BG_KEY = "hypervoid:bg";
 const FONT_KEY = "hypervoid:font";
 const FONT_SIZE_KEY = "hypervoid:font-size";
 const DISPLAY_MODE_KEY = "hypervoid:display";
-const CLICK_EFFECT_KEY = "hypervoid:click-effect";
-const SPARKLE_EFFECT_KEY = "hypervoid:sparkle-effect";
 
 type SettingsValue = {
   hue: number;
@@ -140,15 +138,11 @@ type SettingsValue = {
   font: FontKey;
   fontSize: FontSizeKey;
   displayMode: DisplayMode;
-  clickEffect: boolean;
-  sparkleEffect: boolean;
   setHue: (v: number) => void;
   setBackground: (v: BackgroundKey) => void;
   setFont: (v: FontKey) => void;
   setFontSize: (v: FontSizeKey) => void;
   setDisplayMode: (v: DisplayMode) => void;
-  setClickEffect: (v: boolean) => void;
-  setSparkleEffect: (v: boolean) => void;
   applyPreset: (preset: ThemePreset) => void;
   reset: () => void;
 };
@@ -159,15 +153,11 @@ const SettingsContext = createContext<SettingsValue>({
   font: DEFAULT_FONT,
   fontSize: DEFAULT_FONT_SIZE,
   displayMode: DEFAULT_DISPLAY_MODE,
-  clickEffect: true,
-  sparkleEffect: true,
   setHue: () => {},
   setBackground: () => {},
   setFont: () => {},
   setFontSize: () => {},
   setDisplayMode: () => {},
-  setClickEffect: () => {},
-  setSparkleEffect: () => {},
   applyPreset: () => {},
   reset: () => {},
 });
@@ -214,9 +204,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [displayMode, setDisplayModeState] = useState<DisplayMode>(
     DEFAULT_DISPLAY_MODE,
   );
-  const [clickEffect, setClickEffectState] = useState(true);
-  const [sparkleEffect, setSparkleEffectState] = useState(true);
-
   useEffect(() => {
     try {
       const storedHue = localStorage.getItem(HUE_KEY);
@@ -264,14 +251,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         applyDisplayMode(storedDisplay);
       } else {
         applyDisplayMode(DEFAULT_DISPLAY_MODE);
-      }
-      const storedClickEffect = localStorage.getItem(CLICK_EFFECT_KEY);
-      if (storedClickEffect !== null) {
-        setClickEffectState(storedClickEffect === "true");
-      }
-      const storedSparkleEffect = localStorage.getItem(SPARKLE_EFFECT_KEY);
-      if (storedSparkleEffect !== null) {
-        setSparkleEffectState(storedSparkleEffect === "true");
       }
     } catch {
       // ignore
@@ -352,32 +331,18 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     [setHue, setBackground, setFont, setFontSize],
   );
 
-  const setClickEffect = useCallback((v: boolean) => {
-    setClickEffectState(v);
-    try { localStorage.setItem(CLICK_EFFECT_KEY, String(v)); } catch {}
-  }, []);
-
-  const setSparkleEffect = useCallback((v: boolean) => {
-    setSparkleEffectState(v);
-    try { localStorage.setItem(SPARKLE_EFFECT_KEY, String(v)); } catch {}
-  }, []);
-
   const reset = useCallback(() => {
     setHue(DEFAULT_HUE);
     setBackground(DEFAULT_BACKGROUND);
     setFont(DEFAULT_FONT);
     setFontSize(DEFAULT_FONT_SIZE);
     setDisplayMode(DEFAULT_DISPLAY_MODE);
-    setClickEffectState(true);
-    setSparkleEffectState(true);
     try {
       localStorage.removeItem(HUE_KEY);
       localStorage.removeItem(BG_KEY);
       localStorage.removeItem(FONT_KEY);
       localStorage.removeItem(FONT_SIZE_KEY);
       localStorage.removeItem(DISPLAY_MODE_KEY);
-      localStorage.removeItem(CLICK_EFFECT_KEY);
-      localStorage.removeItem(SPARKLE_EFFECT_KEY);
     } catch {
       /* ignore */
     }
@@ -391,15 +356,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         font,
         fontSize,
         displayMode,
-        clickEffect,
-        sparkleEffect,
         setHue,
         setBackground,
         setFont,
         setFontSize,
         setDisplayMode,
-        setClickEffect,
-        setSparkleEffect,
         applyPreset,
         reset,
       }}

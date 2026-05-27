@@ -25,6 +25,8 @@ export default async function AdminSettingsPage() {
     "music.playlistId",
     "music.savedPlaylists",
     "effects.playerWidget",
+    "effects.clickParticles",
+    "effects.textSparkle",
     "effects.particles",
     "effects.glow",
   ]);

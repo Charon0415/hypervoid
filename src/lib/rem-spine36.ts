@@ -411,16 +411,26 @@ function readAttachment(
   const type = input.readByte();
   if (type === 0) {
     const path = input.readString() ?? name;
+    const rotation = input.readFloat();
+    const x = input.readFloat();
+    const y = input.readFloat();
+    const scaleX = input.readFloat();
+    const scaleY = input.readFloat();
+    // Spine 3.6 binary stores region width/height at 2× the source-image
+    // dimensions (full skeleton coordinate space).  Divide by 2 to get the
+    // actual source-image half-extents used by the vertex offset formula.
+    const width = input.readFloat() / 2;
+    const height = input.readFloat() / 2;
     return {
       name,
       path,
-      rotation: input.readFloat(),
-      x: input.readFloat(),
-      y: input.readFloat(),
-      scaleX: input.readFloat(),
-      scaleY: input.readFloat(),
-      width: input.readFloat(),
-      height: input.readFloat(),
+      rotation,
+      x,
+      y,
+      scaleX,
+      scaleY,
+      width,
+      height,
       alpha: colorAlpha(input.readInt32()),
     };
   }

@@ -4,15 +4,20 @@ import { getSiteOverride } from "@/lib/site-config-server";
 export const runtime = "nodejs";
 
 export async function GET() {
-  const [playerWidget, particles, glow] = await Promise.all([
-    getSiteOverride("effects.playerWidget"),
-    getSiteOverride("effects.particles"),
-    getSiteOverride("effects.glow"),
-  ]);
+  const [playerWidget, clickParticles, textSparkle, particles, glow] =
+    await Promise.all([
+      getSiteOverride("effects.playerWidget"),
+      getSiteOverride("effects.clickParticles"),
+      getSiteOverride("effects.textSparkle"),
+      getSiteOverride("effects.particles"),
+      getSiteOverride("effects.glow"),
+    ]);
 
   return NextResponse.json(
     {
       playerWidget: playerWidget === "on",
+      clickParticles: clickParticles === "on",
+      textSparkle: textSparkle === "on",
       particles: particles === "on",
       glow: glow === "on",
     },
