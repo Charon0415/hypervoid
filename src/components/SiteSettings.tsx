@@ -518,6 +518,13 @@ export function SiteSettings() {
                               detail: { character: next },
                             }),
                           );
+                          window.setTimeout(() => {
+                            window.dispatchEvent(
+                              new CustomEvent("hypervoid:mascot-changed", {
+                                detail: true,
+                              }),
+                            );
+                          }, 0);
                         } catch {
                           /* noop */
                         }

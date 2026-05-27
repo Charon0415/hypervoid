@@ -38,9 +38,9 @@ export function CodeBlock(props: Props) {
   const hasHeader = Boolean(filename || lang);
 
   return (
-    <div className="not-prose group relative my-6 overflow-hidden rounded-2xl border border-border">
+    <div className="code-panel not-prose group relative my-6 overflow-hidden rounded-2xl border">
       {hasHeader ? (
-        <div className="flex items-center justify-between gap-2 border-b border-border bg-card px-4 py-2">
+        <div className="flex items-center justify-between gap-2 border-b border-white/10 bg-[#161b22] px-4 py-2">
           <div className="flex min-w-0 items-center gap-2">
             <span aria-hidden className="flex shrink-0 gap-1">
               <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
@@ -48,12 +48,12 @@ export function CodeBlock(props: Props) {
               <span className="h-2.5 w-2.5 rounded-full bg-green-400/70" />
             </span>
             {filename ? (
-              <span className="truncate font-mono text-xs text-foreground/80">
+              <span className="truncate font-mono text-xs text-slate-200">
                 {filename}
               </span>
             ) : null}
             {lang ? (
-              <span className="rounded-full bg-primary/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-primary">
+              <span className="rounded-full bg-cyan-400/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-cyan-200">
                 {lang}
               </span>
             ) : null}

@@ -77,7 +77,7 @@ export function MascotRouter() {
     };
   }, []);
 
-  if (character === "rem") return <GifMascot />;
-  if (character === "ram") return <RamMascot />;
-  return <Live2DMascot />;
+  if (character === "rem") return <GifMascot key="rem" />;
+  if (character === "ram") return <RamMascot key="ram" />;
+  return <Live2DMascot key="kanna" />;
 }

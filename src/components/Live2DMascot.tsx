@@ -7,10 +7,10 @@ import { MascotChat } from "@/components/MascotChat";
 const STORAGE_KEY = "hypervoid:mascot";
 const DEFAULT_MODEL = "/live2d/kobayaxi/Kobayaxi.model.json";
 const CUBISM2_RUNTIME = "/live2d/live2d.min.js";
-const MASCOT_W = 220;
-const MASCOT_H = 260;
-const CANVAS_W = 200;
-const CANVAS_H = 250;
+const MASCOT_W = 280;
+const MASCOT_H = 340;
+const CANVAS_W = 260;
+const CANVAS_H = 320;
 
 function loadCubism2Runtime(): Promise<void> {
   if (typeof window === "undefined") {
@@ -218,11 +218,11 @@ export function Live2DMascot() {
           if (disposed) return;
 
           const scale =
-            Math.min(CANVAS_W / model.width, CANVAS_H / model.height) * 0.85;
+            Math.min(CANVAS_W / model.width, CANVAS_H / model.height) * 0.98;
           model.scale.set(scale);
           model.anchor.set(0.5, 0.5);
           model.x = CANVAS_W / 2;
-          model.y = CANVAS_H * 0.55;
+          model.y = CANVAS_H * 0.56;
 
           model.on("pointertap", () => {
             const msgs = MESSAGES.tap;
