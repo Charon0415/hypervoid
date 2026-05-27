@@ -14,6 +14,198 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
+type AdminNavItem = {
+  href: string;
+  title: string;
+  desc: string;
+  countKey?: "posts";
+};
+
+type AdminNavGroup = {
+  title: string;
+  desc: string;
+  items: AdminNavItem[];
+};
+
+const DEFAULT_ADMIN_NAV_GROUPS: AdminNavGroup[] = [
+  {
+    title: "内容生产",
+    desc: "文章、标签、资源、相册和媒体资产。",
+    items: [
+      {
+        href: "/admin/posts",
+        title: "文章管理",
+        desc: "创建、编辑、删除文章，草稿、定时发布",
+        countKey: "posts",
+      },
+      {
+        href: "/admin/import",
+        title: "导入文章",
+        desc: "批量导入 Markdown 文件，自动解析 frontmatter",
+      },
+      {
+        href: "/admin/tags",
+        title: "标签管理",
+        desc: "跨文章重命名、合并、删除标签",
+      },
+      {
+        href: "/admin/resources",
+        title: "资源库",
+        desc: "收藏链接、软件、工具，展示在 /resources",
+      },
+      {
+        href: "/admin/albums",
+        title: "相册管理",
+        desc: "创建相册、上传照片、添加说明",
+      },
+      {
+        href: "/admin/media",
+        title: "图库管理",
+        desc: "查看 Blob 图片、复制 URL、清理孤儿图",
+      },
+    ],
+  },
+  {
+    title: "互动运营",
+    desc: "访客留言、订阅、友链、公告和数据反馈。",
+    items: [
+      {
+        href: "/admin/notes",
+        title: "公告管理",
+        desc: "顶部条、侧边栏、文章顶部公告，支持时间窗",
+      },
+      {
+        href: "/admin/guestbook",
+        title: "留言板管理",
+        desc: "审核访客留言：隐藏、恢复、删除",
+      },
+      {
+        href: "/admin/subscribers",
+        title: "订阅者管理",
+        desc: "查看邮箱订阅列表，手动退订或删除",
+      },
+      {
+        href: "/admin/friends",
+        title: "友链管理",
+        desc: "维护朋友的博客与个人站点链接",
+      },
+      {
+        href: "/admin/reactions",
+        title: "反应数据",
+        desc: "每篇文章 emoji 反应数，识别受欢迎内容",
+      },
+      {
+        href: "/admin/webmentions",
+        title: "Webmention 审核",
+        desc: "外站引用留痕，隐藏或删除可疑来源",
+      },
+    ],
+  },
+  {
+    title: "站点外观",
+    desc: "主题、看板娘、音乐播放器和全站展示偏好。",
+    items: [
+      {
+        href: "/admin/settings",
+        title: "站点设置",
+        desc: "作者名、头像、简介、首页名句、公告文本",
+      },
+      {
+        href: "/admin/themes",
+        title: "主题定制",
+        desc: "调色板、实时预览、JSON 主题包导入导出",
+      },
+      {
+        href: "/admin/mascot",
+        title: "看板娘设置",
+        desc: "默认角色、访客切换权限、切换按钮显示",
+      },
+      {
+        href: "/admin/music",
+        title: "音乐设置",
+        desc: "管理音源、歌单、播放器和 Cookie 状态",
+      },
+      {
+        href: "/admin/effects",
+        title: "视觉特效",
+        desc: "开关粒子、光晕、播放器小组件等增强效果",
+      },
+    ],
+  },
+  {
+    title: "工具系统",
+    desc: "统计分析、AI、链接巡检和备份维护。",
+    items: [
+      {
+        href: "/admin/stats",
+        title: "数据看板",
+        desc: "月度发文趋势、热门文章排行、累计指标",
+      },
+      {
+        href: "/admin/search-log",
+        title: "搜索分析",
+        desc: "站内搜索查询、命中数和零结果分析",
+      },
+      {
+        href: "/admin/ai",
+        title: "AI 配置",
+        desc: "切换模型、API Key 状态、摘要/标签/Q&A 设置",
+      },
+      {
+        href: "/admin/link-check",
+        title: "失效链接巡检",
+        desc: "扫描已发布文章外链，标记 404、超时、SSL 错误",
+      },
+      {
+        href: "/admin/backup",
+        title: "数据备份",
+        desc: "导出整库 JSON 到 Blob，下载或删除历史快照",
+      },
+    ],
+  },
+  {
+    title: "其他",
+    desc: "低频但仍需要保留入口的后台功能。",
+    items: [
+      {
+        href: "/admin/redirects",
+        title: "短链管理",
+        desc: "/r/<码> 跳转和命中计数",
+      },
+      {
+        href: "/admin/audit",
+        title: "操作审计",
+        desc: "所有后台动作的只读时间线",
+      },
+    ],
+  },
+];
+
+// Add project-specific admin groups here. A custom group with the same title as
+// a default group appends items to that group; a new title creates a new group.
+const CUSTOM_ADMIN_NAV_GROUPS: AdminNavGroup[] = [];
+
+function mergeAdminNavGroups(
+  defaults: AdminNavGroup[],
+  custom: AdminNavGroup[],
+): AdminNavGroup[] {
+  const groups = new Map<string, AdminNavGroup>();
+  for (const group of [...defaults, ...custom]) {
+    const existing = groups.get(group.title);
+    if (existing) {
+      existing.items.push(...group.items);
+    } else {
+      groups.set(group.title, { ...group, items: [...group.items] });
+    }
+  }
+  return [...groups.values()].filter((group) => group.items.length > 0);
+}
+
+const ADMIN_NAV_GROUPS = mergeAdminNavGroups(
+  DEFAULT_ADMIN_NAV_GROUPS,
+  CUSTOM_ADMIN_NAV_GROUPS,
+);
+
 export default async function AdminHome() {
   const session = await auth();
   if (!session?.user) redirect("/admin/sign-in");
@@ -154,132 +346,40 @@ export default async function AdminHome() {
         </div>
       </section>
 
-      <section>
-        <h2 className="mb-3 text-sm font-semibold tracking-tight text-muted">
-          模块入口
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <NavTile
-            href="/admin/posts"
-            title="文章管理"
-            desc="创建、编辑、删除文章，草稿、定时发布"
-            count={allPosts.length}
-          />
-          <NavTile
-            href="/admin/stats"
-            title="数据看板"
-            desc="月度发文趋势、热门文章排行、累计指标"
-          />
-          <NavTile
-            href="/admin/reactions"
-            title="反应数据"
-            desc="每篇文章 5 个 emoji 的反应数；找出最受欢迎的内容"
-          />
-          <NavTile
-            href="/admin/notes"
-            title="公告管理"
-            desc="多位点公告 · 顶部条 / 侧边栏 / 文章顶部，带时间窗"
-          />
-          <NavTile
-            href="/admin/redirects"
-            title="短链管理"
-            desc="/r/<码> 跳转 + 命中计数"
-          />
-          <NavTile
-            href="/admin/webmentions"
-            title="Webmention 审核"
-            desc="外站引用的留痕，隐藏/删除可疑来源"
-          />
-          <NavTile
-            href="/admin/resources"
-            title="资源库"
-            desc="收藏的链接、软件、工具，按分类分组展示在 /resources"
-          />
-          <NavTile
-            href="/admin/media"
-            title="图库管理"
-            desc="查看 Vercel Blob 全部图片、复制URL、孤儿图清理"
-          />
-          <NavTile
-            href="/admin/themes"
-            title="主题定制"
-            desc="调色板 + 实时预览 + JSON 主题包导入导出"
-          />
-          <NavTile
-            href="/admin/ai"
-            title="AI 配置"
-            desc="切换 Claude 模型、查看 API Key 状态、影响摘要/标签/Q&A/康娜"
-          />
-          <NavTile
-            href="/admin/guestbook"
-            title="留言板管理"
-            desc="审核访客留言：隐藏、恢复、删除"
-          />
-          <NavTile
-            href="/admin/subscribers"
-            title="订阅者管理"
-            desc="查看邮箱订阅列表，手动退订/删除"
-          />
-          <NavTile
-            href="/admin/friends"
-            title="友链管理"
-            desc="维护朋友的博客与个人站点链接"
-          />
-          <NavTile
-            href="/admin/albums"
-            title="相册管理"
-            desc="创建相册、上传照片、添加说明"
-          />
-          <NavTile
-            href="/admin/import"
-            title="导入文章"
-            desc="批量导入 Markdown 文件，自动解析 frontmatter"
-          />
-          <NavTile
-            href="/admin/tags"
-            title="标签管理"
-            desc="跨文章重命名 / 合并 / 删除标签，一处生效全站"
-          />
-          <NavTile
-            href="/admin/link-check"
-            title="失效链接巡检"
-            desc="扫描已发布文章外链，并标记 404 / 超时 / SSL 错误"
-          />
-          <NavTile
-            href="/admin/search-log"
-            title="搜索分析"
-            desc="站内搜索查询 + 命中数；零结果查询单独高亮"
-          />
-          <NavTile
-            href="/admin/backup"
-            title="数据备份"
-            desc="一键导出整库 JSON 到 Vercel Blob，下载或删除历史快照"
-          />
-          <NavTile
-            href="/admin/audit"
-            title="操作审计"
-            desc="所有后台动作的只读时间线"
-          />
-          <NavTile
-            href="/admin/mascot"
-            title="看板娘设置"
-            desc="选择看板娘角色：康娜(Live2D)、雷姆(GIF)——支持扩展"
-          />
-          <NavTile
-            href="/admin/music"
-            title="音乐设置"
-            desc="添加/切换网易云歌单 · 预览封面 · 查看 Cookie 状态"
-          />
-          <NavTile
-            href="/admin/effects"
-            title="视觉特效"
-            desc="开关播放器小组件背景、粒子、光晕等视觉增强效果"
-          />
-          <NavTile
-            href="/admin/settings"
-            title="站点设置"
-            desc="作者名、头像、简介、首页名句、公告——在线可改"
-          />
+      <section className="flex flex-col gap-4">
+        <div>
+          <h2 className="text-sm font-semibold tracking-tight text-muted">
+            后台功能
+          </h2>
+          <p className="mt-1 text-xs text-muted">
+            按使用场景分组，常用入口不用在一整屏卡片里找。
+          </p>
+        </div>
+        <div className="grid gap-4 xl:grid-cols-2">
+          {ADMIN_NAV_GROUPS.map((group) => (
+            <div
+              key={group.title}
+              className="rounded-2xl border border-border bg-card p-4"
+            >
+              <div className="mb-3 border-b border-border pb-3">
+                <h3 className="text-base font-semibold tracking-tight">
+                  {group.title}
+                </h3>
+                <p className="mt-1 text-xs text-muted">{group.desc}</p>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {group.items.map((item) => (
+                  <NavTile
+                    key={item.href}
+                    href={item.href}
+                    title={item.title}
+                    desc={item.desc}
+                    count={item.countKey === "posts" ? allPosts.length : undefined}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -355,17 +455,17 @@ function NavTile({
   return (
     <Link
       href={href}
-      className="group rounded-xl border border-border bg-card p-5 transition hover:border-primary hover:shadow-md"
+      className="group rounded-lg border border-border bg-background/60 p-3 transition hover:border-primary/60 hover:bg-primary/5"
     >
       <div className="flex items-baseline justify-between gap-2">
-        <h3 className="text-base font-semibold group-hover:text-primary">
+        <h3 className="text-sm font-semibold group-hover:text-primary">
           {title} →
         </h3>
         {count !== undefined ? (
           <span className="font-mono text-xs text-muted">{count}</span>
         ) : null}
       </div>
-      <p className="mt-1 text-xs text-muted">{desc}</p>
+      <p className="mt-1 text-[11px] leading-relaxed text-muted">{desc}</p>
     </Link>
   );
 }
