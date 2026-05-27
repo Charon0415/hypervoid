@@ -3,54 +3,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { MascotChat } from "@/components/MascotChat";
+import { buildRemSetupPose, type RemDrawable, type RemSetupPose } from "@/lib/rem-spine36";
 
 const STORAGE_KEY = "hypervoid:mascot";
 const MASCOT_W = 240;
 const MASCOT_H = 300;
 
 const SPINE_ATLAS = "/mascot/rem/1.atlas";
+const SPINE_SKEL = "/mascot/rem/1.skel";
 const SPINE_IMAGE = "/mascot/rem/1.png";
 const CANVAS_W = 240;
 const CANVAS_H = 300;
-const SOURCE_W = 455;
-const SOURCE_H = 456;
-
-const BODY_PARTS = [
-  "shadow",
-  "weaponMain",
-  "legB_back",
-  "thighB_back",
-  "legF_back",
-  "thighF_back",
-  "skirtB",
-  "skirtF_back",
-  "body_back",
-  "body",
-  "armB_back",
-  "handB_back",
-  "armF_back",
-  "handF_back",
-  "head_back",
-  "hairB",
-  "headB",
-  "head",
-  "faceNormal",
-  "hairF",
-  "acce02_back",
-  "acce02Ex0001",
-  "acce01",
-] as const;
-
-type AtlasRegion = {
-  name: string;
-  rotate: boolean;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  offsetX: number;
-  offsetY: number;
-};
 
 async function readAssetText(src: string): Promise<string> {
   const res = await fetch(src, { cache: "force-cache" });
@@ -58,6 +21,14 @@ async function readAssetText(src: string): Promise<string> {
     throw new Error("failed to load " + src + ": " + res.status);
   }
   return res.text();
+}
+
+async function readAssetBytes(src: string): Promise<Uint8Array> {
+  const res = await fetch(src, { cache: "force-cache" });
+  if (!res.ok) {
+    throw new Error("failed to load " + src + ": " + res.status);
+  }
+  return new Uint8Array(await res.arrayBuffer());
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -70,92 +41,74 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-function parseAtlas(text: string): Map<string, AtlasRegion> {
-  const regions = new Map<string, AtlasRegion>();
-  const lines = text.split(/\r?\n/);
-  for (let i = 0; i < lines.length; i += 1) {
-    const name = lines[i]?.trim();
-    if (!name || name.endsWith(".png")) continue;
+type CanvasPoint = { x: number; y: number };
 
-    const region: AtlasRegion = {
-      name,
-      rotate: false,
-      x: 0,
-      y: 0,
-      width: 0,
-      height: 0,
-      offsetX: 0,
-      offsetY: 0,
-    };
-
-    for (let j = i + 1; j < Math.min(i + 7, lines.length); j += 1) {
-      const line = lines[j]?.trim();
-      if (!line) break;
-      const [key, rawValue] = line.split(":");
-      if (!key || rawValue === undefined) continue;
-      const values = rawValue.split(",").map((v) => v.trim());
-      if (key === "rotate") region.rotate = values[0] === "true";
-      if (key === "xy") {
-        region.x = Number(values[0]);
-        region.y = Number(values[1]);
-      }
-      if (key === "size") {
-        region.width = Number(values[0]);
-        region.height = Number(values[1]);
-      }
-      if (key === "offset") {
-        region.offsetX = Number(values[0]);
-        region.offsetY = Number(values[1]);
-      }
-    }
-
-    if (region.width > 1 && region.height > 1) regions.set(name, region);
-  }
-  return regions;
-}
-
-function drawAtlasRegion(
+function drawRemDrawable(
   ctx: CanvasRenderingContext2D,
   image: HTMLImageElement,
-  region: AtlasRegion,
+  drawable: RemDrawable,
+  setupPose: RemSetupPose,
   scale: number,
   originX: number,
   originY: number,
 ) {
-  const destX = originX + region.offsetX * scale;
-  const destY = originY + (SOURCE_H - region.offsetY - region.height) * scale;
-  const destW = region.width * scale;
-  const destH = region.height * scale;
+  const [br, bl, ul, ur] = projectVertices(
+    drawable.vertices,
+    setupPose,
+    scale,
+    originX,
+    originY,
+  );
+  const region = drawable.region;
 
   ctx.save();
-  ctx.translate(destX, destY);
+  ctx.globalAlpha *= drawable.alpha;
   if (region.rotate) {
-    ctx.translate(0, destH);
-    ctx.rotate(-Math.PI / 2);
-    ctx.drawImage(
-      image,
-      region.x,
-      region.y,
-      region.height,
-      region.width,
-      0,
-      0,
-      destH,
-      destW,
-    );
+    drawImageAffine(ctx, image, region.x, region.y, region.width, region.height, br, bl, ur);
   } else {
-    ctx.drawImage(
-      image,
-      region.x,
-      region.y,
-      region.width,
-      region.height,
-      0,
-      0,
-      destW,
-      destH,
-    );
+    drawImageAffine(ctx, image, region.x, region.y, region.width, region.height, ul, ur, bl);
   }
+  ctx.restore();
+}
+
+function projectVertices(
+  vertices: RemDrawable["vertices"],
+  setupPose: RemSetupPose,
+  scale: number,
+  originX: number,
+  originY: number,
+): [CanvasPoint, CanvasPoint, CanvasPoint, CanvasPoint] {
+  const points: CanvasPoint[] = [];
+  for (let i = 0; i < vertices.length; i += 2) {
+    points.push({
+      x: originX + (vertices[i] - setupPose.bounds.minX) * scale,
+      y: originY + (setupPose.bounds.maxY - vertices[i + 1]) * scale,
+    });
+  }
+  return points as [CanvasPoint, CanvasPoint, CanvasPoint, CanvasPoint];
+}
+
+function drawImageAffine(
+  ctx: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  sx: number,
+  sy: number,
+  sw: number,
+  sh: number,
+  topLeft: CanvasPoint,
+  topRight: CanvasPoint,
+  bottomLeft: CanvasPoint,
+) {
+  ctx.save();
+  ctx.transform(
+    (topRight.x - topLeft.x) / sw,
+    (topRight.y - topLeft.y) / sw,
+    (bottomLeft.x - topLeft.x) / sh,
+    (bottomLeft.y - topLeft.y) / sh,
+    topLeft.x,
+    topLeft.y,
+  );
+  ctx.drawImage(image, sx, sy, sw, sh, 0, 0, sw, sh);
   ctx.restore();
 }
 
@@ -306,12 +259,14 @@ export function GifMascot() {
 
     (async () => {
       try {
-        const [atlasText, image] = await Promise.all([
+        const [atlasText, skeletonBytes, image] = await Promise.all([
           readAssetText(SPINE_ATLAS),
+          readAssetBytes(SPINE_SKEL),
           loadImage(SPINE_IMAGE),
         ]);
         if (disposed || !canvasRef.current) return;
 
+        const setupPose = buildRemSetupPose(skeletonBytes, atlasText);
         const canvas = canvasRef.current;
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         canvas.width = CANVAS_W * dpr;
@@ -322,10 +277,11 @@ export function GifMascot() {
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = "high";
 
-        const atlas = parseAtlas(atlasText);
-        const scale = Math.min(CANVAS_W / SOURCE_W, CANVAS_H / SOURCE_H) * 0.94;
-        const originX = (CANVAS_W - SOURCE_W * scale) / 2;
-        const originY = (CANVAS_H - SOURCE_H * scale) / 2 + 8;
+        const poseW = setupPose.bounds.maxX - setupPose.bounds.minX;
+        const poseH = setupPose.bounds.maxY - setupPose.bounds.minY;
+        const scale = Math.min(CANVAS_W / poseW, CANVAS_H / poseH) * 0.94;
+        const originX = (CANVAS_W - poseW * scale) / 2;
+        const originY = (CANVAS_H - poseH * scale) / 2 + 8;
 
         const draw = (time: number) => {
           if (disposed) return;
@@ -333,15 +289,8 @@ export function GifMascot() {
           const bob = Math.sin(time / 900) * 2;
           ctx.save();
           ctx.translate(0, bob);
-          for (const name of BODY_PARTS) {
-            if (name === "faceNormal") {
-              const blink = Math.floor(time / 3200) % 2 === 1 && time % 3200 < 180;
-              const face = atlas.get(blink ? "faceBlink" : "faceNormal");
-              if (face) drawAtlasRegion(ctx, image, face, scale, originX, originY);
-              continue;
-            }
-            const region = atlas.get(name);
-            if (region) drawAtlasRegion(ctx, image, region, scale, originX, originY);
+          for (const drawable of setupPose.drawables) {
+            drawRemDrawable(ctx, image, drawable, setupPose, scale, originX, originY);
           }
           ctx.restore();
           frameId = window.requestAnimationFrame(draw);
@@ -349,7 +298,7 @@ export function GifMascot() {
 
         frameId = window.requestAnimationFrame(draw);
       } catch (e) {
-        console.warn("[mascot/rem-atlas] load failed:", e);
+        console.warn("[mascot/rem-spine36] load failed:", e);
         setLoadError("雷姆模型加载失败");
       }
     })();
