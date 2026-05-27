@@ -124,7 +124,56 @@ export async function getPlaylistMeta(
 }
 
 /**
+ * Parse a raw NCM track object into our NcmTrack shape.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function parseNcmTrack(t: any): NcmTrack {
+  return {
+    id: t.id,
+    title: t.name,
+    artist: (t.ar || []).map((a: { name: string }) => a.name).join(" / "),
+    cover: t.al?.picUrl ? `${t.al.picUrl}?param=300y300` : "",
+    duration: t.dt || 0,
+  };
+}
+
+const SONG_DETAIL_BATCH = 1000;
+
+/**
+ * Fetch full track details for a list of song IDs in batches via
+ * `/api/v3/song/detail`. Used when the playlist detail endpoint only returns
+ * trackIds (large playlists) instead of full track objects.
+ */
+async function getTracksByIds(ids: number[]): Promise<NcmTrack[]> {
+  const tracks: NcmTrack[] = [];
+  for (let i = 0; i < ids.length; i += SONG_DETAIL_BATCH) {
+    const batch = ids.slice(i, i + SONG_DETAIL_BATCH);
+    const body = JSON.stringify({ c: batch.map((id) => ({ id })) });
+    const res = await fetch(`${BASE}/api/v3/song/detail`, {
+      method: "POST",
+      headers: headers(),
+      body,
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) {
+      console.warn(`[NCM] song detail batch HTTP ${res.status}`);
+      continue;
+    }
+    const data = await res.json();
+    if (data?.songs) {
+      for (const s of data.songs) tracks.push(parseNcmTrack(s));
+    }
+  }
+  return tracks;
+}
+
+/**
  * Get all tracks from a playlist.
+ *
+ * NCM's playlist detail endpoint only returns full track objects for the first
+ * ~1000 entries. For larger playlists the response contains `trackIds` with the
+ * complete list — we use that to fetch the remaining tracks via
+ * `/api/v3/song/detail` in batches.
  */
 export async function getPlaylistTracks(
   playlistId: string,
@@ -139,21 +188,46 @@ export async function getPlaylistTracks(
   if (!res.ok) throw new Error(`NCM playlist HTTP ${res.status}`);
   const data = await res.json();
   assertNcmOk(data, `playlist ${playlistId}`);
-  const playlist = (data as { playlist?: { tracks?: unknown[] } }).playlist;
-  if (!playlist?.tracks) throw new Error("NCM no tracks");
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return playlist.tracks.map((t: any) => ({
-    id: t.id,
-    title: t.name,
-    artist: (t.ar || []).map((a: { name: string }) => a.name).join(" / "),
-    cover: t.al?.picUrl ? `${t.al.picUrl}?param=300y300` : "",
-    duration: t.dt || 0,
-  }));
+  const playlist = (data as any).playlist;
+  if (!playlist) throw new Error("NCM no playlist");
+
+  // tracks may be absent for very large playlists; trackIds is always present.
+  const rawTracks: unknown[] = playlist.tracks ?? [];
+  const trackIds: number[] = (playlist.trackIds ?? []).map(
+    (t: { id: number }) => t.id,
+  );
+
+  // If the detail endpoint returned all tracks (common for small playlists),
+  // we're done.
+  if (rawTracks.length >= trackIds.length) {
+    return rawTracks.map(parseNcmTrack);
+  }
+
+  // Otherwise, parse what we have and fetch the rest by ID.
+  const partial = rawTracks.map(parseNcmTrack);
+  const haveIds = new Set(partial.map((t) => t.id));
+  const missingIds = trackIds.filter((id) => !haveIds.has(id));
+
+  if (missingIds.length > 0) {
+    const extra = await getTracksByIds(missingIds);
+    // Preserve the original trackIds order by building a lookup map.
+    const lookup = new Map<number, NcmTrack>();
+    for (const t of partial) lookup.set(t.id, t);
+    for (const t of extra) lookup.set(t.id, t);
+    return trackIds.map((id) => lookup.get(id)).filter(Boolean) as NcmTrack[];
+  }
+
+  return partial;
 }
+
+const URL_BATCH_SIZE = 100;
 
 /**
  * Get playable audio URLs for a list of song IDs.
+ *
+ * NCM's URL endpoint silently drops IDs beyond a certain batch size (~100),
+ * so we split large requests into parallel batches.
  */
 export async function getSongUrls(
   ids: number[],
@@ -161,26 +235,35 @@ export async function getSongUrls(
   const map = new Map<number, string | null>();
   if (ids.length === 0) return map;
 
-  // NCM CDN URLs typically expire in ~20 min; cache for 5 to balance refresh
-  // and load.
-  const res = await fetch(`${BASE}/api/song/enhance/player/url/v1`, {
-    method: "POST",
-    headers: headers(),
-    body: `ids=${JSON.stringify(ids)}&level=exhigh&encodeType=flac`,
-    next: { revalidate: 300 },
-  });
+  const batches: number[][] = [];
+  for (let i = 0; i < ids.length; i += URL_BATCH_SIZE) {
+    batches.push(ids.slice(i, i + URL_BATCH_SIZE));
+  }
 
-  if (!res.ok) {
-    console.warn(`[NCM] song urls HTTP ${res.status}`);
-    return map;
-  }
-  const data = await res.json();
-  // Logical-error: returns code !== 200 (often happens without a valid cookie)
-  if (data?.code && data.code !== 200) {
-    console.warn(`[NCM] song urls code=${data.code} message=${data.message ?? ""}`);
-  }
-  if (data?.data) {
-    for (const d of data.data as { id: number; url: string | null }[]) {
+  const results = await Promise.all(
+    batches.map(async (batch) => {
+      const res = await fetch(`${BASE}/api/song/enhance/player/url/v1`, {
+        method: "POST",
+        headers: headers(),
+        body: `ids=${JSON.stringify(batch)}&level=exhigh&encodeType=flac`,
+        next: { revalidate: 300 },
+      });
+      if (!res.ok) {
+        console.warn(`[NCM] song urls HTTP ${res.status}`);
+        return [] as { id: number; url: string | null }[];
+      }
+      const data = await res.json();
+      if (data?.code && data.code !== 200) {
+        console.warn(
+          `[NCM] song urls code=${data.code} message=${data.message ?? ""}`,
+        );
+      }
+      return (data?.data ?? []) as { id: number; url: string | null }[];
+    }),
+  );
+
+  for (const items of results) {
+    for (const d of items) {
       map.set(d.id, d.url || null);
     }
   }
