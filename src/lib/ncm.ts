@@ -299,9 +299,25 @@ export async function getSongUrls(
   return map;
 }
 
+async function getOuterSongUrl(songId: number): Promise<string | null> {
+  const res = await fetch(
+    BASE + "/song/media/outer/url?id=" + encodeURIComponent(String(songId)) + ".mp3",
+    {
+      method: "HEAD",
+      headers: ncmMediaHeaders(),
+      redirect: "manual",
+      cache: "no-store",
+    },
+  ).catch(() => null);
+  if (!res) return null;
+  const location = res.headers.get("location");
+  if (!location || /\/404(?:$|[?#])/i.test(location)) return null;
+  return location;
+}
+
 export async function getPlayableSongUrl(songId: number): Promise<string | null> {
   const urls = await getSongUrls([songId]);
-  return urls.get(songId) ?? null;
+  return urls.get(songId) ?? (await getOuterSongUrl(songId));
 }
 
 /**

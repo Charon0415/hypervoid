@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import { siteConfig } from "@/lib/site-config";
 
 /**
  * Tiny terminal-emulator widget for the home sidebar. Runs a fixed
@@ -111,6 +112,9 @@ export function MiniTerminal({
             { kind: "muted", text: "可用命令：" },
             { kind: "text", text: "  help              显示帮助" },
             { kind: "text", text: "  posts [n]         列出最新文章" },
+            { kind: "text", text: "  latest            打开最新文章" },
+            { kind: "text", text: "  ls                列出常用入口" },
+            { kind: "text", text: "  pwd               当前站点位置" },
             { kind: "text", text: "  open <slug>       打开指定文章" },
             { kind: "text", text: "  tags              列出热门标签" },
             { kind: "text", text: "  tag <name>        打开某个标签页" },
@@ -119,10 +123,40 @@ export function MiniTerminal({
             { kind: "text", text: "  go <路径>          跳转站内路径" },
             { kind: "text", text: "  theme <l|d|sys>   切换主题" },
             { kind: "text", text: "  whoami            当前身份" },
+            { kind: "text", text: "  music/anime/games 快速打开页面" },
+            { kind: "text", text: "  rss/repo          打开 RSS / GitHub" },
             { kind: "text", text: "  date              当前时间" },
             { kind: "text", text: "  echo <文字>        回显" },
             { kind: "text", text: "  clear             清屏" },
           ]);
+          return;
+        }
+        case "ls":
+        case "dir": {
+          append([
+            { kind: "muted", text: "常用入口：" },
+            { kind: "link", text: "  /posts      所有文章", href: "/posts" },
+            { kind: "link", text: "  /archive    归档", href: "/archive" },
+            { kind: "link", text: "  /tags       标签", href: "/tags" },
+            { kind: "link", text: "  /music      音乐", href: "/music" },
+            { kind: "link", text: "  /anime      番剧", href: "/anime" },
+            { kind: "link", text: "  /games      游戏", href: "/games" },
+            { kind: "link", text: "  /about      关于", href: "/about" },
+          ]);
+          return;
+        }
+        case "pwd": {
+          append([{ kind: "text", text: "https://hypervoid.top/" }]);
+          return;
+        }
+        case "latest": {
+          const p = posts[0];
+          if (!p) {
+            append([{ kind: "muted", text: "没有可用的文章" }]);
+            return;
+          }
+          append([{ kind: "text", text: `打开最新文章 → ${p.title}` }]);
+          router.push(`/posts/${p.slug}`);
           return;
         }
         case "posts": {
@@ -267,6 +301,37 @@ export function MiniTerminal({
           } else {
             append([{ kind: "error", text: `未知主题：${v}` }]);
           }
+          return;
+        }
+        case "music": {
+          append([{ kind: "text", text: "打开音乐页 …" }]);
+          router.push("/music");
+          return;
+        }
+        case "anime": {
+          append([{ kind: "text", text: "打开番剧页 …" }]);
+          router.push("/anime");
+          return;
+        }
+        case "games": {
+          append([{ kind: "text", text: "打开游戏页 …" }]);
+          router.push("/games");
+          return;
+        }
+        case "rss": {
+          append([{ kind: "link", text: siteConfig.url + "/rss.xml", href: "/rss.xml" }]);
+          return;
+        }
+        case "repo":
+        case "github": {
+          append([
+            {
+              kind: "link",
+              text: "GitHub: HyperCharon/hypervoid",
+              href: "https://github.com/HyperCharon/hypervoid",
+              external: true,
+            },
+          ]);
           return;
         }
         case "whoami": {
@@ -436,6 +501,8 @@ export function MiniTerminal({
                 <Link
                   href={line.href}
                   onClick={(e) => e.stopPropagation()}
+                  target={line.external ? "_blank" : undefined}
+                  rel={line.external ? "noreferrer noopener" : undefined}
                   className="text-primary hover:underline"
                 >
                   {line.text}

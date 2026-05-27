@@ -104,6 +104,27 @@ function loadBool(key: string, fallback: boolean): boolean {
   }
 }
 
+function firstPlayableIndex(tracks: Track[]): number {
+  const idx = tracks.findIndex((t) => Boolean(t.url));
+  return idx >= 0 ? idx : 0;
+}
+
+function nextPlayableIndex(
+  tracks: Track[],
+  currentIdx: number,
+  direction: 1 | -1,
+): number {
+  if (tracks.length === 0) return 0;
+  const hasPlayable = tracks.some((t) => Boolean(t.url));
+  if (!hasPlayable) return currentIdx;
+  for (let step = 1; step <= tracks.length; step += 1) {
+    const idx =
+      (currentIdx + direction * step + tracks.length) % tracks.length;
+    if (tracks[idx]?.url) return idx;
+  }
+  return currentIdx;
+}
+
 function loadRepeat(): RepeatMode {
   if (typeof window === "undefined") return "off";
   try {
@@ -202,7 +223,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       shuffleCursorRef.current = 0;
       return;
     }
-    const order = tracks.map((_, i) => i).filter((i) => i !== currentIdx);
+    const order = tracks
+      .map((track, i) => (track.url ? i : -1))
+      .filter((i) => i >= 0 && i !== currentIdx);
     for (let i = order.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [order[i], order[j]] = [order[j], order[i]];
@@ -216,7 +239,10 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const setTracks = useCallback((next: Track[]) => {
     setTracksState(next);
     setTracksLoaded(true);
-    setCurrentIdx(0);
+    setCurrentIdx(firstPlayableIndex(next));
+    if (next.length > 0 && !next.some((t) => t.url)) {
+      setError("歌单曲目信息已获取，但没有可播放音源。请在后台配置有效 NCM_COOKIE，或换公开可播放歌单。");
+    }
   }, []);
 
   const ensureTracksLoaded = useCallback(async () => {
@@ -243,9 +269,16 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   }, [tracksLoaded, loading, setTracks]);
 
   const playAt = useCallback((idx: number) => {
+    const track = tracks[idx];
     setCurrentIdx(idx);
+    if (!track?.url) {
+      setPlaying(false);
+      setError("这首歌当前没有可播放音源");
+      return;
+    }
+    setError(null);
     setPlaying(true);
-  }, []);
+  }, [tracks]);
 
   const togglePlay = useCallback(() => {
     const a = audioRef.current;
@@ -274,16 +307,16 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         shuffleCursorRef.current = idx + 1;
         return order[idx];
       }
-      return (prev + 1) % tracks.length;
+      return nextPlayableIndex(tracks, prev, 1);
     });
     setPlaying(true);
-  }, [tracks.length, shuffle]);
+  }, [tracks, shuffle]);
 
   const prev = useCallback(() => {
     if (tracks.length === 0) return;
-    setCurrentIdx((p) => (p - 1 + tracks.length) % tracks.length);
+    setCurrentIdx((p) => nextPlayableIndex(tracks, p, -1));
     setPlaying(true);
-  }, [tracks.length]);
+  }, [tracks]);
 
   const seek = useCallback((ms: number) => {
     const a = audioRef.current;
