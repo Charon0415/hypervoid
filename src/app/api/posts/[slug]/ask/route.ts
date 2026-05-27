@@ -20,7 +20,7 @@ export async function POST(
   request: Request,
   ctx: { params: Promise<Params> },
 ) {
-  if (!isAiConfigured()) {
+  if (!(await isAiConfigured())) {
     return Response.json(
       { error: "AI 未配置，无法回答问题" },
       { status: 503 },

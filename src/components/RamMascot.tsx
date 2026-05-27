@@ -491,11 +491,11 @@ export function RamMascot() {
           ) : null}
 
           {!chatOpen && dialog ? (
-            <div className="absolute left-full top-8 z-10 ml-2 max-w-[220px] rounded-lg border border-border bg-card px-3 py-2 text-xs leading-relaxed text-foreground shadow-lg">
+            <div className="absolute -top-2 left-1/2 z-10 max-w-[220px] -translate-x-1/2 -translate-y-full rounded-lg border border-border bg-card px-3 py-2 text-xs leading-relaxed text-foreground shadow-lg">
               {dialog}
               <span
                 aria-hidden
-                className="absolute right-full top-4 -mr-1.5 h-3 w-3 rotate-45 border-b border-l border-border bg-card"
+                className="absolute left-1/2 top-full -ml-1.5 h-3 w-3 -translate-y-1/2 rotate-45 border-b border-r border-border bg-card"
               />
             </div>
           ) : null}

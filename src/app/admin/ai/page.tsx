@@ -490,7 +490,7 @@ export default async function AdminAiPage() {
               className="rounded-md border border-border bg-background px-2 py-1 font-mono text-[11px]"
             />
             <span className="text-[10px] text-muted">
-              OpenRouter 推荐填 HTTP-Referer + X-Title；MiMo 等 OpenAI 兼容服务通常留空。
+              OpenRouter 推荐填 HTTP-Referer + X-Title；MiMo 通常留空。MiMo 的 Model ID 填 mimo-v2.5-pro，不要把 [1M] 说明写进模型名。
             </span>
           </label>
           <button

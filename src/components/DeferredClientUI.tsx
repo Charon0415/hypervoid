@@ -59,10 +59,6 @@ const SparkleEffect = dynamic(
   { ssr: false },
 );
 
-const FloatingPlayer = dynamic(
-  () => import("@/components/FloatingPlayer").then((m) => m.FloatingPlayer),
-  { ssr: false },
-);
 
 export function DeferredClientUI() {
   return (
@@ -75,7 +71,6 @@ export function DeferredClientUI() {
       <BottomTabBar />
       <ClickEffect />
       <SparkleEffect />
-      <FloatingPlayer />
     </>
   );
 }

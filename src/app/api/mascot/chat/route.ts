@@ -163,8 +163,13 @@ export async function POST(req: Request): Promise<Response> {
       } catch (e) {
         controller.enqueue(encoder.encode(errorMsg));
         controller.close();
-        // Log the error type only — never the message content/headers.
-        console.error("[mascot/chat]", e instanceof Error ? e.name : "error");
+        // Log sanitized upstream errors; never log prompts or headers.
+        console.error(
+          "[mascot/chat]",
+          e instanceof Error
+            ? `${e.name}: ${e.message.slice(0, 400)}`
+            : "error",
+        );
       }
     },
   });

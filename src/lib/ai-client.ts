@@ -60,6 +60,13 @@ function openAiChatCompletionsUrl(baseUrl: string): string {
   return clean + "/chat/completions";
 }
 
+function normalizeOpenAiCompatModelId(endpoint: EndpointConfig, upstreamId: string): string {
+  if (/xiaomimimo\.com/i.test(endpoint.baseUrl)) {
+    return upstreamId.replace(/\s*\[[^\]]+\]\s*$/, "");
+  }
+  return upstreamId;
+}
+
 function isModernOpenAiEndpoint(endpoint: EndpointConfig, upstreamId: string): boolean {
   return (
     endpoint.providerKey === "openai" ||
@@ -250,7 +257,8 @@ async function fetchOpenAiCompat(args: {
   stream: boolean;
   includeUsage?: boolean;
 }): Promise<Response> {
-  const modernTokens = isModernOpenAiEndpoint(args.endpoint, args.upstreamId);
+  const upstreamId = normalizeOpenAiCompatModelId(args.endpoint, args.upstreamId);
+  const modernTokens = isModernOpenAiEndpoint(args.endpoint, upstreamId);
   const canUseStreamOptions =
     args.endpoint.providerKey === "openai" ||
     args.endpoint.providerKey === "deepseek";
@@ -265,7 +273,7 @@ async function fetchOpenAiCompat(args: {
       body: JSON.stringify(
         openAiRequestBody(
           {
-            upstreamId: args.upstreamId,
+            upstreamId,
             system: args.system,
             messages: args.messages,
             maxTokens: args.maxTokens,

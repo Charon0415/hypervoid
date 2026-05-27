@@ -52,7 +52,7 @@ async function autoSummarize(
 ): Promise<void> {
   if (status !== "published") return;
   if (hasExistingSummary) return;
-  if (!isAiConfigured()) return;
+  if (!(await isAiConfigured())) return;
   if (content.trim().length < 200) return;
   try {
     const summary = await summarizePost({ title, content });
@@ -264,8 +264,8 @@ export async function generateSummaryAction(
   slug: string,
 ): Promise<{ summary: string } | { error: string }> {
   await requireAuth();
-  if (!isAiConfigured()) {
-    return { error: "AI 未配置：缺少 ANTHROPIC_API_KEY env" };
+  if (!(await isAiConfigured())) {
+    return { error: "AI 未配置：当前模型未配置可用 API Key" };
   }
   const post = await getPostForEditing(slug);
   if (!post) return { error: "文章不存在" };
@@ -295,8 +295,8 @@ export async function suggestTagsAction(args: {
   content: string;
 }): Promise<{ tags: string[] } | { error: string }> {
   await requireAuth();
-  if (!isAiConfigured()) {
-    return { error: "AI 未配置：缺少 ANTHROPIC_API_KEY env" };
+  if (!(await isAiConfigured())) {
+    return { error: "AI 未配置：当前模型未配置可用 API Key" };
   }
   if (!args.content.trim()) {
     return { error: "正文为空，先写点东西再让 AI 建议标签" };
@@ -319,7 +319,7 @@ export async function generateOutlineAction(args: {
   content: string;
 }): Promise<{ outline: string } | { error: string }> {
   await requireAuth();
-  if (!isAiConfigured()) return { error: "AI 未配置" };
+  if (!(await isAiConfigured())) return { error: "AI 未配置" };
   if (!args.title.trim()) return { error: "需要标题才能生成大纲" };
   try {
     const outline = await generateOutline({
@@ -336,7 +336,7 @@ export async function polishTextAction(
   text: string,
 ): Promise<{ text: string } | { error: string }> {
   await requireAuth();
-  if (!isAiConfigured()) return { error: "AI 未配置" };
+  if (!(await isAiConfigured())) return { error: "AI 未配置" };
   const trimmed = text.trim();
   if (!trimmed) return { error: "请先选中或粘贴一段文字" };
   if (trimmed.length > 4000) return { error: "段落太长（>4000 字），请分段" };
@@ -353,7 +353,7 @@ export async function suggestTitlesAction(args: {
   content: string;
 }): Promise<{ titles: string[] } | { error: string }> {
   await requireAuth();
-  if (!isAiConfigured()) return { error: "AI 未配置" };
+  if (!(await isAiConfigured())) return { error: "AI 未配置" };
   if (!args.content.trim()) return { error: "正文为空，无法建议标题" };
   try {
     const titles = await suggestTitles({
@@ -371,7 +371,7 @@ export async function generateTldrAction(args: {
   content: string;
 }): Promise<{ tldr: string } | { error: string }> {
   await requireAuth();
-  if (!isAiConfigured()) return { error: "AI 未配置" };
+  if (!(await isAiConfigured())) return { error: "AI 未配置" };
   if (!args.content.trim()) return { error: "正文为空" };
   try {
     const tldr = await generateTldr({

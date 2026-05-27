@@ -110,6 +110,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
     getBacklinks(slug, { isAdmin: viewer.isAdmin }),
     listWebmentions(slug).catch(() => []),
   ]);
+  const aiConfigured = await isAiConfigured();
   const giscusRepo = process.env.NEXT_PUBLIC_GISCUS_REPO?.trim();
   const moderateUrl =
     viewer.isAdmin && giscusRepo
@@ -331,7 +332,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
         <RelatedPosts posts={related} />
         <Backlinks posts={backlinks} />
         <Webmentions items={webmentions} />
-        {isAiConfigured() ? (
+        {aiConfigured ? (
           <section className="mt-12">
             <AskAI slug={slug} />
           </section>

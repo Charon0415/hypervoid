@@ -12,10 +12,9 @@ import { getRamSiteFacts } from "@/lib/ram-facts";
  * Caller code that wants to know whether a specific provider can serve
  * the active model should use isActiveProviderConfigured instead.
  */
-export function isAiConfigured(): boolean {
-  return (
-    isProviderConfigured("anthropic") || isProviderConfigured("deepseek")
-  );
+export async function isAiConfigured(): Promise<boolean> {
+  const m = await getActiveAiModel();
+  return isProviderConfigured(m.provider);
 }
 
 export async function summarizePost(args: {
