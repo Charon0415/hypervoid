@@ -148,11 +148,11 @@ async function getTracksByIds(ids: number[]): Promise<NcmTrack[]> {
   const tracks: NcmTrack[] = [];
   for (let i = 0; i < ids.length; i += SONG_DETAIL_BATCH) {
     const batch = ids.slice(i, i + SONG_DETAIL_BATCH);
-    const body = JSON.stringify({ c: batch.map((id) => ({ id })) });
-    const res = await fetch(`${BASE}/api/v3/song/detail`, {
-      method: "POST",
+    const c = JSON.stringify(batch.map((id) => ({ id })));
+    const url = `${BASE}/api/v3/song/detail?c=${encodeURIComponent(c)}`;
+    const res = await fetch(url, {
+      method: "GET",
       headers: headers(),
-      body,
       next: { revalidate: 300 },
     });
     if (!res.ok) {
