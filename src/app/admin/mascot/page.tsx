@@ -85,6 +85,23 @@ function isOn(value: string): boolean {
   return value !== "off";
 }
 
+function normalizeMascotId(value: string): MascotId {
+  return value === "kanna" || value === "rem" || value === "ram"
+    ? value
+    : "ram";
+}
+
+async function setDefaultMascot(character: MascotId) {
+  "use server";
+  const session = await auth();
+  if (!session?.user) redirect("/admin/sign-in");
+  await setSiteOverrides([
+    { key: "mascot.defaultCharacter", value: normalizeMascotId(character) },
+  ]);
+  revalidatePath("/admin/mascot");
+  revalidatePath("/api/mascot/policy");
+}
+
 async function setMascotPolicy(key: PolicyKey, enabled: boolean) {
   "use server";
   const session = await auth();
@@ -100,7 +117,11 @@ export default async function AdminMascotPage() {
   const session = await auth();
   if (!session?.user) redirect("/admin/sign-in");
 
-  const values = await Promise.all(POLICIES.map((p) => getSiteOverride(p.key)));
+  const [defaultCharacterRaw, ...values] = await Promise.all([
+    getSiteOverride("mascot.defaultCharacter"),
+    ...POLICIES.map((p) => getSiteOverride(p.key)),
+  ]);
+  const defaultCharacter = normalizeMascotId(defaultCharacterRaw);
   const policyState = new Map(
     POLICIES.map((p, i) => [p.key, isOn(values[i] ?? "on")]),
   );
@@ -113,7 +134,7 @@ export default async function AdminMascotPage() {
       </header>
 
       <p className="text-sm text-muted">
-        后台只管理前台策略，不再指定某个全站角色，避免覆盖访客自己的本地选择。新访客默认看到拉姆。
+        后台管理前台策略和新访客默认角色；已经在本机切换过角色的访客仍优先使用自己的本地选择。
       </p>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -163,6 +184,46 @@ export default async function AdminMascotPage() {
         })}
       </div>
 
+      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-base font-bold tracking-tight">切换默认显示角色</h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted">
+              只影响没有本地角色记录的新访客；不会覆盖已经切换过角色的用户。
+            </p>
+          </div>
+          <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary">
+            {MASCOTS.find((m) => m.id === defaultCharacter)?.name ?? "拉姆"}
+          </span>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {MASCOTS.map((m) => {
+            const active = m.id === defaultCharacter;
+            return (
+              <form
+                key={m.id}
+                action={async () => {
+                  "use server";
+                  await setDefaultMascot(m.id);
+                }}
+              >
+                <button
+                  type="submit"
+                  className={
+                    "rounded-md border px-4 py-2 text-sm font-medium transition " +
+                    (active
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-background hover:border-primary hover:text-primary")
+                  }
+                >
+                  {m.name}
+                </button>
+              </form>
+            );
+          })}
+        </div>
+      </section>
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {MASCOTS.map((m) => (
           <article
@@ -201,7 +262,7 @@ export default async function AdminMascotPage() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <h2 className="text-lg font-bold tracking-tight">{m.name}</h2>
-                  {m.id === "ram" ? (
+                  {m.id === defaultCharacter ? (
                     <span className="shrink-0 rounded-full bg-primary px-2 py-0.5 text-[10px] font-medium text-primary-foreground">
                       默认
                     </span>
@@ -225,7 +286,7 @@ export default async function AdminMascotPage() {
       <div className="text-xs text-muted">
         <p className="font-medium">说明</p>
         <ul className="mt-1.5 list-disc space-y-0.5 pl-5">
-          <li>角色本身由访客浏览器 localStorage 保存，后台不会覆盖。</li>
+          <li>默认角色只影响新访客；角色本身由访客浏览器 localStorage 保存，后台不会覆盖。</li>
           <li>关闭“显示角色切换按钮”后，前台只保留看板娘开关和角色自身功能。</li>
           <li>关闭“允许用户切换角色”后，按钮可见时也不会执行角色切换。</li>
           <li>看板娘在移动端和管理后台页面默认隐藏。</li>

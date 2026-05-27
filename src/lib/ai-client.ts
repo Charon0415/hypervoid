@@ -48,6 +48,253 @@ function deepseekKey(): string {
   return key;
 }
 
+function openaiKey(): string {
+  const key = process.env.OPENAI_API_KEY;
+  if (!key) throw new Error("OPENAI_API_KEY 未配置");
+  return key;
+}
+
+function openAiChatCompletionsUrl(baseUrl: string): string {
+  const clean = baseUrl.trim().replace(/\/+$/, "");
+  if (/\/chat\/completions$/i.test(clean)) return clean;
+  return clean + "/chat/completions";
+}
+
+function isModernOpenAiEndpoint(endpoint: EndpointConfig, upstreamId: string): boolean {
+  return (
+    endpoint.providerKey === "openai" ||
+    /xiaomimimo\.com/i.test(endpoint.baseUrl) ||
+    /(^gpt-5|^o[134])/i.test(upstreamId)
+  );
+}
+
+type OpenAiBodyOptions = {
+  stream: boolean;
+  includeUsage?: boolean;
+  modernTokens?: boolean;
+  streamOptions?: boolean;
+};
+
+function openAiRequestBody(args: {
+  upstreamId: string;
+  system: string;
+  messages: ChatMessage[];
+  maxTokens: number;
+}, options: OpenAiBodyOptions): Record<string, unknown> {
+  const body: Record<string, unknown> = {
+    model: args.upstreamId,
+    messages: [
+      { role: "system", content: args.system },
+      ...args.messages,
+    ],
+    stream: options.stream,
+  };
+  body[options.modernTokens ? "max_completion_tokens" : "max_tokens"] =
+    args.maxTokens;
+  if (options.stream && options.includeUsage && options.streamOptions !== false) {
+    body.stream_options = { include_usage: true };
+  }
+  return body;
+}
+
+
+function openAiResponsesInput(messages: ChatMessage[]): { role: string; content: string }[] {
+  return messages.map((m) => ({ role: m.role, content: m.content }));
+}
+
+function getResponseOutputText(data: {
+  output_text?: string;
+  output?: { content?: { text?: string; type?: string }[] }[];
+}): string {
+  if (typeof data.output_text === "string") return data.output_text.trim();
+  let text = "";
+  for (const item of data.output ?? []) {
+    for (const block of item.content ?? []) {
+      if (typeof block.text === "string") text += block.text;
+    }
+  }
+  return text.trim();
+}
+
+async function chatOpenAiResponses(args: {
+  system: string;
+  messages: ChatMessage[];
+  maxTokens: number;
+  modelId: string;
+  modelLabel: string;
+  upstreamId: string;
+}): Promise<string> {
+  const res = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer " + openaiKey(),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: args.upstreamId,
+      instructions: args.system,
+      input: openAiResponsesInput(args.messages),
+      max_output_tokens: args.maxTokens,
+      stream: false,
+      store: false,
+    }),
+  });
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "");
+    throw new Error("openai " + res.status + ": " + errText.slice(0, 800));
+  }
+  const data = (await res.json()) as {
+    output_text?: string;
+    output?: { content?: { text?: string; type?: string }[] }[];
+    usage?: { input_tokens?: number; output_tokens?: number };
+  };
+  const text = getResponseOutputText(data);
+  await recordUsage(
+    "openai",
+    {
+      prompt:
+        data.usage?.input_tokens ??
+        estimateTokens(args.system + args.messages.map((m) => m.content).join("\n")),
+      completion: data.usage?.output_tokens ?? estimateTokens(text),
+    },
+    { modelId: args.modelId, modelLabel: args.modelLabel },
+  );
+  if (!text) throw new Error("openai 没有返回文本");
+  return text;
+}
+
+async function* streamOpenAiResponses(args: {
+  system: string;
+  messages: ChatMessage[];
+  maxTokens: number;
+  modelId: string;
+  modelLabel: string;
+  upstreamId: string;
+}): AsyncGenerator<string, void, unknown> {
+  const res = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer " + openaiKey(),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: args.upstreamId,
+      instructions: args.system,
+      input: openAiResponsesInput(args.messages),
+      max_output_tokens: args.maxTokens,
+      stream: true,
+      store: false,
+    }),
+  });
+  if (!res.ok || !res.body) {
+    const errText = await res.text().catch(() => "");
+    throw new Error("openai " + res.status + ": " + errText.slice(0, 800));
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder("utf-8", { fatal: false });
+  let buf = "";
+  let prompt = 0;
+  let completion = 0;
+  let collected = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    const lines = buf.split("\n");
+    buf = lines.pop() ?? "";
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("data:")) continue;
+      const payload = trimmed.slice(5).trim();
+      if (!payload || payload === "[DONE]") continue;
+      try {
+        const obj = JSON.parse(payload) as {
+          type?: string;
+          delta?: string;
+          response?: { usage?: { input_tokens?: number; output_tokens?: number } };
+        };
+        if (obj.type === "response.output_text.delta" && typeof obj.delta === "string") {
+          collected += obj.delta;
+          yield obj.delta;
+        }
+        const usage = obj.response?.usage;
+        if (usage) {
+          prompt = usage.input_tokens ?? prompt;
+          completion = usage.output_tokens ?? completion;
+        }
+      } catch {
+        /* ignore malformed chunk */
+      }
+    }
+  }
+
+  await recordUsage(
+    "openai",
+    {
+      prompt:
+        prompt ||
+        estimateTokens(args.system + args.messages.map((m) => m.content).join("\n")),
+      completion: completion || estimateTokens(collected),
+    },
+    { modelId: args.modelId, modelLabel: args.modelLabel },
+  );
+}
+
+async function fetchOpenAiCompat(args: {
+  endpoint: EndpointConfig;
+  upstreamId: string;
+  system: string;
+  messages: ChatMessage[];
+  maxTokens: number;
+  stream: boolean;
+  includeUsage?: boolean;
+}): Promise<Response> {
+  const modernTokens = isModernOpenAiEndpoint(args.endpoint, args.upstreamId);
+  const canUseStreamOptions =
+    args.endpoint.providerKey === "openai" ||
+    args.endpoint.providerKey === "deepseek";
+  const request = (opts: OpenAiBodyOptions) =>
+    fetch(openAiChatCompletionsUrl(args.endpoint.baseUrl), {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + args.endpoint.apiKey,
+        "Content-Type": "application/json",
+        ...args.endpoint.extraHeaders,
+      },
+      body: JSON.stringify(
+        openAiRequestBody(
+          {
+            upstreamId: args.upstreamId,
+            system: args.system,
+            messages: args.messages,
+            maxTokens: args.maxTokens,
+          },
+          opts,
+        ),
+      ),
+    });
+
+  let res = await request({
+    stream: args.stream,
+    includeUsage: args.includeUsage,
+    modernTokens,
+    streamOptions: canUseStreamOptions,
+  });
+  if (res.ok) return res;
+
+  const retryable = res.status === 400 || res.status === 422;
+  if (!retryable) return res;
+  await res.body?.cancel().catch(() => {});
+  res = await request({
+    stream: args.stream,
+    includeUsage: args.includeUsage,
+    modernTokens: !modernTokens,
+    streamOptions: false,
+  });
+  return res;
+}
+
 /**
  * Resolves the upstream endpoint config for a given model. Built-in models
  * use their dedicated SDK / hardcoded host. Custom models return their
@@ -55,6 +302,15 @@ function deepseekKey(): string {
  */
 async function resolveEndpoint(model: AiModel): Promise<EndpointConfig | null> {
   if (model.provider === "anthropic") return null; // SDK path
+  if (model.provider === "openai") {
+    return {
+      protocol: "openai",
+      baseUrl: "https://api.openai.com/v1",
+      apiKey: openaiKey(),
+      extraHeaders: {},
+      providerKey: "openai",
+    };
+  }
   if (model.provider === "deepseek") {
     return {
       protocol: "openai",
@@ -121,6 +377,17 @@ export async function chat(args: {
     return text;
   }
 
+  if (model.provider === "openai") {
+    return chatOpenAiResponses({
+      system: args.system,
+      messages: args.messages,
+      maxTokens: args.maxTokens,
+      modelId: model.id,
+      modelLabel: model.label,
+      upstreamId: model.upstreamId,
+    });
+  }
+
   const endpoint = await resolveEndpoint(model);
   if (!endpoint) throw new Error(`endpoint not resolved for ${model.id}`);
 
@@ -137,27 +404,18 @@ export async function chat(args: {
   }
 
   // OpenAI-compatible JSON path
-  const res = await fetch(`${endpoint.baseUrl}/chat/completions`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${endpoint.apiKey}`,
-      "Content-Type": "application/json",
-      ...endpoint.extraHeaders,
-    },
-    body: JSON.stringify({
-      model: model.upstreamId,
-      max_tokens: args.maxTokens,
-      messages: [
-        { role: "system", content: args.system },
-        ...args.messages,
-      ],
-      stream: false,
-    }),
+  const res = await fetchOpenAiCompat({
+    endpoint,
+    upstreamId: model.upstreamId,
+    system: args.system,
+    messages: args.messages,
+    maxTokens: args.maxTokens,
+    stream: false,
   });
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
     throw new Error(
-      `${endpoint.providerKey} ${res.status}: ${errText.slice(0, 200)}`,
+      `${endpoint.providerKey} ${res.status}: ${errText.slice(0, 800)}`,
     );
   }
   const data = (await res.json()) as {
@@ -210,7 +468,7 @@ async function chatAnthropicCompat(args: {
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
     throw new Error(
-      `${args.endpoint.providerKey} ${res.status}: ${errText.slice(0, 200)}`,
+      `${args.endpoint.providerKey} ${res.status}: ${errText.slice(0, 800)}`,
     );
   }
   const data = (await res.json()) as {
@@ -308,6 +566,18 @@ export async function* chatStream(args: {
     return;
   }
 
+  if (model.provider === "openai") {
+    yield* streamOpenAiResponses({
+      system: args.system,
+      messages: args.messages,
+      maxTokens: args.maxTokens,
+      modelId: model.id,
+      modelLabel: model.label,
+      upstreamId: model.upstreamId,
+    });
+    return;
+  }
+
   const endpoint = await resolveEndpoint(model);
   if (!endpoint) throw new Error(`endpoint not resolved for ${model.id}`);
 
@@ -325,28 +595,19 @@ export async function* chatStream(args: {
   }
 
   // OpenAI-compatible SSE path
-  const res = await fetch(`${endpoint.baseUrl}/chat/completions`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${endpoint.apiKey}`,
-      "Content-Type": "application/json",
-      ...endpoint.extraHeaders,
-    },
-    body: JSON.stringify({
-      model: model.upstreamId,
-      max_tokens: args.maxTokens,
-      messages: [
-        { role: "system", content: args.system },
-        ...args.messages,
-      ],
-      stream: true,
-      stream_options: { include_usage: true },
-    }),
+  const res = await fetchOpenAiCompat({
+    endpoint,
+    upstreamId: model.upstreamId,
+    system: args.system,
+    messages: args.messages,
+    maxTokens: args.maxTokens,
+    stream: true,
+    includeUsage: true,
   });
   if (!res.ok || !res.body) {
     const errText = await res.text().catch(() => "");
     throw new Error(
-      `${endpoint.providerKey} ${res.status}: ${errText.slice(0, 200)}`,
+      `${endpoint.providerKey} ${res.status}: ${errText.slice(0, 800)}`,
     );
   }
   const reader = res.body.getReader();
@@ -445,7 +706,7 @@ async function* streamAnthropicCompat(args: {
   if (!res.ok || !res.body) {
     const errText = await res.text().catch(() => "");
     throw new Error(
-      `${args.endpoint.providerKey} ${res.status}: ${errText.slice(0, 200)}`,
+      `${args.endpoint.providerKey} ${res.status}: ${errText.slice(0, 800)}`,
     );
   }
   const reader = res.body.getReader();

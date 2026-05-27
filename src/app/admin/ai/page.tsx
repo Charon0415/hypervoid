@@ -34,11 +34,16 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 const ENV_NAME: Record<string, string> = {
+  openai: "OPENAI_API_KEY",
   anthropic: "ANTHROPIC_API_KEY",
   deepseek: "DEEPSEEK_API_KEY",
 };
 
 const PROVIDER_DOCS: Record<string, { url: string; hint: string }> = {
+  openai: {
+    url: "https://platform.openai.com/api-keys",
+    hint: "在 platform.openai.com 创建 Key。内置 OpenAI 模型走官方 Responses API。",
+  },
   anthropic: {
     url: "https://console.anthropic.com/",
     hint: "在 console.anthropic.com 创建 Key,需要绑卡。",
@@ -247,7 +252,7 @@ export default async function AdminAiPage() {
           换模型立即生效——下一次请求即用新模型。Pro 类模型更贵更慢但更聪明,Flash 类更快更便宜。
         </p>
         <form action={updateModelAction} className="flex flex-col gap-3">
-          {(["deepseek", "anthropic"] as AiProvider[]).map((provider) => {
+          {(["openai", "deepseek", "anthropic"] as AiProvider[]).map((provider) => {
             const models = AI_MODELS.filter((m) => m.provider === provider);
             const providerOk = isProviderConfigured(provider);
             return (
@@ -442,11 +447,11 @@ export default async function AdminAiPage() {
             </select>
           </label>
           <label className="flex flex-col gap-1 text-xs">
-            <span className="font-medium">Base URL (不带尾斜杠)</span>
+            <span className="font-medium">Base URL</span>
             <input
               name="baseUrl"
               required
-              placeholder="https://openrouter.ai/api/v1"
+              placeholder="https://api.xiaomimimo.com/v1 或完整 /chat/completions"
               className="rounded-md border border-border bg-background px-2 py-1 font-mono text-sm"
             />
           </label>
@@ -485,7 +490,7 @@ export default async function AdminAiPage() {
               className="rounded-md border border-border bg-background px-2 py-1 font-mono text-[11px]"
             />
             <span className="text-[10px] text-muted">
-              OpenRouter 推荐填 HTTP-Referer + X-Title;其它服务通常留空。
+              OpenRouter 推荐填 HTTP-Referer + X-Title；MiMo 等 OpenAI 兼容服务通常留空。
             </span>
           </label>
           <button

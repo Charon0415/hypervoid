@@ -29,6 +29,7 @@ export type OverridableFields =
   | "home.quoteAuthor"
   | "mascot.allowUserSwitch"
   | "mascot.showSwitchButton"
+  | "mascot.defaultCharacter"
   | "music.playlistId"
   | "music.savedPlaylists"
   | "effects.playerWidget"
@@ -62,6 +63,7 @@ const DEFAULT_MAP: Record<OverridableFields, string> = {
   "home.quoteAuthor": "Carl Sagan",
   "mascot.allowUserSwitch": "on",
   "mascot.showSwitchButton": "on",
+  "mascot.defaultCharacter": "ram",
   "music.playlistId": "",
   "music.savedPlaylists": "[]",
   "effects.playerWidget": "off",
@@ -96,6 +98,7 @@ const LABELS: Record<OverridableFields, string> = {
   "home.quoteAuthor": "首页名句作者",
   "mascot.allowUserSwitch": "允许访客切换看板娘 (on / off)",
   "mascot.showSwitchButton": "显示角色旁切换按钮 (on / off)",
+  "mascot.defaultCharacter": "新访客默认看板娘 (ram / rem / kanna)",
   "music.playlistId": "网易云歌单 ID",
   "music.savedPlaylists": "已保存歌单（JSON）",
   "effects.playerWidget": "播放器小组件视觉特效",

@@ -23,6 +23,7 @@ export default async function AdminSettingsPage() {
   const dedicated = new Set([
     "mascot.allowUserSwitch",
     "mascot.showSwitchButton",
+    "mascot.defaultCharacter",
     "music.playlistId",
     "music.savedPlaylists",
     "effects.playerWidget",

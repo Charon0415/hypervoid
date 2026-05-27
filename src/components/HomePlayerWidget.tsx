@@ -232,10 +232,10 @@ export function HomePlayerWidget() {
                         alt={current.title}
                         className={`object-cover shadow-sm ${
                           fxEnabled
-                            ? `h-14 w-14 rounded-xl shadow-lg ring-1 ring-black/5 dark:ring-white/10 ${
+                            ? `h-14 w-14 rounded-full shadow-lg ring-1 ring-black/5 dark:ring-white/10 ${
                                 playing ? "animate-[spin_20s_linear_infinite]" : ""
                               }`
-                            : `h-12 w-12 rounded-lg ${
+                            : `h-12 w-12 rounded-full ${
                                 playing ? "animate-[spin_20s_linear_infinite]" : ""
                               }`
                         }`}
@@ -245,15 +245,15 @@ export function HomePlayerWidget() {
                       />
                       {/* Glow effect — only when effects enabled */}
                       {fxEnabled && playing ? (
-                        <div className="absolute -inset-1 -z-10 rounded-2xl bg-primary/15 blur-md" />
+                        <div className="absolute -inset-1 -z-10 rounded-full bg-primary/15 blur-md" />
                       ) : null}
                     </div>
                   ) : (
                     <div
                       className={`flex shrink-0 items-center justify-center bg-gradient-to-br from-primary/15 to-primary/5 ${
                         fxEnabled
-                          ? "h-14 w-14 rounded-xl text-2xl shadow-lg ring-1 ring-black/5 dark:ring-white/10"
-                          : "h-12 w-12 rounded-lg text-xl"
+                          ? "h-14 w-14 rounded-full text-2xl shadow-lg ring-1 ring-black/5 dark:ring-white/10"
+                          : "h-12 w-12 rounded-full text-xl"
                       }`}
                     >
                       ♪

@@ -24,6 +24,7 @@ type Props = {
 type MascotPolicy = {
   allowUserSwitch: boolean;
   showSwitchButton: boolean;
+  defaultCharacter: MascotCharacter;
 };
 
 export function MascotCharacterSwitcher({
@@ -44,11 +45,21 @@ export function MascotCharacterSwitcher({
         setPolicy({
           allowUserSwitch: data.allowUserSwitch !== false,
           showSwitchButton: data.showSwitchButton !== false,
+          defaultCharacter:
+            data.defaultCharacter === "kanna" ||
+            data.defaultCharacter === "rem" ||
+            data.defaultCharacter === "ram"
+              ? data.defaultCharacter
+              : "ram",
         });
       })
       .catch(() => {
         if (!cancelled) {
-          setPolicy({ allowUserSwitch: true, showSwitchButton: true });
+          setPolicy({
+            allowUserSwitch: true,
+            showSwitchButton: true,
+            defaultCharacter: "ram",
+          });
         }
       });
     return () => {
@@ -103,7 +114,10 @@ export function MascotCharacterSwitcher({
         aria-label="切换看板娘"
         title={policy.allowUserSwitch ? "切换看板娘" : "后台已禁止切换看板娘"}
         className={
-          "flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card opacity-100 shadow-md transition-all duration-150 " +
+          "flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card shadow-md transition-all duration-150 " +
+          (open
+            ? "opacity-100 "
+            : "opacity-0 group-hover/mascot:opacity-100 focus-visible:opacity-100 ") +
           (policy.allowUserSwitch
             ? "text-muted hover:border-primary hover:text-primary"
             : "cursor-not-allowed text-muted/45")

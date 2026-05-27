@@ -251,7 +251,13 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const a = audioRef.current;
     if (!a || !current?.url) return;
     if (a.paused) {
-      a.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
+      setError(null);
+      a.play()
+        .then(() => setPlaying(true))
+        .catch(() => {
+          setPlaying(false);
+          setError("音频播放失败，请稍后重试");
+        });
     } else {
       a.pause();
       setPlaying(false);
@@ -314,9 +320,15 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       a.src = current.url;
       a.load();
       setCurrentTime(0);
+      setError(null);
     }
     if (playing) {
-      a.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
+      a.play()
+        .then(() => setPlaying(true))
+        .catch(() => {
+          setPlaying(false);
+          setError("音频播放失败，请稍后重试");
+        });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current?.id, current?.url]);
@@ -326,7 +338,11 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const a = audioRef.current;
     if (!a || !current?.url) return;
     if (playing && a.paused) {
-      a.play().catch(() => setPlaying(false));
+      setError(null);
+      a.play().catch(() => {
+        setPlaying(false);
+        setError("音频播放失败，请稍后重试");
+      });
     } else if (!playing && !a.paused) {
       a.pause();
     }
@@ -350,6 +366,11 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const onPause = () => setPlaying(false);
     const onPlay = () => setPlaying(true);
     const onSeeked = () => setCurrentTime(a.currentTime * 1000);
+    const onError = () => {
+      setPlaying(false);
+      setError("音频加载失败，请稍后重试");
+    };
+    const onCanPlay = () => setError(null);
     const onEnded = () => {
       if (repeatMode === "one") {
         a.currentTime = 0;
@@ -378,6 +399,8 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     a.addEventListener("play", onPlay);
     a.addEventListener("seeked", onSeeked);
     a.addEventListener("ended", onEnded);
+    a.addEventListener("error", onError);
+    a.addEventListener("canplay", onCanPlay);
     return () => {
       a.removeEventListener("timeupdate", onTime);
       a.removeEventListener("loadedmetadata", onMeta);
@@ -386,6 +409,8 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       a.removeEventListener("play", onPlay);
       a.removeEventListener("seeked", onSeeked);
       a.removeEventListener("ended", onEnded);
+      a.removeEventListener("error", onError);
+      a.removeEventListener("canplay", onCanPlay);
     };
   }, [repeatMode, shuffle, currentIdx, tracks.length, next]);
 

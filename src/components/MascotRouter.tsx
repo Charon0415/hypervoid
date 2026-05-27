@@ -43,7 +43,26 @@ export function MascotRouter() {
   );
 
   useEffect(() => {
-    const applyStored = () => setCharacter(readStoredChar() ?? "ram");
+    if (readStoredChar()) return;
+    let cancelled = false;
+    fetch("/api/mascot/policy", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((data: { defaultCharacter?: unknown }) => {
+        if (!cancelled && isMascotChar(data.defaultCharacter)) {
+          setCharacter(data.defaultCharacter);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const applyStored = () => {
+      const stored = readStoredChar();
+      if (stored) setCharacter(stored);
+    };
     const onCharacterChanged = (e: Event) => {
       const detail = (e as CustomEvent<{ character?: unknown }>).detail;
       setCharacter(

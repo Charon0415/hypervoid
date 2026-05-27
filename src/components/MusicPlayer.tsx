@@ -170,13 +170,13 @@ export function MusicPlayer({ initialTracks }: { initialTracks: Track[] }) {
               <img
                 src={current.cover}
                 alt={current.title}
-                className={`h-48 w-48 rounded-2xl object-cover shadow-2xl ring-1 ring-black/5 sm:h-56 sm:w-56 ${
+                className={`h-48 w-48 rounded-full object-cover shadow-2xl ring-1 ring-black/5 sm:h-56 sm:w-56 ${
                   playing ? "animate-[spin_30s_linear_infinite]" : ""
                 }`}
                 style={{ animationPlayState: playing ? "running" : "paused" }}
               />
             ) : (
-              <div className="flex h-48 w-48 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 text-6xl shadow-2xl sm:h-56 sm:w-56">
+              <div className="flex h-48 w-48 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 text-6xl shadow-2xl sm:h-56 sm:w-56">
                 ♪
               </div>
             )}
@@ -407,6 +407,12 @@ export function MusicPlayer({ initialTracks }: { initialTracks: Track[] }) {
                 />
               </div>
             </div>
+
+            {error ? (
+              <p className="mt-3 rounded-lg border border-red-500/20 bg-red-500/5 px-3 py-2 text-xs text-red-600 dark:text-red-300">
+                {error}
+              </p>
+            ) : null}
 
             {/* Panel toggles */}
             <div className="mt-4 flex gap-2">

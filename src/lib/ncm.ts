@@ -4,10 +4,10 @@ import "server-only";
  * Lightweight NetEase Cloud Music API client.
  * Calls NCM's internal web API directly — no third-party package needed.
  *
- * Audio bytes are NEVER proxied through this server: the `<audio>` element
- * loads URLs directly from NCM's CDN, so Vercel bandwidth/storage is
- * unaffected by playback. We only proxy small JSON (playlist meta, song
- * url metadata, lyrics).
+ * Playlist metadata and lyrics are small JSON calls. Audio playback uses a
+ * local stream endpoint that resolves fresh NCM URLs server-side and forwards
+ * range requests so browser playback is less likely to fail on expired direct
+ * links, CORS, or referrer checks.
  */
 
 const BASE = "https://music.163.com";
@@ -36,16 +36,22 @@ function getCookie(): string | undefined {
   return v.trim() || undefined;
 }
 
-function headers(): Record<string, string> {
+export function ncmMediaHeaders(): Record<string, string> {
   const h: Record<string, string> = {
     "User-Agent": UA,
     Referer: BASE,
     Origin: BASE,
-    "Content-Type": "application/x-www-form-urlencoded",
   };
   const cookie = getCookie();
   if (cookie) h.Cookie = cookie;
   return h;
+}
+
+function headers(): Record<string, string> {
+  return {
+    ...ncmMediaHeaders(),
+    "Content-Type": "application/x-www-form-urlencoded",
+  };
 }
 
 /**
@@ -229,6 +235,37 @@ const URL_BATCH_SIZE = 100;
  * NCM's URL endpoint silently drops IDs beyond a certain batch size (~100),
  * so we split large requests into parallel batches.
  */
+async function fetchSongUrlBatch(
+  batch: number[],
+  level: string,
+): Promise<{ id: number; url: string | null }[]> {
+  const res = await fetch(BASE + "/api/song/enhance/player/url/v1", {
+    method: "POST",
+    headers: headers(),
+    body:
+      "ids=" +
+      encodeURIComponent(JSON.stringify(batch)) +
+      "&level=" +
+      encodeURIComponent(level) +
+      "&encodeType=mp3",
+    next: { revalidate: 120 },
+  });
+  if (!res.ok) {
+    console.warn("[NCM] song urls HTTP " + res.status);
+    return [];
+  }
+  const data = await res.json();
+  if (data?.code && data.code !== 200) {
+    console.warn(
+      "[NCM] song urls code=" +
+        data.code +
+        " message=" +
+        (data.message ?? ""),
+    );
+  }
+  return (data?.data ?? []) as { id: number; url: string | null }[];
+}
+
 export async function getSongUrls(
   ids: number[],
 ): Promise<Map<number, string | null>> {
@@ -240,34 +277,31 @@ export async function getSongUrls(
     batches.push(ids.slice(i, i + URL_BATCH_SIZE));
   }
 
-  const results = await Promise.all(
+  const levels = ["exhigh", "higher", "standard"];
+  await Promise.all(
     batches.map(async (batch) => {
-      const res = await fetch(`${BASE}/api/song/enhance/player/url/v1`, {
-        method: "POST",
-        headers: headers(),
-        body: `ids=${JSON.stringify(batch)}&level=exhigh&encodeType=flac`,
-        next: { revalidate: 300 },
-      });
-      if (!res.ok) {
-        console.warn(`[NCM] song urls HTTP ${res.status}`);
-        return [] as { id: number; url: string | null }[];
+      const unresolved = new Set(batch);
+      for (const level of levels) {
+        if (unresolved.size === 0) break;
+        const items = await fetchSongUrlBatch([...unresolved], level);
+        for (const d of items) {
+          if (!unresolved.has(d.id)) continue;
+          if (d.url) {
+            map.set(d.id, d.url);
+            unresolved.delete(d.id);
+          }
+        }
       }
-      const data = await res.json();
-      if (data?.code && data.code !== 200) {
-        console.warn(
-          `[NCM] song urls code=${data.code} message=${data.message ?? ""}`,
-        );
-      }
-      return (data?.data ?? []) as { id: number; url: string | null }[];
+      for (const id of unresolved) map.set(id, null);
     }),
   );
 
-  for (const items of results) {
-    for (const d of items) {
-      map.set(d.id, d.url || null);
-    }
-  }
   return map;
+}
+
+export async function getPlayableSongUrl(songId: number): Promise<string | null> {
+  const urls = await getSongUrls([songId]);
+  return urls.get(songId) ?? null;
 }
 
 /**
@@ -281,7 +315,7 @@ export async function getPlaylistWithUrls(
   const urlMap = await getSongUrls(ids);
   return tracks.map((t) => ({
     ...t,
-    url: urlMap.get(t.id) ?? null,
+    url: urlMap.get(t.id) ? `/api/music/stream?id=${t.id}` : null,
   }));
 }
 

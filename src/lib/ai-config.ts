@@ -26,6 +26,34 @@ export type AiModel = {
 
 export const AI_MODELS: AiModel[] = [
   {
+    id: "gpt-5.5",
+    provider: "openai",
+    label: "GPT-5.5",
+    hint: "OpenAI 旗舰模型。适合复杂推理、长文分析和高质量写作。",
+    upstreamId: "gpt-5.5",
+  },
+  {
+    id: "gpt-5.4",
+    provider: "openai",
+    label: "GPT-5.4",
+    hint: "OpenAI 高质量模型。适合日常写作、分析和代码辅助。",
+    upstreamId: "gpt-5.4",
+  },
+  {
+    id: "gpt-5.4-mini",
+    provider: "openai",
+    label: "GPT-5.4 mini",
+    hint: "OpenAI 高性价比模型。适合摘要、标签、聊天和常规写作助手。",
+    upstreamId: "gpt-5.4-mini",
+  },
+  {
+    id: "gpt-5.4-nano",
+    provider: "openai",
+    label: "GPT-5.4 nano",
+    hint: "OpenAI 低延迟、低成本模型。适合轻量任务。",
+    upstreamId: "gpt-5.4-nano",
+  },
+  {
     id: "deepseek-v4-flash",
     provider: "deepseek",
     label: "DeepSeek V4 Flash",
@@ -66,6 +94,7 @@ export const DEFAULT_AI_MODEL_ID = "deepseek-v4-flash";
 
 /** Stable provider keys used for built-ins. Custom models append their own. */
 export const BUILTIN_PROVIDERS: { id: AiProvider; label: string }[] = [
+  { id: "openai", label: "OpenAI" },
   { id: "deepseek", label: "DeepSeek" },
   { id: "anthropic", label: "Claude (Anthropic)" },
 ];
@@ -165,6 +194,7 @@ export async function setAiModel(id: string): Promise<void> {
 }
 
 export function isProviderConfigured(provider: AiProvider): boolean {
+  if (provider === "openai") return Boolean(process.env.OPENAI_API_KEY);
   if (provider === "anthropic") return Boolean(process.env.ANTHROPIC_API_KEY);
   if (provider === "deepseek") return Boolean(process.env.DEEPSEEK_API_KEY);
   // Custom providers carry their own keys in the DB row — handled by ai-client
@@ -188,6 +218,7 @@ export function maskKey(raw: string | undefined): string {
 }
 
 export function providerKeyHint(provider: AiProvider): string {
+  if (provider === "openai") return maskKey(process.env.OPENAI_API_KEY);
   if (provider === "anthropic") return maskKey(process.env.ANTHROPIC_API_KEY);
   if (provider === "deepseek") return maskKey(process.env.DEEPSEEK_API_KEY);
   return "未配置";

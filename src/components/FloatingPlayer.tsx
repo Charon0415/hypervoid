@@ -36,6 +36,7 @@ export function FloatingPlayer() {
     toggleShuffle,
     cycleRepeat,
     playAt,
+    ensureTracksLoaded,
   } = useActions();
 
   const [expanded, setExpanded] = useState(false);
@@ -44,6 +45,10 @@ export function FloatingPlayer() {
   const [visible, setVisible] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef(false);
+
+  useEffect(() => {
+    void ensureTracksLoaded();
+  }, [ensureTracksLoaded]);
 
   useEffect(() => {
     if (tracksLoaded && current) {
@@ -89,7 +94,7 @@ export function FloatingPlayer() {
           {/* Header */}
           <div className="flex items-center gap-3">
             <div
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden shadow-md shrink-0 border border-white/30"
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden shadow-md shrink-0 border border-white/30"
               style={{ animation: playing ? "spin 8s linear infinite" : "none" }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element -- NCM cover hosts vary; this tiny animated artwork should not go through image optimization. */}
