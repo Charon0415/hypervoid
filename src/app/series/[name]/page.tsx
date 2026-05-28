@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getAllSeries, getPostsBySeries } from "@/lib/posts";
+import { getPublicSeriesList } from "@/lib/series-public";
 import { SeriesPostList } from "@/components/SeriesPostList";
 
 type Params = { name: string };
@@ -20,9 +21,11 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { name } = await props.params;
   const decoded = decodeURIComponent(name);
+  const seriesList = await getPublicSeriesList();
+  const series = seriesList.find((s) => s.name === decoded);
   return {
     title: `${decoded} · 系列`,
-    description: `「${decoded}」系列下的所有文章`,
+    description: series?.description ?? `「${decoded}」系列下的所有文章`,
   };
 }
 
@@ -33,6 +36,9 @@ export default async function SeriesDetailPage(
   const decoded = decodeURIComponent(name);
   const posts = await getPostsBySeries(decoded);
   if (posts.length === 0) notFound();
+
+  const seriesList = await getPublicSeriesList();
+  const series = seriesList.find((s) => s.name === decoded);
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6">
@@ -55,6 +61,20 @@ export default async function SeriesDetailPage(
         </svg>
         所有系列
       </Link>
+
+      {series?.cover ? (
+        <div className="overflow-hidden rounded-2xl">
+          <img
+            src={series.cover}
+            alt=""
+            className="w-full object-cover"
+          />
+        </div>
+      ) : null}
+
+      {series?.description ? (
+        <p className="text-sm text-muted">{series.description}</p>
+      ) : null}
 
       <SeriesPostList posts={posts} seriesName={decoded} />
     </div>

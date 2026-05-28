@@ -163,6 +163,21 @@ export const photos = pgTable("photos", {
     .defaultNow(),
 });
 
+/** Topic collections / series — independent from post frontmatter */
+export const series = pgTable("series", {
+  slug: text("slug").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  cover: text("cover"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
 /** Runtime overrides for site-config.ts — editable from /admin/settings */
 export const siteOverrides = pgTable("site_overrides", {
   key: text("key").primaryKey(),

@@ -28,6 +28,7 @@ const TABLE_LIST = [
   "webmentions",
   "linkChecks",
   "searchLog",
+  "series",
   "dbBackups",
 ] as const;
 

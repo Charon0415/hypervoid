@@ -111,6 +111,10 @@ export default async function Home() {
 
         {dailyPick ? <DailyPick post={dailyPick} /> : null}
 
+        <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+          <TopicCollections />
+        </Suspense>
+
         <PostActivityHeatmap />
 
         <section>
@@ -165,9 +169,6 @@ export default async function Home() {
               <MiniCalendar />
             </Suspense>
           </div>
-          <Suspense fallback={<Skeleton className="h-56 w-full" />}>
-            <TopicCollections />
-          </Suspense>
           <HomePlayerWidget />
           <div className="hidden md:contents">
             <Suspense fallback={<Skeleton className="h-32 w-full" />}>
