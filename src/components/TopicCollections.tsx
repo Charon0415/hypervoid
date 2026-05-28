@@ -9,7 +9,7 @@ function hashHue(str: string): number {
 }
 
 export async function TopicCollections() {
-  const series = await getPublicSeriesList();
+  const series = (await getPublicSeriesList()).slice(0, 5);
   if (!series.length) return null;
 
   return (
