@@ -10,6 +10,7 @@ import { ProfileCard } from "@/components/ProfileCard";
 import { MiniCalendar } from "@/components/MiniCalendar";
 import { MiniTerminal } from "@/components/MiniTerminal";
 import { PostActivityHeatmap } from "@/components/PostActivityHeatmap";
+import { AdaptivePostGrid } from "@/components/AdaptivePostGrid";
 import { TopicCollections } from "@/components/TopicCollections";
 import { TagCloud } from "@/components/TagCloud";
 import { RecentGuestbook } from "@/components/RecentGuestbook";
@@ -37,7 +38,7 @@ export default async function Home() {
     getSiteOverride("home.quote"),
     getSiteOverride("home.quoteAuthor"),
   ]);
-  const recent = all.slice(0, 10);
+  const recent = all;
   const dailyPick = pickByDay(all);
 
   // Server-side snapshot for the MiniTerminal — only ships titles+slugs
@@ -117,7 +118,7 @@ export default async function Home() {
 
         <PostActivityHeatmap />
 
-        <section>
+        <div>
           <div className="mb-4 flex items-baseline justify-between">
             <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
               最新文章
@@ -133,17 +134,17 @@ export default async function Home() {
             </Link>
           </div>
           {recent.length ? (
-            <div className="grid gap-4 sm:grid-cols-2">
+            <AdaptivePostGrid>
               {recent.map((post) => (
                 <PostCard key={post.slug} post={post} />
               ))}
-            </div>
+            </AdaptivePostGrid>
           ) : (
             <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
               还没有文章。
             </p>
           )}
-        </section>
+        </div>
 
         <section className="lg:mt-auto">
           {isEmailConfigured() ? <SubscribeForm /> : <RssSubscribeCard />}
