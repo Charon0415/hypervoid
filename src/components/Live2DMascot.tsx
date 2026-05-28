@@ -106,7 +106,7 @@ function clampPos(p: Pos): Pos {
 function defaultPos(): Pos {
   if (typeof window === "undefined") return { x: 0, y: 0 };
   return clampPos({
-    x: window.innerWidth - MASCOT_W - 16,
+    x: 16,
     y: window.innerHeight - MASCOT_H - 16,
   });
 }
@@ -379,7 +379,7 @@ export function Live2DMascot() {
             onClick={close}
             aria-label="收起看板娘"
             title="收起 · 还可在站点设置中重新打开"
-            className="absolute right-1 top-1 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card text-base font-medium text-muted opacity-0 shadow-md transition-all duration-150 hover:border-primary hover:text-primary group-hover/mascot:opacity-100 focus-visible:opacity-100"
+            className="absolute -right-8 top-1 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card text-base font-medium text-muted opacity-0 shadow-md transition-all duration-150 hover:border-primary hover:text-primary group-hover/mascot:opacity-100 focus-visible:opacity-100"
           >
             <svg
               className="h-3.5 w-3.5"
@@ -401,7 +401,7 @@ export function Live2DMascot() {
             onClick={() => setChatOpen((v) => !v)}
             aria-label={chatOpen ? "收起对话" : "和康娜说话"}
             title={chatOpen ? "收起对话" : "和康娜说话"}
-            className={`absolute left-1 top-1 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card text-muted opacity-0 shadow-md transition-all duration-150 hover:border-primary hover:text-primary group-hover/mascot:opacity-100 focus-visible:opacity-100 ${
+            className={`absolute -right-8 top-9 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card text-muted opacity-0 shadow-md transition-all duration-150 hover:border-primary hover:text-primary group-hover/mascot:opacity-100 focus-visible:opacity-100 ${
               chatOpen ? "!opacity-100" : ""
             }`}
           >
@@ -422,14 +422,14 @@ export function Live2DMascot() {
 
           <MascotCharacterSwitcher
             current="kanna"
-            className="left-1 top-9"
-            menuClassName="right-full top-0 mr-2"
+            className="-right-8 top-[4.25rem]"
+            menuClassName="left-full top-0 ml-2"
           />
 
           {chatOpen ? (
             <div
               data-no-drag
-              className="absolute right-full top-12 z-10 mr-2"
+              className="absolute left-full top-[3.75rem] z-10 ml-4"
               onPointerDown={(e) => e.stopPropagation()}
             >
               <MascotChat onClose={() => setChatOpen(false)} />
