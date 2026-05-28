@@ -11,6 +11,14 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     viewTransition: true,
+    serverActions: {
+      allowedOrigins: [
+        "hypervoid.top",
+        "www.hypervoid.top",
+        "*.vercel.app",
+      ],
+      bodySizeLimit: "4mb",
+    },
   },
   // Lets next/image proxy + auto-resize covers/avatars from these hosts.
   // The Vercel Image Optimization API will fetch, resize, and serve modern
