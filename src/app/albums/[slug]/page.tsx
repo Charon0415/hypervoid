@@ -1,11 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import {
-  getAlbumBySlug,
-  listPhotosInAlbum,
-} from "@/db/albums";
+import { getAlbumBySlug, listPhotosInAlbum } from "@/db/albums";
+import { PhotoWall } from "@/components/PhotoWall";
 
 type Params = { slug: string };
 
@@ -50,32 +47,7 @@ export default async function AlbumDetail(props: {
           这个相册还没有照片。
         </p>
       ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {photos.map((p) => (
-            <a
-              key={p.id}
-              href={p.url}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="group relative overflow-hidden rounded-md border border-border"
-            >
-              <Image
-                src={p.url}
-                alt={p.caption ?? ""}
-                width={480}
-                height={480}
-                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-                loading="lazy"
-                className="aspect-square w-full object-cover transition group-hover:scale-110"
-              />
-              {p.caption ? (
-                <p className="dark-locked absolute bottom-0 left-0 right-0 translate-y-full truncate bg-black/60 px-2 py-1 text-xs text-white transition group-hover:translate-y-0">
-                  {p.caption}
-                </p>
-              ) : null}
-            </a>
-          ))}
-        </div>
+        <PhotoWall photos={photos} />
       )}
     </div>
   );
