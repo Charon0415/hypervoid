@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getAlbumBySlug, listPhotosInAlbum } from "@/db/albums";
-import { PhotoSphere } from "@/components/PhotoSphere";
+import { PhotoSphereGL } from "@/components/PhotoSphereGL";
 
 type Params = { slug: string };
 
@@ -14,12 +14,12 @@ export async function generateMetadata(props: {
   const { slug } = await props.params;
   const album = await getAlbumBySlug(slug);
   return {
-    title: album ? `${album.name} · 3D 球体` : "3D 球体",
+    title: album ? `${album.name} · WebGL 球体` : "WebGL 球体",
     description: album?.description ?? undefined,
   };
 }
 
-export default async function AlbumSphere(props: {
+export default async function AlbumSphereGL(props: {
   params: Promise<Params>;
 }) {
   const { slug } = await props.params;
@@ -38,10 +38,10 @@ export default async function AlbumSphere(props: {
         </Link>
         <div className="flex gap-2">
           <Link
-            href={`/albums/${slug}/sphere-gl`}
+            href={`/albums/${slug}/sphere`}
             className="rounded-full border border-border px-3 py-1 text-xs text-muted transition hover:border-primary hover:text-primary"
           >
-            WebGL 球体
+            CSS 球体
           </Link>
           <Link
             href={`/albums/${slug}`}
@@ -56,13 +56,14 @@ export default async function AlbumSphere(props: {
         {album.description ? (
           <p className="mt-1 text-sm text-muted">{album.description}</p>
         ) : null}
+        <p className="mt-1 text-xs text-muted/60">WebGL · Three.js</p>
       </header>
       {photos.length === 0 ? (
         <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
           这个相册还没有照片。
         </p>
       ) : (
-        <PhotoSphere photos={photos} />
+        <PhotoSphereGL photos={photos} />
       )}
     </div>
   );
