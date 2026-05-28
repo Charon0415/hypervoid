@@ -7,6 +7,10 @@ import {
   setSiteOverrides,
   type OverridableFields,
 } from "@/lib/site-config-server";
+import {
+  getSiteSetting,
+  setSiteSetting,
+} from "@/db/site-settings";
 
 export const metadata: Metadata = {
   title: "站点设置",
@@ -18,6 +22,7 @@ export default async function AdminSettingsPage() {
   if (!session?.user) redirect("/admin/sign-in");
 
   const allFields = await getAllOverrides();
+  const loginRequired = (await getSiteSetting("site_login_required")) === "true";
   // These keys have dedicated admin pages and are filtered out from the
   // generic settings form so they don't appear twice.
   const dedicated = new Set([
@@ -99,6 +104,44 @@ export default async function AdminSettingsPage() {
           </button>
         </div>
       </form>
+
+      <hr className="border-border" />
+
+      {/* Site-wide login toggle */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-lg font-semibold">访问控制</h2>
+        <div className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
+          <div>
+            <p className="text-sm font-medium">全站登录</p>
+            <p className="mt-0.5 text-xs text-muted">
+              开启后，未登录用户访问任何页面都会跳转到登录页
+            </p>
+          </div>
+          <form
+            action={async () => {
+              "use server";
+              const next = loginRequired ? "false" : "true";
+              await setSiteSetting("site_login_required", next);
+            }}
+          >
+            <button
+              type="submit"
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
+                loginRequired ? "bg-primary" : "bg-border"
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${
+                  loginRequired ? "translate-x-6" : "translate-x-1"
+                }`}
+              />
+            </button>
+          </form>
+        </div>
+        <p className="text-xs text-muted">
+          当前状态：{loginRequired ? "已开启 — 未登录用户会被拦截" : "已关闭 — 所有人可自由访问"}
+        </p>
+      </section>
 
       <hr className="border-border" />
 

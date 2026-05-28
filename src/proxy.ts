@@ -2,16 +2,11 @@ import { NextResponse, type NextRequest } from "next/server";
 import { auth, ADMIN_LOGIN } from "@/auth";
 
 /**
- * Per-request CSP nonce + preview-deployment/admin gate.
+ * Per-request CSP nonce + preview-deployment/admin gate + optional site-wide login.
  *
  * Next.js 16 renamed the `middleware` convention to `proxy`; keep this file
  * narrow so public ISR pages stay cacheable. Public routes use the static CSP
  * from next.config.ts, while admin/search/cron routes get a strict nonce CSP.
- *
- * NOTE: This proxy does NOT fix the Next-Router-State-Tree [""] bug because
- * Next.js strips internal Flight headers (rsc, next-router-state-tree, etc.)
- * from request.headers during RSC requests in proxy. The fix is instead
- * applied via scripts/patch-next-router-state.mjs (postinstall + prebuild).
  */
 
 const COMMON_DIRECTIVES = [
@@ -29,6 +24,47 @@ const COMMON_DIRECTIVES = [
 
 const SCRIPT_HOSTS =
   "https://giscus.app https://cloud.umami.is https://umami.hypervoid.top";
+
+// Paths exempt from site-wide login check
+const PUBLIC_PATHS = [
+  "/sign-in",
+  "/api/auth",
+  "/api/og",
+  "/favicon.ico",
+  "/robots.txt",
+  "/sitemap.xml",
+  "/manifest.json",
+];
+
+function isPublicPath(pathname: string): boolean {
+  if (PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/")))
+    return true;
+  // Static assets
+  if (pathname.startsWith("/_next/") || pathname.startsWith("/live2d/"))
+    return true;
+  if (/\.(ico|png|jpg|jpeg|gif|webp|svg|css|js|woff2?|ttf|eot)$/.test(pathname))
+    return true;
+  return false;
+}
+
+// Cache the setting for 60s to avoid a DB query on every request
+let loginRequiredCache: { value: boolean; ts: number } | null = null;
+
+async function isSiteLoginRequired(): Promise<boolean> {
+  const now = Date.now();
+  if (loginRequiredCache && now - loginRequiredCache.ts < 60_000) {
+    return loginRequiredCache.value;
+  }
+  try {
+    const { getSiteSetting } = await import("@/db/site-settings");
+    const val = await getSiteSetting("site_login_required");
+    const result = val === "true";
+    loginRequiredCache = { value: result, ts: now };
+    return result;
+  } catch {
+    return false;
+  }
+}
 
 async function denyUnauthorized(req: NextRequest): Promise<NextResponse | null> {
   const { pathname } = req.nextUrl;
@@ -55,6 +91,25 @@ async function denyUnauthorized(req: NextRequest): Promise<NextResponse | null> 
   return NextResponse.redirect(signInUrl);
 }
 
+async function checkSiteLogin(req: NextRequest): Promise<NextResponse | null> {
+  const { pathname } = req.nextUrl;
+
+  // Skip public paths, admin paths (handled separately), and API routes
+  if (isPublicPath(pathname) || pathname.startsWith("/admin") || pathname.startsWith("/api/")) {
+    return null;
+  }
+
+  const required = await isSiteLoginRequired();
+  if (!required) return null;
+
+  const session = await auth();
+  if (session?.user) return null;
+
+  const signInUrl = new URL("/sign-in", req.nextUrl);
+  signInUrl.searchParams.set("callbackUrl", pathname + req.nextUrl.search);
+  return NextResponse.redirect(signInUrl);
+}
+
 export default async function proxy(req: NextRequest): Promise<NextResponse> {
   const { pathname } = req.nextUrl;
   const isAdminOrSearch =
@@ -62,6 +117,10 @@ export default async function proxy(req: NextRequest): Promise<NextResponse> {
     pathname.startsWith("/api/admin") ||
     pathname.startsWith("/api/cron") ||
     pathname === "/search";
+
+  // Site-wide login check (runs for all routes)
+  const siteLoginRedirect = await checkSiteLogin(req);
+  if (siteLoginRedirect) return siteLoginRedirect;
 
   if (!isAdminOrSearch) return NextResponse.next();
 
@@ -93,9 +152,7 @@ export default async function proxy(req: NextRequest): Promise<NextResponse> {
 
 export const config = {
   matcher: [
-    "/admin/:path*",
-    "/api/admin/:path*",
-    "/api/cron/:path*",
-    "/search",
+    // Match all paths except internal Next.js
+    "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };
