@@ -480,7 +480,7 @@ export function RamMascot() {
           {chatOpen ? (
             <div
               data-no-drag
-              className="absolute left-full top-[3.75rem] z-10 ml-4"
+              className="absolute right-full top-[3.75rem] z-10 mr-4"
               onPointerDown={(e) => e.stopPropagation()}
             >
               <MascotChat
@@ -491,11 +491,11 @@ export function RamMascot() {
           ) : null}
 
           {!chatOpen && dialog ? (
-            <div className="absolute -top-8 left-[70%] z-10 max-w-[220px] -translate-x-1/2 -translate-y-full rounded-lg border border-border bg-card px-3 py-2 text-xs leading-relaxed text-foreground shadow-lg">
+            <div className="absolute -top-4 left-[56%] z-10 max-w-[220px] -translate-x-1/2 -translate-y-full rounded-lg border border-border bg-card px-3 py-2 text-xs leading-relaxed text-foreground shadow-lg">
               {dialog}
               <span
                 aria-hidden
-                className="absolute left-[35%] top-full -ml-1.5 h-3 w-3 -translate-y-1/2 rotate-45 border-b border-r border-border bg-card"
+                className="absolute left-1/2 top-full -ml-1.5 h-3 w-3 -translate-y-1/2 rotate-45 border-b border-r border-border bg-card"
               />
             </div>
           ) : null}
