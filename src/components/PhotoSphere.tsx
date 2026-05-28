@@ -18,12 +18,18 @@ type Photo = {
 const EASE_OUT = [0.215, 0.61, 0.355, 1] as const;
 const EASE_OUT_QUINT = [0.23, 1, 0.32, 1] as const;
 
-/* ── fibonacci sphere distribution ── */
+function seededRandom(seed: string) {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++)
+    h = ((h << 5) - h + seed.charCodeAt(i)) | 0;
+  return (h % 1000) / 1000;
+}
+
 function fibonacciSphere(count: number, radius: number) {
   const points: { x: number; y: number; z: number; rotY: number; rotX: number }[] = [];
   const goldenAngle = Math.PI * (3 - Math.sqrt(5));
   for (let i = 0; i < count; i++) {
-    const y = 1 - (i / (count - 1)) * 2; // -1 to 1
+    const y = 1 - (i / Math.max(count - 1, 1)) * 2;
     const radiusAtY = Math.sqrt(1 - y * y);
     const theta = goldenAngle * i;
     const x = Math.cos(theta) * radiusAtY;
@@ -39,13 +45,11 @@ function fibonacciSphere(count: number, radius: number) {
   return points;
 }
 
-/* ── main component ── */
 export function PhotoSphere({ photos }: { photos: Photo[] }) {
   const [lightbox, setLightbox] = useState<Photo | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // drag rotation
-  const rotX = useMotionValue(0);
+  const rotX = useMotionValue(15);
   const rotY = useMotionValue(0);
   const springX = useSpring(rotX, { stiffness: 60, damping: 20 });
   const springY = useSpring(rotY, { stiffness: 60, damping: 20 });
@@ -55,13 +59,12 @@ export function PhotoSphere({ photos }: { photos: Photo[] }) {
   const autoRotateRef = useRef(true);
   const animFrameRef = useRef<number>(0);
 
-  // auto rotation
   useEffect(() => {
     let last = performance.now();
     function tick(now: number) {
       if (autoRotateRef.current && !isDragging.current) {
         const dt = (now - last) / 1000;
-        rotY.set(rotY.get() + dt * 12); // 12 deg/s
+        rotY.set(rotY.get() + dt * 12);
       }
       last = now;
       animFrameRef.current = requestAnimationFrame(tick);
@@ -75,7 +78,7 @@ export function PhotoSphere({ photos }: { photos: Photo[] }) {
       isDragging.current = true;
       autoRotateRef.current = false;
       lastMouse.current = { x: e.clientX, y: e.clientY };
-      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
     },
     [],
   );
@@ -94,26 +97,23 @@ export function PhotoSphere({ photos }: { photos: Photo[] }) {
 
   const handlePointerUp = useCallback(() => {
     isDragging.current = false;
-    // resume auto-rotate after 3s idle
     setTimeout(() => {
       autoRotateRef.current = true;
     }, 3000);
   }, []);
 
-  // scroll to zoom
-  const [radius, setRadius] = useState(320);
+  const [radius, setRadius] = useState(280);
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
-      setRadius((r) => Math.max(180, Math.min(600, r - e.deltaY * 0.5)));
+      setRadius((r) => Math.max(160, Math.min(500, r - e.deltaY * 0.5)));
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
   }, []);
 
-  // keyboard nav
   useEffect(() => {
     if (!lightbox) return;
     const idx = photos.findIndex((p) => p.id === lightbox.id);
@@ -128,23 +128,27 @@ export function PhotoSphere({ photos }: { photos: Photo[] }) {
   }, [lightbox, photos]);
 
   const points = fibonacciSphere(photos.length, radius);
-  const cardW = photos.length <= 8 ? 140 : photos.length <= 20 ? 110 : 90;
+  const cardW = photos.length <= 8 ? 130 : photos.length <= 20 ? 100 : 80;
   const cardH = cardW * 0.75;
+
+  // generate wireframe dots on sphere
+  const wireDots: { x: number; y: number; z: number }[] = [];
+  const wireDotCount = 60;
+  for (let i = 0; i < wireDotCount; i++) {
+    const phi = Math.acos(1 - (2 * (i + 0.5)) / wireDotCount);
+    const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+    wireDots.push({
+      x: Math.sin(phi) * Math.cos(theta) * radius,
+      y: Math.cos(phi) * radius,
+      z: Math.sin(phi) * Math.sin(theta) * radius,
+    });
+  }
 
   return (
     <>
-      {/* grain overlay */}
-      <div
-        className="pointer-events-none fixed inset-0 z-[998] opacity-[0.025]"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-        }}
-      />
-
       <div
         ref={containerRef}
-        className="relative mx-auto flex h-[70vh] cursor-grab items-center justify-center overflow-hidden active:cursor-grabbing"
+        className="relative mx-auto flex h-[70vh] cursor-grab items-center justify-center active:cursor-grabbing"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -163,8 +167,42 @@ export function PhotoSphere({ photos }: { photos: Photo[] }) {
             height: 0,
           }}
         >
+          {/* wireframe dots */}
+          {wireDots.map((d, i) => (
+            <div
+              key={`dot-${i}`}
+              className="absolute rounded-full bg-primary/20"
+              style={{
+                width: 3,
+                height: 3,
+                left: -1.5,
+                top: -1.5,
+                transform: `translate3d(${d.x}px, ${d.y}px, ${d.z}px)`,
+                backfaceVisibility: "hidden",
+              }}
+            />
+          ))}
+
+          {/* wireframe ring lines (CSS circles at different angles) */}
+          {[0, 60, 120].map((angle) => (
+            <div
+              key={`ring-${angle}`}
+              className="absolute rounded-full border border-primary/[0.07]"
+              style={{
+                width: radius * 2,
+                height: radius * 2,
+                left: -radius,
+                top: -radius,
+                transform: `rotateX(${angle}deg)`,
+                backfaceVisibility: "hidden",
+              }}
+            />
+          ))}
+
+          {/* photo cards */}
           {photos.map((photo, i) => {
             const p = points[i];
+            const rotation = (seededRandom(photo.id) - 0.5) * 4;
             return (
               <div
                 key={photo.id}
@@ -192,10 +230,9 @@ export function PhotoSphere({ photos }: { photos: Photo[] }) {
                     loading="lazy"
                     draggable={false}
                   />
-                  {/* hover overlay */}
                   <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-300 group-hover/card:bg-black/40 group-hover/card:opacity-100">
                     <svg
-                      className="h-6 w-6 text-white drop-shadow"
+                      className="h-5 w-5 text-white drop-shadow"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -203,15 +240,13 @@ export function PhotoSphere({ photos }: { photos: Photo[] }) {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     >
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="12" y1="8" x2="12" y2="16" />
-                      <line x1="8" y1="12" x2="16" y2="12" />
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
                     </svg>
                   </div>
                 </button>
-                {/* caption on hover */}
                 {photo.caption && (
-                  <div className="absolute inset-x-0 -bottom-6 text-center text-xs text-white/50 opacity-0 transition-opacity duration-300 group-hover/card:opacity-100">
+                  <div className="absolute inset-x-0 -bottom-5 text-center text-[10px] text-white/50 opacity-0 transition-opacity duration-300 group-hover/card:opacity-100">
                     {photo.caption}
                   </div>
                 )}
@@ -220,13 +255,11 @@ export function PhotoSphere({ photos }: { photos: Photo[] }) {
           })}
         </motion.div>
 
-        {/* instruction hint */}
         <div className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2 text-xs text-white/30">
           拖拽旋转 · 滚轮缩放 · 点击查看
         </div>
       </div>
 
-      {/* lightbox */}
       <AnimatePresence>
         {lightbox && (
           <Lightbox
@@ -241,7 +274,6 @@ export function PhotoSphere({ photos }: { photos: Photo[] }) {
   );
 }
 
-/* ── lightbox (shared with PhotoWall) ── */
 function Lightbox({
   photo,
   photos,
@@ -278,17 +310,14 @@ function Lightbox({
     <motion.div
       role="dialog"
       aria-modal="true"
-      aria-label="照片预览"
       className="fixed inset-0 z-[1000] flex items-center justify-center"
       onClick={onClose}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
     >
       <motion.div
-        className="absolute inset-0 bg-black/85"
-        style={{ backdropFilter: "blur(12px)" }}
+        className="absolute inset-0 bg-black/85 backdrop-blur-xl"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -321,7 +350,6 @@ function Lightbox({
             className="absolute -left-14 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/8 text-white/70 ring-1 ring-white/10 backdrop-blur-md transition-all hover:scale-110 hover:bg-white/15 hover:text-white sm:-left-16"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
-            <span className="sr-only">上一张</span>
           </button>
         )}
 
@@ -369,7 +397,6 @@ function Lightbox({
             className="absolute -right-14 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/8 text-white/70 ring-1 ring-white/10 backdrop-blur-md transition-all hover:scale-110 hover:bg-white/15 hover:text-white sm:-right-16"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
-            <span className="sr-only">下一张</span>
           </button>
         )}
 
@@ -386,7 +413,6 @@ function Lightbox({
             className="flex h-8 w-8 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="6" y1="6" x2="18" y2="18" /><line x1="6" y1="18" x2="18" y2="6" /></svg>
-            <span className="sr-only">关闭</span>
           </button>
         </motion.div>
       </motion.div>

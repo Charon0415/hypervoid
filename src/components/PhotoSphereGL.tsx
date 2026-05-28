@@ -86,8 +86,87 @@ export function PhotoSphereGL({ photos }: { photos: Photo[] }) {
         // ambient light
         scene.add(new THREE.AmbientLight(0xffffff, 1));
 
-        // distribute photos on sphere
+        // ── wireframe sphere skeleton ──
         const radius = 250;
+
+        // 1. wireframe icosahedron (main structure lines)
+        const wireGeo = new THREE.IcosahedronGeometry(radius, 2);
+        const wireMat = new THREE.MeshBasicMaterial({
+          color: 0x8888ff,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.06,
+        });
+        const wireSphere = new THREE.Mesh(wireGeo, wireMat);
+        group.add(wireSphere);
+
+        // 2. equator + meridian rings
+        const ringColors = [0x6666cc, 0x5555aa, 0x4444aa];
+        const ringRotations: [number, number, number][] = [
+          [0, 0, 0],
+          [Math.PI / 3, 0, 0],
+          [0, 0, Math.PI / 3],
+        ];
+        ringColors.forEach((color, i) => {
+          const ringGeo = new THREE.TorusGeometry(radius, 0.5, 8, 128);
+          const ringMat = new THREE.MeshBasicMaterial({
+            color,
+            transparent: true,
+            opacity: 0.1,
+          });
+          const ring = new THREE.Mesh(ringGeo, ringMat);
+          ring.rotation.set(...ringRotations[i]);
+          group.add(ring);
+        });
+
+        // 3. particle dots on sphere surface (fibonacci distribution)
+        const dotCount = 120;
+        const dotPositions = new Float32Array(dotCount * 3);
+        const goldenAngleDot = Math.PI * (3 - Math.sqrt(5));
+        for (let i = 0; i < dotCount; i++) {
+          const y = 1 - (2 * (i + 0.5)) / dotCount;
+          const rAtY = Math.sqrt(1 - y * y);
+          const theta = goldenAngleDot * i;
+          dotPositions[i * 3] = Math.cos(theta) * rAtY * radius;
+          dotPositions[i * 3 + 1] = y * radius;
+          dotPositions[i * 3 + 2] = Math.sin(theta) * rAtY * radius;
+        }
+        const dotGeo = new THREE.BufferGeometry();
+        dotGeo.setAttribute("position", new THREE.BufferAttribute(dotPositions, 3));
+        const dotMat = new THREE.PointsMaterial({
+          color: 0xaaaaff,
+          size: 3,
+          transparent: true,
+          opacity: 0.35,
+          sizeAttenuation: true,
+        });
+        const dots = new THREE.Points(dotGeo, dotMat);
+        group.add(dots);
+
+        // 4. connection lines between nearby dots
+        const linePositions: number[] = [];
+        const threshold = radius * 0.55; // max distance for connection
+        for (let i = 0; i < dotCount; i++) {
+          for (let j = i + 1; j < dotCount; j++) {
+            const ax = dotPositions[i * 3], ay = dotPositions[i * 3 + 1], az = dotPositions[i * 3 + 2];
+            const bx = dotPositions[j * 3], by = dotPositions[j * 3 + 1], bz = dotPositions[j * 3 + 2];
+            const dist = Math.sqrt((ax - bx) ** 2 + (ay - by) ** 2 + (az - bz) ** 2);
+            if (dist < threshold) {
+              linePositions.push(ax, ay, az, bx, by, bz);
+            }
+          }
+        }
+        const lineGeo = new THREE.BufferGeometry();
+        lineGeo.setAttribute("position", new THREE.Float32BufferAttribute(linePositions, 3));
+        const lineMat = new THREE.LineBasicMaterial({
+          color: 0x7777cc,
+          transparent: true,
+          opacity: 0.08,
+        });
+        const lines = new THREE.LineSegments(lineGeo, lineMat);
+        group.add(lines);
+
+        // distribute photos on sphere
         const goldenAngle = Math.PI * (3 - Math.sqrt(5));
         const loader = new THREE.TextureLoader();
         const planeW = 80;
