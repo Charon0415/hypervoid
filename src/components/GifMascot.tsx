@@ -480,7 +480,7 @@ export function GifMascot() {
           {chatOpen ? (
             <div
               data-no-drag
-              className="absolute right-full top-[3.75rem] z-10 mr-4"
+              className="absolute left-full top-[3.75rem] z-10 ml-4"
               onPointerDown={(e) => e.stopPropagation()}
             >
               <MascotChat
