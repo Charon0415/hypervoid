@@ -20,6 +20,7 @@ function rowToInitial(row: Album): AlbumFormInitial {
     name: row.name,
     description: row.description ?? "",
     coverUrl: row.coverUrl ?? "",
+    displayMode: row.displayMode ?? "wall",
     sortOrder: String(row.sortOrder),
   };
 }

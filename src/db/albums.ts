@@ -44,6 +44,7 @@ export type AlbumInput = {
   name: string;
   description?: string | null;
   coverUrl?: string | null;
+  displayMode?: string;
   sortOrder?: number;
 };
 
@@ -55,6 +56,7 @@ export async function createAlbum(input: AlbumInput): Promise<Album> {
       name: input.name,
       description: input.description ?? null,
       coverUrl: input.coverUrl ?? null,
+      displayMode: input.displayMode ?? "wall",
       sortOrder: input.sortOrder ?? 0,
     })
     .returning();
@@ -69,6 +71,7 @@ export async function updateAlbum(id: string, input: AlbumInput): Promise<void> 
       name: input.name,
       description: input.description ?? null,
       coverUrl: input.coverUrl ?? null,
+      displayMode: input.displayMode ?? "wall",
       sortOrder: input.sortOrder ?? 0,
       updatedAt: new Date(),
     })

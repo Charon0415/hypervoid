@@ -139,6 +139,7 @@ export const albums = pgTable("albums", {
   name: text("name").notNull(),
   description: text("description"),
   coverUrl: text("cover_url"),
+  displayMode: text("display_mode").notNull().default("wall"),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getAlbumBySlug, listPhotosInAlbum } from "@/db/albums";
 import { PhotoWall } from "@/components/PhotoWall";
+import { PhotoSphereGL } from "@/components/PhotoSphereGL";
 
 type Params = { slug: string };
 
@@ -26,34 +27,35 @@ export default async function AlbumDetail(props: {
   const album = await getAlbumBySlug(slug);
   if (!album) notFound();
   const photos = await listPhotosInAlbum(album.id);
+  const isSphere = album.displayMode === "sphere";
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <Link
-          href="/albums"
-          className="text-sm text-muted hover:text-primary"
-        >
-          ← 所有相册
-        </Link>
-        <Link
-          href={`/albums/${slug}/sphere`}
-          className="rounded-full border border-border px-3 py-1 text-xs text-muted transition hover:border-primary hover:text-primary"
-        >
-          3D 球体视图
-        </Link>
-      </div>
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight">{album.name}</h1>
+      <Link
+        href="/albums"
+        className="text-sm text-muted hover:text-primary"
+      >
+        ← 所有相册
+      </Link>
+      <header className={isSphere ? "text-center" : ""}>
+        <h1 className={`${isSphere ? "text-2xl" : "text-3xl"} font-bold tracking-tight`}>
+          {album.name}
+        </h1>
         {album.description ? (
-          <p className="mt-2 text-muted">{album.description}</p>
+          <p className={`${isSphere ? "mt-1 text-sm" : "mt-2"} text-muted`}>
+            {album.description}
+          </p>
         ) : null}
-        <p className="mt-1 text-sm text-muted">{photos.length} 张照片</p>
+        {!isSphere && (
+          <p className="mt-1 text-sm text-muted">{photos.length} 张照片</p>
+        )}
       </header>
       {photos.length === 0 ? (
         <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
           这个相册还没有照片。
         </p>
+      ) : isSphere ? (
+        <PhotoSphereGL photos={photos} />
       ) : (
         <PhotoWall photos={photos} />
       )}

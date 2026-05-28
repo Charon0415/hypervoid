@@ -27,12 +27,14 @@ function parseAlbumForm(formData: FormData): AlbumInput {
   if (!name) throw new Error("name required");
   const description = String(formData.get("description") ?? "").trim();
   const coverUrl = String(formData.get("coverUrl") ?? "").trim();
+  const displayMode = String(formData.get("displayMode") ?? "wall").trim();
   const sortOrderStr = String(formData.get("sortOrder") ?? "0").trim();
   return {
     slug,
     name,
     description: description || null,
     coverUrl: coverUrl || null,
+    displayMode: displayMode === "sphere" ? "sphere" : "wall",
     sortOrder: Number.isFinite(Number(sortOrderStr))
       ? Number(sortOrderStr)
       : 0,

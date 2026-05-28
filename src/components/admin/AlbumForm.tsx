@@ -8,6 +8,7 @@ export type AlbumFormInitial = {
   name: string;
   description: string;
   coverUrl: string;
+  displayMode: string;
   sortOrder: string;
 };
 
@@ -16,6 +17,7 @@ const EMPTY: AlbumFormInitial = {
   name: "",
   description: "",
   coverUrl: "",
+  displayMode: "wall",
   sortOrder: "0",
 };
 
@@ -191,6 +193,18 @@ export function AlbumForm({
             }
           />
         </div>
+      </Field>
+
+      <Field label="展示模式">
+        <select
+          name="displayMode"
+          value={state.displayMode}
+          onChange={(e) => update("displayMode", e.target.value)}
+          className={inputClass}
+        >
+          <option value="wall">照片墙（瀑布流）</option>
+          <option value="sphere">3D 球体</option>
+        </select>
       </Field>
 
       <Field label="排序" hint="数字越小越靠前">
