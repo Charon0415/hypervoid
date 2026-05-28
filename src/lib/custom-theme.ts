@@ -2,13 +2,14 @@ import "server-only";
 
 import { eq } from "drizzle-orm";
 import { getDb, schema } from "@/db/client";
-import type {
-  CustomThemeRow,
-  ThemeColors,
+import {
+  sanitizeThemeInput,
+  type CustomThemeRow,
+  type ThemeColors,
 } from "@/lib/custom-theme-shared";
 
 export type { CustomThemeRow, ThemeColors, ThemeKey } from "@/lib/custom-theme-shared";
-export { THEME_KEYS, renderThemeCss } from "@/lib/custom-theme-shared";
+export { THEME_KEYS, renderThemeCss, sanitizeThemeInput } from "@/lib/custom-theme-shared";
 
 const FALLBACK: CustomThemeRow = {
   enabled: false,
@@ -63,29 +64,30 @@ export async function saveCustomTheme(input: {
   wallpaperOpacity: number;
   wallpaperBlur: number;
 }): Promise<void> {
+  const clean = sanitizeThemeInput(input);
   await getDb()
     .insert(schema.customTheme)
     .values({
       id: 1,
-      enabled: input.enabled,
-      light: input.light,
-      dark: input.dark,
-      wallpaperDesktop: input.wallpaperDesktop,
-      wallpaperMobile: input.wallpaperMobile,
-      wallpaperOpacity: input.wallpaperOpacity,
-      wallpaperBlur: input.wallpaperBlur,
+      enabled: clean.enabled,
+      light: clean.light,
+      dark: clean.dark,
+      wallpaperDesktop: clean.wallpaperDesktop,
+      wallpaperMobile: clean.wallpaperMobile,
+      wallpaperOpacity: clean.wallpaperOpacity,
+      wallpaperBlur: clean.wallpaperBlur,
       updatedAt: new Date(),
     })
     .onConflictDoUpdate({
       target: schema.customTheme.id,
       set: {
-        enabled: input.enabled,
-        light: input.light,
-        dark: input.dark,
-        wallpaperDesktop: input.wallpaperDesktop,
-        wallpaperMobile: input.wallpaperMobile,
-        wallpaperOpacity: input.wallpaperOpacity,
-        wallpaperBlur: input.wallpaperBlur,
+        enabled: clean.enabled,
+        light: clean.light,
+        dark: clean.dark,
+        wallpaperDesktop: clean.wallpaperDesktop,
+        wallpaperMobile: clean.wallpaperMobile,
+        wallpaperOpacity: clean.wallpaperOpacity,
+        wallpaperBlur: clean.wallpaperBlur,
         updatedAt: new Date(),
       },
     });

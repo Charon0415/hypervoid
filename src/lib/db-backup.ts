@@ -32,7 +32,7 @@ const TABLE_LIST = [
   "dbBackups",
 ] as const;
 
-export type DbBackupRow = typeof schema.dbBackups.$inferSelect;
+type DbBackupRow = typeof schema.dbBackups.$inferSelect;
 
 export async function listBackups(): Promise<DbBackupRow[]> {
   return getDb()

@@ -9,7 +9,7 @@ import {
 } from "@/lib/reading-time";
 import { formatDateCN } from "@/lib/datetime";
 
-export type PostFrontmatter = {
+type PostFrontmatter = {
   title: string;
   description?: string | null;
   date: string;
@@ -33,7 +33,7 @@ export type Post = {
   content: string;
 };
 
-export type ViewerOpts = { isAdmin?: boolean };
+type ViewerOpts = { isAdmin?: boolean };
 
 function visibilityClause(isAdmin: boolean) {
   if (isAdmin) return undefined;
@@ -201,7 +201,7 @@ export async function getAllPosts(opts: ViewerOpts = {}): Promise<Post[]> {
   return _getAllPostsCached(opts.isAdmin === true);
 }
 
-export type PopularPost = {
+type PopularPost = {
   slug: string;
   title: string;
   views: number;
@@ -345,7 +345,7 @@ export async function getAllTags(
     .sort((a, b) => b.count - a.count);
 }
 
-export type GraphNode = {
+type GraphNode = {
   slug: string;
   title: string;
   /** out-degree + in-degree, used for visual size */
@@ -353,12 +353,12 @@ export type GraphNode = {
   category: string | null;
 };
 
-export type GraphEdge = {
+type GraphEdge = {
   source: string;
   target: string;
 };
 
-export type KnowledgeGraph = {
+type KnowledgeGraph = {
   nodes: GraphNode[];
   edges: GraphEdge[];
 };
@@ -425,7 +425,7 @@ export async function getPostsByTag(
   return posts.filter((p) => p.frontmatter.tags.includes(tag));
 }
 
-export type SearchHit = Post & { score: number };
+type SearchHit = Post & { score: number };
 
 export async function searchPosts(
   query: string,
@@ -491,7 +491,7 @@ export async function searchPosts(
   return hits;
 }
 
-export type SeriesSummary = {
+type SeriesSummary = {
   name: string;
   count: number;
   latestDate: string;

@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import { notFound, redirect as nextRedirect } from "next/navigation";
 import { resolveAndHit } from "@/db/redirects";
+
+export const metadata: Metadata = {
+  robots: { index: false },
+};
 
 export const dynamic = "force-dynamic";
 

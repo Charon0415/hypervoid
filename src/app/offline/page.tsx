@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "离线 — Hypervoid",
+  robots: { index: false },
+};
 
 export default function OfflinePage() {
   return (

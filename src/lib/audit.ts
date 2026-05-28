@@ -4,7 +4,7 @@ import { and, desc, eq, like } from "drizzle-orm";
 import { getDb, schema } from "@/db/client";
 import { auth } from "@/auth";
 
-export type AuditLogRow = typeof schema.auditLog.$inferSelect;
+type AuditLogRow = typeof schema.auditLog.$inferSelect;
 
 /**
  * Best-effort logger — never throws, so it can wrap admin actions without
