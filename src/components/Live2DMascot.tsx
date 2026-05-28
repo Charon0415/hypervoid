@@ -437,7 +437,7 @@ export function Live2DMascot() {
           ) : null}
 
           {!chatOpen && (dialog || loadError) ? (
-            <div className="absolute -top-2 left-1/2 max-w-[200px] -translate-x-1/2 -translate-y-full rounded-lg border border-border bg-card px-3 py-2 text-xs leading-relaxed text-foreground shadow-lg">
+            <div className="absolute -top-4 left-[56%] max-w-[200px] -translate-x-1/2 -translate-y-full rounded-lg border border-border bg-card px-3 py-2 text-xs leading-relaxed text-foreground shadow-lg">
               {loadError ?? dialog}
               <span
                 aria-hidden
