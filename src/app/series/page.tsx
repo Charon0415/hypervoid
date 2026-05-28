@@ -9,6 +9,13 @@ export const metadata: Metadata = {
   description: "围绕同一主题的系列文章",
 };
 
+function hashHue(str: string): number {
+  let h = 0;
+  for (let i = 0; i < str.length; i++)
+    h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+  return Math.abs(h % 360);
+}
+
 export default async function SeriesIndexPage() {
   const series = await getPublicSeriesList();
 
@@ -27,36 +34,49 @@ export default async function SeriesIndexPage() {
         </p>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
-          {series.map((s) => (
-            <Link
-              key={s.slug}
-              href={`/series/${encodeURIComponent(s.name)}`}
-              className="group flex flex-col gap-3 overflow-hidden rounded-2xl border border-border bg-card transition hover:border-primary/40 hover:shadow-md"
-            >
-              {s.cover ? (
-                <div className="aspect-[2/1] overflow-hidden">
-                  <img
-                    src={s.cover}
-                    alt=""
-                    className="h-full w-full object-cover transition group-hover:scale-105"
-                  />
+          {series.map((s) => {
+            const hue = hashHue(s.name);
+            return (
+              <Link
+                key={s.slug}
+                href={`/series/${encodeURIComponent(s.name)}`}
+                className="group relative flex flex-col justify-end overflow-hidden rounded-2xl border border-border transition hover:border-primary/40 hover:shadow-lg sm:min-h-[180px]"
+                style={{
+                  background: s.cover
+                    ? undefined
+                    : `linear-gradient(135deg, hsl(${hue}, 60%, 95%) 0%, hsl(${hue + 30}, 50%, 88%) 100%)`,
+                }}
+              >
+                {s.cover ? (
+                  <>
+                    <img
+                      src={s.cover}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                  </>
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" />
+                )}
+                <div className="relative z-10 flex flex-col gap-2 p-5">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <h2 className="text-lg font-bold tracking-tight text-foreground transition group-hover:text-primary">
+                      {s.name}
+                    </h2>
+                    <span className="shrink-0 font-mono text-xs text-muted">
+                      {s.count} 篇
+                    </span>
+                  </div>
+                  {s.description ? (
+                    <p className="line-clamp-2 text-sm text-muted">
+                      {s.description}
+                    </p>
+                  ) : null}
                 </div>
-              ) : null}
-              <div className="flex flex-col gap-1.5 px-5 pb-5">
-                <div className="flex items-baseline justify-between gap-3">
-                  <h2 className="text-lg font-semibold tracking-tight transition group-hover:text-primary">
-                    {s.name}
-                  </h2>
-                  <span className="shrink-0 font-mono text-xs text-muted">
-                    {s.count} 篇
-                  </span>
-                </div>
-                {s.description ? (
-                  <p className="text-sm text-muted">{s.description}</p>
-                ) : null}
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
