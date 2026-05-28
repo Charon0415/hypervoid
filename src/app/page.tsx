@@ -14,6 +14,7 @@ import { AdaptivePostGrid } from "@/components/AdaptivePostGrid";
 import { TopicCollections } from "@/components/TopicCollections";
 import { TagCloud } from "@/components/TagCloud";
 import { RecentGuestbook } from "@/components/RecentGuestbook";
+import { PrivateSpace } from "@/components/PrivateSpace";
 import { Greeting } from "@/components/Greeting";
 import { DailyPick } from "@/components/DailyPick";
 import { HomePlayerWidget } from "@/components/HomePlayerWidget";
@@ -161,6 +162,7 @@ export default async function Home() {
 
       <aside className="lg:order-2">
         <div className="flex flex-col gap-6 lg:sticky lg:top-20">
+          <PrivateSpace />
           <Suspense fallback={<Skeleton className="h-48 w-full" />}>
             <ProfileCard />
           </Suspense>

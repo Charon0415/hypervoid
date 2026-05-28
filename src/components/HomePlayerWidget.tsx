@@ -190,10 +190,9 @@ export function HomePlayerWidget() {
         {!open ? (
           <p
             onClick={toggleOpen}
-            className="mt-3 cursor-pointer text-center text-xs text-muted/70 leading-relaxed transition-colors hover:text-muted"
-            style={{ fontFamily: "Georgia, 'Noto Serif SC', serif" }}
+            className="mt-3 cursor-pointer text-center text-xs italic leading-relaxed text-muted/60 transition-colors hover:text-muted"
           >
-            {saying || "音乐是灵魂的避难所。"}
+            「{saying || "音乐是灵魂的避难所。"}」
           </p>
         ) : null}
 
@@ -333,15 +332,15 @@ export function HomePlayerWidget() {
                 )}
 
                 {/* Controls */}
-                <div className="mt-3 flex items-center justify-center gap-1">
+                <div className="mt-3 flex items-center justify-center gap-2">
                   <button
                     type="button"
                     onClick={prev}
                     aria-label="上一首"
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition hover:bg-foreground/5 hover:text-foreground"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-muted/70 transition-all hover:bg-foreground/5 hover:text-foreground hover:scale-105"
                   >
                     <svg
-                      className="h-4 w-4"
+                      className="h-3.5 w-3.5"
                       viewBox="0 0 24 24"
                       fill="currentColor"
                       aria-hidden
@@ -354,7 +353,7 @@ export function HomePlayerWidget() {
                     onClick={togglePlay}
                     disabled={!current?.url}
                     aria-label={playing ? "暂停" : "播放"}
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-foreground text-background shadow-md transition hover:opacity-90 disabled:opacity-40"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-foreground text-background shadow-md transition-all hover:opacity-90 hover:scale-105 hover:shadow-lg disabled:opacity-40"
                   >
                     {playing ? (
                       <svg
@@ -380,10 +379,10 @@ export function HomePlayerWidget() {
                     type="button"
                     onClick={next}
                     aria-label="下一首"
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition hover:bg-foreground/5 hover:text-foreground"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-muted/70 transition-all hover:bg-foreground/5 hover:text-foreground hover:scale-105"
                   >
                     <svg
-                      className="h-4 w-4"
+                      className="h-3.5 w-3.5"
                       viewBox="0 0 24 24"
                       fill="currentColor"
                       aria-hidden

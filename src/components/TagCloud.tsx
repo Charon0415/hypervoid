@@ -3,9 +3,18 @@ import { getAllTags } from "@/lib/posts";
 
 const MAX_TAGS = 24;
 
-function scale(count: number, min: number, max: number): number {
-  if (max === min) return 0.5;
-  return (count - min) / (max - min);
+function hashHue(str: string): number {
+  let h = 0;
+  for (let i = 0; i < str.length; i++)
+    h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+  return Math.abs(h % 360);
+}
+
+function hashRotate(str: string): number {
+  let h = 0;
+  for (let i = 0; i < str.length; i++)
+    h = ((h * 31) + str.charCodeAt(i) * 17) | 0;
+  return (Math.abs(h % 13)) - 6; // -6 to +6 degrees
 }
 
 export async function TagCloud() {
@@ -21,19 +30,28 @@ export async function TagCloud() {
       <h3 className="text-sm font-semibold tracking-tight text-foreground/80">
         标签云
       </h3>
-      <div className="mt-3 flex flex-wrap gap-1.5">
+      <div className="mt-3 flex flex-wrap items-center gap-2">
         {tags.map((t) => {
-          const s = scale(t.count, min, max);
-          const fontSize = 0.72 + s * 0.35;
+          const s = max === min ? 0.5 : (t.count - min) / (max - min);
+          const fontSize = 0.7 + s * 0.4;
+          const hue = hashHue(t.tag);
+          const rotate = hashRotate(t.tag);
+          const opacity = 0.55 + s * 0.45;
           return (
             <Link
               key={t.tag}
               href={`/tags/${encodeURIComponent(t.tag)}`}
               title={`${t.tag} · ${t.count} 篇`}
-              className="inline-flex items-center rounded-full border border-primary/15 bg-primary/5 px-2.5 py-0.5 font-medium text-primary/80 transition hover:border-primary/40 hover:bg-primary/15 hover:text-primary"
-              style={{ fontSize: `${fontSize}rem` }}
+              className="inline-block rounded-lg px-2.5 py-1 font-medium transition-all duration-200 hover:scale-110 hover:shadow-sm"
+              style={{
+                fontSize: `${fontSize}rem`,
+                color: `hsl(${hue}, 70%, 45%)`,
+                background: `hsl(${hue}, 80%, 95%)`,
+                transform: `rotate(${rotate}deg)`,
+                opacity,
+              }}
             >
-              #{t.tag}
+              {t.tag}
             </Link>
           );
         })}
