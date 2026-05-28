@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getAlbumBySlug, listPhotosInAlbum } from "@/db/albums";
-import { PhotoWall } from "@/components/PhotoWall";
+import { PhotoSphere } from "@/components/PhotoSphere";
 
 type Params = { slug: string };
 
@@ -14,12 +14,12 @@ export async function generateMetadata(props: {
   const { slug } = await props.params;
   const album = await getAlbumBySlug(slug);
   return {
-    title: album ? `${album.name} · 相册` : "相册",
+    title: album ? `${album.name} · 3D 球体` : "3D 球体",
     description: album?.description ?? undefined,
   };
 }
 
-export default async function AlbumDetail(props: {
+export default async function AlbumSphere(props: {
   params: Promise<Params>;
 }) {
   const { slug } = await props.params;
@@ -28,34 +28,33 @@ export default async function AlbumDetail(props: {
   const photos = await listPhotosInAlbum(album.id);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <Link
-          href="/albums"
+          href={`/albums/${slug}`}
           className="text-sm text-muted hover:text-primary"
         >
-          ← 所有相册
+          ← 返回相册
         </Link>
         <Link
-          href={`/albums/${slug}/sphere`}
+          href={`/albums/${slug}`}
           className="rounded-full border border-border px-3 py-1 text-xs text-muted transition hover:border-primary hover:text-primary"
         >
-          3D 球体视图
+          切换为照片墙
         </Link>
       </div>
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight">{album.name}</h1>
+      <header className="text-center">
+        <h1 className="text-2xl font-bold tracking-tight">{album.name}</h1>
         {album.description ? (
-          <p className="mt-2 text-muted">{album.description}</p>
+          <p className="mt-1 text-sm text-muted">{album.description}</p>
         ) : null}
-        <p className="mt-1 text-sm text-muted">{photos.length} 张照片</p>
       </header>
       {photos.length === 0 ? (
         <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
           这个相册还没有照片。
         </p>
       ) : (
-        <PhotoWall photos={photos} />
+        <PhotoSphere photos={photos} />
       )}
     </div>
   );
