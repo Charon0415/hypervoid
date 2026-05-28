@@ -7,14 +7,22 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+function safeInternalPath(value: string | undefined, fallback: string): string {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) {
+    return fallback;
+  }
+  return value;
+}
+
 export default async function SignInPage(props: {
   searchParams: Promise<{ callbackUrl?: string; error?: string }>;
 }) {
   const session = await auth();
   const { callbackUrl, error } = await props.searchParams;
+  const redirectTo = safeInternalPath(callbackUrl, "/");
 
   if (session?.user) {
-    redirect(callbackUrl ?? "/");
+    redirect(redirectTo);
   }
 
   return (
@@ -41,7 +49,7 @@ export default async function SignInPage(props: {
           action={async () => {
             "use server";
             await signIn("github", {
-              redirectTo: callbackUrl ?? "/",
+              redirectTo,
             });
           }}
           className="w-full"

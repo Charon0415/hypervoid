@@ -47,20 +47,11 @@ function isPublicPath(pathname: string): boolean {
   return false;
 }
 
-// Cache the setting for 60s to avoid a DB query on every request
-let loginRequiredCache: { value: boolean; ts: number } | null = null;
-
 async function isSiteLoginRequired(): Promise<boolean> {
-  const now = Date.now();
-  if (loginRequiredCache && now - loginRequiredCache.ts < 60_000) {
-    return loginRequiredCache.value;
-  }
   try {
     const { getSiteSetting } = await import("@/db/site-settings");
     const val = await getSiteSetting("site_login_required");
-    const result = val === "true";
-    loginRequiredCache = { value: result, ts: now };
-    return result;
+    return val === "true";
   } catch {
     return false;
   }

@@ -2,15 +2,12 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { auth } from "@/auth";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
+import { getAllOverrides } from "@/lib/site-config-server";
+import { getSiteSetting } from "@/db/site-settings";
 import {
-  getAllOverrides,
-  setSiteOverrides,
-  type OverridableFields,
-} from "@/lib/site-config-server";
-import {
-  getSiteSetting,
-  setSiteSetting,
-} from "@/db/site-settings";
+  saveSiteSettingsAction,
+  toggleSiteLoginRequiredAction,
+} from "@/app/admin/settings/actions";
 
 export const metadata: Metadata = {
   title: "站点设置",
@@ -58,17 +55,7 @@ export default async function AdminSettingsPage() {
       </p>
 
       <form
-        action={async (formData: FormData) => {
-          "use server";
-          const entries: { key: OverridableFields; value: string }[] = [];
-          for (const f of fields) {
-            entries.push({
-              key: f.key,
-              value: String(formData.get(f.key) ?? ""),
-            });
-          }
-          await setSiteOverrides(entries);
-        }}
+        action={saveSiteSettingsAction}
         className="flex flex-col gap-5"
       >
         <div className="grid gap-4 sm:grid-cols-2">
@@ -117,15 +104,11 @@ export default async function AdminSettingsPage() {
               开启后，未登录用户访问任何页面都会跳转到登录页
             </p>
           </div>
-          <form
-            action={async () => {
-              "use server";
-              const next = loginRequired ? "false" : "true";
-              await setSiteSetting("site_login_required", next);
-            }}
-          >
+          <form action={toggleSiteLoginRequiredAction}>
             <button
               type="submit"
+              aria-pressed={loginRequired}
+              aria-label={loginRequired ? "关闭全站登录" : "开启全站登录"}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
                 loginRequired ? "bg-primary" : "bg-border"
               }`}
@@ -148,7 +131,7 @@ export default async function AdminSettingsPage() {
       <div className="text-xs text-muted">
         <p className="font-medium">说明</p>
         <ul className="mt-1.5 list-disc space-y-0.5 pl-5">
-          <li>这些值在每次请求时从数据库读取（含 1 分钟内存缓存）。</li>
+          <li>站点文案覆盖值保留 1 分钟内存缓存；全站登录开关会在下一次请求生效。</li>
           <li>清空一个字段并保存，该字段恢复为 site-config.ts 的默认值。</li>
           <li>头像路径填本地文件（如 /avatar.jpg）或外部 URL。</li>
           <li>改完后刷新站点即可看到效果，无需 redeploy。</li>

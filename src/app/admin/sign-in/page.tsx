@@ -1,20 +1,32 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { auth, signIn } from "@/auth";
+import { auth, signIn, signOut } from "@/auth";
 
 export const metadata: Metadata = {
   title: "登录",
   robots: { index: false, follow: false },
 };
 
+function safeAdminPath(value: string | undefined): string {
+  if (!value || !value.startsWith("/admin") || value.startsWith("//")) {
+    return "/admin";
+  }
+  return value;
+}
+
 export default async function SignInPage(props: {
   searchParams: Promise<{ callbackUrl?: string; error?: string }>;
 }) {
   const session = await auth();
   const { callbackUrl, error } = await props.searchParams;
+  const redirectTo = safeAdminPath(callbackUrl);
 
-  if (session?.user) {
-    redirect(callbackUrl ?? "/admin");
+  const user = session?.user as
+    | { isAdmin?: boolean; login?: string | null }
+    | undefined;
+
+  if (user?.isAdmin) {
+    redirect(redirectTo);
   }
 
   return (
@@ -25,18 +37,36 @@ export default async function SignInPage(props: {
           只有博主本人（GitHub: @HyperCharon）能进入。
         </p>
       </div>
-      {error ? (
+      {error || user ? (
         <div className="w-full rounded-md border border-red-400/50 bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">
-          {error === "AccessDenied"
-            ? "你不是博主本人，无权访问。"
-            : `登录失败：${error}`}
+          {user
+            ? `当前登录身份 @${user.login ?? "?"} 不是博主本人。`
+            : error === "AccessDenied"
+              ? "你不是博主本人，无权访问。"
+              : `登录失败：${error}`}
         </div>
       ) : null}
+      {user ? (
+        <form
+          action={async () => {
+            "use server";
+            await signOut({ redirectTo: "/admin/sign-in" });
+          }}
+          className="w-full"
+        >
+          <button
+            type="submit"
+            className="w-full rounded-md border border-border px-4 py-2.5 text-sm font-medium transition hover:bg-card"
+          >
+            退出当前账号
+          </button>
+        </form>
+      ) : (
       <form
         action={async () => {
           "use server";
           await signIn("github", {
-            redirectTo: callbackUrl ?? "/admin",
+            redirectTo,
           });
         }}
         className="w-full"
@@ -60,6 +90,7 @@ export default async function SignInPage(props: {
           使用 GitHub 登录
         </button>
       </form>
+      )}
       <p className="text-xs text-muted">
         登录会通过 GitHub OAuth 验证你的身份。我们不存储你的密码。
       </p>

@@ -8,7 +8,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
   providers: [GitHub],
   pages: {
-    signIn: "/admin/sign-in",
+    signIn: "/sign-in",
   },
   callbacks: {
     async session({ session, token }) {
