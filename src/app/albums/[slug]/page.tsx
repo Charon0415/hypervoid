@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getAlbumBySlug, listPhotosInAlbum } from "@/db/albums";
 import { PhotoWall } from "@/components/PhotoWall";
-import { PhotoSphereGL } from "@/components/PhotoSphereGL";
+import { PhotoSphereLoader } from "@/components/PhotoSphereLoader";
 
 type Params = { slug: string };
 
@@ -55,7 +55,7 @@ export default async function AlbumDetail(props: {
           这个相册还没有照片。
         </p>
       ) : isSphere ? (
-        <PhotoSphereGL photos={photos} />
+        <PhotoSphereLoader photos={photos} />
       ) : (
         <PhotoWall photos={photos} />
       )}
