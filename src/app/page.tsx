@@ -10,7 +10,7 @@ import { ProfileCard } from "@/components/ProfileCard";
 import { MiniCalendar } from "@/components/MiniCalendar";
 import { MiniTerminal } from "@/components/MiniTerminal";
 import { PostActivityHeatmap } from "@/components/PostActivityHeatmap";
-import { PopularPosts } from "@/components/PopularPosts";
+import { TopicCollections } from "@/components/TopicCollections";
 import { TagCloud } from "@/components/TagCloud";
 import { RecentGuestbook } from "@/components/RecentGuestbook";
 import { Greeting } from "@/components/Greeting";
@@ -166,7 +166,7 @@ export default async function Home() {
             </Suspense>
           </div>
           <Suspense fallback={<Skeleton className="h-56 w-full" />}>
-            <PopularPosts />
+            <TopicCollections />
           </Suspense>
           <HomePlayerWidget />
           <div className="hidden md:contents">

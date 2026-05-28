@@ -183,7 +183,19 @@ const DEFAULT_ADMIN_NAV_GROUPS: AdminNavGroup[] = [
 
 // Add project-specific admin groups here. A custom group with the same title as
 // a default group appends items to that group; a new title creates a new group.
-const CUSTOM_ADMIN_NAV_GROUPS: AdminNavGroup[] = [];
+const CUSTOM_ADMIN_NAV_GROUPS: AdminNavGroup[] = [
+  {
+    title: "内容生产",
+    desc: "",
+    items: [
+      {
+        href: "/admin/series",
+        title: "专题合集",
+        desc: "管理文章系列：重命名、删除、查看系列内文章",
+      },
+    ],
+  },
+];
 
 function mergeAdminNavGroups(
   defaults: AdminNavGroup[],
