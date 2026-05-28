@@ -134,7 +134,9 @@ export default async function GuestbookPage() {
                     <p
                       className="mt-2 whitespace-pre-wrap break-words text-sm"
                       dangerouslySetInnerHTML={{
-                        __html: renderMentionsHtml(m.message),
+                        __html: renderMentionsHtml(
+                          m.message.replace(/\r\n/g, "\n").replace(/\r/g, "\n"),
+                        ),
                       }}
                     />
                     {isAdmin ? (

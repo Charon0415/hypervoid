@@ -3,6 +3,10 @@ import Link from "next/link";
 import { listVisibleMessages } from "@/db/guestbook";
 import { formatDateCN } from "@/lib/datetime";
 
+function cleanMessage(s: string): string {
+  return s.replace(/[\r\n]+/g, " ").replace(/\s+/g, " ").trim();
+}
+
 function truncate(s: string, max: number): string {
   if (s.length <= max) return s;
   return s.slice(0, max).trimEnd() + "…";
@@ -73,7 +77,7 @@ export async function RecentGuestbook() {
                 </span>
               </div>
               <p className="mt-0.5 text-xs leading-snug text-muted">
-                {truncate(m.message, 60)}
+                {truncate(cleanMessage(m.message), 60)}
               </p>
             </div>
           </li>
