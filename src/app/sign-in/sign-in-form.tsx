@@ -129,13 +129,13 @@ export function SignInForm({
 
       <motion.div custom={0} variants={fadeUp}>
         <p className="text-xs font-semibold uppercase text-[#b8f2ff]/78">
-          Access interface
+          Secure Gateway / 身份入口
         </p>
         <h2 className="mt-3 text-3xl font-black uppercase leading-none text-white">
-          Sign in
+          登录 Hypervoid
         </h2>
         <p className="mt-4 text-sm leading-6 text-white/62">
-          Choose a verified route to continue.
+          GitHub 为主要登录方式，邮箱 magic link 作为备用入口。
         </p>
       </motion.div>
 
@@ -164,7 +164,7 @@ export function SignInForm({
               <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
             </div>
             <div>
-              <p className="font-bold uppercase">Link transmitted</p>
+              <p className="font-bold uppercase">登录链接已发送</p>
               <p className="mt-2 text-sm leading-6 text-white/64">
                 请查看 <span className="font-semibold text-white">{emailValue}</span>，链接将在 15 分钟后失效。
               </p>
@@ -177,7 +177,7 @@ export function SignInForm({
                 }}
                 className="mt-4 min-h-11 px-0 text-sm font-bold uppercase text-[#b8f2ff] underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#b8f2ff]/50"
               >
-                Change email
+                更换邮箱
               </button>
             </div>
           </div>
@@ -196,21 +196,21 @@ export function SignInForm({
               ) : (
                 <GitHubMark className="h-4 w-4" />
               )}
-              <span>Continue with GitHub</span>
+              <span>使用 GitHub 登录</span>
               <ArrowRight className="ml-auto h-4 w-4 opacity-70 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
             </button>
           </motion.div>
 
           <motion.div custom={2} variants={fadeUp} className="my-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
             <div className="h-px bg-white/20" />
-            <span className="text-xs font-bold uppercase text-white/42">or</span>
+            <span className="text-xs font-bold uppercase text-white/42">邮箱备用登录</span>
             <div className="h-px bg-white/20" />
           </motion.div>
 
           <motion.form custom={3} variants={fadeUp} onSubmit={handleEmail} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor={emailId} className="text-xs font-bold uppercase text-white/72">
-                Email address
+                邮箱地址
               </label>
               <div className="relative">
                 <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/44" aria-hidden="true" />
@@ -233,8 +233,8 @@ export function SignInForm({
               </div>
               <p id={`${emailId}-hint`} className="text-xs leading-5 text-white/48">
                 {emailEnabled
-                  ? "一次性登录链接将发送到你的邮箱。"
-                  : "当前环境未启用邮箱登录。"}
+                  ? "发送一次性登录链接，无需密码。"
+                  : "邮箱登录未启用，需要配置 RESEND_API_KEY。"}
               </p>
             </div>
 
@@ -248,7 +248,7 @@ export function SignInForm({
               ) : (
                 <Mail className="h-4 w-4" aria-hidden="true" />
               )}
-              <span>Send magic link</span>
+              <span>发送邮箱登录链接</span>
               <ArrowRight className="ml-auto h-4 w-4 opacity-70 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
             </button>
           </motion.form>

@@ -27,18 +27,18 @@ function statusOf(sub: {
   if (sub.unsubscribedAt) {
     return {
       label: "已退订",
-      cls: "bg-zinc-500/10 text-zinc-600 dark:text-zinc-300",
+      cls: "border-zinc-400/30 bg-zinc-400/10 text-zinc-200",
     };
   }
   if (sub.verified) {
     return {
       label: "已确认",
-      cls: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+      cls: "border-emerald-400/35 bg-emerald-400/10 text-emerald-200",
     };
   }
   return {
     label: "待确认",
-    cls: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
+    cls: "border-amber-400/35 bg-amber-400/10 text-amber-200",
   };
 }
 
@@ -53,14 +53,20 @@ export default async function AdminSubscribersPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+      <header className="hv-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-3">
           <AdminBackLink href="/admin" label="后台" />
-          <h1 className="text-2xl font-bold tracking-tight">订阅者管理</h1>
+          <div>
+            <p className="hv-kicker">Subscriber Relay</p>
+            <h1 className="hv-title mt-1 text-2xl font-semibold">订阅者管理</h1>
+          </div>
         </div>
+        <p className="max-w-xl text-sm text-muted">
+          维护邮件订阅状态。退订可恢复，删除会从数据库移除，但用户后续仍可重新订阅。
+        </p>
       </header>
 
-      <section className="grid gap-3 grid-cols-2 sm:grid-cols-4">
+      <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatTile label="总数" value={stats.total} />
         <StatTile label="已确认" value={stats.verified} accent="emerald" />
         <StatTile label="待确认" value={stats.pending} accent="amber" />
@@ -68,13 +74,13 @@ export default async function AdminSubscribersPage() {
       </section>
 
       {subs.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
+        <p className="hv-panel border-dashed p-8 text-center text-sm text-muted">
           还没有订阅者。
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border">
-          <table className="w-full min-w-[640px] text-sm">
-            <thead className="border-b border-border bg-card text-left">
+        <div className="hv-panel overflow-x-auto p-0">
+          <table className="w-full min-w-[680px] text-sm">
+            <thead className="border-b border-cyan-200/10 bg-cyan-300/[0.04] text-left text-xs uppercase text-cyan-100/65">
               <tr>
                 <th className="px-4 py-3 font-medium">邮箱</th>
                 <th className="px-4 py-3 font-medium">状态</th>
@@ -89,22 +95,20 @@ export default async function AdminSubscribersPage() {
                 return (
                   <tr
                     key={sub.id}
-                    className="border-t border-border bg-background"
+                    className="border-t border-cyan-200/10 transition hover:bg-cyan-300/[0.035]"
                   >
-                    <td className="px-4 py-3 font-mono text-xs">
+                    <td className="px-4 py-3 font-mono text-xs text-cyan-50/85">
                       {sub.email}
                     </td>
                     <td className="px-4 py-3">
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs ${s.cls}`}
-                      >
+                      <span className={"inline-flex border px-2 py-0.5 font-mono text-[11px] " + s.cls}>
                         {s.label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-xs text-muted">
+                    <td className="px-4 py-3 font-mono text-xs text-muted">
                       {formatDateTimeCN(sub.createdAt)}
                     </td>
-                    <td className="px-4 py-3 text-xs text-muted">
+                    <td className="px-4 py-3 font-mono text-xs text-muted">
                       {sub.verifiedAt ? formatDateTimeCN(sub.verifiedAt) : "—"}
                     </td>
                     <td className="px-4 py-3">
@@ -116,10 +120,7 @@ export default async function AdminSubscribersPage() {
                               await restoreAction(sub.id);
                             }}
                           >
-                            <button
-                              type="submit"
-                              className="rounded-md border border-border bg-card px-2.5 py-1 text-[11px] transition hover:border-primary hover:text-primary"
-                            >
+                            <button type="submit" className="hv-action min-h-0 px-3 py-1 text-[11px]">
                               恢复
                             </button>
                           </form>
@@ -130,10 +131,7 @@ export default async function AdminSubscribersPage() {
                               await unsubscribeAction(sub.id);
                             }}
                           >
-                            <button
-                              type="submit"
-                              className="rounded-md border border-border bg-card px-2.5 py-1 text-[11px] transition hover:border-amber-500 hover:text-amber-600"
-                            >
+                            <button type="submit" className="hv-action min-h-0 px-3 py-1 text-[11px] hover:border-amber-300/60 hover:text-amber-100">
                               退订
                             </button>
                           </form>
@@ -144,10 +142,7 @@ export default async function AdminSubscribersPage() {
                             await deleteAction(sub.id);
                           }}
                         >
-                          <button
-                            type="submit"
-                            className="rounded-md border border-red-500/30 bg-red-500/5 px-2.5 py-1 text-[11px] text-red-600 transition hover:border-red-500 hover:bg-red-500/10 dark:text-red-400"
-                          >
+                          <button type="submit" className="min-h-0 border border-red-400/35 bg-red-500/10 px-3 py-1 text-[11px] text-red-200 transition hover:border-red-300 hover:bg-red-500/15">
                             删除
                           </button>
                         </form>
@@ -160,10 +155,6 @@ export default async function AdminSubscribersPage() {
           </table>
         </div>
       )}
-
-      <p className="text-xs text-muted">
-        提示：「退订」可恢复，「删除」彻底从数据库移除（用户后续可重新订阅）。
-      </p>
     </div>
   );
 }
@@ -179,18 +170,14 @@ function StatTile({
 }) {
   const accentClass =
     accent === "emerald"
-      ? "text-emerald-600 dark:text-emerald-400"
+      ? "text-emerald-200"
       : accent === "amber"
-        ? "text-amber-600 dark:text-amber-400"
-        : "text-foreground";
+        ? "text-amber-200"
+        : "text-cyan-50";
   return (
-    <div className="rounded-2xl border border-border bg-card p-4">
-      <p className="text-[11px] uppercase tracking-wider text-muted">
-        {label}
-      </p>
-      <p
-        className={`mt-1 font-mono text-2xl font-bold leading-tight sm:text-3xl ${accentClass}`}
-      >
+    <div className="hv-panel p-4">
+      <p className="hv-kicker">{label}</p>
+      <p className={"mt-2 font-mono text-2xl font-semibold leading-tight sm:text-3xl " + accentClass}>
         {value.toLocaleString("en-US")}
       </p>
     </div>

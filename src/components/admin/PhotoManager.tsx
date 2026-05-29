@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useRef, useState, useTransition } from "react";
+import { ImagePlus, Trash2 } from "lucide-react";
 import {
   addPhotoAction,
   deletePhotoAction,
@@ -58,14 +59,14 @@ export function PhotoManager({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">照片 ({photos.length})</h2>
+        <h2 className="hv-title text-lg font-semibold tracking-normal">照片 ({photos.length})</h2>
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={uploading}
-          className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
+          className="hv-action px-4 py-1.5 text-sm font-medium disabled:opacity-50"
         >
-          {uploading ? "上传中…" : "+ 上传照片 (可多选)"}
+          {uploading ? "上传中…" : (<><ImagePlus className="h-4 w-4" aria-hidden /> 上传照片</>)}
         </button>
         <input
           ref={fileRef}
@@ -77,10 +78,10 @@ export function PhotoManager({
         />
       </div>
       {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-red-300">{error}</p>
       ) : null}
       {photos.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
+        <p className="hv-panel border-dashed p-8 text-center text-cyan-50/60">
           这个相册还没有照片。
         </p>
       ) : (
@@ -88,7 +89,7 @@ export function PhotoManager({
           {photos.map((p) => (
             <div
               key={p.id}
-              className="group relative overflow-hidden rounded-md border border-border"
+              className="group relative overflow-hidden border border-cyan-100/16 bg-white/[0.035]"
             >
               <Image
                 src={p.url}
@@ -103,9 +104,9 @@ export function PhotoManager({
                 type="button"
                 onClick={() => onDelete(p.id)}
                 disabled={pending}
-                className="dark-locked absolute right-1 top-1 hidden rounded bg-red-500/90 px-2 py-1 text-xs text-white group-hover:block disabled:opacity-50"
+                className="dark-locked absolute right-1 top-1 hidden bg-red-500/90 px-2 py-1 text-xs text-white group-hover:inline-flex disabled:opacity-50"
               >
-                删除
+                <Trash2 className="mr-1 inline h-3.5 w-3.5" aria-hidden /> 删除
               </button>
               {p.caption ? (
                 <p className="dark-locked absolute bottom-0 left-0 right-0 truncate bg-black/60 px-2 py-1 text-xs text-white">

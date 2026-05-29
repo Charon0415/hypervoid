@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
+import { ImagePlus, Pin, Sparkles, Trash2, Upload } from "lucide-react";
 import { suggestTagsAction } from "@/app/admin/posts/actions";
 
 export type PostEditorInitial = {
@@ -162,7 +163,7 @@ export function PostEditor({
   return (
     <form action={handleSubmit} className="flex flex-col gap-6">
       {error ? (
-        <div className="rounded-md border border-red-400/50 bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">
+        <div className="border border-red-400/35 bg-red-500/10 p-3 text-sm text-red-100">
           {error}
         </div>
       ) : null}
@@ -196,7 +197,7 @@ export function PostEditor({
             onChange={(e) =>
               update("slug", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))
             }
-            className={`${inputClass} ${mode === "edit" ? "cursor-not-allowed bg-muted/10 text-muted" : ""}`}
+            className={`${inputClass} ${mode === "edit" ? "cursor-not-allowed bg-cyan-50/[0.02] text-cyan-50/40" : ""}`}
             pattern="[a-z0-9][a-z0-9-]*"
           />
         </Field>
@@ -251,18 +252,18 @@ export function PostEditor({
                   });
                 }}
                 disabled={tagSuggesting || !state.content.trim()}
-                className="shrink-0 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-primary transition hover:border-primary disabled:opacity-50"
+                className="hv-action shrink-0 px-3 py-2 text-xs disabled:opacity-50"
                 title="让 Claude Haiku 读正文给标签建议"
               >
-                {tagSuggesting ? "..." : "✦ AI 建议"}
+                {tagSuggesting ? "..." : (<><Sparkles className="h-3.5 w-3.5" aria-hidden /> AI 建议</>)}
               </button>
             </div>
             {tagSuggestError ? (
-              <p className="text-xs text-red-500">{tagSuggestError}</p>
+              <p className="text-xs text-red-300">{tagSuggestError}</p>
             ) : null}
             {suggestedTags.length > 0 ? (
               <div className="flex flex-wrap items-center gap-1.5 text-xs">
-                <span className="text-muted">建议：</span>
+                <span className="text-cyan-50/50">建议：</span>
                 {suggestedTags.map((t) => {
                   const current = state.tags
                     .split(/[,，]/)
@@ -279,10 +280,10 @@ export function PostEditor({
                         update("tags", next);
                       }}
                       disabled={has}
-                      className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 transition ${
+                      className={`inline-flex items-center gap-1 border px-2 py-0.5 transition ${
                         has
-                          ? "border-primary/30 bg-primary/10 text-primary opacity-60"
-                          : "border-border bg-background hover:border-primary/40 hover:text-primary"
+                          ? "border-cyan-100/30 bg-cyan-100/10 text-cyan-100 opacity-60"
+                          : "border-cyan-100/16 bg-white/[0.035] text-cyan-50/62 hover:border-cyan-100/40 hover:text-cyan-50"
                       }`}
                       title={has ? "已加入" : "点击加入"}
                     >
@@ -293,7 +294,7 @@ export function PostEditor({
                 <button
                   type="button"
                   onClick={() => setSuggestedTags([])}
-                  className="text-muted hover:text-foreground"
+                  className="text-cyan-50/50 hover:text-cyan-50"
                   title="收起"
                 >
                   ×
@@ -315,9 +316,9 @@ export function PostEditor({
               type="button"
               onClick={() => coverInputRef.current?.click()}
               disabled={uploading !== null}
-              className="shrink-0 rounded-md border border-border bg-card px-3 py-2 text-sm transition hover:border-primary disabled:opacity-50"
+              className="hv-action shrink-0 px-3 py-2 text-sm disabled:opacity-50"
             >
-              {uploading === "cover" ? "上传中…" : "上传"}
+              {uploading === "cover" ? "上传中…" : (<><Upload className="h-4 w-4" aria-hidden /> 上传</>)}
             </button>
             <input
               ref={coverInputRef}
@@ -365,8 +366,8 @@ export function PostEditor({
             }
             className={inputClass}
           >
-            <option value="public">🌐 公开</option>
-            <option value="private">🔒 私密（仅管理员可见）</option>
+            <option value="public">公开</option>
+            <option value="private">私密（仅管理员可见）</option>
           </select>
         </Field>
       </div>
@@ -385,15 +386,15 @@ export function PostEditor({
           </Field>
         ) : (
           <Field label="置顶" hint="勾选后会出现在列表最上方">
-            <label className="inline-flex h-10 items-center gap-2 rounded-md border border-border bg-background px-3 text-sm">
+            <label className="inline-flex h-10 items-center gap-2 border border-cyan-100/16 bg-white/[0.035] px-3 text-sm text-cyan-50/72">
               <input
                 type="checkbox"
                 name="pinned"
                 checked={state.pinned}
                 onChange={(e) => update("pinned", e.target.checked)}
-                className="h-4 w-4 rounded border-border accent-primary"
+                className="h-4 w-4 accent-cyan-300"
               />
-              <span>📌 置顶这篇文章</span>
+              <span className="inline-flex items-center gap-1.5"><Pin className="h-3.5 w-3.5 text-cyan-100/70" aria-hidden />置顶这篇文章</span>
             </label>
           </Field>
         )}
@@ -433,9 +434,9 @@ export function PostEditor({
               type="button"
               onClick={() => contentInputRef.current?.click()}
               disabled={uploading !== null}
-              className="rounded-md border border-border bg-card px-3 py-1.5 text-xs transition hover:border-primary disabled:opacity-50"
+              className="hv-action px-3 py-1.5 text-xs disabled:opacity-50"
             >
-              {uploading === "content" ? "上传中…" : "🖼 插入图片"}
+              {uploading === "content" ? "上传中…" : (<><ImagePlus className="h-3.5 w-3.5" aria-hidden /> 插入图片</>)}
             </button>
             <input
               ref={contentInputRef}
@@ -463,7 +464,7 @@ export function PostEditor({
         <div className="flex gap-3">
           <Link
             href="/admin/posts"
-            className="rounded-md border border-border bg-card px-4 py-2 text-sm hover:border-primary"
+            className="hv-action px-4 py-2 text-sm"
           >
             取消
           </Link>
@@ -472,16 +473,16 @@ export function PostEditor({
               type="button"
               onClick={handleDelete}
               disabled={deletePending}
-              className="rounded-md border border-red-400/50 bg-red-50 px-4 py-2 text-sm text-red-700 hover:border-red-500 disabled:opacity-50 dark:bg-red-950 dark:text-red-200"
+              className="border border-red-400/35 bg-red-500/10 px-4 py-2 text-sm text-red-100 hover:border-red-300 disabled:opacity-50"
             >
-              {deletePending ? "删除中…" : "删除"}
+              {deletePending ? "删除中…" : (<><Trash2 className="mr-1 inline h-4 w-4" aria-hidden /> 删除</>)}
             </button>
           ) : null}
         </div>
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
+          className="hv-action px-5 py-2 text-sm font-medium disabled:opacity-50"
         >
           {pending ? "保存中…" : mode === "new" ? "创建" : "保存"}
         </button>
@@ -491,7 +492,7 @@ export function PostEditor({
 }
 
 const inputClass =
-  "w-full rounded-md border border-border bg-background px-3 py-2 text-sm transition focus:border-primary focus:outline-none";
+  "w-full border border-cyan-100/16 bg-white/[0.035] px-3 py-2 text-sm text-cyan-50 placeholder:text-cyan-50/35 transition focus:border-cyan-100/45 focus:outline-none";
 
 function Field({
   label,
@@ -506,12 +507,12 @@ function Field({
 }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-sm font-medium">
+      <span className="text-sm font-medium text-cyan-50">
         {label}
-        {required ? <span className="text-red-500"> *</span> : null}
+        {required ? <span className="text-red-300"> *</span> : null}
       </span>
       {children}
-      {hint ? <span className="text-xs text-muted">{hint}</span> : null}
+      {hint ? <span className="text-xs text-cyan-50/45">{hint}</span> : null}
     </label>
   );
 }

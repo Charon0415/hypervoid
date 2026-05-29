@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { headers } from "next/headers";
+import { ArrowLeft, Filter, Search, Tags } from "lucide-react";
 import type { Metadata } from "next";
 import { SearchHitCard } from "@/components/SearchHitCard";
 import { SearchBox } from "@/components/SearchBox";
@@ -90,7 +91,6 @@ export default async function SearchPage(props: {
     void logSearchQuery({ query: params.q, resultCount: hits.length, ip });
   }
 
-  // Chips reflect what the base query *could* match — compute pre-filter set
   const baseHits = params.q ? await searchPosts(params.q, {}) : [];
   const tagsInHits = new Map<string, number>();
   const yearsInHits = new Map<string, number>();
@@ -116,38 +116,29 @@ export default async function SearchPage(props: {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <Link
-            href="/"
-            className="group inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium text-foreground/80 transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
-          >
-            <svg
-              aria-hidden
-              className="h-3.5 w-3.5 transition group-hover:-translate-x-0.5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M19 12H5" />
-              <path d="M12 19l-7-7 7-7" />
-            </svg>
+      <header className="hv-panel relative overflow-hidden p-5 sm:p-7">
+        <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-100/45 to-transparent" />
+        <div className="mb-5 flex flex-wrap items-center gap-3">
+          <Link href="/" className="hv-action px-4 text-sm font-medium">
+            <ArrowLeft className="h-4 w-4" aria-hidden />
             首页
           </Link>
-          <h1 className="text-3xl font-bold tracking-tight">搜索</h1>
-          <span className="text-xs text-muted">共 {allTags.length} 个标签</span>
+          <span className="hv-chip">{allTags.length} tags</span>
         </div>
-        <Suspense fallback={null}>
-          <SearchBox initial={params.q ?? ""} />
-        </Suspense>
+        <p className="hv-kicker">Search console / indexed memory</p>
+        <h1 className="hv-title mt-2 flex items-center gap-3 text-3xl font-black leading-tight sm:text-5xl">
+          <Search className="h-8 w-8 text-cyan-100/70 sm:h-10 sm:w-10" aria-hidden />
+          搜索
+        </h1>
+        <div className="mt-5">
+          <Suspense fallback={null}>
+            <SearchBox initial={params.q ?? ""} />
+          </Suspense>
+        </div>
       </header>
 
       {params.q ? (
-        <section className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4">
-          {/* Date range */}
+        <section className="hv-panel flex flex-col gap-3 p-4">
           <form
             method="GET"
             action="/search"
@@ -157,50 +148,55 @@ export default async function SearchPage(props: {
             {params.tags.map((t) => (
               <input key={t} type="hidden" name="tags" value={t} />
             ))}
-            <span className="text-muted">日期：</span>
+            <span className="inline-flex items-center gap-1 text-cyan-50/58">
+              <Filter className="h-3.5 w-3.5" aria-hidden />
+              日期
+            </span>
             <input
               type="date"
               name="from"
               defaultValue={params.from ?? ""}
-              className="rounded-md border border-border bg-background px-2 py-1 text-xs"
+              className="border border-cyan-100/18 bg-white/[0.045] px-2 py-1 text-xs text-cyan-50 [color-scheme:dark]"
             />
-            <span className="text-muted">→</span>
+            <span className="text-cyan-50/45">→</span>
             <input
               type="date"
               name="to"
               defaultValue={params.to ?? ""}
-              className="rounded-md border border-border bg-background px-2 py-1 text-xs"
+              className="border border-cyan-100/18 bg-white/[0.045] px-2 py-1 text-xs text-cyan-50 [color-scheme:dark]"
             />
             <button
               type="submit"
-              className="rounded-md bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground transition hover:opacity-90"
+              className="hv-action min-h-8 px-3 text-xs font-medium"
             >
               应用
             </button>
             {(params.from || params.to) && (
               <Link
                 href={buildHref({ ...params, from: undefined, to: undefined })}
-                className="text-muted hover:text-primary"
+                className="text-cyan-50/55 hover:text-cyan-100"
               >
                 清除日期
               </Link>
             )}
           </form>
 
-          {/* Tag chips (multi-select) */}
           {sortedTagChips.length > 0 ? (
             <div className="flex flex-wrap items-center gap-1.5 text-xs">
-              <span className="text-muted">标签：</span>
+              <span className="inline-flex items-center gap-1 text-cyan-50/58">
+                <Tags className="h-3.5 w-3.5" aria-hidden />
+                标签
+              </span>
               {sortedTagChips.map(([name, n]) => {
                 const active = params.tags.includes(name);
                 return (
                   <Link
                     key={name}
                     href={buildHref(toggleTag(params, name))}
-                    className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 transition ${
+                    className={`inline-flex items-center gap-1 border px-2.5 py-0.5 transition ${
                       active
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-border bg-background text-muted hover:border-primary/40 hover:text-foreground"
+                        ? "border-cyan-100/45 bg-cyan-100/14 text-cyan-50"
+                        : "border-cyan-100/16 bg-white/[0.035] text-cyan-50/58 hover:border-cyan-100/35 hover:text-cyan-50"
                     }`}
                   >
                     #{name}
@@ -211,7 +207,7 @@ export default async function SearchPage(props: {
               {params.tags.length > 1 ? (
                 <Link
                   href={buildHref({ ...params, tags: [] })}
-                  className="text-muted hover:text-primary"
+                  className="text-cyan-50/55 hover:text-cyan-100"
                 >
                   清除标签
                 </Link>
@@ -220,33 +216,33 @@ export default async function SearchPage(props: {
           ) : null}
 
           {activeFilters > 0 ? (
-            <p className="text-[10px] text-muted">
-              已应用 <span className="text-foreground">{activeFilters}</span> 个过滤条件 · 多个标签为交集匹配。
+            <p className="text-[10px] text-cyan-50/48">
+              已应用 <span className="text-cyan-50">{activeFilters}</span> 个过滤条件，多标签为交集匹配。
             </p>
           ) : null}
         </section>
       ) : null}
 
       {!params.q ? (
-        <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
+        <p className="hv-panel border-dashed p-8 text-center text-cyan-50/60">
           输入关键词开始搜索（支持中文）。
         </p>
       ) : hits.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
-          没有匹配「<span className="text-foreground">{params.q}</span>」
+        <p className="hv-panel border-dashed p-8 text-center text-cyan-50/60">
+          没有匹配「<span className="text-cyan-50">{params.q}</span>」
           {activeFilters > 0 ? "且符合所选过滤的" : "的"}文章。
         </p>
       ) : (
         <>
-          <p className="text-sm text-muted">
+          <p className="text-sm text-cyan-50/58">
             找到 {hits.length} 篇匹配「
-            <span className="text-foreground">{params.q}</span>」
+            <span className="text-cyan-50">{params.q}</span>」
             {params.tags.length > 0 ? (
               <>
-                {" "}
-                · 标签{" "}
+                {" / "}
+                标签{" "}
                 {params.tags.map((t) => (
-                  <span key={t} className="ml-0.5 text-primary">
+                  <span key={t} className="ml-0.5 text-cyan-100">
                     #{t}
                   </span>
                 ))}
@@ -254,9 +250,9 @@ export default async function SearchPage(props: {
             ) : null}
             {params.from || params.to ? (
               <>
-                {" "}
-                · 日期{" "}
-                <span className="text-primary">
+                {" / "}
+                日期{" "}
+                <span className="text-cyan-100">
                   {params.from || "…"} → {params.to || "…"}
                 </span>
               </>

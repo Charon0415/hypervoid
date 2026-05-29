@@ -35,23 +35,22 @@ export function TableOfContents({ items }: { items: TOCItem[] }) {
 
   return (
     <nav aria-label="目录" className="text-sm">
-      <p className="mb-3 text-xs uppercase tracking-wider text-muted">
-        目录
-      </p>
-      <ul className="flex flex-col gap-1.5 border-l border-border">
+      <p className="hv-kicker mb-3">Navigation matrix</p>
+      <ul className="flex flex-col gap-1 border-l border-cyan-100/15">
         {items.map((item) => {
           const isActive = item.id === activeId;
           const indent = (item.depth - minDepth) * 12;
           return (
             <li key={item.id}>
               <a
-                href={`#${item.id}`}
+                href={"#" + item.id}
                 style={{ paddingLeft: indent + 12 }}
-                className={`block rounded-r border-l-2 py-1 pr-2 transition ${
-                  isActive
-                    ? "-ml-px border-primary bg-primary/5 font-medium text-primary"
-                    : "border-transparent text-muted hover:bg-card hover:text-foreground"
-                }`}
+                className={
+                  "block border-l-2 py-1.5 pr-2 transition " +
+                  (isActive
+                    ? "-ml-px border-cyan-100 bg-cyan-100/10 font-medium text-cyan-50"
+                    : "border-transparent text-cyan-50/55 hover:bg-white/[0.055] hover:text-cyan-50")
+                }
               >
                 {item.text}
               </a>

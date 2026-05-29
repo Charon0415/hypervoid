@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Pin } from "lucide-react";
 import { PostCard } from "@/components/PostCard";
 import { getAllPostMeta } from "@/lib/posts";
 
@@ -15,26 +16,24 @@ export default async function PinnedPage() {
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6">
-      <header>
-        <p className="text-xs uppercase tracking-widest text-primary">
-          📌 Pinned
-        </p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">
-          置顶文章
-        </h1>
-        <p className="mt-2 text-sm text-muted">
-          {pinned.length > 0
-            ? `共 ${pinned.length} 篇精选`
-            : "暂无置顶文章"}
-        </p>
+      <header className="hv-panel relative overflow-hidden p-5 sm:p-7">
+        <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-100/45 to-transparent" />
+        <p className="hv-kicker">Pinned signal / editor selection</p>
+        <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
+          <h1 className="hv-title flex items-center gap-3 text-3xl font-black leading-tight sm:text-5xl">
+            <Pin className="h-8 w-8 text-cyan-100/70 sm:h-10 sm:w-10" aria-hidden />
+            置顶文章
+          </h1>
+          <span className="hv-chip hv-chip-strong">
+            {pinned.length > 0 ? pinned.length + " selected" : "empty"}
+          </span>
+        </div>
       </header>
 
       {pinned.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border p-12 text-center">
-          <p className="text-5xl" aria-hidden>
-            📌
-          </p>
-          <p className="mt-3 text-muted">
+        <div className="hv-panel border-dashed p-12 text-center text-sm text-cyan-50/60">
+          <Pin className="mx-auto h-9 w-9 text-cyan-100/55" aria-hidden />
+          <p className="mt-3">
             管理员可以在文章编辑器中勾选&ldquo;置顶&rdquo;。
           </p>
         </div>

@@ -79,7 +79,7 @@ export default async function EditPostPage(props: {
           href={`/posts/${slug}`}
           target="_blank"
           rel="noreferrer noopener"
-          className="inline-flex items-center gap-1 text-xs text-muted hover:text-primary"
+          className="inline-flex items-center gap-1 text-xs text-muted hover:text-cyan-50"
         >
           线上预览 ↗
         </Link>

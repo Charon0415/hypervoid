@@ -128,9 +128,10 @@ export default async function AdminMascotPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="flex items-center gap-3">
+      <header className="hv-panel p-5">
         <AdminBackLink href="/admin" label="后台" />
-        <h1 className="text-2xl font-bold tracking-tight">看板娘设置</h1>
+        <p className="hv-kicker mt-4">Mascot Protocol</p>
+        <h1 className="hv-title mt-1 text-2xl font-semibold">看板娘设置</h1>
       </header>
 
       <p className="text-sm text-muted">
@@ -143,7 +144,7 @@ export default async function AdminMascotPage() {
           return (
             <section
               key={policy.key}
-              className="rounded-2xl border border-border bg-card p-5 shadow-sm"
+              className="hv-panel p-5 shadow-sm"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -156,9 +157,9 @@ export default async function AdminMascotPage() {
                 </div>
                 <span
                   className={
-                    "shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium " +
+                    "shrink-0  px-2.5 py-1 text-[11px] font-medium " +
                     (enabled
-                      ? "bg-primary/10 text-primary"
+                      ? "bg-cyan-300/10 text-cyan-100"
                       : "bg-muted/20 text-muted")
                   }
                 >
@@ -174,7 +175,7 @@ export default async function AdminMascotPage() {
               >
                 <button
                   type="submit"
-                  className="rounded-md border border-border bg-background px-4 py-2 text-sm font-medium transition hover:border-primary hover:text-primary"
+                  className="rounded-md border border-cyan-100/14 bg-black/20 px-4 py-2 text-sm font-medium transition hover:border-cyan-200/55 hover:text-cyan-100"
                 >
                   {enabled ? policy.offText : policy.onText}
                 </button>
@@ -184,7 +185,7 @@ export default async function AdminMascotPage() {
         })}
       </div>
 
-      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <section className="hv-panel p-5 shadow-sm">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-base font-bold tracking-tight">切换默认显示角色</h2>
@@ -192,7 +193,7 @@ export default async function AdminMascotPage() {
               只影响没有本地角色记录的新访客；不会覆盖已经切换过角色的用户。
             </p>
           </div>
-          <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary">
+          <span className="shrink-0  bg-cyan-100/10 px-2.5 py-1 text-[11px] font-medium text-cyan-100">
             {MASCOTS.find((m) => m.id === defaultCharacter)?.name ?? "拉姆"}
           </span>
         </div>
@@ -212,8 +213,8 @@ export default async function AdminMascotPage() {
                   className={
                     "rounded-md border px-4 py-2 text-sm font-medium transition " +
                     (active
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border bg-background hover:border-primary hover:text-primary")
+                      ? "border-cyan-100 bg-cyan-100 text-slate-950"
+                      : "border-cyan-100/14 bg-black/20 hover:border-cyan-200/55 hover:text-cyan-100")
                   }
                 >
                   {m.name}
@@ -228,10 +229,10 @@ export default async function AdminMascotPage() {
         {MASCOTS.map((m) => (
           <article
             key={m.id}
-            className="flex h-full flex-col gap-4 rounded-2xl border border-border bg-card p-5 text-left"
+            className="flex h-full flex-col gap-4 hv-panel p-5 text-left"
           >
             <div className="flex items-start gap-4">
-              <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-muted/20">
+              <div className="relative h-20 w-20 shrink-0 overflow-hidden  bg-muted/20">
                 {m.preview === "live2d" ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -263,7 +264,7 @@ export default async function AdminMascotPage() {
                 <div className="flex items-center gap-2">
                   <h2 className="text-lg font-bold tracking-tight">{m.name}</h2>
                   {m.id === defaultCharacter ? (
-                    <span className="shrink-0 rounded-full bg-primary px-2 py-0.5 text-[10px] font-medium text-primary-foreground">
+                    <span className="shrink-0  bg-cyan-100 px-2 py-0.5 text-[10px] font-medium text-slate-950">
                       默认
                     </span>
                   ) : null}

@@ -238,7 +238,7 @@ export default async function AdminMusicPage({
         </p>
       ) : null}
 
-      <section className="rounded-2xl border border-border bg-card p-5">
+      <section className="hv-panel p-5">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <div>
             <h2 className="text-sm font-semibold tracking-tight">音源模式</h2>
@@ -246,14 +246,14 @@ export default async function AdminMusicPage({
               前台 APlayer 和首页小组件都会读取这里选择的统一音源。
             </p>
           </div>
-          <span className="rounded-full border border-border bg-background px-3 py-1 text-xs text-muted">
+          <span className=" border border-cyan-100/14 bg-black/20 px-3 py-1 text-xs text-muted">
             当前：{MUSIC_SOURCE_LABEL[sourceConfig.mode]}
           </span>
         </div>
 
         <form action={saveSourceAction} className="mt-4 flex flex-col gap-4">
           <div className="grid gap-3 md:grid-cols-3">
-            <label className="rounded-xl border border-border bg-background/60 p-4 text-sm transition has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+            <label className="border border-cyan-100/12 bg-black/20/60 p-4 text-sm transition has-[:checked]:border-cyan-200/55 has-[:checked]:bg-cyan-300/10">
               <input
                 type="radio"
                 name="sourceMode"
@@ -264,7 +264,7 @@ export default async function AdminMusicPage({
               <span className="font-medium">已部署音源</span>
               <p className="mt-1 text-xs text-muted">沿用现有网易云歌单链路，受 Cookie、版权和地区影响。</p>
             </label>
-            <label className="rounded-xl border border-border bg-background/60 p-4 text-sm transition has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+            <label className="border border-cyan-100/12 bg-black/20/60 p-4 text-sm transition has-[:checked]:border-cyan-200/55 has-[:checked]:bg-cyan-300/10">
               <input
                 type="radio"
                 name="sourceMode"
@@ -275,7 +275,7 @@ export default async function AdminMusicPage({
               <span className="font-medium">LX 音源</span>
               <p className="mt-1 text-xs text-muted">填写可返回 JSON 曲目列表的 LX API。不要直接执行混淆 JS 音源脚本。</p>
             </label>
-            <label className="rounded-xl border border-border bg-background/60 p-4 text-sm transition has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+            <label className="border border-cyan-100/12 bg-black/20/60 p-4 text-sm transition has-[:checked]:border-cyan-200/55 has-[:checked]:bg-cyan-300/10">
               <input
                 type="radio"
                 name="sourceMode"
@@ -295,7 +295,7 @@ export default async function AdminMusicPage({
               type="url"
               defaultValue={sourceConfig.lxApiUrl}
               placeholder="https://example.com/playlist?id={playlistId}"
-              className="rounded-md border border-border bg-background px-3 py-2 text-sm transition focus:border-primary focus:outline-none"
+              className="rounded-md border border-cyan-100/14 bg-black/20 px-3 py-2 text-sm transition focus:border-cyan-200/55 focus:outline-none"
             />
             <span className="text-[11px] text-muted">
               支持 {"{playlistId}"} 占位符；返回 JSON 可为数组，或包含 tracks/list/songs/data/result.playlist 等字段。
@@ -309,7 +309,7 @@ export default async function AdminMusicPage({
               rows={8}
               defaultValue={sourceConfig.localTracksRaw}
               placeholder={LOCAL_EXAMPLE}
-              className="rounded-md border border-border bg-background px-3 py-2 font-mono text-xs transition focus:border-primary focus:outline-none"
+              className="rounded-md border border-cyan-100/14 bg-black/20 px-3 py-2 font-mono text-xs transition focus:border-cyan-200/55 focus:outline-none"
             />
             <span className="text-[11px] text-muted">
               每首歌至少需要 title/name 与 url；可选 artist、cover、duration、lrc。
@@ -319,13 +319,13 @@ export default async function AdminMusicPage({
           <div className="flex flex-wrap gap-2">
             <button
               type="submit"
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+              className="hv-action hv-chip-strong px-4 text-sm font-medium"
             >
               保存音源设置
             </button>
             <a
               href="/admin/music?test=connect"
-              className="rounded-md border border-border bg-background px-4 py-2 text-sm text-muted transition hover:border-primary/40 hover:text-primary"
+              className="rounded-md border border-cyan-100/14 bg-black/20 px-4 py-2 text-sm text-muted transition hover:border-cyan-100/40 hover:text-cyan-100"
             >
               测试当前音源
             </a>
@@ -351,7 +351,7 @@ export default async function AdminMusicPage({
         ) : null}
       </section>
 
-      <section className="rounded-2xl border border-border bg-card p-5">
+      <section className="hv-panel p-5">
         <h2 className="text-sm font-semibold tracking-tight">添加已部署音源歌单</h2>
         <p className="mt-1 text-xs text-muted">
           粘贴网易云音乐歌单链接或纯数字 ID。设为当前后会自动切回「已部署音源」。
@@ -365,11 +365,11 @@ export default async function AdminMusicPage({
             type="text"
             required
             placeholder="https://music.163.com/playlist?id=... 或 2829883282"
-            className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm transition focus:border-primary focus:outline-none"
+            className="flex-1 rounded-md border border-cyan-100/14 bg-black/20 px-3 py-2 text-sm transition focus:border-cyan-200/55 focus:outline-none"
           />
           <button
             type="submit"
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+            className="hv-action hv-chip-strong px-4 text-sm font-medium"
           >
             添加
           </button>
@@ -386,7 +386,7 @@ export default async function AdminMusicPage({
         </div>
 
         {saved.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted">
+          <div className="hv-panel border-dashed p-8 text-center text-sm text-muted">
             还没有保存的歌单。上方添加一个。
           </div>
         ) : (
@@ -396,7 +396,7 @@ export default async function AdminMusicPage({
               return (
                 <div
                   key={p.id}
-                  className={"flex flex-col gap-3 overflow-hidden rounded-2xl border p-4 transition " + (isActive ? "border-primary bg-primary/5 shadow-md" : "border-border bg-card hover:border-primary/40")}
+                  className={"flex flex-col gap-3 overflow-hidden hv-panel p-4 transition " + (isActive ? "border-cyan-200/55 bg-cyan-300/10 shadow-md" : "border-cyan-100/16 bg-cyan-300/6 hover:border-cyan-100/40")}
                 >
                   <div className="flex items-start gap-3">
                     <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-muted/20">
@@ -417,7 +417,7 @@ export default async function AdminMusicPage({
                       <div className="flex items-center gap-2">
                         <h3 className="line-clamp-1 text-base font-semibold tracking-tight">{p.name}</h3>
                         {isActive ? (
-                          <span className="shrink-0 rounded-full bg-primary px-2 py-0.5 text-[10px] font-medium text-primary-foreground">
+                          <span className="shrink-0  bg-cyan-100 px-2 py-0.5 text-[10px] font-medium text-slate-950">
                             当前
                           </span>
                         ) : null}
@@ -437,7 +437,7 @@ export default async function AdminMusicPage({
                         <input type="hidden" name="id" value={p.id} />
                         <button
                           type="submit"
-                          className="rounded-md border border-primary bg-primary/10 px-3 py-1 text-xs font-medium text-primary transition hover:bg-primary/15"
+                          className="rounded-md border border-cyan-200/55 bg-cyan-100/10 px-3 py-1 text-xs font-medium text-cyan-100 transition hover:bg-cyan-100/15"
                         >
                           设为当前
                         </button>
@@ -448,7 +448,7 @@ export default async function AdminMusicPage({
                       <button
                         type="submit"
                         title="重新拉取封面/名称"
-                        className="rounded-md border border-border bg-background px-3 py-1 text-xs text-muted transition hover:border-primary/40 hover:text-primary"
+                        className="rounded-md border border-cyan-100/14 bg-black/20 px-3 py-1 text-xs text-muted transition hover:border-cyan-100/40 hover:text-cyan-100"
                       >
                         刷新
                       </button>
@@ -457,7 +457,7 @@ export default async function AdminMusicPage({
                       href={"https://music.163.com/#/playlist?id=" + p.id}
                       target="_blank"
                       rel="noreferrer"
-                      className="rounded-md border border-border bg-background px-3 py-1 text-xs text-muted transition hover:border-primary/40 hover:text-primary"
+                      className="rounded-md border border-cyan-100/14 bg-black/20 px-3 py-1 text-xs text-muted transition hover:border-cyan-100/40 hover:text-cyan-100"
                     >
                       网易云 ↗
                     </a>
@@ -465,7 +465,7 @@ export default async function AdminMusicPage({
                       <input type="hidden" name="id" value={p.id} />
                       <button
                         type="submit"
-                        className="rounded-md border border-border bg-background px-3 py-1 text-xs text-muted transition hover:border-red-500/40 hover:text-red-500"
+                        className="rounded-md border border-cyan-100/14 bg-black/20 px-3 py-1 text-xs text-muted transition hover:border-red-500/40 hover:text-red-500"
                       >
                         删除
                       </button>
@@ -478,10 +478,10 @@ export default async function AdminMusicPage({
         )}
       </section>
 
-      <section className="rounded-2xl border border-border bg-card p-5">
+      <section className="hv-panel p-5">
         <h2 className="text-sm font-semibold tracking-tight">已部署音源 Cookie 状态</h2>
         <div className="mt-3 flex items-center gap-3">
-          <span className={"inline-flex h-2.5 w-2.5 rounded-full " + (cookieSet ? "bg-emerald-500" : "bg-amber-500")} />
+          <span className={"inline-flex h-2.5 w-2.5  " + (cookieSet ? "bg-emerald-500" : "bg-amber-500")} />
           <p className="text-sm">
             <span className={cookieSet ? "font-medium text-emerald-700 dark:text-emerald-400" : "font-medium text-amber-700 dark:text-amber-400"}>
               {cookieSet ? "已配置" : "未配置"}

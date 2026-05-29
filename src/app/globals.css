@@ -52,14 +52,14 @@ html[data-font-size="large"] .prose {
 }
 
 :root {
-  color-scheme: light dark;
-  --background: #fafafa;
-  --foreground: #18181b;
-  --card: #ffffff;
-  --muted: #71717a;
-  --border: #e4e4e7;
-  --primary: #1d4ed8;
-  --primary-foreground: #ffffff;
+  color-scheme: dark;
+  --background: #02040a;
+  --foreground: #f8fafc;
+  --card: #060914;
+  --muted: #93a4b8;
+  --border: rgba(207, 250, 254, 0.16);
+  --primary: #67e8f9;
+  --primary-foreground: #02040a;
 }
 
 /* Elements that are already styled for a fixed scheme (e.g. white text on
@@ -74,13 +74,13 @@ html[data-font-size="large"] .prose {
 }
 
 .dark {
-  --background: #09090b;
-  --foreground: #fafafa;
-  --card: #18181b;
-  --muted: #a1a1aa;
-  --border: #27272a;
-  --primary: #3b82f6;
-  --primary-foreground: #ffffff;
+  --background: #02040a;
+  --foreground: #f8fafc;
+  --card: #060914;
+  --muted: #93a4b8;
+  --border: rgba(207, 250, 254, 0.16);
+  --primary: #67e8f9;
+  --primary-foreground: #02040a;
 }
 
 @theme inline {
@@ -684,4 +684,327 @@ html[data-display="fullscreen"] select {
 .hypervoid-aplayer .aplayer .aplayer-pic,
 .hypervoid-aplayer .aplayer .aplayer-pic img {
   border-radius: 999px;
+}
+
+
+/* Hypervoid console shell */
+:root {
+  --hv-console-bg: #02040a;
+  --hv-console-panel: rgba(255, 255, 255, 0.06);
+  --hv-console-panel-strong: rgba(255, 255, 255, 0.1);
+  --hv-console-line: rgba(207, 250, 254, 0.18);
+  --hv-console-line-strong: rgba(207, 250, 254, 0.34);
+  --hv-console-glow: rgba(34, 211, 238, 0.18);
+  --hv-console-text-soft: rgba(236, 254, 255, 0.68);
+}
+
+.dark {
+  --background: #02040a;
+  --foreground: #f8fafc;
+  --card: #060914;
+  --muted: #93a4b8;
+  --border: rgba(207, 250, 254, 0.16);
+  --primary: #67e8f9;
+  --primary-foreground: #02040a;
+}
+
+body {
+  background:
+    radial-gradient(circle at 50% -10%, rgba(103, 232, 249, 0.11), transparent 36rem),
+    radial-gradient(circle at 88% 18%, rgba(129, 140, 248, 0.08), transparent 24rem),
+    linear-gradient(180deg, #02040a 0%, #05070d 48%, #02040a 100%);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -19;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(103, 232, 249, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(103, 232, 249, 0.045) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(circle at 50% 18%, black, transparent 74%);
+}
+
+.hv-shell {
+  position: relative;
+}
+
+.hv-shell::before,
+.hv-shell::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  pointer-events: none;
+  border-color: rgba(207, 250, 254, 0.22);
+}
+
+.hv-shell::before {
+  left: 1.25rem;
+  top: 5rem;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-left: 1px solid;
+  border-top: 1px solid;
+}
+
+.hv-shell::after {
+  right: 1.25rem;
+  bottom: 2rem;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.hv-panel {
+  border: 1px solid var(--hv-console-line);
+  background: rgba(2, 6, 23, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 22px 72px rgba(0, 0, 0, 0.28);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .hv-panel {
+    background: var(--hv-console-panel);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+  }
+}
+
+.hv-panel-hover {
+  transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.hv-panel-hover:hover {
+  border-color: var(--hv-console-line-strong);
+  background-color: rgba(255, 255, 255, 0.085);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.11),
+    0 24px 84px rgba(0, 0, 0, 0.32),
+    0 0 34px var(--hv-console-glow);
+  transform: translateY(-2px);
+}
+
+.hv-kicker {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.68rem;
+  line-height: 1rem;
+  text-transform: uppercase;
+  color: rgba(207, 250, 254, 0.72);
+}
+
+.hv-title {
+  color: #f8fafc;
+  letter-spacing: 0;
+  text-shadow: 0 0 26px rgba(103, 232, 249, 0.16);
+}
+
+.hv-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 1.75rem;
+  border: 1px solid rgba(207, 250, 254, 0.18);
+  background: rgba(103, 232, 249, 0.075);
+  padding: 0.18rem 0.55rem;
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.68rem;
+  line-height: 1rem;
+  color: rgba(236, 254, 255, 0.78);
+}
+
+.hv-chip-strong {
+  border-color: rgba(207, 250, 254, 0.36);
+  background: rgba(207, 250, 254, 0.92);
+  color: #02040a;
+}
+
+.hv-action {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(207, 250, 254, 0.18);
+  background: rgba(255, 255, 255, 0.055);
+  color: rgba(248, 250, 252, 0.84);
+  transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.hv-action:hover {
+  border-color: rgba(207, 250, 254, 0.46);
+  background: rgba(103, 232, 249, 0.1);
+  color: #ffffff;
+}
+
+.hv-action:active {
+  transform: scale(0.98);
+}
+
+.hv-input {
+  border: 1px solid rgba(207, 250, 254, 0.16);
+  background: rgba(2, 6, 23, 0.74);
+  color: rgba(248, 250, 252, 0.9);
+  transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.hv-input::placeholder {
+  color: rgba(147, 164, 184, 0.58);
+}
+
+.hv-input:focus {
+  border-color: rgba(103, 232, 249, 0.58);
+  background: rgba(2, 6, 23, 0.9);
+  box-shadow: 0 0 0 3px rgba(103, 232, 249, 0.1);
+  outline: none;
+}
+
+.hv-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(207, 250, 254, 0.26), transparent);
+}
+
+.hv-prose {
+  color: rgba(248, 250, 252, 0.86);
+}
+
+.hv-prose :where(h1, h2, h3, h4) {
+  color: #f8fafc;
+  letter-spacing: 0;
+}
+
+.hv-prose :where(h2, h3) a {
+  text-decoration: none;
+}
+
+.hv-prose :where(p, li) {
+  line-height: 1.82;
+}
+
+.hv-prose :where(blockquote) {
+  border-left-color: rgba(103, 232, 249, 0.5);
+  background: rgba(103, 232, 249, 0.055);
+  padding: 0.85rem 1rem;
+  color: rgba(236, 254, 255, 0.76);
+}
+
+.hv-prose :where(img) {
+  border: 1px solid rgba(207, 250, 254, 0.18);
+  border-radius: 0.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hv-panel-hover,
+  .hv-action {
+    transition: none;
+  }
+  .hv-panel-hover:hover,
+  .hv-action:active {
+    transform: none;
+  }
+}
+
+
+/* Hypervoid full-screen entry */
+.hypervoid-entry-grid {
+  background-image:
+    linear-gradient(rgba(103, 232, 249, 0.22) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(103, 232, 249, 0.16) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(207, 250, 254, 0.18), transparent 36%);
+  background-size: 72px 72px, 72px 72px, 100% 100%;
+  mask-image: radial-gradient(circle at center, black 0 58%, transparent 82%);
+}
+
+.hypervoid-entry-scanlines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.18) 0 1px,
+    transparent 1px 4px
+  );
+  mix-blend-mode: screen;
+}
+
+.hypervoid-glow-pulse {
+  animation: hypervoid-glow-pulse 4.6s ease-in-out infinite;
+}
+
+.hypervoid-glass {
+  background: rgba(2, 6, 23, 0.72);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .hypervoid-glass {
+    background: rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+  }
+}
+
+@keyframes hypervoid-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.82;
+    text-shadow: 0 0 18px rgba(103, 232, 249, 0.22);
+  }
+  50% {
+    opacity: 1;
+    text-shadow: 0 0 34px rgba(207, 250, 254, 0.46);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hypervoid-glow-pulse {
+    animation: none;
+  }
+}
+
+
+/* Legacy surface cleanup — remap old blog utility skin to the Hypervoid HUD material without changing component behavior. */
+[class*="bg-card"]:not(input):not(textarea):not(select),
+[class*="bg-background"]:not(body):not(input):not(textarea):not(select) {
+  background-color: rgba(2, 6, 23, 0.66);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  [class*="bg-card"]:not(input):not(textarea):not(select),
+  [class*="bg-background"]:not(body):not(input):not(textarea):not(select) {
+    background-color: rgba(255, 255, 255, 0.055);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+  }
+}
+
+[class*="border-border"] {
+  border-color: rgba(207, 250, 254, 0.16);
+}
+
+[class*="text-muted"] {
+  color: rgba(147, 164, 184, 0.86);
+}
+
+[class*="rounded-3xl"]:not([class*="rounded-full"]),
+[class*="rounded-2xl"]:not([class*="rounded-full"]),
+[class*="rounded-xl"]:not([class*="rounded-full"]) {
+  border-radius: 0.5rem;
+}
+
+[class*="shadow-md"],
+[class*="shadow-lg"],
+[class*="shadow-xl"],
+[class*="shadow-2xl"] {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 22px 72px rgba(0, 0, 0, 0.26);
+}
+
+[class*="hover:shadow-md"]:hover,
+[class*="hover:shadow-lg"]:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.11),
+    0 24px 84px rgba(0, 0, 0, 0.32),
+    0 0 34px rgba(34, 211, 238, 0.16);
 }

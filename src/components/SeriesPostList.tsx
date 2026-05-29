@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Check, RadioTower } from "lucide-react";
 import { useReadPosts } from "@/lib/use-read-posts";
 import type { Post } from "@/lib/posts";
 
@@ -17,26 +18,24 @@ export function SeriesPostList({
 
   return (
     <>
-      <header>
-        <p className="text-xs uppercase tracking-widest text-primary">
-          ✦ Series
+      <header className="hv-panel p-4">
+        <p className="hv-kicker inline-flex items-center gap-2">
+          <RadioTower className="h-3.5 w-3.5" aria-hidden />
+          Series progress
         </p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">
-          {seriesName}
-        </h1>
-        <p className="mt-2 text-sm text-muted">
-          共 {total} 篇
-          {readCount > 0 ? (
-            <span className="ml-2">
-              · 已读 {readCount}/{total}
-            </span>
-          ) : null}
-        </p>
+        <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
+          <h2 className="hv-title text-xl font-semibold tracking-normal">
+            {seriesName}
+          </h2>
+          <span className="hv-chip">
+            {readCount}/{total} read
+          </span>
+        </div>
         {total > 0 ? (
-          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-border">
+          <div className="mt-3 h-1.5 w-full overflow-hidden bg-cyan-100/10">
             <div
-              className="h-full rounded-full bg-primary transition-all duration-500"
-              style={{ width: `${Math.round((readCount / total) * 100)}%` }}
+              className="h-full bg-cyan-100 shadow-[0_0_14px_rgba(103,232,249,0.45)] transition-all duration-500"
+              style={{ width: String(Math.round((readCount / total) * 100)) + "%" }}
             />
           </div>
         ) : null}
@@ -48,14 +47,10 @@ export function SeriesPostList({
           return (
             <li key={post.slug}>
               <Link
-                href={`/posts/${post.slug}`}
-                className={`group flex items-baseline gap-4 rounded-xl border p-4 transition hover:shadow-sm ${
-                  isRead
-                    ? "border-border/50 bg-card/50"
-                    : "border-border bg-card hover:border-primary/40"
-                }`}
+                href={"/posts/" + post.slug}
+                className={"hv-panel hv-panel-hover group flex items-baseline gap-4 p-4 " + (isRead ? "opacity-[0.72]" : "")}
               >
-                <span className="shrink-0 font-mono text-sm text-muted">
+                <span className="shrink-0 font-mono text-sm text-cyan-100/55">
                   {String(post.frontmatter.seriesOrder ?? i + 1).padStart(
                     2,
                     "0",
@@ -63,27 +58,27 @@ export function SeriesPostList({
                 </span>
                 <div className="min-w-0 flex-1">
                   <p
-                    className={`font-medium tracking-tight transition ${
+                    className={"font-medium tracking-tight transition " + (
                       isRead
-                        ? "text-muted line-through decoration-muted/30"
-                        : "group-hover:text-primary"
-                    }`}
+                        ? "text-cyan-50/45 line-through decoration-cyan-100/25"
+                        : "text-cyan-50 group-hover:text-cyan-100"
+                    )}
                   >
                     {post.frontmatter.title}
                   </p>
                   {post.frontmatter.description ? (
-                    <p className="mt-0.5 line-clamp-1 text-xs text-muted">
+                    <p className="mt-0.5 line-clamp-1 text-xs text-cyan-50/55">
                       {post.frontmatter.description}
                     </p>
                   ) : null}
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   {isRead ? (
-                    <span className="shrink-0 text-[10px] text-primary/60">
-                      ✓ 已读
+                    <span className="hv-chip text-[10px]">
+                      <Check className="h-3 w-3" aria-hidden /> 已读
                     </span>
                   ) : null}
-                  <time className="font-mono text-xs text-muted">
+                  <time className="font-mono text-xs text-cyan-50/45">
                     {post.frontmatter.date}
                   </time>
                 </div>

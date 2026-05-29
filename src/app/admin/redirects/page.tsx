@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
+import { Link2, Plus, Trash2 } from "lucide-react";
 import { auth } from "@/auth";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { listRedirects } from "@/db/redirects";
@@ -22,70 +23,56 @@ export default async function AdminRedirectsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-center gap-3">
-        <AdminBackLink href="/admin" label="后台" />
-        <h1 className="text-2xl font-bold tracking-tight">短链管理</h1>
-        <span className="text-sm text-muted">共 {list.length} 条</span>
+      <header className="hv-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-3">
+          <AdminBackLink href="/admin" label="后台" />
+          <div>
+            <p className="hv-kicker">Redirect Router</p>
+            <h1 className="hv-title mt-1 text-2xl font-semibold">短链管理</h1>
+            <p className="mt-2 max-w-2xl text-sm text-muted">
+              访问 <code>{siteConfig.url}/r/&lt;短码&gt;</code> 会 307 跳转到目标地址并累计命中。
+            </p>
+          </div>
+        </div>
+        <span className="hv-chip">共 {list.length} 条</span>
       </header>
 
-      <p className="text-sm text-muted">
-        创建后访问 <code>{siteConfig.url}/r/&lt;短码&gt;</code> 会 307 跳转到目标地址，并 +1 计数。
-        适合短信、二维码、社交平台分享、老文章换名后兜底。
-      </p>
-
-      <section className="rounded-2xl border border-border bg-card p-5">
-        <h2 className="text-sm font-semibold tracking-tight">新建短链</h2>
-        <form action={createAction} className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
-          <label className="flex flex-1 flex-col gap-1">
+      <section className="hv-panel p-5">
+        <div className="flex items-center gap-2">
+          <Link2 className="h-4 w-4 text-cyan-100/70" aria-hidden="true" />
+          <h2 className="text-sm font-semibold tracking-tight text-cyan-50">新建短链</h2>
+        </div>
+        <form action={createAction} className="mt-4 grid gap-3 lg:grid-cols-[1.1fr_2fr_1.2fr_auto] lg:items-end">
+          <label className="flex flex-col gap-1">
             <span className="text-xs text-muted">短码</span>
             <div className="flex items-center gap-1">
               <span className="font-mono text-xs text-muted">/r/</span>
-              <input
-                type="text"
-                name="code"
-                required
-                pattern="[\w-]+"
-                placeholder="welcome"
-                className="flex-1 rounded-md border border-border bg-background px-3 py-2 font-mono text-sm transition focus:border-primary focus:outline-none"
-              />
+              <input type="text" name="code" required pattern="[\w-]+" placeholder="welcome" className="hv-input min-h-11 flex-1 px-3 font-mono text-sm" />
             </div>
           </label>
-          <label className="flex flex-[2] flex-col gap-1">
+          <label className="flex flex-col gap-1">
             <span className="text-xs text-muted">目标地址</span>
-            <input
-              type="url"
-              name="toUrl"
-              required
-              placeholder="https://..."
-              className="rounded-md border border-border bg-background px-3 py-2 text-sm transition focus:border-primary focus:outline-none"
-            />
+            <input type="url" name="toUrl" required placeholder="https://..." className="hv-input min-h-11 px-3 text-sm" />
           </label>
-          <label className="flex flex-1 flex-col gap-1">
+          <label className="flex flex-col gap-1">
             <span className="text-xs text-muted">备注</span>
-            <input
-              type="text"
-              name="note"
-              placeholder="为什么造这条短链"
-              className="rounded-md border border-border bg-background px-3 py-2 text-sm transition focus:border-primary focus:outline-none"
-            />
+            <input type="text" name="note" placeholder="为什么造这条短链" className="hv-input min-h-11 px-3 text-sm" />
           </label>
-          <button
-            type="submit"
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
-          >
+          <button type="submit" className="hv-action px-4 text-sm">
+            <Plus className="h-4 w-4" aria-hidden="true" />
             创建
           </button>
         </form>
       </section>
 
       {list.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
+        <p className="hv-panel border-dashed p-8 text-center text-sm text-muted">
           还没有短链。
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border">
-          <table className="w-full min-w-[640px] text-sm">
-            <thead className="border-b border-border bg-card text-left">
+        <div className="hv-panel overflow-x-auto p-0">
+          <table className="w-full min-w-[680px] text-sm">
+            <thead className="border-b border-cyan-200/10 bg-cyan-300/[0.04] text-left text-xs uppercase text-cyan-100/65">
               <tr>
                 <th className="px-4 py-3 font-medium">短链</th>
                 <th className="px-4 py-3 font-medium">目标</th>
@@ -96,30 +83,18 @@ export default async function AdminRedirectsPage() {
             </thead>
             <tbody>
               {list.map((r) => (
-                <tr key={r.id} className="border-t border-border bg-background">
+                <tr key={r.id} className="border-t border-cyan-200/10 transition hover:bg-cyan-300/[0.035]">
                   <td className="px-4 py-3 font-mono text-xs">
-                    <a
-                      href={`/r/${r.code}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-primary hover:underline"
-                    >
+                    <a href={"/r/" + r.code} target="_blank" rel="noreferrer" className="text-cyan-100 hover:text-white">
                       /r/{r.code}
                     </a>
                   </td>
                   <td className="px-4 py-3 text-xs">
-                    <a
-                      href={r.toUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="break-all hover:underline"
-                    >
+                    <a href={r.toUrl} target="_blank" rel="noreferrer" className="break-all text-cyan-50/80 hover:text-white">
                       {r.toUrl}
                     </a>
                   </td>
-                  <td className="px-4 py-3 font-mono text-xs">
-                    {r.hits.toLocaleString("en-US")}
-                  </td>
+                  <td className="px-4 py-3 font-mono text-xs text-cyan-50">{r.hits.toLocaleString("en-US")}</td>
                   <td className="px-4 py-3 text-xs text-muted">
                     {r.note ? <span>{r.note}</span> : null}
                     {r.note ? <span className="mx-1.5">·</span> : null}
@@ -132,10 +107,8 @@ export default async function AdminRedirectsPage() {
                         await deleteAction(r.id);
                       }}
                     >
-                      <button
-                        type="submit"
-                        className="rounded-md border border-red-500/30 bg-red-500/5 px-2.5 py-1 text-[11px] text-red-600 transition hover:border-red-500 hover:bg-red-500/10 dark:text-red-400"
-                      >
+                      <button type="submit" className="inline-flex items-center gap-1 border border-red-400/35 bg-red-500/10 px-3 py-1 text-[11px] text-red-200 transition hover:border-red-300 hover:bg-red-500/15">
+                        <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                         删除
                       </button>
                     </form>

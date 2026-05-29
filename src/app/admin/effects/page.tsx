@@ -48,7 +48,7 @@ const EFFECTS: EffectDef[] = [
 function ToggleIcon({ on }: { on: boolean }) {
   return (
     <svg
-      className={`h-5 w-5 ${on ? "text-primary" : "text-muted"}`}
+      className={`h-5 w-5 ${on ? "text-cyan-100" : "text-muted"}`}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -92,9 +92,10 @@ export default async function AdminEffectsPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="flex items-center gap-3">
+      <header className="hv-panel p-5">
         <AdminBackLink href="/admin" label="后台" />
-        <h1 className="text-2xl font-bold tracking-tight">视觉特效</h1>
+        <p className="hv-kicker mt-4">Visual Effects</p>
+        <h1 className="hv-title mt-1 text-2xl font-semibold">视觉特效</h1>
       </header>
 
       <p className="text-sm text-muted">
@@ -109,10 +110,10 @@ export default async function AdminEffectsPage() {
             <form key={effect.key} action={toggleEffect.bind(null, effect.key, values[i])}>
               <button
                 type="submit"
-                className={`flex w-full items-center gap-4 rounded-2xl border p-5 text-left transition ${
+                className={`flex w-full items-center gap-4 hv-panel p-5 text-left transition ${
                   isOn
-                    ? "border-primary bg-primary/5 shadow-sm"
-                    : "border-border bg-card hover:border-primary/30"
+                    ? "border-cyan-200/55 bg-cyan-300/10 shadow-sm"
+                    : "border-cyan-100/16 bg-cyan-300/6 hover:border-cyan-100/40"
                 }`}
               >
                 <div className="shrink-0">
@@ -124,9 +125,9 @@ export default async function AdminEffectsPage() {
                       {effect.name}
                     </h2>
                     <span
-                      className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                      className={`shrink-0  px-2 py-0.5 text-[10px] font-medium ${
                         isOn
-                          ? "bg-primary/15 text-primary"
+                          ? "bg-cyan-300/15 text-cyan-100"
                           : "bg-muted/30 text-muted"
                       }`}
                     >

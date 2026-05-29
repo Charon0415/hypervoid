@@ -88,29 +88,29 @@ export async function SiteStats() {
   ];
 
   return (
-    <aside className="rounded-3xl border border-border bg-card p-5">
-      <h3 className="text-sm font-semibold tracking-tight text-foreground/80">
+    <aside className="hv-panel p-5">
+      <h3 className="hv-title text-sm font-semibold tracking-normal">
         站点统计
       </h3>
       <div className="mt-3 grid grid-cols-2 gap-2">
         {items.map((item) => (
           <div
             key={item.label}
-            className="relative overflow-hidden rounded-2xl bg-primary/5 px-3 py-2.5"
+            className="relative overflow-hidden border border-cyan-100/12 bg-white/[0.035] px-3 py-2.5"
           >
             <span
               aria-hidden
-              className="absolute right-2 top-2 grid h-5 w-5 place-items-center rounded-full bg-primary/15 text-primary"
+              className="absolute right-2 top-2 grid h-5 w-5 place-items-center border border-cyan-100/14 bg-cyan-50/[0.055] text-cyan-100/70"
             >
               {item.icon}
             </span>
             <p
-              className="whitespace-nowrap font-mono text-base font-semibold leading-tight text-foreground pr-6"
+              className="whitespace-nowrap pr-6 font-mono text-base font-semibold leading-tight text-cyan-50"
               title={item.value}
             >
               {item.value}
             </p>
-            <p className="mt-0.5 text-[11px] leading-tight text-muted">
+            <p className="mt-0.5 text-[11px] leading-tight text-cyan-50/50">
               {item.label}
             </p>
           </div>

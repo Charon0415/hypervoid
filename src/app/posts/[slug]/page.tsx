@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft, Coffee, Dices, ExternalLink, LockKeyhole, Pin, RefreshCcw, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
 // KaTeX stylesheet — scoped to article pages so the ~50KB of CSS isn't
@@ -118,7 +119,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
       : null;
 
   return (
-    <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_220px]">
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-10">
       <ArticleJsonLd
         url={`${siteConfig.url}/posts/${slug}`}
         title={frontmatter.title}
@@ -136,21 +137,9 @@ export default async function PostPage(props: { params: Promise<Params> }) {
         <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
           <Link
             href="/posts"
-            className="group inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium text-foreground/80 transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
+            className="hv-action px-4 text-sm font-medium"
           >
-            <svg
-              aria-hidden
-              className="h-3.5 w-3.5 transition group-hover:-translate-x-0.5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M19 12H5" />
-              <path d="M12 19l-7-7 7-7" />
-            </svg>
+            <ArrowLeft className="h-4 w-4" aria-hidden />
             返回文章列表
           </Link>
           <div className="flex items-center gap-1">
@@ -171,29 +160,31 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             />
           </div>
         </div>
-        <header className="mt-4 border-b border-border pb-6">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+        <header className="hv-panel relative mt-5 overflow-hidden p-5 sm:p-7">
+          <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-100/45 to-transparent" />
+          <p className="hv-kicker">Article node / reading chamber</p>
+          <h1 className="hv-title mt-2 text-3xl font-black leading-tight sm:text-5xl">
             {frontmatter.title}
           </h1>
-          <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted">
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-cyan-50/62">
             {frontmatter.visibility === "private" ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-2 py-0.5 text-xs font-medium text-amber-600 dark:text-amber-400">
-                🔒 私密
+              <span className="hv-chip border-amber-300/30 bg-amber-300/10 text-amber-200">
+                <LockKeyhole className="h-3 w-3" aria-hidden /> 私密
               </span>
             ) : null}
             {frontmatter.pinned ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
-                📌 置顶
+              <span className="hv-chip hv-chip-strong">
+                <Pin className="h-3 w-3" aria-hidden /> 置顶
               </span>
             ) : null}
             <time>{frontmatter.date}</time>
             {frontmatter.updatedDate &&
             frontmatter.updatedDate !== frontmatter.date ? (
               <span
-                className="inline-flex items-center gap-1 rounded-full border border-border bg-card/50 px-2 py-0.5 text-[11px] text-muted"
+                className="hv-chip"
                 title={`本文最后更新于 ${frontmatter.updatedDate}`}
               >
-                ↻ 更新于 {frontmatter.updatedDate}
+                <RefreshCcw className="h-3 w-3" aria-hidden /> 更新于 {frontmatter.updatedDate}
               </span>
             ) : null}
             {frontmatter.category ? (
@@ -221,7 +212,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
                     <Link
                       key={tag}
                       href={`/tags/${encodeURIComponent(tag)}`}
-                      className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary transition hover:bg-primary/15"
+                      className="hv-chip transition hover:border-cyan-100/42 hover:text-cyan-50"
                     >
                       #{tag}
                     </Link>
@@ -231,7 +222,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             ) : null}
           </div>
           {frontmatter.description ? (
-            <p className="mt-3 text-base text-muted">
+            <p className="mt-4 max-w-2xl text-base leading-7 text-cyan-50/66">
               {frontmatter.description}
             </p>
           ) : null}
@@ -239,14 +230,14 @@ export default async function PostPage(props: { params: Promise<Params> }) {
         <SeriesBanner post={post} />
         <ArticleTopAnnouncement />
         {frontmatter.summary ? (
-          <aside className="mt-8 rounded-md border-l-4 border-primary bg-primary/5 p-4">
-            <p className="mb-1 text-xs uppercase tracking-wider text-primary">
-              ✦ AI 摘要
+          <aside className="hv-panel mt-8 p-4">
+            <p className="hv-kicker mb-1">
+              AI briefing
             </p>
-            <p className="text-sm leading-relaxed">{frontmatter.summary}</p>
+            <p className="text-sm leading-7 text-cyan-50/72">{frontmatter.summary}</p>
           </aside>
         ) : null}
-        <div className="prose prose-zinc dark:prose-invert mt-8 max-w-none">
+        <div className="prose prose-zinc dark:prose-invert hv-prose mt-8 max-w-none">
           <MDXRemote
             source={content}
             components={mdxComponents}
@@ -293,22 +284,11 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             {siteConfig.donate.enabled ? (
               <Link
                 href="/donate"
-                className="group inline-flex items-center gap-1.5 text-xs text-muted transition hover:text-primary"
+                className="hv-action min-h-8 px-3 text-xs"
               >
-                ☕ 觉得有用？请作者喝杯咖啡
-                <svg
-                  aria-hidden
-                  className="h-3 w-3 transition group-hover:translate-x-0.5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M5 12h14" />
-                  <path d="M13 5l7 7-7 7" />
-                </svg>
+                <Coffee className="h-3.5 w-3.5" aria-hidden />
+                觉得有用？请作者喝杯咖啡
+                <ExternalLink className="h-3 w-3" aria-hidden />
               </Link>
             ) : null}
           </div>
@@ -318,14 +298,9 @@ export default async function PostPage(props: { params: Promise<Params> }) {
           <Link
             href="/posts/random"
             prefetch={false}
-            className="group inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm text-muted shadow-sm transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
+            className="hv-action px-4 text-sm"
           >
-            <span
-              aria-hidden
-              className="text-base transition-transform group-hover:rotate-12"
-            >
-              🎲
-            </span>
+            <Dices className="h-4 w-4" aria-hidden />
             随机一篇
           </Link>
         </div>
@@ -337,30 +312,19 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             <AskAI slug={slug} />
           </section>
         ) : null}
-        <section className="mt-16 border-t border-border pt-8">
+        <section className="hv-panel mt-16 p-5 sm:p-6">
           <div className="mb-6 flex items-baseline justify-between gap-3">
-            <h2 className="text-xl font-semibold tracking-tight">评论</h2>
+            <h2 className="hv-title text-xl font-semibold tracking-normal">评论</h2>
             {moderateUrl ? (
               <a
                 href={moderateUrl}
                 target="_blank"
                 rel="noreferrer noopener"
                 title="GitHub Discussions 是评论真实存储地。点这里跳到对应 discussion 删评论"
-                className="group inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] text-muted transition hover:border-primary/40 hover:text-primary"
+                className="hv-action min-h-8 px-2.5 text-[11px]"
               >
-                🛡️ 在 GitHub 管理
-                <svg
-                  aria-hidden
-                  className="h-3 w-3 transition group-hover:translate-x-0.5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M7 17L17 7M17 7H8M17 7v9" />
-                </svg>
+                <ShieldCheck className="h-3.5 w-3.5" aria-hidden /> 在 GitHub 管理
+                <ExternalLink className="h-3 w-3" aria-hidden />
               </a>
             ) : null}
           </div>
@@ -368,7 +332,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
         </section>
       </article>
       <aside className="hidden lg:block">
-        <div className="sticky top-20">
+        <div className="hv-panel sticky top-24 p-4">
           <TableOfContents items={toc} />
         </div>
       </aside>

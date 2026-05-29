@@ -6,9 +6,15 @@ import { getSiteSetting } from "@/db/site-settings";
 
 const ADMIN_GITHUB_LOGIN =
   process.env.ADMIN_GITHUB_LOGIN?.trim() || "HyperCharon";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim().toLowerCase() || null;
 
 function isAuthEmailConfigured(): boolean {
   return Boolean(process.env.RESEND_API_KEY);
+}
+
+function isAdminIdentity(user: { login?: string | null; email?: string | null } | undefined): boolean {
+  const email = user?.email?.trim().toLowerCase();
+  return user?.login === ADMIN_GITHUB_LOGIN || Boolean(ADMIN_EMAIL && email === ADMIN_EMAIL);
 }
 
 function authEmailFrom(): string {
@@ -108,14 +114,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (token?.login) {
           (session.user as { login?: string }).login = token.login as string;
         }
-        (session.user as { isAdmin?: boolean }).isAdmin =
-          token?.login === ADMIN_GITHUB_LOGIN;
+        if (token?.email) {
+          session.user.email = token.email as string;
+        }
+        (session.user as { isAdmin?: boolean }).isAdmin = isAdminIdentity({
+          login: token?.login as string | undefined,
+          email: token?.email as string | undefined,
+        });
       }
       return session;
     },
-    async jwt({ token, profile }) {
+    async jwt({ token, profile, user }) {
       const login = (profile as { login?: string } | undefined)?.login;
       if (login) token.login = login;
+      if (user?.email) token.email = user.email;
       return token;
     },
     async authorized({ auth, request }) {
@@ -124,8 +136,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // Admin routes always require admin login
       if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
         if (pathname === "/admin/sign-in") return true;
-        const login = (auth?.user as { login?: string } | undefined)?.login;
-        return login === ADMIN_GITHUB_LOGIN;
+        return isAdminIdentity(auth?.user as { login?: string | null; email?: string | null } | undefined);
       }
 
       // Public routes that never require login
@@ -194,9 +205,9 @@ export const ADMIN_LOGIN = ADMIN_GITHUB_LOGIN;
 export async function requireAdmin(): Promise<void> {
   const session = await auth();
   const user = session?.user as
-    | { isAdmin?: boolean; login?: string }
+    | { isAdmin?: boolean; login?: string; email?: string }
     | undefined;
-  if (!user?.isAdmin) {
+  if (!user?.isAdmin && !isAdminIdentity(user)) {
     throw new Error("Not authorized");
   }
 }

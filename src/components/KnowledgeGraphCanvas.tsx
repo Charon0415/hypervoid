@@ -87,7 +87,7 @@ export function KnowledgeGraphCanvas({
 
   if (simNodes.length === 0) {
     return (
-      <p className="rounded-2xl border border-dashed border-border p-12 text-center text-muted">
+      <p className="hv-panel border-dashed p-12 text-center text-cyan-50/60">
         还没有互相链接的文章。在两篇文章之间加上 <code>/posts/&lt;slug&gt;</code>{" "}
         或 <code>[[slug]]</code> 形式的链接，它们就会出现在这里。
       </p>
@@ -95,7 +95,7 @@ export function KnowledgeGraphCanvas({
   }
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl border border-border bg-card">
+    <div className="hv-panel relative w-full overflow-hidden p-0">
       <svg
         ref={svgRef}
         viewBox={`0 0 ${W} ${H}`}
@@ -123,9 +123,9 @@ export function KnowledgeGraphCanvas({
                 y1={s.y}
                 x2={t.x}
                 y2={t.y}
-                stroke={active ? "var(--primary)" : "var(--border)"}
+                stroke={active ? "rgb(103 232 249)" : "rgba(103,232,249,0.22)"}
                 strokeWidth={active ? 1.5 : 1}
-                strokeOpacity={active ? 0.9 : 0.55}
+                strokeOpacity={active ? 0.9 : 0.42}
               />
             );
           })}
@@ -148,8 +148,8 @@ export function KnowledgeGraphCanvas({
               >
                 <circle
                   r={r}
-                  fill={isHovered ? "var(--primary)" : "var(--card)"}
-                  stroke={isHovered ? "var(--primary)" : "var(--border)"}
+                  fill={isHovered ? "rgba(103,232,249,0.22)" : "rgba(255,255,255,0.055)"}
+                  stroke={isHovered ? "rgb(103 232 249)" : "rgba(103,232,249,0.34)"}
                   strokeWidth={isHovered ? 2 : 1.5}
                 />
                 <text
@@ -157,9 +157,9 @@ export function KnowledgeGraphCanvas({
                   y={r + 12}
                   className="select-none fill-current text-[10px] font-medium"
                   style={{
-                    fill: isHovered ? "var(--primary)" : "var(--foreground)",
+                    fill: isHovered ? "rgb(224 242 254)" : "rgba(240,249,255,0.76)",
                     paintOrder: "stroke",
-                    stroke: "var(--background)",
+                    stroke: "rgba(2,4,10,0.92)",
                     strokeWidth: 3,
                   }}
                 >

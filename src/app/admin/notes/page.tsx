@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { Plus } from "lucide-react";
 import { auth } from "@/auth";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { listAllAnnouncements } from "@/db/announcements";
@@ -28,27 +29,25 @@ export default async function AdminNotesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+      <header className="hv-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-3">
           <AdminBackLink href="/admin" label="后台" />
-          <h1 className="text-2xl font-bold tracking-tight">公告管理</h1>
-          <span className="text-sm text-muted">共 {list.length} 条</span>
+          <div>
+            <p className="hv-kicker">Announcement Matrix</p>
+            <h1 className="hv-title mt-1 text-2xl font-semibold">公告管理</h1>
+            <p className="mt-2 max-w-2xl text-sm text-muted">
+              每个槽位只显示优先级最高且在时间窗内的一条。空起止时间表示永久有效。
+            </p>
+          </div>
         </div>
-        <Link
-          href="/admin/notes/new"
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
-        >
-          + 新公告
+        <Link href="/admin/notes/new" className="hv-action px-4 text-sm">
+          <Plus className="h-4 w-4" aria-hidden="true" />
+          新公告
         </Link>
       </header>
 
-      <p className="text-sm text-muted">
-        每个槽位（顶部 / 侧边栏 / 文章顶部）只显示优先级最高且在时间窗内的一条。
-        高于此规则的优先级数值意味着更靠前。空起止时间表示「永久有效」。
-      </p>
-
       {list.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
+        <p className="hv-panel border-dashed p-8 text-center text-sm text-muted">
           还没有公告。
         </p>
       ) : (
@@ -56,57 +55,51 @@ export default async function AdminNotesPage() {
           {list.map((a) => (
             <li
               key={a.id}
-              className={`flex flex-col gap-3 rounded-2xl border p-4 ${
-                a.active ? "border-border bg-card" : "border-border bg-card/40 opacity-70"
-              }`}
+              className={"hv-panel flex flex-col gap-3 p-4 " + (a.active ? "" : "opacity-65")}
             >
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-baseline gap-2">
-                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="hv-chip-strong px-2 py-0.5 text-[11px]">
                       {SLOT_LABEL[a.slot]}
                     </span>
-                    <span className="rounded-full border border-border px-2 py-0.5 text-[11px] font-mono">
-                      优先级 {a.priority}
+                    <span className="hv-chip px-2 py-0.5 text-[11px]">
+                      PRI {a.priority}
                     </span>
                     {!a.active ? (
-                      <span className="rounded-full bg-zinc-500/10 px-2 py-0.5 text-[11px] text-muted">
+                      <span className="border border-zinc-300/25 bg-zinc-400/10 px-2 py-0.5 text-[11px] text-zinc-200">
                         已停用
                       </span>
                     ) : null}
-                    {a.startsAt || a.endsAt ? (
-                      <span className="font-mono text-[11px] text-muted">
-                        {a.startsAt ? formatDateTimeCN(a.startsAt) : "立即"} →{" "}
-                        {a.endsAt ? formatDateTimeCN(a.endsAt) : "永久"}
-                      </span>
-                    ) : (
-                      <span className="font-mono text-[11px] text-muted">
-                        永久有效
-                      </span>
-                    )}
+                    <span className="font-mono text-[11px] text-muted">
+                      {a.startsAt || a.endsAt ? (
+                        <>
+                          {a.startsAt ? formatDateTimeCN(a.startsAt) : "立即"} → {a.endsAt ? formatDateTimeCN(a.endsAt) : "永久"}
+                        </>
+                      ) : (
+                        "永久有效"
+                      )}
+                    </span>
                   </div>
-                  <p className="mt-1.5 whitespace-pre-wrap break-words text-sm text-foreground/90">
+                  <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-cyan-50/86">
                     {a.message}
                   </p>
                   {a.link ? (
-                    <p className="mt-1 text-xs text-primary/80">
-                      → {a.linkText || "了解更多"}：
+                    <p className="mt-2 break-all font-mono text-xs text-cyan-100/80">
+                      {a.linkText || "了解更多"}：
                       <a
                         href={a.link}
                         target="_blank"
                         rel="noreferrer"
-                        className="ml-1 underline-offset-2 hover:underline"
+                        className="ml-1 underline-offset-2 hover:text-white hover:underline"
                       >
                         {a.link}
                       </a>
                     </p>
                   ) : null}
                 </div>
-                <div className="flex shrink-0 flex-col gap-1">
-                  <Link
-                    href={`/admin/notes/${a.id}/edit`}
-                    className="rounded-md border border-border bg-card px-2.5 py-1 text-center text-[11px] transition hover:border-primary hover:text-primary"
-                  >
+                <div className="grid shrink-0 grid-cols-3 gap-2 sm:grid-cols-1">
+                  <Link href={"/admin/notes/" + a.id + "/edit"} className="hv-action min-h-0 px-3 py-1 text-center text-[11px]">
                     编辑
                   </Link>
                   <form
@@ -115,10 +108,7 @@ export default async function AdminNotesPage() {
                       await toggleAction(a.id);
                     }}
                   >
-                    <button
-                      type="submit"
-                      className="w-full rounded-md border border-border bg-card px-2.5 py-1 text-[11px] transition hover:border-amber-500 hover:text-amber-600"
-                    >
+                    <button type="submit" className="hv-action min-h-0 w-full px-3 py-1 text-[11px] hover:border-amber-300/60 hover:text-amber-100">
                       {a.active ? "停用" : "启用"}
                     </button>
                   </form>
@@ -128,10 +118,7 @@ export default async function AdminNotesPage() {
                       await deleteAction(a.id);
                     }}
                   >
-                    <button
-                      type="submit"
-                      className="w-full rounded-md border border-red-500/30 bg-red-500/5 px-2.5 py-1 text-[11px] text-red-600 transition hover:border-red-500 hover:bg-red-500/10 dark:text-red-400"
-                    >
+                    <button type="submit" className="w-full border border-red-400/35 bg-red-500/10 px-3 py-1 text-[11px] text-red-200 transition hover:border-red-300 hover:bg-red-500/15">
                       删除
                     </button>
                   </form>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight, RadioTower } from "lucide-react";
 import { getActiveAnnouncement } from "@/db/announcements";
 
 /**
@@ -10,16 +11,17 @@ export async function ArticleTopAnnouncement() {
   if (!ann) return null;
 
   return (
-    <aside className="mt-4 rounded-md border-l-4 border-primary bg-primary/5 p-3 text-sm">
-      <p>
-        <span className="mr-2 text-primary">✦</span>
+    <aside className="hv-panel mt-4 p-3 text-sm">
+      <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-cyan-50/72">
+        <RadioTower className="h-4 w-4 text-cyan-100/70" aria-hidden />
         {ann.message}
         {ann.link ? (
           <Link
             href={ann.link}
-            className="ml-2 inline-flex items-center gap-0.5 font-medium text-primary underline-offset-2 hover:underline"
+            className="inline-flex items-center gap-1 font-medium text-cyan-100 underline-offset-2 hover:underline"
           >
-            {ann.linkText || "了解更多"} →
+            {ann.linkText || "了解更多"}
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden />
           </Link>
         ) : null}
       </p>

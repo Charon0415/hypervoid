@@ -22,14 +22,14 @@ export function SiteHeader() {
   return (
     <header
       style={{ viewTransitionName: "site-header" }}
-      className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/85 backdrop-blur-md supports-[backdrop-filter]:bg-background/65"
+      className="sticky top-0 z-40 w-full border-b border-cyan-100/15 bg-black/58 text-white shadow-[0_12px_48px_rgba(0,0,0,0.28)] backdrop-blur-xl supports-[backdrop-filter]:bg-black/42"
     >
-      <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-3 sm:gap-3 sm:px-4">
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-3 sm:gap-3 sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="group flex shrink-0 items-center gap-2 font-bold tracking-tight sm:gap-2.5"
+          className="group flex min-h-11 shrink-0 items-center gap-2 font-bold tracking-tight sm:gap-2.5"
         >
-          <span aria-hidden className="inline-flex h-7 w-7 items-center justify-center text-primary transition-transform group-hover:rotate-12">
+          <span aria-hidden className="inline-flex h-8 w-8 items-center justify-center text-cyan-200 transition-transform group-hover:rotate-12">
             <svg
               viewBox="0 0 64 64"
               className="h-7 w-7"
@@ -68,7 +68,7 @@ export function SiteHeader() {
               <circle cx="32" cy="32" r="4.5" fill="url(#hv-core)" />
             </svg>
           </span>
-          <span className="hidden text-foreground sm:inline">
+          <span className="hidden text-white sm:inline">
             <HypervoidWordmark className="h-6 w-auto" />
           </span>
         </Link>
@@ -82,7 +82,7 @@ export function SiteHeader() {
             href="/search"
             aria-label={t.common.search}
             title={`${t.common.search} (${isMac ? "⌘" : "Ctrl"}+K)`}
-            className="inline-flex h-9 w-9 items-center justify-center gap-1.5 rounded-full border border-border/60 bg-card/70 text-muted backdrop-blur-sm transition hover:border-primary hover:bg-card hover:text-primary sm:w-auto sm:px-2.5"
+            className="hv-action inline-flex h-10 w-10 items-center justify-center gap-1.5 px-0 text-cyan-50/70 sm:w-auto sm:px-3"
           >
             <svg
               aria-hidden="true"
@@ -95,7 +95,7 @@ export function SiteHeader() {
               <circle cx="11" cy="11" r="7" />
               <path d="M21 21l-4.35-4.35" />
             </svg>
-            <kbd className="hidden font-mono text-[10px] tracking-wider opacity-70 md:inline">
+            <kbd className="hidden font-mono text-[10px] opacity-70 md:inline">
               {isMac ? "⌘K" : "Ctrl K"}
             </kbd>
           </Link>

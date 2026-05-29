@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Bot, Send, TriangleAlert } from "lucide-react";
 
 export function AskAIImpl({ slug }: { slug: string }) {
   const [question, setQuestion] = useState("");
@@ -17,7 +18,7 @@ export function AskAIImpl({ slug }: { slug: string }) {
     setError(null);
 
     try {
-      const res = await fetch(`/api/posts/${slug}/ask`, {
+      const res = await fetch("/api/posts/" + slug + "/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: trimmed }),
@@ -25,7 +26,7 @@ export function AskAIImpl({ slug }: { slug: string }) {
 
       if (!res.ok) {
         const data = (await res.json().catch(() => ({}))) as { error?: string };
-        throw new Error(data.error ?? `请求失败 (${res.status})`);
+        throw new Error(data.error ?? "请求失败 (" + res.status + ")");
       }
 
       if (!res.body) throw new Error("响应没有 body");
@@ -46,13 +47,16 @@ export function AskAIImpl({ slug }: { slug: string }) {
   };
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5">
+    <div className="hv-panel p-5">
       <div className="flex items-baseline justify-between gap-3">
-        <h3 className="text-lg font-semibold tracking-tight">问问 AI ✦</h3>
-        <span className="text-xs text-muted">基于这篇文章回答</span>
+        <h3 className="hv-title inline-flex items-center gap-2 text-lg font-semibold tracking-normal">
+          <Bot className="h-5 w-5 text-cyan-100/70" aria-hidden />
+          问问 AI
+        </h3>
+        <span className="hv-chip text-[10px]">article scope</span>
       </div>
-      <p className="mt-1 text-xs text-muted">
-        Claude Haiku 会基于这篇文章的内容回答你的问题。回答仅供参考，可能与作者本人观点不同。
+      <p className="mt-2 text-xs leading-relaxed text-cyan-50/58">
+        AI 会基于这篇文章的内容回答你的问题。回答仅供参考，可能与作者本人观点不同。
       </p>
 
       <form onSubmit={onSubmit} className="mt-4 flex flex-col gap-3">
@@ -63,32 +67,32 @@ export function AskAIImpl({ slug }: { slug: string }) {
           rows={2}
           maxLength={500}
           disabled={loading}
-          className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm transition focus:border-primary focus:outline-none disabled:opacity-60"
+          className="min-h-24 w-full border border-cyan-100/18 bg-white/[0.045] px-3 py-2 text-sm text-cyan-50 placeholder:text-cyan-50/35 transition focus:border-cyan-100/45 focus:outline-none disabled:opacity-60"
         />
-        <div className="flex items-center justify-between text-xs text-muted">
+        <div className="flex items-center justify-between text-xs text-cyan-50/48">
           <span>{question.length} / 500</span>
           <button
             type="submit"
             disabled={loading || !question.trim()}
-            className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
+            className="hv-action min-h-9 px-4 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50"
           >
+            <Send className="h-4 w-4" aria-hidden />
             {loading ? "思考中…" : "提问"}
           </button>
         </div>
       </form>
 
       {error ? (
-        <p className="mt-3 rounded-md border border-red-400/50 bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">
+        <p className="mt-3 flex items-start gap-2 border border-red-400/35 bg-red-500/10 p-3 text-sm text-red-100">
+          <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
           {error}
         </p>
       ) : null}
 
       {answer ? (
-        <div className="mt-4 rounded-md border border-border bg-background p-4">
-          <p className="mb-2 text-xs uppercase tracking-wider text-muted">
-            AI 回答
-          </p>
-          <p className="whitespace-pre-wrap text-sm leading-relaxed">{answer}</p>
+        <div className="mt-4 border border-cyan-100/14 bg-cyan-50/[0.035] p-4">
+          <p className="hv-kicker mb-2">AI answer</p>
+          <p className="whitespace-pre-wrap text-sm leading-relaxed text-cyan-50/78">{answer}</p>
         </div>
       ) : null}
     </div>

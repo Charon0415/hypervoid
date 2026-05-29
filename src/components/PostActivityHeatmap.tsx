@@ -3,11 +3,11 @@ import { getPostHeatmap } from "@/lib/stats";
 const WEEKS = 18;
 
 function cellColor(count: number): string {
-  if (count <= 0) return "bg-zinc-100 dark:bg-zinc-800";
-  if (count === 1) return "bg-emerald-200 dark:bg-emerald-900";
-  if (count === 2) return "bg-emerald-300 dark:bg-emerald-700";
-  if (count === 3) return "bg-emerald-400 dark:bg-emerald-500";
-  return "bg-emerald-500 dark:bg-emerald-400";
+  if (count <= 0) return "bg-cyan-50/[0.04]";
+  if (count === 1) return "bg-cyan-100/22";
+  if (count === 2) return "bg-cyan-100/38";
+  if (count === 3) return "bg-cyan-100/55";
+  return "bg-cyan-100/75";
 }
 
 const MONTHS = [
@@ -48,12 +48,12 @@ export async function PostActivityHeatmap() {
   });
 
   return (
-    <section className="flex flex-col gap-2 rounded-3xl border border-border bg-card p-4 sm:p-5">
+    <section className="hv-panel flex flex-col gap-2 p-4 sm:p-5">
       <div className="flex items-baseline gap-2 text-sm">
-        <span className="font-semibold tracking-tight">
+        <span className="font-semibold tracking-tight text-cyan-50">
           {totalPosts} 篇
         </span>
-        <span className="text-xs text-muted">
+        <span className="text-xs text-cyan-50/55">
           过去 {WEEKS} 周 · {activeDays} 个活跃日
         </span>
       </div>
@@ -63,7 +63,7 @@ export async function PostActivityHeatmap() {
         {monthLabels.map((m, i) => (
           <div key={i} className="relative h-3 flex-1">
             {m !== null ? (
-              <span className="absolute left-0 top-0 text-[10px] leading-none text-muted">
+              <span className="absolute left-0 top-0 text-[10px] leading-none text-cyan-50/45">
                 {MONTHS[m]}
               </span>
             ) : null}
@@ -75,7 +75,7 @@ export async function PostActivityHeatmap() {
         {/* Row 0-6: each row = day label + 18 week cells */}
         {[0, 1, 2, 3, 4, 5, 6].map((row) => (
           <div key={row} className="flex items-center gap-[2px]">
-            <span className="mr-0.5 flex w-4 shrink-0 items-center justify-end pr-0.5 text-[9px] leading-none text-muted/60">
+            <span className="mr-0.5 flex w-4 shrink-0 items-center justify-end pr-0.5 text-[9px] leading-none text-cyan-50/45/60">
               {DAY_ABBR[row] ?? ""}
             </span>
             {weeks.map((week) => {
@@ -85,7 +85,7 @@ export async function PostActivityHeatmap() {
                 <div
                   key={day.date}
                   title={`${day.date} · ${day.count} 篇文章`}
-                  className={`flex-1 aspect-square rounded-sm ${cellColor(day.count)}`}
+                  className={`flex-1 aspect-square  ${cellColor(day.count)}`}
                 />
               );
             })}
@@ -94,12 +94,12 @@ export async function PostActivityHeatmap() {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center justify-end gap-[2px] text-[10px] text-muted/70">
+      <div className="flex items-center justify-end gap-[2px] text-[10px] text-cyan-50/45/70">
         <span className="mr-0.5">少</span>
         {[0, 1, 2, 3, 4].map((n) => (
           <div
             key={n}
-            className={`h-2.5 w-2.5 rounded-sm ${cellColor(n)}`}
+            className={`h-2.5 w-2.5  ${cellColor(n)}`}
           />
         ))}
         <span className="ml-0.5">多</span>

@@ -22,31 +22,16 @@ function hostnameOf(rawUrl: string): string {
 }
 
 function statusBadge(status: string) {
+  const base = "inline-flex border px-2 py-0.5 font-mono text-[10px] font-medium";
   switch (status) {
     case "verified":
-      return (
-        <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-300">
-          已验证
-        </span>
-      );
+      return <span className={base + " border-emerald-300/35 bg-emerald-400/10 text-emerald-100"}>已验证</span>;
     case "pending":
-      return (
-        <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-400">
-          待验证
-        </span>
-      );
+      return <span className={base + " border-amber-300/35 bg-amber-400/10 text-amber-100"}>待验证</span>;
     case "rejected":
-      return (
-        <span className="rounded-full bg-red-500/15 px-2 py-0.5 text-[10px] font-medium text-red-700 dark:text-red-300">
-          已拒绝
-        </span>
-      );
+      return <span className={base + " border-red-300/35 bg-red-500/10 text-red-100"}>已拒绝</span>;
     default:
-      return (
-        <span className="rounded-full bg-muted/20 px-2 py-0.5 text-[10px] font-medium text-muted">
-          {status}
-        </span>
-      );
+      return <span className={base + " border-cyan-100/20 bg-cyan-300/10 text-muted"}>{status}</span>;
   }
 }
 
@@ -65,9 +50,14 @@ export default async function AdminWebmentionsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-center gap-3">
-        <AdminBackLink href="/admin" label="后台" />
-        <h1 className="text-2xl font-bold tracking-tight">Webmention 审核</h1>
+      <header className="hv-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-3">
+          <AdminBackLink href="/admin" label="后台" />
+          <div>
+            <p className="hv-kicker">Webmention Gate</p>
+            <h1 className="hv-title mt-1 text-2xl font-semibold">Webmention 审核</h1>
+          </div>
+        </div>
       </header>
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -78,23 +68,18 @@ export default async function AdminWebmentionsPage() {
       </section>
 
       {list.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
+        <p className="hv-panel border-dashed p-8 text-center text-sm text-muted">
           还没有 Webmention 进来。
         </p>
       ) : (
         <ul className="flex flex-col gap-3">
           {list.map((w) => (
-            <li
-              key={w.id}
-              className={`rounded-xl border border-border bg-card p-4 ${
-                w.hidden ? "opacity-60" : ""
-              }`}
-            >
-              <header className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
+            <li key={w.id} className={"hv-panel p-4 " + (w.hidden ? "opacity-60" : "")}>
+              <header className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {statusBadge(w.status)}
                   {w.hidden ? (
-                    <span className="rounded-full bg-muted/20 px-2 py-0.5 text-[10px] text-muted">
+                    <span className="border border-zinc-300/25 bg-zinc-400/10 px-2 py-0.5 text-[10px] text-zinc-200">
                       已隐藏
                     </span>
                   ) : null}
@@ -109,10 +94,7 @@ export default async function AdminWebmentionsPage() {
                       await toggleHiddenAction(w.id, !w.hidden);
                     }}
                   >
-                    <button
-                      type="submit"
-                      className="rounded-md border border-border bg-background px-2.5 py-1 text-[11px] text-muted transition hover:border-primary hover:text-foreground"
-                    >
+                    <button type="submit" className="hv-action min-h-0 px-3 py-1 text-[11px]">
                       {w.hidden ? "显示" : "隐藏"}
                     </button>
                   </form>
@@ -122,49 +104,28 @@ export default async function AdminWebmentionsPage() {
                       await deleteAction(w.id);
                     }}
                   >
-                    <button
-                      type="submit"
-                      className="rounded-md border border-red-500/30 bg-red-500/5 px-2.5 py-1 text-[11px] text-red-600 transition hover:border-red-500 hover:bg-red-500/10 dark:text-red-400"
-                    >
+                    <button type="submit" className="border border-red-400/35 bg-red-500/10 px-3 py-1 text-[11px] text-red-200 transition hover:border-red-300 hover:bg-red-500/15">
                       删除
                     </button>
                   </form>
                 </div>
               </header>
 
-              <p className="text-sm">
+              <p className="text-sm text-cyan-50/84">
                 <span className="text-muted">来源：</span>
-                <a
-                  href={w.source}
-                  target="_blank"
-                  rel="noreferrer noopener nofollow"
-                  className="break-all hover:text-primary"
-                >
+                <a href={w.source} target="_blank" rel="noreferrer noopener nofollow" className="break-all hover:text-white">
                   {w.source}
                 </a>{" "}
-                <span className="text-[10px] text-muted">
-                  ({hostnameOf(w.source)})
-                </span>
+                <span className="font-mono text-[10px] text-muted">({hostnameOf(w.source)})</span>
               </p>
-              <p className="mt-1 text-sm">
+              <p className="mt-1 text-sm text-cyan-50/84">
                 <span className="text-muted">目标：</span>
-                <a
-                  href={`/posts/${w.targetSlug ?? ""}`}
-                  className="break-all hover:text-primary"
-                >
+                <a href={"/posts/" + (w.targetSlug ?? "")} className="break-all hover:text-white">
                   /posts/{w.targetSlug ?? "?"}
                 </a>
               </p>
-              {w.authorName ? (
-                <p className="mt-1 text-xs text-muted">
-                  作者：{w.authorName}
-                </p>
-              ) : null}
-              {w.content ? (
-                <p className="mt-2 line-clamp-3 text-xs text-foreground/80">
-                  {w.content}
-                </p>
-              ) : null}
+              {w.authorName ? <p className="mt-1 text-xs text-muted">作者：{w.authorName}</p> : null}
+              {w.content ? <p className="mt-3 line-clamp-3 text-xs leading-5 text-cyan-50/72">{w.content}</p> : null}
             </li>
           ))}
         </ul>
@@ -175,11 +136,9 @@ export default async function AdminWebmentionsPage() {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-4">
-      <p className="text-[11px] uppercase tracking-wider text-muted">
-        {label}
-      </p>
-      <p className="mt-1 font-mono text-2xl font-bold leading-tight">
+    <div className="hv-panel p-4">
+      <p className="hv-kicker">{label}</p>
+      <p className="mt-2 font-mono text-2xl font-semibold leading-tight text-cyan-50">
         {value.toLocaleString("en-US")}
       </p>
     </div>

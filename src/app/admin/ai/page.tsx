@@ -79,9 +79,10 @@ export default async function AdminAiPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-center gap-3">
+      <header className="hv-panel p-5">
         <AdminBackLink href="/admin" label="后台" />
-        <h1 className="text-2xl font-bold tracking-tight">AI 配置</h1>
+        <p className="hv-kicker mt-4">AI Control Plane</p>
+        <h1 className="hv-title mt-1 text-2xl font-semibold">AI 配置</h1>
       </header>
 
       <p className="text-sm text-muted">
@@ -98,10 +99,10 @@ export default async function AdminAiPage() {
           return (
             <div
               key={p.id}
-              className={`rounded-2xl border p-5 ${
+              className={`hv-panel p-5 ${
                 current.provider === p.id
-                  ? "border-primary bg-primary/5"
-                  : "border-border bg-card"
+                  ? "border-cyan-200/55 bg-cyan-300/10"
+                  : "border-cyan-100/16 bg-cyan-300/6"
               }`}
             >
               <header className="mb-2 flex items-center justify-between gap-3">
@@ -109,7 +110,7 @@ export default async function AdminAiPage() {
                   {p.label}
                 </h2>
                 <span
-                  className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                  className={` px-2 py-0.5 text-[10px] font-medium ${
                     ok
                       ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
                       : "bg-red-500/15 text-red-700 dark:text-red-300"
@@ -131,7 +132,7 @@ export default async function AdminAiPage() {
                   href={PROVIDER_DOCS[p.id].url}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="text-primary hover:underline"
+                  className="text-cyan-100 hover:underline"
                 >
                   控制台 ↗
                 </a>
@@ -141,7 +142,7 @@ export default async function AdminAiPage() {
         })}
       </section>
 
-      <section className="rounded-2xl border border-border bg-card p-5">
+      <section className="hv-panel p-5">
         <h2 className="mb-1 text-sm font-semibold tracking-tight">
           今日用量(本地时区 0 点重置)
         </h2>
@@ -159,12 +160,12 @@ export default async function AdminAiPage() {
             return (
               <div
                 key={p.key}
-                className={`rounded-xl border p-3 ${
+                className={`border p-3 ${
                   over
                     ? "border-red-500/50 bg-red-500/5"
                     : near
                     ? "border-amber-500/50 bg-amber-500/5"
-                    : "border-border bg-background"
+                    : "border-cyan-100/14 bg-black/20"
                 }`}
               >
                 <div className="flex items-baseline justify-between gap-2">
@@ -182,14 +183,14 @@ export default async function AdminAiPage() {
                   <span className="text-muted">tokens</span>
                 </div>
                 {limit > 0 ? (
-                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-border/60">
+                  <div className="mt-2 h-1.5 overflow-hidden  bg-cyan-100/12">
                     <div
                       className={`h-full transition-all ${
                         over
                           ? "bg-red-500"
                           : near
                           ? "bg-amber-500"
-                          : "bg-primary"
+                          : "bg-cyan-100"
                       }`}
                       style={{ width: `${pct}%` }}
                     />
@@ -206,7 +207,7 @@ export default async function AdminAiPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-border bg-card p-5">
+      <section className="hv-panel p-5">
         <h2 className="mb-1 text-sm font-semibold tracking-tight">每日 token 限额</h2>
         <p className="mb-4 text-xs text-muted">
           0 表示不限。限额累加到 token 总数(prompt+completion),达到后当日所有该 provider 的请求会被拒绝。
@@ -221,7 +222,7 @@ export default async function AdminAiPage() {
             {quotaProviders.map((p) => (
               <label
                 key={p.key}
-                className="flex flex-col gap-1 rounded-xl border border-border bg-background p-3"
+                className="flex flex-col gap-1 border border-cyan-100/12 bg-black/20 p-3"
               >
                 <span className="text-xs font-medium">{p.label}</span>
                 <input
@@ -230,7 +231,7 @@ export default async function AdminAiPage() {
                   defaultValue={quotas[p.key] ?? 0}
                   min={0}
                   step={1000}
-                  className="w-full rounded-md border border-border bg-card px-2 py-1 font-mono text-sm"
+                  className="w-full rounded-md border border-cyan-100/16 bg-cyan-300/6 px-2 py-1 font-mono text-sm"
                   placeholder="0 = 不限"
                 />
                 <span className="text-[10px] text-muted">tokens / 天</span>
@@ -239,14 +240,14 @@ export default async function AdminAiPage() {
           </div>
           <button
             type="submit"
-            className="self-start rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+            className="self-start hv-action hv-chip-strong px-4 text-sm font-medium"
           >
             保存限额
           </button>
         </form>
       </section>
 
-      <section className="rounded-2xl border border-border bg-card p-5">
+      <section className="hv-panel p-5">
         <h2 className="mb-1 text-sm font-semibold tracking-tight">模型选择</h2>
         <p className="mb-4 text-xs text-muted">
           换模型立即生效——下一次请求即用新模型。Pro 类模型更贵更慢但更聪明,Flash 类更快更便宜。
@@ -270,10 +271,10 @@ export default async function AdminAiPage() {
                   return (
                     <label
                       key={m.id}
-                      className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${
+                      className={`flex cursor-pointer items-start gap-3 border p-3 transition ${
                         active
-                          ? "border-primary bg-primary/5"
-                          : "border-border bg-background hover:border-primary/40"
+                          ? "border-cyan-200/55 bg-cyan-300/10"
+                          : "border-cyan-100/14 bg-black/20 hover:border-cyan-100/40"
                       } ${!providerOk ? "opacity-60" : ""}`}
                     >
                       <input
@@ -281,12 +282,12 @@ export default async function AdminAiPage() {
                         name="model"
                         value={m.id}
                         defaultChecked={active}
-                        className="mt-1 accent-primary"
+                        className="mt-1 accent-cyan-300"
                       />
                       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                         <span className="flex flex-wrap items-center gap-2 text-sm font-medium">
                           {m.label}
-                          <code className="rounded bg-card px-1.5 py-0.5 font-mono text-[10px] text-muted">
+                          <code className="rounded bg-black/25 px-1.5 py-0.5 font-mono text-[10px] text-muted">
                             {m.upstreamId}
                           </code>
                         </span>
@@ -309,10 +310,10 @@ export default async function AdminAiPage() {
                 return (
                   <label
                     key={row.id}
-                    className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${
+                    className={`flex cursor-pointer items-start gap-3 border p-3 transition ${
                       active
-                        ? "border-primary bg-primary/5"
-                        : "border-border bg-background hover:border-primary/40"
+                        ? "border-cyan-200/55 bg-cyan-300/10"
+                        : "border-cyan-100/14 bg-black/20 hover:border-cyan-100/40"
                     }`}
                   >
                     <input
@@ -320,15 +321,15 @@ export default async function AdminAiPage() {
                       name="model"
                       value={row.id}
                       defaultChecked={active}
-                      className="mt-1 accent-primary"
+                      className="mt-1 accent-cyan-300"
                     />
                     <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                       <span className="flex flex-wrap items-center gap-2 text-sm font-medium">
                         {row.label}
-                        <code className="rounded bg-card px-1.5 py-0.5 font-mono text-[10px] text-muted">
+                        <code className="rounded bg-black/25 px-1.5 py-0.5 font-mono text-[10px] text-muted">
                           {row.upstreamId}
                         </code>
-                        <span className="rounded-full bg-border/60 px-1.5 py-0.5 text-[9px] uppercase tracking-widest">
+                        <span className=" bg-cyan-100/12 px-1.5 py-0.5 text-[9px] uppercase tracking-widest">
                           {row.protocol}
                         </span>
                       </span>
@@ -344,14 +345,14 @@ export default async function AdminAiPage() {
 
           <button
             type="submit"
-            className="self-start rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+            className="self-start hv-action hv-chip-strong px-4 text-sm font-medium"
           >
             保存模型
           </button>
         </form>
       </section>
 
-      <section className="rounded-2xl border border-border bg-card p-5">
+      <section className="hv-panel p-5">
         <header className="mb-1 flex items-baseline justify-between gap-3">
           <h2 className="text-sm font-semibold tracking-tight">
             自定义模型管理({customRows.length})
@@ -371,20 +372,20 @@ export default async function AdminAiPage() {
               return (
                 <li
                   key={row.id}
-                  className={`flex items-start gap-3 rounded-xl border p-3 text-xs ${
+                  className={`flex items-start gap-3 border p-3 text-xs ${
                     active
-                      ? "border-primary bg-primary/5"
-                      : "border-border bg-background"
+                      ? "border-cyan-200/55 bg-cyan-300/10"
+                      : "border-cyan-100/14 bg-black/20"
                   }`}
                 >
                   <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                     <p className="text-sm font-medium">
                       {row.label}{" "}
-                      <code className="rounded bg-card px-1 py-0.5 font-mono text-[10px] text-muted">
+                      <code className="rounded bg-black/25 px-1 py-0.5 font-mono text-[10px] text-muted">
                         {customDisplayId(row.id)}
                       </code>
                       {active ? (
-                        <span className="ml-2 rounded-full bg-primary/15 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-widest text-primary">
+                        <span className="ml-2  bg-cyan-100/15 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-widest text-cyan-100">
                           当前启用
                         </span>
                       ) : null}
@@ -415,7 +416,7 @@ export default async function AdminAiPage() {
 
         <form
           action={saveCustomModelAction}
-          className="grid gap-3 rounded-xl border border-dashed border-border p-4 sm:grid-cols-2"
+          className="grid gap-3 hv-panel border-dashed p-4 sm:grid-cols-2"
         >
           <label className="flex flex-col gap-1 text-xs">
             <span className="font-medium">id (字母数字/-,2-40 位)</span>
@@ -423,7 +424,7 @@ export default async function AdminAiPage() {
               name="id"
               required
               placeholder="openrouter-sonnet"
-              className="rounded-md border border-border bg-background px-2 py-1 font-mono text-sm"
+              className="rounded-md border border-cyan-100/14 bg-black/20 px-2 py-1 font-mono text-sm"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs">
@@ -432,7 +433,7 @@ export default async function AdminAiPage() {
               name="label"
               required
               placeholder="OpenRouter · Claude 3.5 Sonnet"
-              className="rounded-md border border-border bg-background px-2 py-1 text-sm"
+              className="rounded-md border border-cyan-100/14 bg-black/20 px-2 py-1 text-sm"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs">
@@ -440,7 +441,7 @@ export default async function AdminAiPage() {
             <select
               name="protocol"
               defaultValue="openai"
-              className="rounded-md border border-border bg-background px-2 py-1 text-sm"
+              className="rounded-md border border-cyan-100/14 bg-black/20 px-2 py-1 text-sm"
             >
               <option value="openai">openai (兼容 /chat/completions)</option>
               <option value="anthropic">anthropic (兼容 /v1/messages)</option>
@@ -452,7 +453,7 @@ export default async function AdminAiPage() {
               name="baseUrl"
               required
               placeholder="https://api.xiaomimimo.com/v1 或完整 /chat/completions"
-              className="rounded-md border border-border bg-background px-2 py-1 font-mono text-sm"
+              className="rounded-md border border-cyan-100/14 bg-black/20 px-2 py-1 font-mono text-sm"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs">
@@ -461,7 +462,7 @@ export default async function AdminAiPage() {
               name="upstreamId"
               required
               placeholder="anthropic/claude-3.5-sonnet"
-              className="rounded-md border border-border bg-background px-2 py-1 font-mono text-sm"
+              className="rounded-md border border-cyan-100/14 bg-black/20 px-2 py-1 font-mono text-sm"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs">
@@ -471,7 +472,7 @@ export default async function AdminAiPage() {
               required
               type="password"
               placeholder="sk-or-..."
-              className="rounded-md border border-border bg-background px-2 py-1 font-mono text-sm"
+              className="rounded-md border border-cyan-100/14 bg-black/20 px-2 py-1 font-mono text-sm"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs sm:col-span-2">
@@ -479,7 +480,7 @@ export default async function AdminAiPage() {
             <input
               name="hint"
               placeholder="OpenRouter 的 Sonnet — 国内可达"
-              className="rounded-md border border-border bg-background px-2 py-1 text-sm"
+              className="rounded-md border border-cyan-100/14 bg-black/20 px-2 py-1 text-sm"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs sm:col-span-2">
@@ -487,7 +488,7 @@ export default async function AdminAiPage() {
             <input
               name="extraHeaders"
               placeholder={'{"HTTP-Referer": "https://hypervoid.top", "X-Title": "Hypervoid"}'}
-              className="rounded-md border border-border bg-background px-2 py-1 font-mono text-[11px]"
+              className="rounded-md border border-cyan-100/14 bg-black/20 px-2 py-1 font-mono text-[11px]"
             />
             <span className="text-[10px] text-muted">
               OpenRouter 推荐填 HTTP-Referer + X-Title；MiMo 通常留空。MiMo 的 Model ID 填 mimo-v2.5-pro，不要把 [1M] 说明写进模型名。
@@ -495,14 +496,14 @@ export default async function AdminAiPage() {
           </label>
           <button
             type="submit"
-            className="self-start rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 sm:col-span-2"
+            className="self-start hv-action hv-chip-strong px-4 text-sm font-medium sm:col-span-2"
           >
             添加 / 更新自定义模型
           </button>
         </form>
       </section>
 
-      <section className="rounded-2xl border border-border bg-card p-5">
+      <section className="hv-panel p-5">
         <h2 className="mb-3 text-sm font-semibold tracking-tight">使用范围</h2>
         <ul className="grid gap-2 sm:grid-cols-2 text-xs">
           <FeatureCard title="文章摘要" hint="发布时自动生成 / 编辑页手动重生" />
@@ -524,7 +525,7 @@ export default async function AdminAiPage() {
 
 function FeatureCard({ title, hint }: { title: string; hint: string }) {
   return (
-    <li className="rounded-lg border border-border bg-background p-3">
+    <li className="border border-cyan-100/12 bg-black/20 p-3">
       <p className="font-medium">{title}</p>
       <p className="mt-0.5 text-muted">{hint}</p>
     </li>

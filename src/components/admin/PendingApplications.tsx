@@ -1,5 +1,6 @@
 "use client";
 
+import { Check, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { approveApplicationAction, rejectApplicationAction } from "@/app/admin/friends/actions";
 
@@ -18,31 +19,32 @@ export function PendingApplications({ applications }: { applications: App[] }) {
   if (applications.length === 0) return null;
 
   return (
-    <section className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-5">
-      <div className="flex items-center gap-2">
-        <h2 className="font-semibold text-amber-600 dark:text-amber-400">
-          待审核申请
-        </h2>
-        <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-600 dark:text-amber-400">
+    <section className="hv-panel border-amber-300/35 p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="hv-kicker text-amber-100/80">Pending Applications</p>
+          <h2 className="mt-1 font-semibold text-amber-100">待审核申请</h2>
+        </div>
+        <span className="border border-amber-300/35 bg-amber-400/10 px-2 py-0.5 font-mono text-xs text-amber-100">
           {applications.length}
         </span>
       </div>
-      <div className="mt-3 flex flex-col gap-2">
+      <div className="mt-4 flex flex-col gap-2">
         {applications.map((app) => (
           <div
             key={app.id}
-            className="flex items-start justify-between gap-3 rounded-lg border border-border bg-card p-4"
+            className="flex flex-col gap-3 border border-cyan-100/12 bg-black/20 p-4 sm:flex-row sm:items-start sm:justify-between"
           >
             <div className="min-w-0 flex-1">
-              <p className="font-medium">{app.name}</p>
-              <p className="truncate text-sm text-muted">{app.url}</p>
-              {app.description && (
-                <p className="mt-0.5 text-sm text-muted">{app.description}</p>
-              )}
-              {app.email && (
-                <p className="mt-0.5 text-xs text-muted">{app.email}</p>
-              )}
-              <p className="mt-1 text-xs text-muted">
+              <p className="font-medium text-cyan-50">{app.name}</p>
+              <p className="truncate font-mono text-sm text-muted">{app.url}</p>
+              {app.description ? (
+                <p className="mt-1 text-sm text-muted">{app.description}</p>
+              ) : null}
+              {app.email ? (
+                <p className="mt-1 font-mono text-xs text-muted">{app.email}</p>
+              ) : null}
+              <p className="mt-2 font-mono text-xs text-muted">
                 {new Date(app.createdAt).toLocaleDateString("zh-CN")}
               </p>
             </div>
@@ -53,10 +55,8 @@ export function PendingApplications({ applications }: { applications: App[] }) {
                   router.refresh();
                 }}
               >
-                <button
-                  type="submit"
-                  className="dark-locked rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-green-700"
-                >
+                <button type="submit" className="inline-flex min-h-10 items-center gap-1 border border-emerald-300/35 bg-emerald-400/10 px-3 text-sm font-medium text-emerald-100 transition hover:border-emerald-200">
+                  <Check className="h-4 w-4" aria-hidden="true" />
                   通过
                 </button>
               </form>
@@ -66,10 +66,8 @@ export function PendingApplications({ applications }: { applications: App[] }) {
                   router.refresh();
                 }}
               >
-                <button
-                  type="submit"
-                  className="dark-locked rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-red-700"
-                >
+                <button type="submit" className="inline-flex min-h-10 items-center gap-1 border border-red-300/35 bg-red-500/10 px-3 text-sm font-medium text-red-100 transition hover:border-red-200">
+                  <X className="h-4 w-4" aria-hidden="true" />
                   拒绝
                 </button>
               </form>

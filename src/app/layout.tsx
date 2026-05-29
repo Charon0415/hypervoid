@@ -106,10 +106,10 @@ export default async function RootLayout({
           id="sw-cleanup"
           strategy="beforeInteractive"
           nonce={nonce}
-        >{`!function(){if(!("serviceWorker"in navigator))return;var v=null;try{v=localStorage.getItem("sw_v")}catch(e){}if("6"===v)return;navigator.serviceWorker.getRegistrations().then(function(r){return Promise.all(r.map(function(s){return s.unregister()}))})}()`}</Script>
+        >{`!function(){if(!("serviceWorker"in navigator))return;var h=location.hostname,l=h==="localhost"||h==="127.0.0.1"||h==="0.0.0.0",v=null;try{v=localStorage.getItem("sw_v")}catch(e){}if(!l&&"7"===v)return;navigator.serviceWorker.getRegistrations().then(function(r){if(!r.length)return;return Promise.all(r.map(function(s){return s.unregister()})).then(function(){try{localStorage.removeItem("sw_v")}catch(e){}if("caches"in window)caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x.indexOf("hypervoid-")===0}).map(function(x){return caches.delete(x)}))});if(l&&!sessionStorage.getItem("sw_cleanup_reloaded")){sessionStorage.setItem("sw_cleanup_reloaded","1");location.reload()}})})}()`}</Script>
         <CustomThemeStyles />
       </head>
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-background text-foreground">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded-full focus:bg-primary focus:px-5 focus:py-2.5 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-lg focus:outline-none"
@@ -123,7 +123,7 @@ export default async function RootLayout({
             <AnnouncementWrapper />
             <SiteHeader />
             <BannerStrip />
-            <main id="main-content" tabIndex={-1} className="page-fade mx-auto w-full max-w-6xl flex-1 px-4 py-8">
+            <main id="main-content" tabIndex={-1} className="page-fade hv-shell mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
               {children}
             </main>
             <SiteFooter />

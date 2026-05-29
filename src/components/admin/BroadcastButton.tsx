@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { Send } from "lucide-react";
 import { broadcastPostAction } from "@/app/admin/posts/actions";
 import { formatDateTimeCN } from "@/lib/datetime-client";
 
@@ -22,16 +23,16 @@ export function BroadcastButton({
 
   if (status !== "published") {
     return (
-      <div className="rounded-md border border-dashed border-border bg-card p-4 text-sm text-muted">
-        ✉️ 邮件群发只能在已发布状态下进行。
+      <div className="hv-panel border-dashed p-4 text-sm text-muted">
+        邮件群发只能在已发布状态下进行。
       </div>
     );
   }
 
   if (notifiedAt && !result) {
     return (
-      <div className="rounded-md border border-emerald-400/50 bg-emerald-50 p-4 text-sm text-emerald-700 dark:bg-emerald-950 dark:text-emerald-200">
-        ✓ 这篇文章已经群发过（{formatDateTimeCN(notifiedAt)}）。
+      <div className="hv-panel border-emerald-300/35 bg-emerald-400/10 p-4 text-sm text-emerald-100">
+        这篇文章已经群发过（{formatDateTimeCN(notifiedAt)}）。
       </div>
     );
   }
@@ -59,10 +60,10 @@ export function BroadcastButton({
   };
 
   return (
-    <div className="rounded-md border border-border bg-card p-4 text-sm">
+    <div className="hv-panel p-4 text-sm">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="font-medium">订阅通知</p>
+          <p className="font-medium text-cyan-50">订阅通知</p>
           <p className="mt-0.5 text-xs text-muted">
             当前订阅者：{subscriberCount}
           </p>
@@ -71,9 +72,9 @@ export function BroadcastButton({
           type="button"
           onClick={onSend}
           disabled={pending || subscriberCount === 0}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
+          className="hv-action hv-chip-strong px-4 text-sm font-medium disabled:opacity-50"
         >
-          {pending ? "群发中…" : "向订阅者群发 ✉️"}
+          {pending ? "群发中…" : (<><Send className="h-4 w-4" aria-hidden="true" />向订阅者群发</>)}
         </button>
       </div>
       {result ? (
@@ -83,11 +84,11 @@ export function BroadcastButton({
           ) : (
             <>
               <p>
-                成功：<span className="text-emerald-600 dark:text-emerald-400">{result.sent}</span>
+                成功：<span className="text-emerald-200">{result.sent}</span>
                 {result.failed > 0 ? (
                   <>
                     {" · "}失败：
-                    <span className="text-red-600 dark:text-red-400">{result.failed}</span>
+                    <span className="text-red-200">{result.failed}</span>
                   </>
                 ) : null}
               </p>

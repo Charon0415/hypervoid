@@ -1,5 +1,6 @@
 "use client";
 
+import { Columns2, Rows3 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function useColumnLayout(
@@ -37,57 +38,34 @@ export function ColumnToggleButton({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <div className="inline-flex items-center gap-0.5 rounded-full border border-border bg-card p-1 shadow-sm">
+    <div className="inline-flex items-center border border-cyan-100/18 bg-white/[0.045] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl">
       <button
         type="button"
         onClick={() => onChange(false)}
         aria-label="单列"
         aria-pressed={!twoCol}
-        className={`grid h-8 w-8 place-items-center rounded-full transition ${
+        title="单列"
+        className={`grid h-9 w-9 place-items-center transition ${
           !twoCol
-            ? "bg-primary text-primary-foreground"
-            : "text-muted hover:bg-primary/10 hover:text-foreground"
+            ? "bg-cyan-100 text-black"
+            : "text-cyan-50/56 hover:bg-white/[0.07] hover:text-white"
         }`}
       >
-        <svg
-          aria-hidden
-          className="h-3.5 w-3.5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <rect x="4" y="5" width="16" height="3.5" rx="1" />
-          <rect x="4" y="10.5" width="16" height="3.5" rx="1" />
-          <rect x="4" y="16" width="16" height="3.5" rx="1" />
-        </svg>
+        <Rows3 className="h-4 w-4" aria-hidden />
       </button>
       <button
         type="button"
         onClick={() => onChange(true)}
         aria-label="双列"
         aria-pressed={twoCol}
-        className={`grid h-8 w-8 place-items-center rounded-full transition ${
+        title="双列"
+        className={`grid h-9 w-9 place-items-center transition ${
           twoCol
-            ? "bg-primary text-primary-foreground"
-            : "text-muted hover:bg-primary/10 hover:text-foreground"
+            ? "bg-cyan-100 text-black"
+            : "text-cyan-50/56 hover:bg-white/[0.07] hover:text-white"
         }`}
       >
-        <svg
-          aria-hidden
-          className="h-3.5 w-3.5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <rect x="4" y="5" width="7" height="14" rx="1" />
-          <rect x="13" y="5" width="7" height="14" rx="1" />
-        </svg>
+        <Columns2 className="h-4 w-4" aria-hidden />
       </button>
     </div>
   );

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft, Hash } from "lucide-react";
 import type { Metadata } from "next";
 import { PostCard } from "@/components/PostCard";
 import { PostsGrid } from "@/components/PostsGrid";
@@ -36,29 +37,21 @@ export default async function TagDetailPage(props: {
   if (posts.length === 0) notFound();
 
   return (
-    <div className="flex flex-col gap-4">
-      <Link
-        href="/tags"
-        className="group inline-flex w-fit items-center gap-1.5 rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium text-foreground/80 transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
-      >
-        <svg
-          aria-hidden
-          className="h-3.5 w-3.5 transition group-hover:-translate-x-0.5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M19 12H5" />
-          <path d="M12 19l-7-7 7-7" />
-        </svg>
+    <div className="flex flex-col gap-6">
+      <Link href="/tags" className="hv-action w-fit px-4 text-sm font-medium">
+        <ArrowLeft className="h-4 w-4" aria-hidden />
         所有标签
       </Link>
-      <header className="flex items-baseline gap-3">
-        <h1 className="text-3xl font-bold tracking-tight">#{decoded}</h1>
-        <span className="text-sm text-muted">{posts.length} 篇文章</span>
+      <header className="hv-panel relative overflow-hidden p-5 sm:p-7">
+        <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-100/45 to-transparent" />
+        <p className="hv-kicker">Filtered channel / tag transmission</p>
+        <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
+          <h1 className="hv-title flex items-center gap-3 text-3xl font-black leading-tight sm:text-5xl">
+            <Hash className="h-8 w-8 text-cyan-100/70 sm:h-10 sm:w-10" aria-hidden />
+            {decoded}
+          </h1>
+          <span className="hv-chip hv-chip-strong">{posts.length} nodes</span>
+        </div>
       </header>
       <PostsGrid>
         {posts.map((post) => (

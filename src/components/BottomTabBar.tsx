@@ -99,7 +99,7 @@ export function BottomTabBar() {
     <nav
       aria-label="底部导航"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
-      className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-border bg-card/95 shadow-[0_-2px_10px_color-mix(in_srgb,var(--foreground)_5%,transparent)] backdrop-blur md:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-cyan-100/15 bg-black/78 shadow-[0_-18px_44px_rgba(0,0,0,0.34)] backdrop-blur-xl md:hidden"
     >
       {TABS.map((t) => {
         const active = t.match(pathname);
@@ -110,8 +110,8 @@ export function BottomTabBar() {
             aria-current={active ? "page" : undefined}
             className={`flex flex-col items-center justify-center gap-0.5 py-2.5 text-[11px] transition ${
               active
-                ? "text-primary"
-                : "text-muted hover:text-foreground active:text-foreground"
+                ? "text-cyan-100"
+                : "text-cyan-50/55 hover:text-white active:text-white"
             }`}
           >
             <span aria-hidden>{t.icon}</span>

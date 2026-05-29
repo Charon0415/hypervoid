@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { Trash2 } from "lucide-react";
 import { auth } from "@/auth";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { countSearchLog, listTopQueries } from "@/db/search-log";
@@ -33,85 +34,51 @@ export default async function AdminSearchLogPage(props: {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex flex-wrap items-center gap-3">
-        <AdminBackLink href="/admin" label="后台" />
-        <h1 className="text-2xl font-bold tracking-tight">搜索分析</h1>
-        <span className="text-sm text-muted">最近 {days} 天</span>
-      </header>
-
-      <section className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-5">
-        <div className="flex flex-1 flex-wrap gap-4">
-          <Stat label="总查询数" value={counters.total} />
-          <Stat label="不同查询" value={counters.distinctQueries} />
-          <Stat
-            label="零结果"
-            value={counters.zero}
-            tone={counters.zero > 0 ? "warn" : undefined}
-          />
+      <header className="hv-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-3">
+          <AdminBackLink href="/admin" label="后台" />
+          <div>
+            <p className="hv-kicker">Search Telemetry</p>
+            <h1 className="hv-title mt-1 text-2xl font-semibold">搜索分析</h1>
+            <p className="mt-2 text-sm text-muted">最近 {days} 天的站内搜索意图和零结果缺口。</p>
+          </div>
         </div>
-        <div className="flex gap-2 text-xs">
+        <div className="flex flex-wrap gap-2 text-xs">
           {[7, 30, 90, 365].map((d) => (
-            <Link
-              key={d}
-              href={`/admin/search-log?days=${d}`}
-              className={`rounded-md border px-2 py-1 transition ${
-                d === days
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-border bg-background text-muted hover:border-primary/40"
-              }`}
-            >
+            <Link key={d} href={"/admin/search-log?days=" + d} className={d === days ? "hv-chip-strong px-3" : "hv-chip px-3 transition hover:border-cyan-100/40 hover:text-cyan-50"}>
               {d} 天
             </Link>
           ))}
         </div>
+      </header>
+
+      <section className="hv-panel flex flex-wrap items-center gap-5 p-5">
+        <div className="grid flex-1 grid-cols-3 gap-4">
+          <Stat label="总查询数" value={counters.total} />
+          <Stat label="不同查询" value={counters.distinctQueries} />
+          <Stat label="零结果" value={counters.zero} tone={counters.zero > 0 ? "warn" : undefined} />
+        </div>
         <form action={clearSearchLogAction}>
-          <button
-            type="submit"
-            className="rounded-md border border-border bg-card px-3 py-2 text-xs transition hover:border-red-500 hover:text-red-500"
-          >
+          <button type="submit" className="inline-flex min-h-11 items-center gap-2 border border-red-400/35 bg-red-500/10 px-3 text-xs text-red-100 transition hover:border-red-300 hover:bg-red-500/15">
+            <Trash2 className="h-4 w-4" aria-hidden="true" />
             清空日志
           </button>
         </form>
       </section>
 
       <section className="grid gap-4 lg:grid-cols-2">
-        <QueryTable
-          title="热门查询"
-          rows={top}
-          emptyHint="还没有任何搜索记录。"
-        />
-        <QueryTable
-          title="⚠ 零结果查询"
-          rows={zero}
-          emptyHint="没有零结果查询 — 太棒了。"
-          highlight
-        />
+        <QueryTable title="热门查询" rows={top} emptyHint="还没有任何搜索记录。" />
+        <QueryTable title="零结果查询" rows={zero} emptyHint="没有零结果查询。" highlight />
       </section>
     </div>
   );
 }
 
-function Stat({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: number;
-  tone?: "warn";
-}) {
+function Stat({ label, value, tone }: { label: string; value: number; tone?: "warn" }) {
   return (
     <div>
-      <p className="text-[11px] uppercase tracking-wider text-muted">
-        {label}
-      </p>
-      <p
-        className={`mt-0.5 font-mono text-2xl font-bold leading-tight ${
-          tone === "warn"
-            ? "text-amber-600 dark:text-amber-400"
-            : "text-foreground"
-        }`}
-      >
+      <p className="hv-kicker">{label}</p>
+      <p className={"mt-1 font-mono text-2xl font-semibold leading-tight " + (tone === "warn" ? "text-amber-200" : "text-cyan-50")}>
         {value.toLocaleString("en-US")}
       </p>
     </div>
@@ -136,8 +103,8 @@ function QueryTable({
   highlight?: boolean;
 }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-card">
-      <h2 className="border-b border-border px-4 py-3 text-sm font-semibold tracking-tight">
+    <div className="hv-panel overflow-hidden p-0">
+      <h2 className="border-b border-cyan-200/10 bg-cyan-300/[0.035] px-4 py-3 text-sm font-semibold tracking-tight text-cyan-50">
         {title}
       </h2>
       {rows.length === 0 ? (
@@ -145,41 +112,29 @@ function QueryTable({
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[480px] text-sm">
-          <thead className="text-left text-xs text-muted">
-            <tr>
-              <th className="px-4 py-2 font-medium">查询</th>
-              <th className="px-2 py-2 font-medium">命中</th>
-              <th className="px-2 py-2 font-medium">独立 IP</th>
-              <th className="px-2 py-2 font-medium">最近</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr
-                key={r.query}
-                className={`border-t border-border ${
-                  highlight ? "bg-amber-500/[0.02]" : ""
-                }`}
-              >
-                <td className="px-4 py-2">
-                  <Link
-                    href={`/search?q=${encodeURIComponent(r.query)}`}
-                    className="break-all hover:text-primary"
-                  >
-                    {r.query}
-                  </Link>
-                </td>
-                <td className="px-2 py-2 font-mono text-xs">{r.hits}</td>
-                <td className="px-2 py-2 font-mono text-xs text-muted">
-                  {r.uniqueIps}
-                </td>
-                <td className="px-2 py-2 font-mono text-[11px] text-muted">
-                  {formatDateTimeCN(r.lastSeen)}
-                </td>
+            <thead className="text-left text-xs uppercase text-cyan-100/60">
+              <tr>
+                <th className="px-4 py-2 font-medium">查询</th>
+                <th className="px-2 py-2 font-medium">命中</th>
+                <th className="px-2 py-2 font-medium">独立 IP</th>
+                <th className="px-2 py-2 font-medium">最近</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.query} className={"border-t border-cyan-200/10 transition hover:bg-cyan-300/[0.035] " + (highlight ? "bg-amber-500/[0.03]" : "")}>
+                  <td className="px-4 py-2">
+                    <Link href={"/search?q=" + encodeURIComponent(r.query)} className="break-all text-cyan-50 hover:text-white">
+                      {r.query}
+                    </Link>
+                  </td>
+                  <td className="px-2 py-2 font-mono text-xs text-cyan-50">{r.hits}</td>
+                  <td className="px-2 py-2 font-mono text-xs text-muted">{r.uniqueIps}</td>
+                  <td className="px-2 py-2 font-mono text-[11px] text-muted">{formatDateTimeCN(r.lastSeen)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

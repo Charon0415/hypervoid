@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { AdjacentPost } from "@/lib/posts";
 
 export function PostNav({
@@ -13,7 +14,7 @@ export function PostNav({
   return (
     <nav
       aria-label="文章导航"
-      className="mt-12 grid grid-cols-1 gap-3 border-t border-border pt-8 sm:grid-cols-2"
+      className="mt-12 grid grid-cols-1 gap-3 sm:grid-cols-2"
     >
       {prev ? (
         <NavCard side="prev" post={prev} />
@@ -40,7 +41,7 @@ function NavCard({
   return (
     <Link
       href={`/posts/${post.slug}`}
-      className={`group flex gap-3 rounded-2xl border border-border bg-card p-3 transition hover:border-primary/40 hover:bg-primary/5 hover:shadow-sm sm:p-4 ${
+      className={`hv-panel hv-panel-hover group flex gap-3 p-3 sm:p-4 ${
         isPrev ? "flex-row" : "flex-row-reverse"
       }`}
     >
@@ -52,18 +53,18 @@ function NavCard({
           height={160}
           sizes="(min-width: 640px) 80px, 64px"
           loading="lazy"
-          className="aspect-square h-16 w-16 shrink-0 rounded-xl object-cover sm:h-20 sm:w-20"
+          className="aspect-square h-16 w-16 shrink-0 border border-cyan-100/14 object-cover opacity-[0.86] saturate-[0.85] transition group-hover:opacity-100 group-hover:saturate-100 sm:h-20 sm:w-20"
         />
       ) : (
         <div
           aria-hidden
-          className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-2xl transition group-hover:scale-105 sm:h-20 sm:w-20 ${
+          className={`grid h-16 w-16 shrink-0 place-items-center border border-cyan-100/14 bg-cyan-50/[0.035] text-cyan-100/62 transition group-hover:border-cyan-100/32 sm:h-20 sm:w-20 ${
             isPrev
-              ? "from-primary/10 to-primary/5"
-              : "from-primary/5 to-primary/10"
+              ? "bg-[radial-gradient(circle_at_35%_50%,rgba(103,232,249,.16),transparent_48%)]"
+              : "bg-[radial-gradient(circle_at_65%_50%,rgba(103,232,249,.16),transparent_48%)]"
           }`}
         >
-          <span className="opacity-50">{isPrev ? "‹" : "›"}</span>
+          {isPrev ? <ArrowLeft className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
         </div>
       )}
       <div
@@ -71,57 +72,26 @@ function NavCard({
           isPrev ? "items-start text-left" : "items-end text-right"
         }`}
       >
-        <span className="inline-flex items-center gap-1 text-xs uppercase tracking-wider text-muted transition group-hover:text-primary">
+        <span className="hv-kicker inline-flex items-center gap-1">
           {isPrev ? (
             <>
-              <ArrowIcon dir="left" />
+              <ArrowLeft className="h-3.5 w-3.5 transition group-hover:-translate-x-0.5" aria-hidden />
               上一篇
             </>
           ) : (
             <>
               下一篇
-              <ArrowIcon dir="right" />
+              <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" aria-hidden />
             </>
           )}
         </span>
-        <p className="line-clamp-2 text-sm font-medium leading-snug tracking-tight transition group-hover:text-primary sm:text-base">
+        <p className="line-clamp-2 text-sm font-semibold leading-snug tracking-tight text-cyan-50 transition group-hover:text-cyan-100 sm:text-base">
           {post.title}
         </p>
-        <span className="font-mono text-[10px] text-muted">
+        <span className="font-mono text-[10px] uppercase text-cyan-50/48">
           {post.readingMinutes} min
         </span>
       </div>
     </Link>
-  );
-}
-
-function ArrowIcon({ dir }: { dir: "left" | "right" }) {
-  return (
-    <svg
-      aria-hidden
-      className={`h-3.5 w-3.5 transition ${
-        dir === "left"
-          ? "group-hover:-translate-x-0.5"
-          : "group-hover:translate-x-0.5"
-      }`}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      {dir === "left" ? (
-        <>
-          <path d="M19 12H5" />
-          <path d="M12 19l-7-7 7-7" />
-        </>
-      ) : (
-        <>
-          <path d="M5 12h14" />
-          <path d="M12 5l7 7-7 7" />
-        </>
-      )}
-    </svg>
   );
 }

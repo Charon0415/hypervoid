@@ -22,7 +22,7 @@ const EMPTY: AlbumFormInitial = {
 };
 
 const inputClass =
-  "w-full rounded-md border border-border bg-background px-3 py-2 text-sm transition focus:border-primary focus:outline-none";
+  "hv-input min-h-11 w-full px-3 text-sm";
 
 function Field({
   label,
@@ -37,9 +37,9 @@ function Field({
 }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-sm font-medium">
+      <span className="text-sm font-medium text-cyan-50">
         {label}
-        {required ? <span className="text-red-500"> *</span> : null}
+        {required ? <span className="text-red-300"> *</span> : null}
       </span>
       {children}
       {hint ? <span className="text-xs text-muted">{hint}</span> : null}
@@ -121,7 +121,7 @@ export function AlbumForm({
   return (
     <form action={handleSubmit} className="flex flex-col gap-6">
       {error ? (
-        <div className="rounded-md border border-red-400/50 bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">
+        <div className="border border-red-400/40 bg-red-500/10 p-3 text-sm text-red-100">
           {error}
         </div>
       ) : null}
@@ -151,7 +151,7 @@ export function AlbumForm({
               )
             }
             pattern="[a-z0-9][a-z0-9-]*"
-            className={`${inputClass} ${mode === "edit" ? "cursor-not-allowed bg-muted/10 text-muted" : ""}`}
+            className={`${inputClass} ${mode === "edit" ? "cursor-not-allowed opacity-60" : ""}`}
           />
         </Field>
       </div>
@@ -179,7 +179,7 @@ export function AlbumForm({
             type="button"
             onClick={() => coverInputRef.current?.click()}
             disabled={uploading}
-            className="shrink-0 rounded-md border border-border bg-card px-3 py-2 text-sm transition hover:border-primary disabled:opacity-50"
+            className="hv-action shrink-0 px-3 text-sm disabled:opacity-50"
           >
             {uploading ? "上传中…" : "上传"}
           </button>
@@ -221,7 +221,7 @@ export function AlbumForm({
         <div className="flex gap-3">
           <Link
             href="/admin/albums"
-            className="rounded-md border border-border bg-card px-4 py-2 text-sm hover:border-primary"
+            className="hv-action px-4 text-sm"
           >
             取消
           </Link>
@@ -230,7 +230,7 @@ export function AlbumForm({
               type="button"
               onClick={handleDelete}
               disabled={deletePending}
-              className="rounded-md border border-red-400/50 bg-red-50 px-4 py-2 text-sm text-red-700 hover:border-red-500 disabled:opacity-50 dark:bg-red-950 dark:text-red-200"
+              className="border border-red-400/40 bg-red-500/10 px-4 py-2 text-sm text-red-100 transition hover:border-red-300 disabled:opacity-50"
             >
               {deletePending ? "删除中…" : "删除相册"}
             </button>
@@ -239,7 +239,7 @@ export function AlbumForm({
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
+          className="hv-action hv-chip-strong min-h-11 px-5 text-sm font-medium disabled:opacity-50"
         >
           {pending ? "保存中…" : mode === "new" ? "创建" : "保存"}
         </button>

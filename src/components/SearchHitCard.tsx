@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { BookOpenText, Clock3, Pin, ScanSearch } from "lucide-react";
 import type { Post } from "@/lib/posts";
 import { ReadBadge } from "@/components/ReadBadge";
 import { highlight } from "@/lib/highlight";
@@ -11,7 +12,7 @@ export function SearchHitCard({ post, query }: { post: Post; query: string }) {
   return (
     <Link
       href={`/posts/${slug}`}
-      className="group flex flex-col gap-3 overflow-hidden rounded-2xl border border-border bg-card p-4 transition hover:border-primary/40 hover:shadow-md sm:flex-row sm:items-start sm:gap-5 sm:p-5"
+      className="hv-panel hv-panel-hover group flex flex-col gap-3 overflow-hidden p-4 sm:flex-row sm:items-start sm:gap-5 sm:p-5"
     >
       {frontmatter.cover ? (
         <Image
@@ -21,54 +22,54 @@ export function SearchHitCard({ post, query }: { post: Post; query: string }) {
           height={192}
           sizes="(min-width: 640px) 128px, 100vw"
           loading="lazy"
-          className="aspect-[4/3] w-full shrink-0 rounded-xl object-cover sm:h-24 sm:w-32 sm:aspect-auto"
+          className="aspect-[4/3] w-full shrink-0 border border-cyan-100/14 object-cover opacity-[0.86] saturate-[0.85] transition group-hover:opacity-100 group-hover:saturate-100 sm:h-24 sm:w-32 sm:aspect-auto"
         />
       ) : null}
 
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <div className="flex items-baseline gap-2">
           {frontmatter.pinned ? (
-            <span title="置顶" aria-label="置顶" className="text-sm">
-              📌
+            <span title="置顶" aria-label="置顶" className="hv-chip hv-chip-strong">
+              <Pin className="h-3 w-3" aria-hidden />
             </span>
           ) : null}
-          <h3 className="line-clamp-2 text-base font-semibold leading-snug tracking-tight transition group-hover:text-primary sm:text-lg">
+          <h3 className="hv-title line-clamp-2 text-base font-semibold leading-snug tracking-tight transition group-hover:text-cyan-100 sm:text-lg">
             {highlight(frontmatter.title, query)}
           </h3>
           <ReadBadge slug={slug} />
         </div>
 
         {frontmatter.description ? (
-          <p className="line-clamp-2 text-sm leading-relaxed text-muted">
+          <p className="line-clamp-2 text-sm leading-relaxed text-cyan-50/62">
             {highlight(frontmatter.description, query)}
           </p>
         ) : null}
 
         {snippet ? (
-          <p className="line-clamp-2 rounded-md border border-dashed border-border/70 bg-background/40 px-2.5 py-1.5 text-xs leading-relaxed text-muted">
+          <p className="line-clamp-2 border border-dashed border-cyan-100/18 bg-cyan-50/[0.035] px-2.5 py-1.5 text-xs leading-relaxed text-cyan-50/58">
+            <ScanSearch className="mr-1 inline h-3 w-3 text-cyan-100/58" aria-hidden />
             … {highlight(snippet, query)} …
           </p>
         ) : null}
 
-        <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+        <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase text-cyan-50/50">
           <time className="font-mono">{frontmatter.date}</time>
-          <span aria-hidden>·</span>
-          <span className="font-mono">
+          <span className="inline-flex items-center gap-1">
+            <BookOpenText className="h-3.5 w-3.5" aria-hidden />
             {frontmatter.wordCount.toLocaleString()} 字
           </span>
-          <span aria-hidden>·</span>
-          <span className="font-mono">{frontmatter.readingMinutes} min</span>
+          <span className="inline-flex items-center gap-1">
+            <Clock3 className="h-3.5 w-3.5" aria-hidden />
+            {frontmatter.readingMinutes} min
+          </span>
           {frontmatter.tags?.length ? (
-            <>
-              <span aria-hidden>·</span>
-              <span className="flex flex-wrap gap-1">
-                {frontmatter.tags.slice(0, 3).map((tag) => (
-                  <span key={tag} className="font-medium text-primary/80">
-                    #{tag}
-                  </span>
-                ))}
-              </span>
-            </>
+            <span className="flex flex-wrap gap-1">
+              {frontmatter.tags.slice(0, 3).map((tag) => (
+                <span key={tag} className="font-medium text-cyan-100/72">
+                  #{tag}
+                </span>
+              ))}
+            </span>
           ) : null}
         </div>
       </div>

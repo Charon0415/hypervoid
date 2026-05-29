@@ -43,9 +43,10 @@ export default async function EditAlbumPage(props: {
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="flex items-center gap-3">
+      <header className="hv-panel p-5">
         <AdminBackLink href="/admin/albums" label="相册列表" />
-        <h1 className="text-2xl font-bold tracking-tight">编辑相册</h1>
+        <p className="hv-kicker mt-4">Album Editor</p>
+        <h1 className="hv-title mt-1 text-2xl font-semibold">编辑相册</h1>
       </header>
       <AlbumForm
         mode="edit"
@@ -53,7 +54,7 @@ export default async function EditAlbumPage(props: {
         onSubmit={updateBound}
         onDelete={deleteBound}
       />
-      <hr className="border-border" />
+      <div className="hv-divider" />
       <PhotoManager
         albumId={id}
         photos={photos.map((p) => ({

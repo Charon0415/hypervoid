@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft, Layers3 } from "lucide-react";
 import type { Metadata } from "next";
 import { getAllSeries, getPostsBySeries } from "@/lib/posts";
 import { getPublicSeriesList } from "@/lib/series-public";
@@ -24,8 +25,8 @@ export async function generateMetadata(
   const seriesList = await getPublicSeriesList();
   const series = seriesList.find((s) => s.name === decoded);
   return {
-    title: `${decoded} · 系列`,
-    description: series?.description ?? `「${decoded}」系列下的所有文章`,
+    title: decoded + " · 系列",
+    description: series?.description ?? "「" + decoded + "」系列下的所有文章",
   };
 }
 
@@ -42,39 +43,38 @@ export default async function SeriesDetailPage(
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6">
-      <Link
-        href="/series"
-        className="group inline-flex w-fit items-center gap-1.5 rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium text-foreground/80 transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
-      >
-        <svg
-          aria-hidden
-          className="h-3.5 w-3.5 transition group-hover:-translate-x-0.5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M19 12H5" />
-          <path d="M12 19l-7-7 7-7" />
-        </svg>
+      <Link href="/series" className="hv-action w-fit px-4 text-sm font-medium">
+        <ArrowLeft className="h-4 w-4" aria-hidden />
         所有系列
       </Link>
 
-      {series?.cover ? (
-        <div className="overflow-hidden rounded-2xl">
-          <img
-            src={series.cover}
-            alt=""
-            className="w-full object-cover"
-          />
+      <header className="hv-panel relative overflow-hidden p-5 sm:p-7">
+        {series?.cover ? (
+          <>
+            <img
+              src={series.cover}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover opacity-[0.26] saturate-[0.8]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/55 to-black/30" />
+          </>
+        ) : null}
+        <div className="relative z-10">
+          <p className="hv-kicker">Series route / sequential reading</p>
+          <h1 className="hv-title mt-2 flex items-center gap-3 text-3xl font-black leading-tight sm:text-5xl">
+            <Layers3 className="h-8 w-8 text-cyan-100/70 sm:h-10 sm:w-10" aria-hidden />
+            {decoded}
+          </h1>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="hv-chip hv-chip-strong">{posts.length} nodes</span>
+          </div>
+          {series?.description ? (
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-cyan-50/66">
+              {series.description}
+            </p>
+          ) : null}
         </div>
-      ) : null}
-
-      {series?.description ? (
-        <p className="text-sm text-muted">{series.description}</p>
-      ) : null}
+      </header>
 
       <SeriesPostList posts={posts} seriesName={decoded} />
     </div>

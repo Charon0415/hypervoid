@@ -213,7 +213,7 @@ export function PhotoSphereGL({ photos }: { photos: Photo[] }) {
         const raycaster = new THREE.Raycaster();
         const pointer = new THREE.Vector2();
         let isDragging = false;
-        let pointerDown = new THREE.Vector2();
+        const pointerDown = new THREE.Vector2();
 
         canvas.addEventListener("pointerdown", (e) => {
           pointerDown.set(e.clientX, e.clientY);

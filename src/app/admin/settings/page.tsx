@@ -43,14 +43,14 @@ export default async function AdminSettingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-center gap-3">
+      <header className="hv-panel p-5 sm:p-6 flex items-center gap-3">
         <AdminBackLink href="/admin" label="后台" />
-        <h1 className="text-2xl font-bold tracking-tight">站点设置</h1>
+        <h1 className="hv-title text-2xl font-black tracking-tight">站点设置</h1>
       </header>
 
-      <p className="text-sm text-muted">
+      <p className="text-sm text-cyan-50/55">
         这里改动的值会覆盖{" "}
-        <code className="rounded bg-card px-1.5 py-0.5 text-xs">
+        <code className="rounded bg-white/[0.045] px-1.5 py-0.5 text-xs">
           src/lib/site-config.ts
         </code>{" "}
         的对应字段。留空或与默认值一致时恢复默认。
@@ -69,14 +69,14 @@ export default async function AdminSettingsPage() {
                 type="text"
                 defaultValue={f.value}
                 placeholder={f.default}
-                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm transition focus:border-primary focus:outline-none"
+                className="w-full rounded-md border border-cyan-100/16 bg-white/[0.035] px-3 py-2 text-sm transition focus:border-cyan-100/45 focus:outline-none"
               />
               {f.value !== f.default ? (
-                <span className="text-[10px] text-primary">
+                <span className="text-[10px] text-cyan-100">
                   已自定义（默认：{f.default}）
                 </span>
               ) : (
-                <span className="text-[10px] text-muted">
+                <span className="text-[10px] text-cyan-50/55">
                   默认：{f.default}
                 </span>
               )}
@@ -87,18 +87,18 @@ export default async function AdminSettingsPage() {
         <div>
           <button
             type="submit"
-            className="rounded-md bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+            className="hv-action px-5 py-2 text-sm font-medium"
           >
             保存设置
           </button>
         </div>
       </form>
 
-      <hr className="border-border" />
+      <hr className="border-cyan-100/16" />
 
       {/* Login policy */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold">访问控制</h2>
+        <h2 className="hv-title text-lg font-semibold tracking-normal">访问控制</h2>
         <form action={setLoginPolicyAction} className="flex flex-col gap-3">
           {[
             {
@@ -119,10 +119,10 @@ export default async function AdminSettingsPage() {
           ].map((opt) => (
             <label
               key={opt.value}
-              className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors ${
+              className={`flex cursor-pointer items-start gap-3 border p-4 transition-colors ${
                 loginPolicy === opt.value
-                  ? "border-primary bg-primary/5"
-                  : "border-border bg-card hover:border-primary/40"
+                  ? "border-cyan-100/45 bg-cyan-100/12"
+                  : "border-cyan-100/16 bg-white/[0.035] hover:border-cyan-100/40"
               }`}
             >
               <input
@@ -130,24 +130,24 @@ export default async function AdminSettingsPage() {
                 name="login_policy"
                 value={opt.value}
                 defaultChecked={loginPolicy === opt.value}
-                className="mt-0.5 accent-primary"
+                className="mt-0.5 accent-cyan-300"
               />
               <div>
                 <p className="text-sm font-medium">{opt.label}</p>
-                <p className="mt-0.5 text-xs text-muted">{opt.desc}</p>
+                <p className="mt-0.5 text-xs text-cyan-50/55">{opt.desc}</p>
               </div>
             </label>
           ))}
           <div>
             <button
               type="submit"
-              className="rounded-md bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+              className="hv-action px-5 py-2 text-sm font-medium"
             >
               保存策略
             </button>
           </div>
         </form>
-        <p className="text-xs text-muted">
+        <p className="text-xs text-cyan-50/55">
           当前策略：
           {loginPolicy === "required"
             ? "全站登录 — 未登录用户会被拦截"
@@ -156,10 +156,10 @@ export default async function AdminSettingsPage() {
               : "自由访问 — 所有人可自由浏览"}
         </p>
 
-        <div className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
+        <div className="flex items-center justify-between border border-cyan-100/16 bg-white/[0.045] p-4">
           <div>
             <p className="text-sm font-medium">首页登录拦截</p>
-            <p className="mt-0.5 text-xs text-muted">
+            <p className="mt-0.5 text-xs text-cyan-50/55">
               开启后，未登录用户访问首页会直接跳转到登录揭幕页
             </p>
           </div>
@@ -168,26 +168,26 @@ export default async function AdminSettingsPage() {
               type="submit"
               aria-pressed={homepageRedirect}
               aria-label={homepageRedirect ? "关闭首页登录拦截" : "开启首页登录拦截"}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
-                homepageRedirect ? "bg-primary" : "bg-border"
+              className={`relative inline-flex h-6 w-11 items-center transition-colors duration-200 ${
+                homepageRedirect ? "bg-cyan-100" : "bg-cyan-100/16"
               }`}
             >
               <span
-                className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${
+                className={`inline-block h-4 w-4 bg-black shadow transition-transform duration-200 ${
                   homepageRedirect ? "translate-x-6" : "translate-x-1"
                 }`}
               />
             </button>
           </form>
         </div>
-        <p className="text-xs text-muted">
+        <p className="text-xs text-cyan-50/55">
           当前状态：{homepageRedirect ? "已开启 — 未登录用户进入首页会跳转登录页" : "已关闭 — 首页正常展示"}
         </p>
       </section>
 
-      <hr className="border-border" />
+      <hr className="border-cyan-100/16" />
 
-      <div className="text-xs text-muted">
+      <div className="text-xs text-cyan-50/55">
         <p className="font-medium">说明</p>
         <ul className="mt-1.5 list-disc space-y-0.5 pl-5">
           <li>站点文案覆盖值保留 1 分钟内存缓存；全站登录开关会在下一次请求生效。</li>

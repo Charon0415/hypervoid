@@ -61,11 +61,14 @@ const SparkleEffect = dynamic(
 );
 
 /** Routes where floating UI (mascot, back-to-top, etc.) should be hidden. */
-const HIDE_FLOATING_UI = ["/sign-in"];
+const HIDE_FLOATING_UI_PREFIXES = ["/sign-in"];
+const HIDE_FLOATING_UI_EXACT = ["/"];
 
 export function DeferredClientUI() {
   const pathname = usePathname();
-  const hideFloating = HIDE_FLOATING_UI.some((p) => pathname.startsWith(p));
+  const hideFloating =
+    HIDE_FLOATING_UI_EXACT.includes(pathname) ||
+    HIDE_FLOATING_UI_PREFIXES.some((p) => pathname.startsWith(p));
 
   return (
     <>
@@ -75,8 +78,8 @@ export function DeferredClientUI() {
       {!hideFloating && <MascotRouter />}
       <PwaInstallController />
       {!hideFloating && <BottomTabBar />}
-      <ClickEffect />
-      <SparkleEffect />
+      {!hideFloating && <ClickEffect />}
+      {!hideFloating && <SparkleEffect />}
     </>
   );
 }

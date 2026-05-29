@@ -1,81 +1,56 @@
-const CACHE = "hypervoid-v6";
-// Pre-cache the offline page only — HTML pages must NOT be pre-cached
-// because their JS chunk references change with every deploy.
-const STATIC = [
-  "/offline",
-];
+const CACHE = "hypervoid-v7";
+const STATIC = ["/offline"];
 
-self.addEventListener("install", (e) => {
-  e.waitUntil(
+self.addEventListener("install", (event) => {
+  event.waitUntil(
     caches.open(CACHE).then((cache) => cache.addAll(STATIC)).finally(() => {
       self.skipWaiting();
     }),
   );
 });
 
-self.addEventListener("activate", (e) => {
-  e.waitUntil(
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
     (async () => {
-      // Purge old caches
       const keys = await caches.keys();
-      await Promise.all(
-        keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)),
-      );
-      // Take control of all clients and tell them to reload
+      await Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)));
       await self.clients.claim();
       const clients = await self.clients.matchAll({ type: "window" });
-      for (const client of clients) {
-        client.postMessage("reload");
-      }
+      for (const client of clients) client.postMessage("reload");
     })(),
   );
 });
 
-// Handle skip-waiting message from the page
 self.addEventListener("message", (event) => {
-  if (event.data === "skip-waiting") {
-    self.skipWaiting();
-  }
+  if (event.data === "skip-waiting") self.skipWaiting();
 });
 
-/**
- * Routing:
- *   - /api/*           → network-first (fresh DB data; cache fallback when offline)
- *   - HTML pages       → network-only + offline fallback (JS chunk references
- *                        change every deploy; stale HTML causes page load
- *                        failures after client-side navigation)
- *   - /_next/static/*, fonts, images → cache-first (versioned by content hash)
- */
-self.addEventListener("fetch", (e) => {
-  const { request } = e;
+self.addEventListener("fetch", (event) => {
+  const { request } = event;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // API: network-first, with cache fallback for offline reads.
+  // Never intercept Next build assets. Stale SW responses for content-hashed
+  // chunks are the fastest way to break CSS/JS after a rebuild or deploy.
+  if (url.pathname.startsWith("/_next/")) return;
+
   if (url.pathname.startsWith("/api/")) {
-    e.respondWith(networkFirst(request));
+    event.respondWith(networkFirst(request));
     return;
   }
 
-  // HTML must not be cached. Old HTML can reference deleted Next chunks.
   if (request.headers.get("Accept")?.includes("text/html")) {
-    e.respondWith(networkOnlyPage(request));
+    event.respondWith(networkOnlyPage(request));
     return;
   }
 
-  // Versioned static assets: cache-first
-  if (
-    url.pathname.startsWith("/_next/static/") ||
-    url.pathname.startsWith("/fonts/") ||
-    url.pathname.match(/\.(?:woff2?|ttf|otf|png|jpe?g|gif|webp|avif|svg|ico)$/i)
-  ) {
-    e.respondWith(cacheFirst(request));
+  if (url.pathname.match(/\.(?:woff2?|ttf|otf|png|jpe?g|gif|webp|avif|svg|ico)$/i)) {
+    event.respondWith(cacheFirst(request));
     return;
   }
 
-  // Everything else: stale-while-revalidate
-  e.respondWith(staleWhileRevalidate(request));
+  event.respondWith(staleWhileRevalidate(request));
 });
 
 async function networkFirst(request) {

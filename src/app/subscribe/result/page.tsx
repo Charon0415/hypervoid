@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { ArrowLeft, CheckCircle2, Info, TriangleAlert } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "订阅结果",
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
 
 const MESSAGES: Record<string, { title: string; body: string; tone: "ok" | "error" | "info" }> = {
   ok: {
-    title: "订阅确认成功 🎉",
+    title: "订阅确认成功",
     body: "你已确认订阅。新文章发布时会发邮件通知你。",
     tone: "ok",
   },
@@ -34,11 +35,11 @@ const MESSAGES: Record<string, { title: string; body: string; tone: "ok" | "erro
   },
 };
 
-const TONE_CLASS: Record<string, string> = {
-  ok: "border-emerald-400/50 bg-emerald-50 dark:bg-emerald-950",
-  error: "border-red-400/50 bg-red-50 dark:bg-red-950",
-  info: "border-border bg-card",
-};
+function ToneIcon({ tone }: { tone: "ok" | "error" | "info" }) {
+  if (tone === "ok") return <CheckCircle2 className="h-9 w-9 text-emerald-300" aria-hidden />;
+  if (tone === "error") return <TriangleAlert className="h-9 w-9 text-red-300" aria-hidden />;
+  return <Info className="h-9 w-9 text-cyan-100/70" aria-hidden />;
+}
 
 export default async function SubscribeResult(props: {
   searchParams: Promise<{ status?: string }>;
@@ -48,16 +49,13 @@ export default async function SubscribeResult(props: {
 
   return (
     <div className="mx-auto flex max-w-md flex-col items-center gap-6 py-16 text-center">
-      <div
-        className={`w-full rounded-xl border p-8 ${TONE_CLASS[m.tone]}`}
-      >
-        <h1 className="text-2xl font-bold tracking-tight">{m.title}</h1>
-        <p className="mt-3 text-sm text-muted">{m.body}</p>
+      <div className="hv-panel w-full p-8">
+        <ToneIcon tone={m.tone} />
+        <h1 className="hv-title mt-4 text-2xl font-bold tracking-tight">{m.title}</h1>
+        <p className="mt-3 text-sm leading-7 text-cyan-50/62">{m.body}</p>
       </div>
-      <Link
-        href="/"
-        className="rounded-md border border-border bg-card px-4 py-2 text-sm transition hover:border-primary hover:text-primary"
-      >
+      <Link href="/" className="hv-action px-4 py-2 text-sm">
+        <ArrowLeft className="h-4 w-4" aria-hidden />
         返回首页
       </Link>
     </div>

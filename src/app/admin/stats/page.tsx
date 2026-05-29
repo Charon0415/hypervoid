@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { BarChart3 } from "lucide-react";
 import type { Metadata } from "next";
 import { auth } from "@/auth";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
@@ -53,9 +54,9 @@ export default async function AdminStatsPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="flex items-center gap-3">
+      <header className="hv-panel p-5 sm:p-6 flex items-center gap-3">
         <AdminBackLink href="/admin" label="后台" />
-        <h1 className="text-2xl font-bold tracking-tight">数据看板</h1>
+        <h1 className="hv-title text-2xl font-black tracking-tight">数据看板</h1>
       </header>
 
       <section className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
@@ -67,9 +68,9 @@ export default async function AdminStatsPage() {
       </section>
 
       {/* Monthly bar chart — pure CSS */}
-      <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
-        <h2 className="text-sm font-semibold tracking-tight">
-          近 12 个月发文趋势
+      <section className="hv-panel p-4 sm:p-5">
+        <h2 className="hv-title text-sm font-semibold tracking-normal">
+          <BarChart3 className="mr-1 inline h-4 w-4 text-cyan-100/70" aria-hidden />近 12 个月发文趋势
         </h2>
         <div className="mt-4 flex h-36 items-end gap-1 sm:mt-5 sm:h-44 sm:gap-2">
           {monthly.map((m) => {
@@ -84,16 +85,16 @@ export default async function AdminStatsPage() {
                 title={`${m.month} · ${m.count} 篇`}
               >
                 <div
-                  className={`w-full rounded-t transition ${
+                  className={`w-full transition ${
                     m.count === 0
-                      ? "bg-muted/15"
+                      ? "bg-cyan-50/[0.04]"
                       : isThisMonth
-                        ? "bg-primary"
-                        : "bg-primary/55 group-hover:bg-primary"
+                        ? "bg-cyan-100/80"
+                        : "bg-cyan-100/45 group-hover:bg-cyan-100/75"
                   }`}
                   style={{ height: `${Math.max(2, heightPct)}%` }}
                 />
-                <span className="text-[8px] font-mono text-muted sm:text-[9px]">
+                <span className="text-[8px] font-mono text-cyan-50/50 sm:text-[9px]">
                   {m.month.slice(5)}
                 </span>
                 <span className="absolute -top-5 hidden font-mono text-[10px] text-foreground/80 group-hover:block">
@@ -122,7 +123,7 @@ export default async function AdminStatsPage() {
 
       <VisitorList rows={visitors} total={visitorCount} />
 
-      <p className="text-xs text-muted">
+      <p className="text-xs text-cyan-50/50">
         实时从数据库读取。访问量来自服务端计数（每次完整渲染 +1），点赞来自访客手动操作。
       </p>
     </div>
@@ -137,19 +138,19 @@ function VisitorList({
   total: number;
 }) {
   return (
-    <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+    <section className="hv-panel p-4 sm:p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-1.5">
-        <h2 className="text-sm font-semibold tracking-tight">
+        <h2 className="hv-title text-sm font-semibold tracking-normal">
           访客记录
-          <span className="ml-2 font-mono text-xs font-normal text-muted">
+          <span className="ml-2 font-mono text-xs font-normal text-cyan-50/50">
             共 {total} 个 GitHub 账号
           </span>
         </h2>
-        <p className="text-[10px] text-muted">按最近登录时间排序 · 上限 50</p>
+        <p className="text-[10px] text-cyan-50/50">按最近登录时间排序 · 上限 50</p>
       </div>
 
       {rows.length === 0 ? (
-        <p className="mt-4 text-sm text-muted">
+        <p className="mt-4 text-sm text-cyan-50/50">
           还没有访客登录过博客。
         </p>
       ) : (
@@ -157,7 +158,7 @@ function VisitorList({
           {rows.map((v) => (
             <li
               key={v.githubLogin}
-              className="flex items-center gap-3 rounded-md px-2 py-2 transition hover:bg-background sm:py-1.5"
+              className="flex items-center gap-3 rounded-md px-2 py-2 transition hover:bg-white/[0.045] sm:py-1.5"
             >
               {v.avatarUrl ? (
                 <Image
@@ -167,10 +168,10 @@ function VisitorList({
                   height={72}
                   sizes="36px"
                   loading="lazy"
-                  className="h-9 w-9 shrink-0 rounded-full sm:h-7 sm:w-7"
+                  className="h-9 w-9 shrink-0 border border-cyan-100/18 sm:h-7 sm:w-7"
                 />
               ) : (
-                <div className="h-9 w-9 shrink-0 rounded-full bg-muted/20 sm:h-7 sm:w-7" />
+                <div className="h-9 w-9 shrink-0 border border-cyan-100/18 bg-cyan-50/[0.055] sm:h-7 sm:w-7" />
               )}
               <div className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2">
                 <span className="truncate text-sm">
@@ -180,19 +181,19 @@ function VisitorList({
                   href={`https://github.com/${v.githubLogin}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="shrink-0 truncate font-mono text-[11px] text-muted hover:text-primary sm:text-xs"
+                  className="shrink-0 truncate font-mono text-[11px] text-cyan-50/50 hover:text-cyan-100 sm:text-xs"
                 >
                   @{v.githubLogin}
                 </Link>
-                <time className="font-mono text-[10px] text-muted/80 sm:hidden">
+                <time className="font-mono text-[10px] text-cyan-50/40 sm:hidden">
                   {formatDateTimeCN(v.lastSeenAt)}
                 </time>
               </div>
               <span className="shrink-0 font-mono text-xs">
                 <span className="font-bold">{v.loginCount}</span>
-                <span className="ml-0.5 text-muted">次</span>
+                <span className="ml-0.5 text-cyan-50/50">次</span>
               </span>
-              <time className="hidden shrink-0 font-mono text-[10px] text-muted sm:inline">
+              <time className="hidden shrink-0 font-mono text-[10px] text-cyan-50/50 sm:inline">
                 {formatDateTimeCN(v.lastSeenAt)}
               </time>
             </li>
@@ -205,11 +206,11 @@ function VisitorList({
 
 function BigStat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-3 sm:p-4">
-      <p className="text-[10px] uppercase tracking-wider text-muted sm:text-[11px]">
+    <div className="hv-panel p-3 sm:p-4">
+      <p className="hv-kicker sm:text-[11px]">
         {label}
       </p>
-      <p className="mt-1 font-mono text-xl font-bold leading-tight sm:text-2xl lg:text-3xl">
+      <p className="mt-1 font-mono text-xl font-bold leading-tight text-cyan-50 sm:text-2xl lg:text-3xl">
         {value.toLocaleString("en-US")}
       </p>
     </div>
@@ -234,33 +235,33 @@ function TopList({
   metricLabel: string;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
-      <h2 className="text-sm font-semibold tracking-tight">{title}</h2>
+    <div className="hv-panel p-4 sm:p-5">
+      <h2 className="hv-title text-sm font-semibold tracking-normal">{title}</h2>
       {rows.length === 0 ? (
-        <p className="mt-3 text-sm text-muted">还没有数据。</p>
+        <p className="mt-3 text-sm text-cyan-50/50">还没有数据。</p>
       ) : (
         <ol className="mt-3 flex flex-col gap-1.5">
           {rows.map((r, i) => (
             <li
               key={r.slug}
-              className="flex items-baseline gap-2 rounded-md px-2 py-1.5 transition hover:bg-background sm:gap-3"
+              className="flex items-baseline gap-2 rounded-md px-2 py-1.5 transition hover:bg-white/[0.045] sm:gap-3"
             >
-              <span className="w-5 shrink-0 text-right font-mono text-xs text-muted">
+              <span className="w-5 shrink-0 text-right font-mono text-xs text-cyan-50/50">
                 {i + 1}
               </span>
               <Link
                 href={`/posts/${r.slug}`}
                 target="_blank"
                 rel="noreferrer"
-                className="min-w-0 flex-1 truncate text-sm hover:text-primary"
+                className="min-w-0 flex-1 truncate text-sm hover:text-cyan-100"
               >
                 {r.title}
               </Link>
               <span className="shrink-0 font-mono text-xs">
                 <span className="font-bold">{r[metricKey].toLocaleString("en-US")}</span>{" "}
-                <span className="text-muted">{metricLabel}</span>
+                <span className="text-cyan-50/50">{metricLabel}</span>
               </span>
-              <time className="hidden shrink-0 font-mono text-[10px] text-muted sm:inline">
+              <time className="hidden shrink-0 font-mono text-[10px] text-cyan-50/50 sm:inline">
                 {r.publishAt ? formatDateCN(r.publishAt) : "—"}
               </time>
             </li>

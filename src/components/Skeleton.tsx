@@ -2,15 +2,15 @@ export function Skeleton({ className }: { className?: string }) {
   return (
     <div
       aria-hidden
-      className={`animate-pulse rounded-lg bg-border/50 ${className ?? ""}`}
+      className={"animate-pulse bg-cyan-100/10 shadow-[0_0_18px_rgba(103,232,249,0.08)] " + (className ?? "")}
     />
   );
 }
 
 export function PostCardSkeleton() {
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-start sm:gap-5 sm:p-5">
-      <Skeleton className="aspect-[4/3] w-full sm:h-24 sm:w-32 sm:aspect-auto" />
+    <div className="hv-panel flex flex-col gap-3 p-4 sm:flex-row sm:items-start sm:gap-5 sm:p-5">
+      <Skeleton className="aspect-[4/3] w-full border border-cyan-100/10 sm:h-24 sm:w-32 sm:aspect-auto" />
       <div className="flex flex-1 flex-col gap-2.5">
         <Skeleton className="h-5 w-3/4" />
         <Skeleton className="h-4 w-full" />

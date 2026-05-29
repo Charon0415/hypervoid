@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ArrowLeft, ArrowRight, Eye, Heart } from "lucide-react";
 import { getYearInReview } from "@/lib/stats";
 import { siteConfig } from "@/lib/site-config";
 
@@ -47,21 +48,21 @@ export default async function YearInReviewPage(props: {
   const isEmpty = data.postCount === 0;
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-10 py-10">
-      <header className="text-center">
-        <p className="text-xs uppercase tracking-[0.4em] text-primary">
+    <div className="mx-auto flex max-w-3xl flex-col gap-10 py-2">
+      <header className="hv-panel relative overflow-hidden p-6 text-center sm:p-8">
+        <p className="hv-kicker justify-center">
           Year in Review
         </p>
-        <h1 className="mt-2 font-bold tracking-tight">
+        <h1 className="hv-title mt-2 font-black tracking-tight">
           <span className="block text-5xl sm:text-7xl">{y}</span>
-          <span className="mt-2 block text-base text-muted sm:text-lg">
-            ✦ {siteConfig.name} 的一年
+          <span className="mt-2 block text-base text-cyan-50/62 sm:text-lg">
+            {siteConfig.name} 的一年
           </span>
         </h1>
       </header>
 
       {isEmpty ? (
-        <p className="rounded-2xl border border-dashed border-border p-12 text-center text-muted">
+        <p className="hv-panel border-dashed p-12 text-center text-cyan-50/60">
           {y} 年还没有公开发布的文章。
         </p>
       ) : (
@@ -73,22 +74,22 @@ export default async function YearInReviewPage(props: {
             <Stat label="阅读量" value={data.totalViews} suffix="次" />
           </section>
 
-          <section className="rounded-2xl border border-border bg-card p-6">
+          <section className="hv-panel p-6">
             <p className="text-xs uppercase tracking-wider text-muted">
               累计阅读时长
             </p>
-            <p className="mt-1 font-mono text-3xl font-bold">
+            <p className="mt-2 font-mono text-3xl font-bold text-cyan-50">
               {Math.floor(data.totalReadingMinutes / 60)}{" "}
-              <span className="text-base font-normal text-muted">小时</span>{" "}
+              <span className="text-base font-normal text-cyan-50/55">小时</span>{" "}
               {data.totalReadingMinutes % 60}{" "}
-              <span className="text-base font-normal text-muted">分钟</span>
+              <span className="text-base font-normal text-cyan-50/55">分钟</span>
             </p>
-            <p className="mt-1 text-xs text-muted">
+            <p className="mt-1 text-xs text-cyan-50/48">
               按平均 250 字 / 分钟估算（不含代码块）
             </p>
           </section>
 
-          <section className="rounded-2xl border border-border bg-card p-6">
+          <section className="hv-panel p-6">
             <h2 className="mb-4 text-sm font-semibold tracking-tight text-muted">
               月度发文分布
             </h2>
@@ -102,15 +103,15 @@ export default async function YearInReviewPage(props: {
                   >
                     <div className="flex h-full w-full items-end">
                       <div
-                        className="w-full rounded-t bg-primary/40 transition group-hover:bg-primary"
+                        className="w-full bg-cyan-100/45 shadow-[0_0_16px_rgba(103,232,249,0.18)] transition hover:bg-cyan-100/80"
                         style={{ height: `${pct}%` }}
                         title={`${MONTH_NAMES[m.month - 1]}: ${m.count} 篇`}
                       />
                     </div>
-                    <span className="font-mono text-[10px] text-muted">
+                    <span className="font-mono text-[10px] text-cyan-50/45">
                       {m.count > 0 ? m.count : ""}
                     </span>
-                    <span className="text-[10px] text-muted">
+                    <span className="text-[10px] text-cyan-50/45">
                       {m.month}
                     </span>
                   </div>
@@ -120,7 +121,7 @@ export default async function YearInReviewPage(props: {
           </section>
 
           {data.topPosts.length > 0 ? (
-            <section className="rounded-2xl border border-border bg-card p-6">
+            <section className="hv-panel p-6">
               <h2 className="mb-4 text-sm font-semibold tracking-tight text-muted">
                 最受欢迎的 5 篇
               </h2>
@@ -128,19 +129,19 @@ export default async function YearInReviewPage(props: {
                 {data.topPosts.map((p, i) => (
                   <li
                     key={p.slug}
-                    className="flex items-center gap-3 rounded-lg border border-border/60 bg-background px-3 py-2"
+                    className="flex items-center gap-3 border border-cyan-100/12 bg-white/[0.035] px-3 py-2"
                   >
-                    <span className="font-mono text-lg font-bold text-primary">
+                    <span className="font-mono text-lg font-bold text-cyan-100">
                       {i + 1}
                     </span>
                     <Link
                       href={`/posts/${p.slug}`}
-                      className="min-w-0 flex-1 truncate text-sm font-medium hover:text-primary"
+                      className="min-w-0 flex-1 truncate text-sm font-medium text-cyan-50 hover:text-cyan-100"
                     >
                       {p.title}
                     </Link>
-                    <span className="shrink-0 font-mono text-[11px] text-muted">
-                      👁 {p.views} · 🎉 {p.reactions}
+                    <span className="inline-flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-cyan-50/55">
+                      <Eye className="inline h-3.5 w-3.5" aria-hidden /> {p.views} / <Heart className="inline h-3.5 w-3.5" aria-hidden /> {p.reactions}
                     </span>
                   </li>
                 ))}
@@ -149,7 +150,7 @@ export default async function YearInReviewPage(props: {
           ) : null}
 
           {data.topTags.length > 0 ? (
-            <section className="rounded-2xl border border-border bg-card p-6">
+            <section className="hv-panel p-6">
               <h2 className="mb-4 text-sm font-semibold tracking-tight text-muted">
                 高频标签
               </h2>
@@ -158,10 +159,10 @@ export default async function YearInReviewPage(props: {
                   <Link
                     key={t.tag}
                     href={`/tags/${encodeURIComponent(t.tag)}`}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-xs transition hover:border-primary hover:text-primary"
+                    className="hv-chip gap-1.5 px-3 py-1 text-xs transition hover:border-cyan-100/42 hover:text-cyan-50"
                   >
                     <span>#{t.tag}</span>
-                    <span className="font-mono text-[10px] text-muted">
+                    <span className="font-mono text-[10px] text-cyan-50/45">
                       ×{t.count}
                     </span>
                   </Link>
@@ -172,21 +173,21 @@ export default async function YearInReviewPage(props: {
         </>
       )}
 
-      <nav className="flex items-center justify-between border-t border-border pt-6 text-xs text-muted">
+      <nav className="flex items-center justify-between border-t border-cyan-100/12 pt-6 text-xs text-cyan-50/58">
         <Link
           href={`/year-in-review/${y - 1}`}
-          className="transition hover:text-primary"
+          className="hv-action min-h-8 px-3"
         >
-          ← {y - 1} 年
+          <ArrowLeft className="h-3.5 w-3.5" aria-hidden /> {y - 1} 年
         </Link>
-        <Link href="/" className="transition hover:text-primary">
+        <Link href="/" className="hv-action min-h-8 px-3">
           返回首页
         </Link>
         <Link
           href={`/year-in-review/${y + 1}`}
-          className="transition hover:text-primary"
+          className="hv-action min-h-8 px-3"
         >
-          {y + 1} 年 →
+          {y + 1} 年 <ArrowRight className="h-3.5 w-3.5" aria-hidden />
         </Link>
       </nav>
     </div>
@@ -203,14 +204,14 @@ function Stat({
   suffix?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-4">
-      <p className="text-[11px] uppercase tracking-wider text-muted">
+    <div className="hv-panel p-4">
+      <p className="hv-kicker">
         {label}
       </p>
-      <p className="mt-1 font-mono text-2xl font-bold leading-tight">
+      <p className="mt-1 font-mono text-2xl font-bold leading-tight text-cyan-50">
         {value.toLocaleString("en-US")}
         {suffix ? (
-          <span className="ml-1 text-xs font-normal text-muted">
+          <span className="ml-1 text-xs font-normal text-cyan-50/55">
             {suffix}
           </span>
         ) : null}

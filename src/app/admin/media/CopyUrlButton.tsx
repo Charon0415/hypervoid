@@ -19,7 +19,7 @@ export function CopyUrlButton({ url }: { url: string }) {
     <button
       type="button"
       onClick={copy}
-      className="rounded-md border border-border bg-card px-2 py-0.5 text-[11px] transition hover:border-primary hover:text-primary"
+      className="hv-action min-h-0 px-2 py-0.5 text-[11px]"
     >
       {copied ? "已复制 ✓" : "复制"}
     </button>

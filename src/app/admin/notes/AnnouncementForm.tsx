@@ -29,12 +29,12 @@ export function AnnouncementForm({
   return (
     <form action={action} className="flex flex-col gap-5">
       <fieldset className="flex flex-col gap-2">
-        <legend className="text-sm font-medium">显示位置</legend>
+        <legend className="text-sm font-medium text-cyan-50">显示位置</legend>
         <div className="grid gap-2 sm:grid-cols-3">
           {SLOT_OPTIONS.map((s) => (
             <label
               key={s.value}
-              className="flex cursor-pointer flex-col gap-0.5 rounded-xl border border-border bg-card p-3 has-[:checked]:border-primary has-[:checked]:bg-primary/5"
+              className="hv-panel flex cursor-pointer flex-col gap-0.5 p-3 transition has-[:checked]:border-cyan-200/60 has-[:checked]:bg-cyan-300/10"
             >
               <span className="flex items-center gap-2">
                 <input
@@ -59,7 +59,7 @@ export function AnnouncementForm({
           defaultValue={defaults.message}
           rows={3}
           required
-          className="rounded-md border border-border bg-background px-3 py-2 text-sm transition focus:border-primary focus:outline-none"
+          className="hv-input min-h-11 px-3 text-sm"
         />
       </label>
 
@@ -71,7 +71,7 @@ export function AnnouncementForm({
             name="link"
             defaultValue={defaults.link}
             placeholder="https://..."
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm transition focus:border-primary focus:outline-none"
+            className="hv-input min-h-11 px-3 text-sm"
           />
         </label>
         <label className="flex flex-col gap-1.5">
@@ -81,7 +81,7 @@ export function AnnouncementForm({
             name="linkText"
             defaultValue={defaults.linkText}
             placeholder="了解更多"
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm transition focus:border-primary focus:outline-none"
+            className="hv-input min-h-11 px-3 text-sm"
           />
         </label>
       </div>
@@ -93,7 +93,7 @@ export function AnnouncementForm({
             type="datetime-local"
             name="startsAt"
             defaultValue={defaults.startsAt}
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm transition focus:border-primary focus:outline-none"
+            className="hv-input min-h-11 px-3 text-sm"
           />
           <span className="text-[11px] text-muted">留空 = 立即生效</span>
         </label>
@@ -103,7 +103,7 @@ export function AnnouncementForm({
             type="datetime-local"
             name="endsAt"
             defaultValue={defaults.endsAt}
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm transition focus:border-primary focus:outline-none"
+            className="hv-input min-h-11 px-3 text-sm"
           />
           <span className="text-[11px] text-muted">留空 = 永久有效</span>
         </label>
@@ -116,7 +116,7 @@ export function AnnouncementForm({
             type="number"
             name="priority"
             defaultValue={defaults.priority}
-            className="w-20 rounded-md border border-border bg-background px-2 py-1"
+            className="hv-input w-24 px-2 py-1"
           />
           <span className="text-xs text-muted">数值越大越优先</span>
         </label>
@@ -134,13 +134,13 @@ export function AnnouncementForm({
       <div className="flex items-center gap-3">
         <button
           type="submit"
-          className="rounded-md bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+          className="hv-action hv-chip-strong px-5 text-sm font-medium"
         >
           {submitLabel}
         </button>
         <Link
           href="/admin/notes"
-          className="text-sm text-muted hover:text-foreground"
+          className="hv-action px-4 text-sm"
         >
           取消
         </Link>

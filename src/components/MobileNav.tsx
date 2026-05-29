@@ -52,7 +52,7 @@ export function MobileNav() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="打开菜单"
-        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/60 bg-card/70 text-foreground backdrop-blur-sm transition hover:border-primary hover:bg-card hover:text-primary md:hidden"
+        className="hv-action inline-flex h-10 w-10 items-center justify-center px-0 text-cyan-50/80 md:hidden"
       >
         <svg
           aria-hidden="true"
@@ -75,21 +75,21 @@ export function MobileNav() {
           role="dialog"
         >
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/72 backdrop-blur-sm"
             onClick={() => setOpen(false)}
             aria-hidden
           />
           <div
-            className="absolute right-0 top-0 h-screen w-72 max-w-[85vw] overflow-y-auto bg-card text-foreground shadow-2xl ring-1 ring-border"
+            className="hv-panel absolute right-0 top-0 h-screen w-72 max-w-[85vw] overflow-y-auto text-white shadow-2xl"
             style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom, 0px))" }}
           >
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-card px-5 py-4">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-cyan-100/15 bg-black/45 px-5 py-4 backdrop-blur-xl">
               <span className="font-bold tracking-tight">Hypervoid</span>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="关闭菜单"
-                className="rounded-md p-1.5 text-muted transition hover:bg-background hover:text-foreground"
+                className="p-1.5 text-cyan-50/62 transition hover:bg-white/[0.06] hover:text-white"
               >
                 <svg
                   className="h-5 w-5"
@@ -112,10 +112,10 @@ export function MobileNav() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`rounded-md px-3 py-2.5 text-sm transition ${
+                    className={`px-3 py-2.5 text-sm transition ${
                       pathname === item.href
-                        ? "bg-primary/10 font-medium text-primary"
-                        : "text-foreground/85 hover:bg-background hover:text-foreground"
+                        ? "bg-cyan-100/12 font-medium text-cyan-100"
+                        : "text-cyan-50/72 hover:bg-white/[0.06] hover:text-white"
                     }`}
                   >
                     {item.label}
@@ -123,8 +123,8 @@ export function MobileNav() {
                 ))}
               </div>
 
-              <div className="mt-4 border-t border-border pt-3">
-                <p className="px-3 pb-1.5 text-[10px] uppercase tracking-widest text-muted">
+              <div className="mt-4 border-t border-cyan-100/15 pt-3">
+                <p className="px-3 pb-1.5 font-mono text-[10px] uppercase text-cyan-50/45">
                   {t.nav.groupLinks}
                 </p>
                 <div className="flex flex-wrap gap-1.5 px-3">
@@ -136,7 +136,7 @@ export function MobileNav() {
                       rel="noreferrer noopener"
                       title={s.name}
                       aria-label={s.name}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted transition hover:border-primary hover:bg-primary/10 hover:text-primary"
+                      className="inline-flex h-8 w-8 items-center justify-center border border-cyan-100/18 bg-white/[0.045] text-cyan-50/62 transition hover:border-cyan-100/45 hover:bg-cyan-50/10 hover:text-cyan-100"
                     >
                       <SocialIcon name={s.icon} className="h-3.5 w-3.5" />
                     </a>

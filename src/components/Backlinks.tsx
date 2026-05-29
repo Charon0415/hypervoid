@@ -1,14 +1,15 @@
 import Link from "next/link";
+import { CornerDownRight } from "lucide-react";
 import type { Post } from "@/lib/posts";
 
 export function Backlinks({ posts }: { posts: Post[] }) {
   if (posts.length === 0) return null;
   return (
-    <section className="mt-12 border-t border-border pt-8">
-      <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold tracking-tight">
-        <span aria-hidden>↪</span>
+    <section className="mt-12">
+      <h2 className="hv-title mb-4 flex items-center gap-2 text-xl font-semibold tracking-normal">
+        <CornerDownRight className="h-5 w-5 text-cyan-100/70" aria-hidden />
         被这些文章引用
-        <span className="text-xs font-normal text-muted">
+        <span className="hv-chip text-xs font-normal">
           ({posts.length})
         </span>
       </h2>
@@ -17,12 +18,12 @@ export function Backlinks({ posts }: { posts: Post[] }) {
           <Link
             key={p.slug}
             href={`/posts/${p.slug}`}
-            className="group flex flex-col gap-0.5 rounded-lg border border-border bg-card p-3 transition hover:border-primary/40"
+            className="hv-panel hv-panel-hover group flex flex-col gap-1 p-3"
           >
-            <p className="line-clamp-1 text-sm font-medium tracking-tight transition group-hover:text-primary">
+            <p className="line-clamp-1 text-sm font-medium tracking-tight text-cyan-50 transition group-hover:text-cyan-100">
               {p.frontmatter.title}
             </p>
-            <p className="text-[10px] text-muted">
+            <p className="text-[10px] text-cyan-50/48">
               {p.frontmatter.date}
               {p.frontmatter.tags.length > 0 ? (
                 <>
