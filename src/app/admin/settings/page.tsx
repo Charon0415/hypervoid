@@ -7,6 +7,7 @@ import { getSiteSetting } from "@/db/site-settings";
 import {
   saveSiteSettingsAction,
   setLoginPolicyAction,
+  toggleHomepageLoginRedirectAction,
 } from "@/app/admin/settings/actions";
 
 export const metadata: Metadata = {
@@ -20,6 +21,7 @@ export default async function AdminSettingsPage() {
 
   const allFields = await getAllOverrides();
   const loginPolicy = (await getSiteSetting("site_login_required")) || "optional";
+  const homepageRedirect = (await getSiteSetting("homepage_login_redirect")) === "true";
   // These keys have dedicated admin pages and are filtered out from the
   // generic settings form so they don't appear twice.
   const dedicated = new Set([
@@ -152,6 +154,34 @@ export default async function AdminSettingsPage() {
             : loginPolicy === "private_only"
               ? "仅私密空间 — /private 路径需要登录"
               : "自由访问 — 所有人可自由浏览"}
+        </p>
+
+        <div className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
+          <div>
+            <p className="text-sm font-medium">首页登录拦截</p>
+            <p className="mt-0.5 text-xs text-muted">
+              开启后，未登录用户访问首页会直接跳转到登录揭幕页
+            </p>
+          </div>
+          <form action={toggleHomepageLoginRedirectAction}>
+            <button
+              type="submit"
+              aria-pressed={homepageRedirect}
+              aria-label={homepageRedirect ? "关闭首页登录拦截" : "开启首页登录拦截"}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
+                homepageRedirect ? "bg-primary" : "bg-border"
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${
+                  homepageRedirect ? "translate-x-6" : "translate-x-1"
+                }`}
+              />
+            </button>
+          </form>
+        </div>
+        <p className="text-xs text-muted">
+          当前状态：{homepageRedirect ? "已开启 — 未登录用户进入首页会跳转登录页" : "已关闭 — 首页正常展示"}
         </p>
       </section>
 

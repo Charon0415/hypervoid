@@ -134,6 +134,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       // Check login policy from DB
       try {
+        // Homepage login redirect — independent of the global policy
+        if (pathname === "/") {
+          const homepageRedirect = (await getSiteSetting("homepage_login_redirect")) === "true";
+          if (homepageRedirect && !auth?.user) return false;
+        }
+
         const policy = (await getSiteSetting("site_login_required")) || "optional";
 
         if (policy === "required") {

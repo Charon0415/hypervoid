@@ -36,3 +36,11 @@ export async function setLoginPolicyAction(formData: FormData) {
   await setSiteSetting("site_login_required", valid.includes(policy) ? policy : "optional");
   revalidatePath("/admin/settings");
 }
+
+export async function toggleHomepageLoginRedirectAction() {
+  await requireAdmin();
+
+  const enabled = (await getSiteSetting("homepage_login_redirect")) === "true";
+  await setSiteSetting("homepage_login_redirect", enabled ? "false" : "true");
+  revalidatePath("/admin/settings");
+}
