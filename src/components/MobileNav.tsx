@@ -52,7 +52,7 @@ export function MobileNav() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="打开菜单"
-        className="hv-action inline-flex h-10 w-10 items-center justify-center px-0 text-cyan-50/80 md:hidden"
+        className="grid h-10 w-10 place-items-center border border-cyan-100/18 bg-white/[0.055] px-0 text-cyan-50/80 backdrop-blur-xl transition hover:border-cyan-100/45 hover:bg-cyan-50/10 hover:text-white md:hidden"
       >
         <svg
           aria-hidden="true"
@@ -80,10 +80,10 @@ export function MobileNav() {
             aria-hidden
           />
           <div
-            className="hv-panel absolute right-0 top-0 h-screen w-72 max-w-[85vw] overflow-y-auto text-white shadow-2xl"
+            className="absolute right-0 top-0 h-screen w-72 max-w-[85vw] overflow-y-auto border-l border-cyan-100/18 bg-slate-950/92 text-white shadow-[0_28px_90px_rgba(0,0,0,0.50)] backdrop-blur-2xl"
             style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom, 0px))" }}
           >
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-cyan-100/15 bg-black/45 px-5 py-4 backdrop-blur-xl">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-cyan-100/14 bg-slate-950/82 px-5 py-4 backdrop-blur-xl">
               <span className="font-bold tracking-tight">Hypervoid</span>
               <button
                 type="button"
@@ -112,10 +112,10 @@ export function MobileNav() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`px-3 py-2.5 text-sm transition ${
+                    className={`border px-3 py-2.5 text-sm transition ${
                       pathname === item.href
-                        ? "bg-cyan-100/12 font-medium text-cyan-100"
-                        : "text-cyan-50/72 hover:bg-white/[0.06] hover:text-white"
+                        ? "border-cyan-100/28 bg-cyan-50/12 font-medium text-cyan-100"
+                        : "border-transparent text-cyan-50/72 hover:border-cyan-100/18 hover:bg-cyan-50/8 hover:text-white"
                     }`}
                   >
                     {item.label}
@@ -136,7 +136,7 @@ export function MobileNav() {
                       rel="noreferrer noopener"
                       title={s.name}
                       aria-label={s.name}
-                      className="inline-flex h-8 w-8 items-center justify-center border border-cyan-100/18 bg-white/[0.045] text-cyan-50/62 transition hover:border-cyan-100/45 hover:bg-cyan-50/10 hover:text-cyan-100"
+                      className="inline-flex h-9 w-9 items-center justify-center border border-cyan-100/18 bg-white/[0.045] text-cyan-50/62 transition hover:border-cyan-100/45 hover:bg-cyan-50/10 hover:text-cyan-100"
                     >
                       <SocialIcon name={s.icon} className="h-3.5 w-3.5" />
                     </a>

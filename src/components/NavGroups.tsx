@@ -152,7 +152,7 @@ export function NavGroups() {
       className="hidden md:flex md:items-center"
       onMouseLeave={scheduleClose}
     >
-      <div className="flex flex-nowrap items-center gap-0.5 overflow-visible border border-cyan-100/15 bg-white/[0.055] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl">
+      <div className="flex flex-nowrap items-center gap-1 overflow-visible border border-cyan-100/12 bg-slate-950/58 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_0_34px_rgba(34,211,238,0.08)] backdrop-blur-2xl">
         {directLinks.map((link) => {
           const active = isHrefActive(link.href);
           return (
@@ -162,8 +162,8 @@ export function NavGroups() {
               onMouseEnter={closeNow}
               className={`shrink-0 px-3.5 py-1.5 text-sm font-medium tracking-tight transition ${
                 active
-                  ? "bg-cyan-100/15 text-cyan-100 shadow-sm"
-                  : "text-cyan-50/62 hover:bg-white/[0.055] hover:text-white"
+                  ? "border border-cyan-100/30 bg-cyan-50/12 text-cyan-100 shadow-[0_0_18px_rgba(34,211,238,0.10)]"
+                  : "border border-transparent text-cyan-50/62 hover:border-cyan-100/18 hover:bg-cyan-50/8 hover:text-white"
               }`}
             >
               {link.label}
@@ -173,7 +173,7 @@ export function NavGroups() {
 
         <span
           aria-hidden
-          className="mx-1 h-4 w-px shrink-0 bg-cyan-100/15"
+          className="mx-1 h-5 w-px shrink-0 bg-cyan-100/14"
         />
 
         {groups.map((g) => {
@@ -193,8 +193,8 @@ export function NavGroups() {
                 onFocus={() => openGroup(g.key)}
                 className={`relative inline-flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium tracking-tight transition ${
                   isOpen || isActive
-                    ? "bg-cyan-100/15 text-cyan-100 shadow-sm"
-                    : "text-cyan-50/62 hover:bg-white/[0.055] hover:text-white"
+                    ? "border border-cyan-100/30 bg-cyan-50/12 text-cyan-100 shadow-[0_0_18px_rgba(34,211,238,0.10)]"
+                    : "border border-transparent text-cyan-50/62 hover:border-cyan-100/18 hover:bg-cyan-50/8 hover:text-white"
                 }`}
               >
                 {g.label}
@@ -217,14 +217,14 @@ export function NavGroups() {
                   role="menu"
                   className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-2"
                 >
-                  <div className="hv-panel w-max min-w-[14rem] p-1.5 shadow-2xl">
+                  <div className="border border-cyan-100/16 bg-slate-950/88 p-1.5 shadow-[0_24px_80px_rgba(0,0,0,0.45),0_0_34px_rgba(34,211,238,0.10)] backdrop-blur-2xl">
                     {g.items.map((item) => {
                       const itemActive = !item.external && isHrefActive(item.href);
                       const ItemIcon = item.icon;
-                      const className = `flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition ${
+                      const className = `flex items-center gap-2.5 border border-transparent px-3 py-2 text-sm transition ${
                         itemActive
-                          ? "bg-cyan-100/12 text-cyan-100"
-                          : "text-cyan-50/72 hover:bg-white/[0.065] hover:text-white"
+                          ? "border-cyan-100/24 bg-cyan-50/12 text-cyan-100"
+                          : "text-cyan-50/72 hover:border-cyan-100/18 hover:bg-cyan-50/8 hover:text-white"
                       }`;
                       if (item.external) {
                         return (

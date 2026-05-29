@@ -2,10 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/auth";
-import {
-  getSiteSetting,
-  setSiteSetting,
-} from "@/db/site-settings";
+import { setSiteSetting } from "@/db/site-settings";
 import {
   OVERRIDABLE_FIELDS,
   setSiteOverrides,
@@ -34,13 +31,5 @@ export async function setLoginPolicyAction(formData: FormData) {
   const policy = String(formData.get("login_policy") ?? "optional");
   const valid = ["optional", "required", "private_only"];
   await setSiteSetting("site_login_required", valid.includes(policy) ? policy : "optional");
-  revalidatePath("/admin/settings");
-}
-
-export async function toggleHomepageLoginRedirectAction() {
-  await requireAdmin();
-
-  const enabled = (await getSiteSetting("homepage_login_redirect")) === "true";
-  await setSiteSetting("homepage_login_redirect", enabled ? "false" : "true");
   revalidatePath("/admin/settings");
 }

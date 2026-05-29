@@ -1,17 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import {
-  BACKGROUND_OPTIONS,
-  DEFAULT_HUE,
+  Bot,
+  Check,
+  Download,
+  MonitorCog,
+  RotateCcw,
+  Settings2,
+  Type,
+  X,
+} from "lucide-react";
+import {
   DISPLAY_MODE_OPTIONS,
-  FONT_OPTIONS,
   FONT_SIZE_OPTIONS,
-  HUE_PRESETS,
-  THEME_PRESETS,
   useSettings,
-  type BackgroundKey,
 } from "@/components/SettingsProvider";
 import { isMascotEnabled, setMascotEnabled } from "@/components/Live2DMascot";
 import { useInstallPrompt } from "@/components/PwaInstallController";
@@ -19,118 +23,26 @@ import { useInstallPrompt } from "@/components/PwaInstallController";
 const MASCOT_ENABLED_KEY = "hypervoid:mascot";
 const MASCOT_ENABLED_EVENT = "hypervoid:mascot-changed";
 
-
-function BgThumb({ bg }: { bg: BackgroundKey }) {
-  const base = "h-10 w-full overflow-hidden rounded";
-  switch (bg) {
-    case "plain":
-      return (
-        <div
-          className={`${base} border border-dashed border-border bg-background`}
-        />
-      );
-    case "cosmic":
-      return (
-        <div
-          className={`${base} relative bg-gradient-to-br from-[color-mix(in_srgb,var(--primary)_25%,transparent)] via-[color-mix(in_srgb,var(--primary)_5%,transparent)] to-background`}
-        >
-          <span className="absolute left-2 top-2 h-0.5 w-0.5 rounded-full bg-foreground/70" />
-          <span className="absolute right-3 top-3 h-0.5 w-0.5 rounded-full bg-foreground/70" />
-          <span className="absolute left-5 bottom-2 h-0.5 w-0.5 rounded-full bg-foreground/70" />
-          <span className="absolute right-2 bottom-3 h-0.5 w-0.5 rounded-full bg-foreground/70" />
-        </div>
-      );
-    case "particles":
-      return (
-        <div
-          className={`${base} relative bg-gradient-to-br from-[color-mix(in_srgb,var(--primary)_40%,transparent)] via-[color-mix(in_srgb,var(--primary)_10%,transparent)] to-background`}
-        >
-          {Array.from({ length: 10 }).map((_, i) => (
-            <span
-              key={i}
-              className="absolute h-px w-px rounded-full bg-foreground/70"
-              style={{
-                left: `${((i * 23 + 7) % 90) + 5}%`,
-                top: `${((i * 37 + 11) % 80) + 5}%`,
-              }}
-            />
-          ))}
-        </div>
-      );
-    case "paper":
-      return (
-        <div
-          className={base}
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(0deg, var(--border) 0 1px, transparent 1px 6px), repeating-linear-gradient(90deg, var(--border) 0 1px, transparent 1px 6px)",
-            backgroundColor: "var(--background)",
-          }}
-        />
-      );
-    case "waves":
-      return (
-        <div
-          className={base}
-          style={{
-            backgroundImage:
-              "radial-gradient(ellipse 60% 50% at 30% 30%, color-mix(in srgb, var(--primary) 30%, transparent), transparent), radial-gradient(ellipse 60% 50% at 70% 70%, color-mix(in srgb, var(--primary) 20%, transparent), transparent)",
-            backgroundColor: "var(--background)",
-          }}
-        />
-      );
-    case "acg":
-      return (
-        <div
-          className={base}
-          style={{
-            backgroundImage: "url(/wallpapers/1.webp)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
-      );
-    case "medieval":
-      return (
-        <div
-          className={base}
-          style={{
-            backgroundImage: "url(/wallpapers/medieval.webp)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
-      );
-    case "cyberpunk":
-      return (
-        <div
-          className={`${base} relative`}
-          style={{
-            backgroundImage:
-              "linear-gradient(135deg, #0a0a14 0%, #1a0a2e 50%, #050510 100%)",
-          }}
-        >
-          <span
-            aria-hidden
-            className="absolute inset-0"
-            style={{
-              backgroundImage:
-                "radial-gradient(ellipse at 20% 30%, rgba(0,229,255,0.55), transparent 55%), radial-gradient(ellipse at 80% 75%, rgba(200,0,200,0.45), transparent 55%)",
-            }}
-          />
-          <span
-            aria-hidden
-            className="absolute left-1.5 top-1.5 h-0.5 w-3 rounded-full"
-            style={{ background: "#00e5ff", boxShadow: "0 0 4px #00e5ff" }}
-          />
-          <span
-            aria-hidden
-            className="absolute bottom-1.5 right-2 h-0.5 w-2 rounded-full"
-            style={{ background: "#ff00d4", boxShadow: "0 0 4px #ff00d4" }}
-          />
-        </div>
-      );
-  }
+function SettingSection({
+  icon,
+  title,
+  children,
+}: {
+  icon: ReactNode;
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="border border-cyan-100/14 bg-white/[0.035] p-3">
+      <div className="mb-3 flex items-center gap-2 font-mono text-[11px] uppercase text-cyan-50/68">
+        <span className="grid h-6 w-6 place-items-center border border-cyan-100/18 bg-cyan-50/8 text-cyan-100">
+          {icon}
+        </span>
+        {title}
+      </div>
+      {children}
+    </section>
+  );
 }
 
 export function SiteSettings() {
@@ -139,20 +51,7 @@ export function SiteSettings() {
   const [isMobile, setIsMobile] = useState(false);
   const [mascot, setMascot] = useState(false);
   const { available: installAvailable, install } = useInstallPrompt();
-  const {
-    hue,
-    background,
-    font,
-    fontSize,
-    displayMode,
-    setHue,
-    setBackground,
-    setFont,
-    setFontSize,
-    setDisplayMode,
-    applyPreset,
-    reset,
-  } = useSettings();
+  const { fontSize, displayMode, setFontSize, setDisplayMode, reset } = useSettings();
 
   useEffect(() => {
     setMounted(true);
@@ -178,7 +77,6 @@ export function SiteSettings() {
     };
   }, []);
 
-  // Lock body scroll while the mobile bottom-sheet is open.
   useEffect(() => {
     if (!open || !isMobile) return;
     const prev = document.body.style.overflow;
@@ -188,7 +86,6 @@ export function SiteSettings() {
     };
   }, [open, isMobile]);
 
-  // Keyboard shortcuts: Cmd/Ctrl+, toggles panel; Esc closes it.
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === ",") {
@@ -196,350 +93,168 @@ export function SiteSettings() {
         setOpen((v) => !v);
         return;
       }
-      if (e.key === "Escape" && open) {
-        setOpen(false);
-      }
+      if (e.key === "Escape" && open) setOpen(false);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  // Reusable choice-pill classes — bigger touch targets on mobile.
-  const pillBase =
-    "rounded-md border px-2 py-2.5 text-sm transition md:py-1.5 md:text-xs";
-  const pillIdle =
-    "border-border text-muted hover:border-primary/40 hover:text-foreground";
-  const pillActive = "border-primary bg-primary/10 text-primary";
+  const optionBase =
+    "relative flex min-h-11 items-center justify-between gap-3 border px-3 py-2 text-left text-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/70";
+  const active = "border-cyan-100/48 bg-cyan-50/12 text-white shadow-[0_0_22px_rgba(34,211,238,0.12)]";
+  const idle = "border-cyan-100/14 bg-black/16 text-cyan-50/68 hover:border-cyan-100/34 hover:bg-cyan-50/8 hover:text-white";
 
   const panel = open ? (
     <>
-      {/* Backdrop — dim+blur on mobile, click-catcher on desktop */}
       <div
-        className="fixed inset-0 z-50 bg-black/45 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none"
+        className="fixed inset-0 z-50 bg-black/55 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none"
         onClick={() => setOpen(false)}
         aria-hidden
       />
 
-      {/* Panel — bottom-sheet on mobile, popover on desktop */}
       <div
         role="dialog"
-        aria-label="站点设置"
-        className="
-          fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto
-          rounded-t-2xl border-t border-x border-border bg-card shadow-2xl
-          animate-[sheetUp_220ms_ease-out]
-          md:absolute md:inset-x-auto md:bottom-auto md:right-0 md:top-11
-          md:w-[19rem] md:max-h-[80vh] md:rounded-xl md:border md:shadow-xl
-          md:animate-none
-        "
-        style={{
-          paddingBottom: "max(1rem, env(safe-area-inset-bottom, 0px))",
-        }}
+        aria-label="界面控制"
+        className="fixed inset-x-3 bottom-3 z-50 max-h-[86dvh] overflow-y-auto border border-cyan-100/20 bg-slate-950/88 text-white shadow-[0_28px_90px_rgba(0,0,0,0.46),0_0_40px_rgba(34,211,238,0.12)] backdrop-blur-2xl md:absolute md:inset-x-auto md:bottom-auto md:right-0 md:top-12 md:w-[21rem]"
+        style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))" }}
         onClick={(e) => e.stopPropagation()}
       >
-            {/* Mobile drag-handle hint */}
-            <div
-              className="mx-auto mt-2 mb-1 h-1 w-9 rounded-full bg-border md:hidden"
-              aria-hidden
-            />
-
-            {/* Sticky header (mobile) + flush header (desktop) */}
-            <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border bg-card px-5 pb-3 pt-2 md:static md:border-0 md:px-4 md:pb-0 md:pt-4">
-              <p className="text-sm font-semibold">站点设置</p>
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={reset}
-                  className="text-xs text-muted hover:text-primary"
-                >
-                  重置全部
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setOpen(false)}
-                  aria-label="关闭"
-                  className="rounded-md p-1 text-muted hover:bg-background hover:text-foreground md:hidden"
-                >
-                  <svg
-                    className="h-4 w-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                    <line x1="6" y1="18" x2="18" y2="6" />
-                  </svg>
-                </button>
-              </div>
+        <div className="sticky top-0 z-10 border-b border-cyan-100/14 bg-slate-950/82 px-4 py-3 backdrop-blur-xl">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="font-mono text-[10px] uppercase text-cyan-100/70">Interface Console</p>
+              <h2 className="mt-1 text-base font-black tracking-normal text-white">界面控制</h2>
             </div>
-
-            <div className="px-5 pb-5 pt-2 md:px-4 md:pb-4">
-              <section className="mt-3 md:mt-4">
-                <p className="mb-2 text-xs uppercase tracking-wider text-muted">
-                  一键装扮
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {THEME_PRESETS.map((p) => {
-                    const matches =
-                      hue === p.hue &&
-                      background === p.background &&
-                      font === p.font &&
-                      fontSize === p.fontSize;
-                    return (
-                      <button
-                        key={p.key}
-                        type="button"
-                        onClick={() => applyPreset(p)}
-                        title={p.hint}
-                        aria-pressed={matches}
-                        className={`rounded-full border px-2.5 py-1 text-xs transition ${
-                          matches ? pillActive : pillIdle
-                        }`}
-                      >
-                        {p.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </section>
-
-              <section className="mt-5 md:mt-4">
-                <p className="mb-2 text-xs uppercase tracking-wider text-muted">
-                  主题色
-                </p>
-                <div className="mb-2 flex flex-wrap gap-2 md:gap-1.5">
-                  {HUE_PRESETS.map((p) => (
-                    <button
-                      key={p.name}
-                      type="button"
-                      onClick={() => setHue(p.hue)}
-                      aria-label={p.name}
-                      title={`${p.name} (${p.hue}°)`}
-                      className={`h-9 w-9 rounded-full border-2 transition md:h-7 md:w-7 ${
-                        hue === p.hue
-                          ? "border-foreground"
-                          : "border-transparent hover:border-border"
-                      }`}
-                      style={{ background: `hsl(${p.hue} 70% 60%)` }}
-                    />
-                  ))}
-                </div>
-                <input
-                  type="range"
-                  min={0}
-                  max={360}
-                  step={1}
-                  value={hue}
-                  onChange={(e) => setHue(Number(e.target.value))}
-                  aria-label="色相滑块"
-                  className="w-full"
-                  style={{
-                    background:
-                      "linear-gradient(to right, hsl(0 70% 60%), hsl(60 70% 60%), hsl(120 70% 60%), hsl(180 70% 60%), hsl(240 70% 60%), hsl(300 70% 60%), hsl(360 70% 60%))",
-                  }}
-                />
-                <p className="mt-1 font-mono text-[10px] text-muted">
-                  hue: {hue}°{hue !== DEFAULT_HUE ? " (自定义)" : ""}
-                </p>
-              </section>
-
-              <section className="mt-5 md:mt-4">
-                <p className="mb-2 text-xs uppercase tracking-wider text-muted">
-                  背景
-                </p>
-                <div className="grid grid-cols-3 gap-2">
-                  {BACKGROUND_OPTIONS.map((o) => {
-                    const active = background === o.key;
-                    return (
-                      <button
-                        key={o.key}
-                        type="button"
-                        onClick={() => setBackground(o.key)}
-                        aria-pressed={active}
-                        className={`group flex flex-col gap-1 rounded-lg border p-1.5 text-center transition ${
-                          active
-                            ? "border-primary bg-primary/10"
-                            : "border-border hover:border-primary/40"
-                        }`}
-                      >
-                        <BgThumb bg={o.key} />
-                        <span
-                          className={`text-[11px] leading-tight ${
-                            active
-                              ? "font-medium text-primary"
-                              : "text-muted group-hover:text-foreground"
-                          }`}
-                        >
-                          {o.label}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </section>
-
-              <section className="mt-5 md:mt-4">
-                <p className="mb-2 text-xs uppercase tracking-wider text-muted">
-                  显示模式
-                </p>
-                <div className="grid grid-cols-3 gap-2 md:gap-1.5">
-                  {DISPLAY_MODE_OPTIONS.map((o) => (
-                    <button
-                      key={o.key}
-                      type="button"
-                      onClick={() => setDisplayMode(o.key)}
-                      aria-pressed={displayMode === o.key}
-                      title={o.hint}
-                      className={`${pillBase} ${
-                        displayMode === o.key ? pillActive : pillIdle
-                      }`}
-                    >
-                      {o.label}
-                    </button>
-                  ))}
-                </div>
-                <p className="mt-1.5 text-[10px] text-muted">
-                  {DISPLAY_MODE_OPTIONS.find((o) => o.key === displayMode)?.hint}
-                </p>
-              </section>
-
-              <section className="mt-5 md:mt-4">
-                <p className="mb-2 text-xs uppercase tracking-wider text-muted">
-                  字体
-                </p>
-                <div className="grid grid-cols-3 gap-2 md:gap-1.5">
-                  {FONT_OPTIONS.map((o) => (
-                    <button
-                      key={o.key}
-                      type="button"
-                      onClick={() => setFont(o.key)}
-                      aria-pressed={font === o.key}
-                      className={`${pillBase} ${
-                        font === o.key ? pillActive : pillIdle
-                      }`}
-                    >
-                      {o.label}
-                    </button>
-                  ))}
-                </div>
-              </section>
-
-              <section className="mt-5 md:mt-4">
-                <p className="mb-2 text-xs uppercase tracking-wider text-muted">
-                  字号
-                </p>
-                <div className="grid grid-cols-2 gap-2 md:gap-1.5">
-                  {FONT_SIZE_OPTIONS.map((o) => (
-                    <button
-                      key={o.key}
-                      type="button"
-                      onClick={() => setFontSize(o.key)}
-                      aria-pressed={fontSize === o.key}
-                      title={o.hint}
-                      className={`${pillBase} ${
-                        fontSize === o.key ? pillActive : pillIdle
-                      }`}
-                    >
-                      {o.label}
-                    </button>
-                  ))}
-                </div>
-                <p className="mt-1.5 text-[10px] text-muted">
-                  {FONT_SIZE_OPTIONS.find((o) => o.key === fontSize)?.hint}
-                </p>
-              </section>
-
-              {/* 看板娘 — desktop only. The mascot canvas itself also
-                  bails on mobile (Live2DMascot.tsx returns null), so the
-                  toggle would have no effect there; hide it to keep the
-                  panel tidy on small screens. */}
-              {!isMobile ? (
-                <section className="mt-5 md:mt-4">
-                  <p className="mb-2 text-xs uppercase tracking-wider text-muted">
-                    看板娘
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const next = !mascot;
-                      setMascot(next);
-                      setMascotEnabled(next);
-                    }}
-                    className={`${pillBase} flex items-center gap-2 ${
-                      mascot ? pillActive : pillIdle
-                    }`}
-                    style={{ width: "100%" }}
-                  >
-                    <span
-                      aria-hidden
-                      className={`relative inline-block h-4 w-7 shrink-0 rounded-full transition-colors ${
-                        mascot ? "bg-primary" : "bg-border"
-                      }`}
-                    >
-                      <span
-                        className={`absolute top-0.5 inline-block h-3 w-3 rounded-full bg-white shadow-sm transition-all ${
-                          mascot ? "left-3.5" : "left-0.5"
-                        }`}
-                      />
-                    </span>
-                    {mascot ? "已开启" : "已关闭"}
-                  </button>
-                  <p className="mt-1.5 text-[10px] text-muted">
-                    在页面右下角显示看板娘（默认关闭）
-                  </p>
-                </section>
-              ) : null}
-
-              {installAvailable ? (
-                <section className="mt-5 md:mt-4">
-                  <p className="mb-2 text-xs uppercase tracking-wider text-muted">
-                    安装到桌面
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      install();
-                    }}
-                    className={`${pillBase} ${pillIdle} flex w-full items-center justify-center gap-2`}
-                  >
-                    <span aria-hidden>📲</span>
-                    立即安装 Hypervoid
-                  </button>
-                  <p className="mt-1.5 text-[10px] text-muted">
-                    把站点装到桌面 / 主屏，启动更快，离线也能看缓存过的页面。
-                  </p>
-                </section>
-              ) : null}
-
-              <p className="mt-4 hidden text-[10px] text-muted md:block">
-                快捷键：⌘/Ctrl + , 打开 · Esc 关闭
-              </p>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={reset}
+                aria-label="重置界面控制"
+                title="重置"
+                className="grid h-9 w-9 place-items-center border border-cyan-100/14 text-cyan-50/64 transition hover:border-cyan-100/38 hover:bg-cyan-50/8 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/70"
+              >
+                <RotateCcw className="h-4 w-4" aria-hidden />
+              </button>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label="关闭界面控制"
+                className="grid h-9 w-9 place-items-center border border-cyan-100/14 text-cyan-50/64 transition hover:border-cyan-100/38 hover:bg-cyan-50/8 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/70 md:hidden"
+              >
+                <X className="h-4 w-4" aria-hidden />
+              </button>
             </div>
           </div>
-        </>
-      ) : null;
+          <p className="mt-2 text-xs leading-5 text-cyan-50/50">
+            旧主题、色相、壁纸与字体预设已移除；站点固定使用 Hypervoid HUD 视觉。
+          </p>
+        </div>
+
+        <div className="grid gap-3 p-4">
+          <SettingSection icon={<MonitorCog className="h-3.5 w-3.5" aria-hidden />} title="视觉层级">
+            <div className="grid gap-2">
+              {DISPLAY_MODE_OPTIONS.map((o) => {
+                const isActive = displayMode === o.key;
+                return (
+                  <button
+                    key={o.key}
+                    type="button"
+                    onClick={() => setDisplayMode(o.key)}
+                    aria-pressed={isActive}
+                    title={o.hint}
+                    className={[optionBase, isActive ? active : idle].join(" ")}
+                  >
+                    <span>
+                      <span className="block font-semibold">{o.label}</span>
+                      <span className="mt-0.5 block text-xs text-cyan-50/48">{o.hint}</span>
+                    </span>
+                    {isActive ? <Check className="h-4 w-4 shrink-0 text-cyan-100" aria-hidden /> : null}
+                  </button>
+                );
+              })}
+            </div>
+          </SettingSection>
+
+          <SettingSection icon={<Type className="h-3.5 w-3.5" aria-hidden />} title="阅读字号">
+            <div className="grid grid-cols-2 gap-2">
+              {FONT_SIZE_OPTIONS.map((o) => {
+                const isActive = fontSize === o.key;
+                return (
+                  <button
+                    key={o.key}
+                    type="button"
+                    onClick={() => setFontSize(o.key)}
+                    aria-pressed={isActive}
+                    title={o.hint}
+                    className={[optionBase, "flex-col items-start justify-center", isActive ? active : idle].join(" ")}
+                  >
+                    <span className="font-semibold">{o.label}</span>
+                    <span className="text-xs text-cyan-50/48">{o.hint}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </SettingSection>
+
+          {!isMobile ? (
+            <SettingSection icon={<Bot className="h-3.5 w-3.5" aria-hidden />} title="看板娘">
+              <button
+                type="button"
+                onClick={() => {
+                  const nextMascot = !mascot;
+                  setMascot(nextMascot);
+                  setMascotEnabled(nextMascot);
+                }}
+                aria-pressed={mascot}
+                className={[optionBase, "w-full", mascot ? active : idle].join(" ")}
+              >
+                <span>
+                  <span className="block font-semibold">{mascot ? "已开启" : "已关闭"}</span>
+                  <span className="mt-0.5 block text-xs text-cyan-50/48">右下角交互角色，仅桌面显示。</span>
+                </span>
+                <span
+                  aria-hidden
+                  className={["relative h-5 w-9 border transition", mascot ? "border-cyan-100 bg-cyan-100" : "border-cyan-100/18 bg-white/5"].join(" ")}
+                >
+                  <span className={["absolute top-0.5 h-3.5 w-3.5 bg-slate-950 transition-transform", mascot ? "translate-x-[1.125rem]" : "translate-x-0.5"].join(" ")} />
+                </span>
+              </button>
+            </SettingSection>
+          ) : null}
+
+          {installAvailable ? (
+            <SettingSection icon={<Download className="h-3.5 w-3.5" aria-hidden />} title="安装">
+              <button type="button" onClick={install} className={[optionBase, "w-full", idle].join(" ")}>
+                <span>
+                  <span className="block font-semibold">安装 Hypervoid</span>
+                  <span className="mt-0.5 block text-xs text-cyan-50/48">添加到桌面或主屏，使用离线缓存。</span>
+                </span>
+                <Download className="h-4 w-4 shrink-0 text-cyan-100" aria-hidden />
+              </button>
+            </SettingSection>
+          ) : null}
+
+          <p className="hidden border-t border-cyan-100/12 pt-3 font-mono text-[10px] uppercase text-cyan-50/38 md:block">
+            Cmd/Ctrl + , open · Esc close
+          </p>
+        </div>
+      </div>
+    </>
+  ) : null;
 
   return (
     <div className="relative">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-label="站点设置"
+        aria-label="界面控制"
         aria-expanded={open}
-        title="主题 · 背景 · 字体 (⌘/Ctrl+,)"
-        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/60 bg-card/70 backdrop-blur-sm transition hover:border-primary hover:bg-card"
+        title="界面控制 (Cmd/Ctrl+,)"
+        className="grid h-10 w-10 place-items-center border border-cyan-100/18 bg-white/[0.055] text-cyan-50/72 backdrop-blur-xl transition hover:border-cyan-100/45 hover:bg-cyan-50/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/70"
       >
-        <span
-          className="block h-4 w-4 rounded-full ring-2 ring-background"
-          style={{ background: `hsl(${hue} 70% 60%)` }}
-        />
+        <Settings2 className="h-4 w-4" aria-hidden />
       </button>
-      {mounted && isMobile && panel
-        ? createPortal(panel, document.body)
-        : panel}
+      {mounted && isMobile && panel ? createPortal(panel, document.body) : panel}
     </div>
   );
 }

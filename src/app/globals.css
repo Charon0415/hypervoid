@@ -728,6 +728,64 @@ body::after {
   mask-image: radial-gradient(circle at 50% 18%, black, transparent 74%);
 }
 
+.hv-site-header {
+  position: sticky;
+  isolation: isolate;
+}
+
+.hv-site-header::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(103, 232, 249, 0.46), transparent);
+  opacity: 0.72;
+}
+
+.hv-site-header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: linear-gradient(90deg, rgba(103, 232, 249, 0.045) 1px, transparent 1px);
+  background-size: 96px 100%;
+  mask-image: linear-gradient(90deg, transparent, black 16%, black 84%, transparent);
+}
+
+.hv-main-shell {
+  position: relative;
+  isolation: isolate;
+}
+
+.hv-main-shell::before,
+.hv-main-shell::after {
+  content: "";
+  position: fixed;
+  top: 5.75rem;
+  bottom: 2.25rem;
+  z-index: -1;
+  width: 1px;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(103, 232, 249, 0.26), transparent);
+}
+
+.hv-main-shell::before {
+  left: max(1rem, calc((100vw - 88rem) / 2));
+}
+
+.hv-main-shell::after {
+  right: max(1rem, calc((100vw - 88rem) / 2));
+}
+
+@media (max-width: 767px) {
+  .hv-main-shell::before,
+  .hv-main-shell::after {
+    display: none;
+  }
+}
+
 .hv-shell {
   position: relative;
 }
@@ -910,6 +968,38 @@ body::after {
 
 
 /* Hypervoid full-screen entry */
+.hypervoid-entry-video {
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  transform: translate3d(-50%, -50%, 0);
+  will-change: transform;
+}
+
+@media (max-width: 768px) {
+  .hypervoid-entry-video {
+    width: 100svh;
+    height: 100svw;
+    min-width: 100svh;
+    min-height: 100svw;
+    transform: translate3d(-50%, -50%, 0) rotate(90deg);
+  }
+}
+
+@supports (height: 100dvh) {
+  @media (max-width: 768px) {
+    .hypervoid-entry-video {
+      width: 100dvh;
+      height: 100dvw;
+      min-width: 100dvh;
+      min-height: 100dvw;
+    }
+  }
+}
+
 .hypervoid-entry-grid {
   background-image:
     linear-gradient(rgba(103, 232, 249, 0.22) 1px, transparent 1px),

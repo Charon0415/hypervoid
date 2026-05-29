@@ -27,35 +27,9 @@ export type DisplayMode = "fullscreen" | "banner" | "simple";
 
 export const DEFAULT_HUE = 215;
 export const DEFAULT_BACKGROUND: BackgroundKey = "cosmic";
-export const DEFAULT_FONT: FontKey = "serif";
+export const DEFAULT_FONT: FontKey = "geist";
 export const DEFAULT_FONT_SIZE: FontSizeKey = "normal";
 export const DEFAULT_DISPLAY_MODE: DisplayMode = "fullscreen";
-
-export const HUE_PRESETS: { name: string; hue: number }[] = [
-  { name: "Indigo", hue: 240 },
-  { name: "Sakura", hue: 340 },
-  { name: "Ocean", hue: 210 },
-  { name: "Forest", hue: 140 },
-  { name: "Amber", hue: 35 },
-  { name: "Violet", hue: 280 },
-];
-
-export const BACKGROUND_OPTIONS: { key: BackgroundKey; label: string }[] = [
-  { key: "cosmic", label: "宇宙" },
-  { key: "particles", label: "粒子" },
-  { key: "acg", label: "ACG 轮播" },
-  { key: "medieval", label: "中世纪" },
-  { key: "paper", label: "纸质" },
-  { key: "waves", label: "波纹" },
-  { key: "plain", label: "纯净" },
-  { key: "cyberpunk", label: "赛博朋克" },
-];
-
-export const FONT_OPTIONS: { key: FontKey; label: string }[] = [
-  { key: "serif", label: "Serif" },
-  { key: "geist", label: "Geist" },
-  { key: "handwriting", label: "手写" },
-];
 
 export const FONT_SIZE_OPTIONS: { key: FontSizeKey; label: string; hint: string }[] = [
   { key: "normal", label: "标准", hint: "17.5px 基准（默认）" },
@@ -68,69 +42,13 @@ export const DISPLAY_MODE_OPTIONS: { key: DisplayMode; label: string; hint: stri
   { key: "simple", label: "简洁", hint: "完全隐藏背景特效" },
 ];
 
-export type ThemePreset = {
-  key: string;
-  label: string;
-  hint: string;
-  hue: number;
-  background: BackgroundKey;
-  font: FontKey;
-  fontSize: FontSizeKey;
-};
-
-export const THEME_PRESETS: ThemePreset[] = [
-  {
-    key: "medieval",
-    label: "中世纪",
-    hint: "羊皮卷 · 衬线 · 舒适字号",
-    hue: 35,
-    background: "medieval",
-    font: "serif",
-    fontSize: "large",
-  },
-  {
-    key: "cosmic",
-    label: "宇宙",
-    hint: "深蓝 · 衬线 · 粒子",
-    hue: 240,
-    background: "cosmic",
-    font: "serif",
-    fontSize: "normal",
-  },
-  {
-    key: "acg",
-    label: "ACG",
-    hint: "樱粉 · 手写 · 壁纸轮播",
-    hue: 340,
-    background: "acg",
-    font: "handwriting",
-    fontSize: "normal",
-  },
-  {
-    key: "paper",
-    label: "纸质",
-    hint: "琥珀 · 衬线 · 静谧",
-    hue: 35,
-    background: "paper",
-    font: "serif",
-    fontSize: "large",
-  },
-  {
-    key: "minimal",
-    label: "极简",
-    hint: "干净 · Geist · 无背景",
-    hue: 215,
-    background: "plain",
-    font: "geist",
-    fontSize: "normal",
-  },
-];
-
 const HUE_KEY = "hypervoid:hue";
 const BG_KEY = "hypervoid:bg";
 const FONT_KEY = "hypervoid:font";
 const FONT_SIZE_KEY = "hypervoid:font-size";
 const DISPLAY_MODE_KEY = "hypervoid:display";
+const SETTINGS_SCHEMA_KEY = "hypervoid:settings-schema";
+const SETTINGS_SCHEMA_VERSION = "2";
 
 type SettingsValue = {
   hue: number;
@@ -143,7 +61,6 @@ type SettingsValue = {
   setFont: (v: FontKey) => void;
   setFontSize: (v: FontSizeKey) => void;
   setDisplayMode: (v: DisplayMode) => void;
-  applyPreset: (preset: ThemePreset) => void;
   reset: () => void;
 };
 
@@ -158,7 +75,6 @@ const SettingsContext = createContext<SettingsValue>({
   setFont: () => {},
   setFontSize: () => {},
   setDisplayMode: () => {},
-  applyPreset: () => {},
   reset: () => {},
 });
 
@@ -206,28 +122,22 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   );
   useEffect(() => {
     try {
-      const storedHue = localStorage.getItem(HUE_KEY);
-      if (storedHue !== null) {
-        const n = Number(storedHue);
-        if (Number.isFinite(n)) {
-          setHueState(n);
-          applyHue(n);
-        }
+      const migrated = localStorage.getItem(SETTINGS_SCHEMA_KEY) === SETTINGS_SCHEMA_VERSION;
+      if (!migrated) {
+        localStorage.removeItem(HUE_KEY);
+        localStorage.removeItem(BG_KEY);
+        localStorage.removeItem(FONT_KEY);
+        localStorage.removeItem(DISPLAY_MODE_KEY);
+        localStorage.setItem(SETTINGS_SCHEMA_KEY, SETTINGS_SCHEMA_VERSION);
       }
-      const storedBg = localStorage.getItem(BG_KEY) as BackgroundKey | null;
-      if (storedBg && BACKGROUND_OPTIONS.some((o) => o.key === storedBg)) {
-        setBackgroundState(storedBg);
-        applyBackground(storedBg);
-      } else {
-        applyBackground(DEFAULT_BACKGROUND);
-      }
-      const storedFont = localStorage.getItem(FONT_KEY) as FontKey | null;
-      if (storedFont && FONT_OPTIONS.some((o) => o.key === storedFont)) {
-        setFontState(storedFont);
-        applyFont(storedFont);
-      } else {
-        applyFont(DEFAULT_FONT);
-      }
+
+      setHueState(DEFAULT_HUE);
+      setBackgroundState(DEFAULT_BACKGROUND);
+      setFontState(DEFAULT_FONT);
+      applyHue(DEFAULT_HUE);
+      applyBackground(DEFAULT_BACKGROUND);
+      applyFont(DEFAULT_FONT);
+
       const storedFontSize = localStorage.getItem(
         FONT_SIZE_KEY,
       ) as FontSizeKey | null;
@@ -253,7 +163,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         applyDisplayMode(DEFAULT_DISPLAY_MODE);
       }
     } catch {
-      // ignore
+      applyHue(DEFAULT_HUE);
+      applyBackground(DEFAULT_BACKGROUND);
+      applyFont(DEFAULT_FONT);
+      applyFontSize(DEFAULT_FONT_SIZE);
+      applyDisplayMode(DEFAULT_DISPLAY_MODE);
     }
   }, []);
 
@@ -321,16 +235,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const applyPreset = useCallback(
-    (preset: ThemePreset) => {
-      setHue(preset.hue);
-      setBackground(preset.background);
-      setFont(preset.font);
-      setFontSize(preset.fontSize);
-    },
-    [setHue, setBackground, setFont, setFontSize],
-  );
-
   const reset = useCallback(() => {
     setHue(DEFAULT_HUE);
     setBackground(DEFAULT_BACKGROUND);
@@ -361,7 +265,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         setFont,
         setFontSize,
         setDisplayMode,
-        applyPreset,
         reset,
       }}
     >

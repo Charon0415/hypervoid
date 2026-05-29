@@ -192,7 +192,7 @@ export function VoidEntryLogin({ emailEnabled, currentUser }: VoidEntryLoginProp
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       >
         <video
-          className="absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 object-cover object-center max-md:h-[100vw] max-md:w-[100dvh] max-md:rotate-90"
+          className="hypervoid-entry-video absolute object-cover object-center"
           autoPlay
           loop
           muted
@@ -350,10 +350,10 @@ export function VoidEntryLogin({ emailEnabled, currentUser }: VoidEntryLoginProp
                         <p className="mt-2 break-all text-sm leading-6 text-white/70">
                           当前身份 <span className="font-semibold text-white">{currentIdentity}</span>，会话已生效。
                         </p>
-                        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                        <div className="mt-5 grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
                           <Link
                             href="/posts"
-                            className="inline-flex min-h-11 items-center justify-center gap-2 border border-cyan-100/55 bg-cyan-50 px-4 text-sm font-black uppercase text-black transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/80"
+                            className="inline-flex min-h-11 min-w-0 items-center justify-center gap-2 whitespace-nowrap border border-cyan-100/55 bg-cyan-50 px-4 text-sm font-black uppercase text-black transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/80"
                           >
                             进入博客
                             <ArrowRight className="h-4 w-4" aria-hidden />
@@ -361,7 +361,7 @@ export function VoidEntryLogin({ emailEnabled, currentUser }: VoidEntryLoginProp
                           {currentUser.isAdmin ? (
                             <Link
                               href="/admin"
-                              className="inline-flex min-h-11 items-center justify-center gap-2 border border-white/20 bg-white/10 px-4 text-sm font-black uppercase text-white transition hover:border-cyan-100/60 hover:bg-cyan-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/70"
+                              className="inline-flex min-h-11 min-w-0 items-center justify-center gap-2 whitespace-nowrap border border-white/20 bg-white/10 px-4 text-sm font-black uppercase text-white transition hover:border-cyan-100/60 hover:bg-cyan-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/70"
                             >
                               进入后台
                             </Link>
