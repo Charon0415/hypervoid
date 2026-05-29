@@ -71,6 +71,13 @@
       "when": 1779971196029,
       "tag": "0009_flawless_silverclaw",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1779989685418,
+      "tag": "0010_majestic_mole_man",
+      "breakpoints": true
     }
   ]
 }
