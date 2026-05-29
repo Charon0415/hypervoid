@@ -1,4 +1,4 @@
-const CACHE = "hypervoid-v7";
+const CACHE = "hypervoid-v8";
 const STATIC = ["/offline"];
 
 self.addEventListener("install", (event) => {
@@ -31,6 +31,18 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
+  // Media files and range requests must go straight to the network. Browsers
+  // request video/audio with Range headers, and caching partial 206 responses
+  // can make the Service Worker fail the whole load.
+  if (
+    request.headers.has("range") ||
+    request.destination === "video" ||
+    request.destination === "audio" ||
+    url.pathname.match(/\.(?:mp4|webm|mov|m4v|mp3|m4a|ogg|wav|flac)$/i)
+  ) {
+    return;
+  }
+
   // Never intercept Next build assets. Stale SW responses for content-hashed
   // chunks are the fastest way to break CSS/JS after a rebuild or deploy.
   if (url.pathname.startsWith("/_next/")) return;
@@ -50,7 +62,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  event.respondWith(staleWhileRevalidate(request));
+  // Let the browser handle everything else. This avoids stale or invalid SW
+  // cache entries for large files and framework-generated assets.
 });
 
 async function networkFirst(request) {
@@ -82,16 +95,4 @@ async function cacheFirst(request) {
   const fresh = await fetch(request);
   if (fresh.ok) cache.put(request, fresh.clone());
   return fresh;
-}
-
-async function staleWhileRevalidate(request) {
-  const cache = await caches.open(CACHE);
-  const hit = await cache.match(request);
-  const fetchAndCache = fetch(request)
-    .then((res) => {
-      if (res.ok) cache.put(request, res.clone());
-      return res;
-    })
-    .catch(() => hit);
-  return hit || fetchAndCache;
 }

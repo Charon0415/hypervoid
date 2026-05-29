@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-const SW_VERSION = "7";
+const SW_VERSION = "8";
 
 function isLocalDevHost() {
   return ["localhost", "127.0.0.1", "0.0.0.0"].includes(window.location.hostname);

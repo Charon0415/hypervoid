@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   AnimatePresence,
   motion,
@@ -16,19 +17,29 @@ import {
   CheckCircle2,
   CircleDot,
   Loader2,
+  LogOut,
   Mail,
   Orbit,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
 import { type FormEvent, type PointerEvent, useEffect, useId, useState } from "react";
-import { signIn } from "@/auth.client";
+import { signIn, signOut } from "@/auth.client";
 
 type EntryState = "explore" | "login";
-type AuthLoading = "github" | "email" | null;
+type AuthLoading = "github" | "email" | "signout" | null;
+
+type CurrentUser = {
+  name: string | null;
+  email: string | null;
+  image: string | null;
+  login: string | null;
+  isAdmin: boolean;
+};
 
 type VoidEntryLoginProps = {
   emailEnabled: boolean;
+  currentUser: CurrentUser | null;
 };
 
 const statusRows = [
@@ -54,7 +65,7 @@ function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-export function VoidEntryLogin({ emailEnabled }: VoidEntryLoginProps) {
+export function VoidEntryLogin({ emailEnabled, currentUser }: VoidEntryLoginProps) {
   const [entryState, setEntryState] = useState<EntryState>("explore");
   const [parallaxEnabled, setParallaxEnabled] = useState(false);
   const [loading, setLoading] = useState<AuthLoading>(null);
@@ -100,6 +111,21 @@ export function VoidEntryLogin({ emailEnabled }: VoidEntryLoginProps) {
   function resetPointer() {
     pointerX.set(0);
     pointerY.set(0);
+  }
+
+  const currentIdentity = currentUser?.login
+    ? "@" + currentUser.login
+    : currentUser?.name || currentUser?.email || "已登录用户";
+
+  async function handleSignOut() {
+    setAuthError(null);
+    setLoading("signout");
+    try {
+      await signOut({ redirectTo: "/" });
+    } catch {
+      setAuthError("退出登录失败，请刷新后重试。");
+      setLoading(null);
+    }
   }
 
   async function handleGitHub() {
@@ -238,14 +264,14 @@ export function VoidEntryLogin({ emailEnabled }: VoidEntryLoginProps) {
             >
               <div className="hypervoid-glow-pulse mb-7 inline-flex items-center gap-3 border border-cyan-100/25 bg-white/[0.045] px-4 py-2 font-mono text-[11px] uppercase text-cyan-50/85 shadow-[0_0_28px_rgba(34,211,238,0.12)] backdrop-blur-md">
                 <CircleDot className="h-3.5 w-3.5 text-cyan-200" aria-hidden />
-                HV-001 / VOID ACCESS
+                {currentUser ? "SIGNED IN / " + currentIdentity : "HV-001 / VOID ACCESS"}
               </div>
 
               <h1 className="hypervoid-glow-pulse max-w-full text-[clamp(3.1rem,14vw,10rem)] font-black uppercase leading-[0.82] text-white drop-shadow-[0_0_46px_rgba(125,211,252,0.36)]">
                 Hypervoid
               </h1>
               <p className="mt-7 max-w-[34rem] font-mono text-xs uppercase leading-6 text-cyan-50/72 sm:text-sm">
-                GitHub primary access online. Email magic link remains on standby.
+                {currentUser ? "Identity confirmed. Session channel is active." : "GitHub primary access online. Email magic link remains on standby."}
               </p>
 
               <button
@@ -305,7 +331,55 @@ export function VoidEntryLogin({ emailEnabled }: VoidEntryLoginProps) {
                   ) : null}
                 </div>
 
-                {emailSent ? (
+                {currentUser ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="border border-cyan-100/35 bg-cyan-50/10 p-5"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div
+                        className="grid h-12 w-12 shrink-0 place-items-center border border-cyan-100/50 bg-black/35 bg-cover bg-center text-sm font-black text-cyan-100"
+                        style={currentUser.image ? { backgroundImage: "url(" + currentUser.image + ")" } : undefined}
+                        aria-hidden
+                      >
+                        {currentUser.image ? null : currentIdentity.slice(0, 1).toUpperCase()}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-mono text-xs uppercase text-cyan-50">GitHub 已连接</p>
+                        <p className="mt-2 break-all text-sm leading-6 text-white/70">
+                          当前身份 <span className="font-semibold text-white">{currentIdentity}</span>，会话已生效。
+                        </p>
+                        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                          <Link
+                            href="/posts"
+                            className="inline-flex min-h-11 items-center justify-center gap-2 border border-cyan-100/55 bg-cyan-50 px-4 text-sm font-black uppercase text-black transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/80"
+                          >
+                            进入博客
+                            <ArrowRight className="h-4 w-4" aria-hidden />
+                          </Link>
+                          {currentUser.isAdmin ? (
+                            <Link
+                              href="/admin"
+                              className="inline-flex min-h-11 items-center justify-center gap-2 border border-white/20 bg-white/10 px-4 text-sm font-black uppercase text-white transition hover:border-cyan-100/60 hover:bg-cyan-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/70"
+                            >
+                              进入后台
+                            </Link>
+                          ) : null}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleSignOut}
+                          disabled={loading !== null}
+                          className="mt-4 inline-flex min-h-10 cursor-pointer items-center gap-2 px-0 text-sm font-bold uppercase text-cyan-100 underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/60 disabled:cursor-not-allowed disabled:opacity-55"
+                        >
+                          {loading === "signout" ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <LogOut className="h-4 w-4" aria-hidden />}
+                          退出登录
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                ) : emailSent ? (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -441,7 +515,7 @@ export function VoidEntryLogin({ emailEnabled }: VoidEntryLoginProps) {
                       <span className="text-cyan-50/60">{label}</span>
                       <span className="inline-flex items-center gap-2 text-cyan-50">
                         <BadgeCheck className="h-3.5 w-3.5 text-cyan-200" aria-hidden />
-                        {label === "邮箱中继" ? (emailEnabled ? value : "未启用") : value}
+                        {label === "GitHub" && currentUser ? "已连接" : label === "邮箱中继" ? (emailEnabled ? value : "未启用") : value}
                       </span>
                     </div>
                   ))}
