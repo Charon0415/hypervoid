@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 
 /**
  * Non-critical floating UI is deferred so it doesn't ship in the initial
@@ -59,16 +60,21 @@ const SparkleEffect = dynamic(
   { ssr: false },
 );
 
+/** Routes where floating UI (mascot, back-to-top, etc.) should be hidden. */
+const HIDE_FLOATING_UI = ["/sign-in"];
 
 export function DeferredClientUI() {
+  const pathname = usePathname();
+  const hideFloating = HIDE_FLOATING_UI.some((p) => pathname.startsWith(p));
+
   return (
     <>
-      <BackToTop />
+      {!hideFloating && <BackToTop />}
       <ServiceWorkerRegister />
       <KeyboardShortcuts />
-      <MascotRouter />
+      {!hideFloating && <MascotRouter />}
       <PwaInstallController />
-      <BottomTabBar />
+      {!hideFloating && <BottomTabBar />}
       <ClickEffect />
       <SparkleEffect />
     </>
