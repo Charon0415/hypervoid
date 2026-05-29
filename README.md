@@ -59,9 +59,11 @@ Articles live in **Postgres**, images in **Vercel Blob**, comments in **GitHub D
 - **Music page powered by APlayer** — `/music` uses APlayer UI and a unified backend source switcher: deployed NCM route, LX JSON API, or local JSON tracks
 - **Steam game library** — `/games`, recent-2-weeks + total playtime + search + sort
 - **Cosmic-themed 404** with random article recommendation
+- **Sign-in reveal page** — fullscreen video background with parallax scroll · glassmorphism login card · gradient overlays
+- **Configurable login policy** — admin chooses: free browsing (default) · full-site login gate · private-space-only gate · optional homepage login redirect
 - **Back-to-top** floating button + page fade-in transition
 - **Sidebar widgets**: profile card · mini calendar · 365-day heatmap · popular posts · tag cloud · recent guestbook · site stats · email subscribe
-- **Custom pages**: `/projects` · `/skills` · `/timeline` · `/albums` · `/diary` · `/friends` · `/guestbook` · `/archive` · `/series`
+- **Custom pages**: `/projects` · `/skills` · `/timeline` · `/albums` · `/diary` · `/friends` · `/guestbook` · `/archive` · `/series` · `/private`
 - **Bilingual UI** (zh-CN / en) via custom React Context
 - **Mobile-first** responsive layout + hamburger drawer
 
@@ -121,6 +123,8 @@ Articles live in **Postgres**, images in **Vercel Blob**, comments in **GitHub D
 /bookmarks     本地收藏夹 (localStorage)
 /reading-list  阅读队列 (localStorage)
 /donate        赞赏页 (默认隐藏，受 siteConfig.donate.enabled 控制)
+/sign-in       登录揭幕页 (视频背景 + 玻璃拟态登录卡)
+/private       私密空间 (需登录，受 login policy 控制)
 /admin         后台 dashboard (GitHub OAuth)
 /admin/ai      AI provider 切换 · 每日 token 限额 · 自定义模型
 /admin/music   APlayer 音乐设置 · 已部署/LX/本地三类音源
@@ -204,7 +208,9 @@ For day-to-day operation — how to write a post, customize the theme, manage DN
 - [x] **v1.6** — DeepSeek provider · daily AI token quota · custom AI endpoints · Kanna chat with blog corpus + link suggestions
 - [x] **v1.7** — ISR posts · meta-only list queries · Postgres rate limit · `<Image>` proxy · CSP eval drop · hot-path indexes
 - [x] **v1.8** — grouped admin dashboard · APlayer music page · deployed/LX/local music source switcher
-- [ ] **v1.x** — article-level i18n · Resend custom domain · ACG wallpapers activation · donate QR codes · pixi v8 + drizzle 0.50 upgrades
+- [x] **v2.0** — topic series · bento grid · adaptive post grid · tag cloud · private space · theme validation
+- [x] **v2.1** — sign-in reveal page (video background) · 3-option login policy · homepage login redirect · auth tables
+- [ ] **v2.x** — article-level i18n · Resend custom domain · ACG wallpapers activation · donate QR codes · pixi v8 + drizzle 0.50 upgrades
 
 ## ✦ License
 
