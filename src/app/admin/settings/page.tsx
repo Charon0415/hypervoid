@@ -6,7 +6,7 @@ import { getAllOverrides } from "@/lib/site-config-server";
 import { getSiteSetting } from "@/db/site-settings";
 import {
   saveSiteSettingsAction,
-  toggleSiteLoginRequiredAction,
+  setLoginPolicyAction,
 } from "@/app/admin/settings/actions";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default async function AdminSettingsPage() {
   if (!session?.user) redirect("/admin/sign-in");
 
   const allFields = await getAllOverrides();
-  const loginRequired = (await getSiteSetting("site_login_required")) === "true";
+  const loginPolicy = (await getSiteSetting("site_login_required")) || "optional";
   // These keys have dedicated admin pages and are filtered out from the
   // generic settings form so they don't appear twice.
   const dedicated = new Set([
@@ -94,35 +94,64 @@ export default async function AdminSettingsPage() {
 
       <hr className="border-border" />
 
-      {/* Site-wide login toggle */}
+      {/* Login policy */}
       <section className="flex flex-col gap-4">
         <h2 className="text-lg font-semibold">访问控制</h2>
-        <div className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
-          <div>
-            <p className="text-sm font-medium">全站登录</p>
-            <p className="mt-0.5 text-xs text-muted">
-              开启后，未登录用户访问任何页面都会跳转到登录页
-            </p>
-          </div>
-          <form action={toggleSiteLoginRequiredAction}>
-            <button
-              type="submit"
-              aria-pressed={loginRequired}
-              aria-label={loginRequired ? "关闭全站登录" : "开启全站登录"}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
-                loginRequired ? "bg-primary" : "bg-border"
+        <form action={setLoginPolicyAction} className="flex flex-col gap-3">
+          {[
+            {
+              value: "optional",
+              label: "自由访问",
+              desc: "登录页可选，所有访客可自由浏览博客内容",
+            },
+            {
+              value: "required",
+              label: "全站登录",
+              desc: "未登录用户访问任何页面都会跳转到登录页",
+            },
+            {
+              value: "private_only",
+              label: "仅私密空间",
+              desc: "博客公开可浏览，但访问 /private 路径时需要登录",
+            },
+          ].map((opt) => (
+            <label
+              key={opt.value}
+              className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors ${
+                loginPolicy === opt.value
+                  ? "border-primary bg-primary/5"
+                  : "border-border bg-card hover:border-primary/40"
               }`}
             >
-              <span
-                className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${
-                  loginRequired ? "translate-x-6" : "translate-x-1"
-                }`}
+              <input
+                type="radio"
+                name="login_policy"
+                value={opt.value}
+                defaultChecked={loginPolicy === opt.value}
+                className="mt-0.5 accent-primary"
               />
+              <div>
+                <p className="text-sm font-medium">{opt.label}</p>
+                <p className="mt-0.5 text-xs text-muted">{opt.desc}</p>
+              </div>
+            </label>
+          ))}
+          <div>
+            <button
+              type="submit"
+              className="rounded-md bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+            >
+              保存策略
             </button>
-          </form>
-        </div>
+          </div>
+        </form>
         <p className="text-xs text-muted">
-          当前状态：{loginRequired ? "已开启 — 未登录用户会被拦截" : "已关闭 — 所有人可自由访问"}
+          当前策略：
+          {loginPolicy === "required"
+            ? "全站登录 — 未登录用户会被拦截"
+            : loginPolicy === "private_only"
+              ? "仅私密空间 — /private 路径需要登录"
+              : "自由访问 — 所有人可自由浏览"}
         </p>
       </section>
 

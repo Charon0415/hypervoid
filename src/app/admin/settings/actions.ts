@@ -28,10 +28,11 @@ export async function saveSiteSettingsAction(formData: FormData) {
   revalidatePath("/admin/settings");
 }
 
-export async function toggleSiteLoginRequiredAction() {
+export async function setLoginPolicyAction(formData: FormData) {
   await requireAdmin();
 
-  const enabled = (await getSiteSetting("site_login_required")) === "true";
-  await setSiteSetting("site_login_required", enabled ? "false" : "true");
+  const policy = String(formData.get("login_policy") ?? "optional");
+  const valid = ["optional", "required", "private_only"];
+  await setSiteSetting("site_login_required", valid.includes(policy) ? policy : "optional");
   revalidatePath("/admin/settings");
 }

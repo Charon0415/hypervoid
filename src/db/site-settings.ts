@@ -21,7 +21,17 @@ export async function setSiteSetting(key: string, value: string): Promise<void> 
     });
 }
 
-export async function isSiteLoginRequired(): Promise<boolean> {
+/**
+ * Returns the login policy: "optional" (default), "required", or "private_only".
+ */
+export async function getLoginPolicy(): Promise<"optional" | "required" | "private_only"> {
   const val = await getSiteSetting("site_login_required");
-  return val === "true";
+  if (val === "required" || val === "private_only") return val;
+  return "optional";
+}
+
+/** @deprecated Use getLoginPolicy() instead */
+export async function isSiteLoginRequired(): Promise<boolean> {
+  const policy = await getLoginPolicy();
+  return policy === "required";
 }
