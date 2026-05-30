@@ -11,12 +11,12 @@ export function FriendApplyForm() {
 
   if (!open) {
     return (
-      <p className="rounded-xl border border-dashed border-border p-5 text-center text-sm text-muted">
+      <p className="hv-panel border-dashed p-5 text-center text-sm text-cyan-50/68">
         想交换友链？
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="ml-1 text-primary underline underline-offset-2 hover:opacity-80"
+          className="ml-1 text-cyan-100 underline underline-offset-2 hover:text-cyan-50 transition"
         >
           点此申请
         </button>
@@ -53,10 +53,10 @@ export function FriendApplyForm() {
   };
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5">
-      <h3 className="font-semibold">申请友链</h3>
+    <div className="hv-panel p-5">
+      <h3 className="font-mono text-sm font-semibold uppercase tracking-wide text-cyan-100">申请友链</h3>
       {done ? (
-        <p className="mt-2 rounded-lg bg-green-50 p-3 text-sm text-green-700 dark:bg-green-950 dark:text-green-300">
+        <p className="mt-2 rounded-lg border border-green-400/30 bg-green-400/10 p-3 text-sm text-green-300">
           {done}
         </p>
       ) : (
@@ -68,46 +68,50 @@ export function FriendApplyForm() {
 
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="flex flex-col gap-1">
-              <span className="text-sm font-medium">名称 *</span>
+              <span className="text-sm font-medium text-cyan-50/78">名称 *</span>
               <input
                 name="name"
                 required
                 maxLength={30}
-                className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                className="hv-input px-3 py-2 text-sm"
                 placeholder="博客名称"
+                style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%)' }}
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-sm font-medium">网址 *</span>
+              <span className="text-sm font-medium text-cyan-50/78">网址 *</span>
               <input
                 name="url"
                 type="url"
                 required
-                className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                className="hv-input px-3 py-2 text-sm"
                 placeholder="https://"
+                style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%)' }}
               />
             </label>
           </div>
           <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium">简介</span>
+            <span className="text-sm font-medium text-cyan-50/78">简介</span>
             <input
               name="description"
               maxLength={120}
-              className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+              className="hv-input px-3 py-2 text-sm"
               placeholder="简短介绍你的博客（可选）"
+              style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%)' }}
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium">邮箱</span>
+            <span className="text-sm font-medium text-cyan-50/78">邮箱</span>
             <input
               name="email"
               type="email"
-              className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+              className="hv-input px-3 py-2 text-sm"
               placeholder="审核通过后通知你（可选）"
+              style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%)' }}
             />
           </label>
           {error && (
-            <p className="rounded-lg bg-red-50 p-2 text-sm text-red-600 dark:bg-red-950 dark:text-red-300">
+            <p className="rounded-lg border border-red-400/30 bg-red-400/10 p-2 text-sm text-red-300">
               {error}
             </p>
           )}
@@ -115,14 +119,15 @@ export function FriendApplyForm() {
             <button
               type="submit"
               disabled={sending}
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
+              className="hv-action px-4 py-2 text-sm font-medium disabled:opacity-50"
+              style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%)' }}
             >
               {sending ? "提交中..." : "提交申请"}
             </button>
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="rounded-md px-4 py-2 text-sm text-muted hover:text-foreground"
+              className="px-4 py-2 text-sm text-cyan-50/58 hover:text-cyan-100 transition"
             >
               取消
             </button>

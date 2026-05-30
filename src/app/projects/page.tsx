@@ -15,9 +15,15 @@ const SAMPLE = [
 export default function ProjectsPage() {
   return (
     <div className="flex flex-col gap-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight">项目</h1>
-        <p className="mt-2 text-muted">
+      <header className="hv-panel relative overflow-hidden p-5 sm:p-7">
+        <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent" />
+        <div aria-hidden className="absolute left-0 top-0 h-8 w-8 border-l border-t border-cyan-400/40" />
+        <div aria-hidden className="absolute right-0 top-0 h-2 w-2 rounded-full bg-cyan-400/60 animate-pulse" />
+        <p className="hv-kicker">Projects / Code_Repository</p>
+        <h1 className="hv-title mt-2 text-3xl font-black uppercase tracking-tight sm:text-4xl">
+          项目
+        </h1>
+        <p className="mt-3 text-sm text-cyan-50/68">
           公开发布的开源项目、个人作品与正在进行中的实验。
         </p>
       </header>
@@ -28,17 +34,17 @@ export default function ProjectsPage() {
             href={project.link}
             target="_blank"
             rel="noreferrer noopener"
-            className="group flex flex-col gap-2 rounded-xl border border-border bg-card p-5 transition hover:border-primary hover:shadow-md"
+            className="group hv-card flex flex-col gap-2 p-5 transition-all duration-300"
           >
-            <h3 className="text-lg font-semibold group-hover:text-primary">
+            <h3 className="text-lg font-semibold text-cyan-50 group-hover:text-cyan-100 transition">
               {project.name}
             </h3>
-            <p className="text-sm text-muted">{project.description}</p>
+            <p className="text-sm text-cyan-50/68">{project.description}</p>
             <div className="mt-1 flex flex-wrap gap-1.5">
               {project.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"
+                  className="hv-chip-sci text-[11px]"
                 >
                   {tag}
                 </span>

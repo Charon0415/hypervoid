@@ -30,17 +30,19 @@ export function GuestbookForm() {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="留下一句话…"
-        className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm transition focus:border-primary focus:outline-none"
+        className="hv-input w-full px-3 py-2 text-sm"
+        style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%)' }}
       />
       {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-red-400">{error}</p>
       ) : null}
-      <div className="flex items-center justify-between text-xs text-muted">
-        <span>{message.length} / 1000</span>
+      <div className="flex items-center justify-between text-xs">
+        <span className="font-mono text-cyan-50/58">{message.length} / 1000</span>
         <button
           type="submit"
           disabled={pending || !message.trim()}
-          className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
+          className="hv-action px-4 py-1.5 text-sm font-medium disabled:opacity-50"
+          style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%)' }}
         >
           {pending ? "发送中…" : "发送"}
         </button>

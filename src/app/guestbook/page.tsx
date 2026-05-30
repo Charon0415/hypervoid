@@ -29,25 +29,31 @@ export default async function GuestbookPage() {
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight">留言板</h1>
-        <p className="mt-2 text-sm text-muted">
+      <header className="hv-panel relative overflow-hidden p-5 sm:p-7">
+        <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent" />
+        <div aria-hidden className="absolute left-0 top-0 h-8 w-8 border-l border-t border-cyan-400/40" />
+        <div aria-hidden className="absolute right-0 top-0 h-2 w-2 rounded-full bg-cyan-400/60 animate-pulse" />
+        <p className="hv-kicker">Message_Board / Public_Channel</p>
+        <h1 className="hv-title mt-2 text-3xl font-black uppercase tracking-tight sm:text-4xl">
+          留言板
+        </h1>
+        <p className="mt-3 text-sm text-cyan-50/68">
           欢迎随便留言。用 GitHub 登录后发布，留言会同时显示你的头像和昵称。
         </p>
       </header>
 
-      <section className="rounded-xl border border-border bg-card p-5">
+      <section className="hv-panel p-5">
         {session?.user ? (
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between gap-3 text-sm">
-              <span>
+              <span className="text-cyan-50/78">
                 已登录：
-                <span className="font-medium">@{currentLogin ?? "?"}</span>
+                <span className="font-mono font-medium text-cyan-100">@{currentLogin ?? "?"}</span>
               </span>
               <form action={signOutFromGuestbook}>
                 <button
                   type="submit"
-                  className="text-xs text-muted hover:text-foreground"
+                  className="text-xs text-cyan-50/58 hover:text-cyan-100 transition"
                 >
                   退出
                 </button>
@@ -60,10 +66,11 @@ export default async function GuestbookPage() {
             action={signInForGuestbook}
             className="flex flex-col items-start gap-3"
           >
-            <p className="text-sm text-muted">登录后即可留言。</p>
+            <p className="text-sm text-cyan-50/68">登录后即可留言。</p>
             <button
               type="submit"
-              className="dark-locked inline-flex items-center gap-2 rounded-md bg-[#24292f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#1f2329]"
+              className="dark-locked inline-flex items-center gap-2 border border-cyan-100/20 bg-[#24292f] px-4 py-2 text-sm font-medium text-white transition hover:border-cyan-100/40 hover:bg-[#1f2329] clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)]"
+              style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%)' }}
             >
               <svg
                 aria-hidden="true"
@@ -84,11 +91,11 @@ export default async function GuestbookPage() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-sm font-medium text-muted">
-          {messages.length} 条留言
-        </h2>
+        <div className="flex items-center gap-2">
+          <span className="hv-chip">{messages.length} messages</span>
+        </div>
         {messages.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
+          <p className="hv-panel border-dashed p-8 text-center text-cyan-50/60">
             还没有留言。第一个留言的是你？
           </p>
         ) : (
@@ -96,7 +103,7 @@ export default async function GuestbookPage() {
             {messages.map((m) => (
               <li
                 key={m.id}
-                className="rounded-xl border border-border bg-card p-4"
+                className="hv-card p-4 transition-all duration-300"
               >
                 <div className="flex items-start gap-3">
                   {m.avatarUrl ? (
@@ -107,10 +114,10 @@ export default async function GuestbookPage() {
                       height={80}
                       sizes="40px"
                       loading="lazy"
-                      className="h-10 w-10 shrink-0 rounded-full object-cover"
+                      className="h-10 w-10 shrink-0 rounded-full border border-cyan-100/20 object-cover"
                     />
                   ) : (
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 font-medium text-primary">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-cyan-100/30 bg-cyan-400/10 font-medium text-cyan-100">
                       {(m.githubName || m.githubLogin).slice(0, 1).toUpperCase()}
                     </div>
                   )}
@@ -120,19 +127,19 @@ export default async function GuestbookPage() {
                         href={`https://github.com/${m.githubLogin}`}
                         target="_blank"
                         rel="noreferrer noopener"
-                        className="text-sm font-medium hover:text-primary"
+                        className="text-sm font-medium text-cyan-50 hover:text-cyan-100 transition"
                       >
                         {m.githubName || m.githubLogin}
-                        <span className="ml-1 font-normal text-muted">
+                        <span className="ml-1 font-mono text-xs font-normal text-cyan-50/58">
                           @{m.githubLogin}
                         </span>
                       </a>
-                      <time className="shrink-0 text-xs text-muted">
+                      <time className="shrink-0 font-mono text-xs text-cyan-50/48">
                         {formatDate(m.createdAt)}
                       </time>
                     </div>
                     <p
-                      className="mt-2 whitespace-pre-wrap break-words text-sm"
+                      className="mt-2 whitespace-pre-wrap break-words text-sm text-cyan-50/78"
                       dangerouslySetInnerHTML={{
                         __html: renderMentionsHtml(
                           m.message.replace(/\r\n/g, "\n").replace(/\r/g, "\n"),

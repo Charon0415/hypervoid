@@ -12,12 +12,20 @@ export default async function FriendsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight">友链</h1>
-        <p className="mt-2 text-muted">朋友们的博客与个人站点。</p>
+      <header className="hv-panel relative overflow-hidden p-5 sm:p-7">
+        <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent" />
+        <div aria-hidden className="absolute left-0 top-0 h-8 w-8 border-l border-t border-cyan-400/40" />
+        <div aria-hidden className="absolute right-0 top-0 h-2 w-2 rounded-full bg-cyan-400/60 animate-pulse" />
+        <p className="hv-kicker">Friend_Links / Network_Nodes</p>
+        <h1 className="hv-title mt-2 text-3xl font-black uppercase tracking-tight sm:text-4xl">
+          友链
+        </h1>
+        <p className="mt-3 text-sm text-cyan-50/68">
+          朋友们的博客与个人站点。
+        </p>
       </header>
       {friends.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
+        <p className="hv-panel border-dashed p-8 text-center text-cyan-50/60">
           暂无友链。
         </p>
       ) : (
@@ -28,7 +36,7 @@ export default async function FriendsPage() {
               href={f.url}
               target="_blank"
               rel="noreferrer noopener"
-              className="group flex gap-3 rounded-xl border border-border bg-card p-5 transition hover:border-primary hover:shadow-md"
+              className="group hv-card flex gap-3 p-5 transition-all duration-300"
             >
               {f.avatar ? (
                 <Image
@@ -39,21 +47,21 @@ export default async function FriendsPage() {
                   sizes="56px"
                   loading="lazy"
                   unoptimized
-                  className="h-14 w-14 shrink-0 rounded-full object-cover"
+                  className="h-14 w-14 shrink-0 rounded-full border border-cyan-100/20 object-cover"
                 />
               ) : (
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary/10 text-lg font-medium text-primary">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-cyan-100/30 bg-cyan-400/10 text-lg font-medium text-cyan-100">
                   {f.name.slice(0, 1).toUpperCase()}
                 </div>
               )}
               <div className="min-w-0 flex-1">
-                <p className="truncate text-base font-semibold group-hover:text-primary">
+                <p className="truncate text-base font-semibold text-cyan-50 group-hover:text-cyan-100 transition">
                   {f.name}
                 </p>
                 {f.description ? (
-                  <p className="mt-0.5 text-sm text-muted">{f.description}</p>
+                  <p className="mt-0.5 text-sm text-cyan-50/68">{f.description}</p>
                 ) : null}
-                <p className="mt-1 truncate text-xs text-muted">{f.url}</p>
+                <p className="mt-1 truncate font-mono text-xs text-cyan-50/48">{f.url}</p>
               </div>
             </a>
           ))}
