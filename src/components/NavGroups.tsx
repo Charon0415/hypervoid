@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { gsap } from "gsap";
 import { Archive, BookOpenText, Box, CalendarDays, Clapperboard, Code2, Gamepad2, GitBranch, GraduationCap, Handshake, ImageIcon, MessageSquareText, Music2, Network, Pin, Sparkles, Tags, UserRound, Wrench } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -25,6 +26,11 @@ export function NavGroups() {
   const [openKey, setOpenKey] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const activeMarkerRef = useRef<HTMLSpanElement | null>(null);
+  const pillRefs = useRef<Array<HTMLElement | null>>([]);
+  const labelRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const hoverLabelRefs = useRef<Array<HTMLSpanElement | null>>([]);
 
   const directLinks: DirectLink[] = [
     { href: "/posts", label: t.nav.posts },
@@ -146,27 +152,109 @@ export function NavGroups() {
     return g.items.some((it) => isHrefActive(it.href));
   }
 
+  const directActiveIndex = directLinks.findIndex((link) => isHrefActive(link.href));
+  const groupActiveIndex = groups.findIndex((g) => openKey === g.key || isGroupActive(g));
+  const activeIndex = directActiveIndex >= 0
+    ? directActiveIndex
+    : groupActiveIndex >= 0
+      ? directLinks.length + groupActiveIndex
+      : -1;
+
+  useEffect(() => {
+    if (!trackRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        pillRefs.current.filter(Boolean),
+        { y: -8, opacity: 0, scale: 0.96 },
+        { y: 0, opacity: 1, scale: 1, duration: 0.46, stagger: 0.035, ease: "power3.out" },
+      );
+    }, trackRef);
+    return () => ctx.revert();
+  }, []);
+
+  useEffect(() => {
+    const marker = activeMarkerRef.current;
+    const track = trackRef.current;
+    const activeEl = activeIndex >= 0 ? pillRefs.current[activeIndex] : null;
+    if (!marker || !track || !activeEl) {
+      if (marker) gsap.to(marker, { opacity: 0, duration: 0.16, ease: "power2.out" });
+      return;
+    }
+
+    const trackRect = track.getBoundingClientRect();
+    const activeRect = activeEl.getBoundingClientRect();
+    gsap.to(marker, {
+      x: activeRect.left - trackRect.left,
+      y: activeRect.top - trackRect.top,
+      width: activeRect.width,
+      height: activeRect.height,
+      opacity: 1,
+      duration: 0.38,
+      ease: "power3.out",
+    });
+  }, [activeIndex]);
+
+  function setPillRef(index: number) {
+    return (node: HTMLElement | null) => {
+      pillRefs.current[index] = node;
+    };
+  }
+
+  function setLabelRef(index: number) {
+    return (node: HTMLSpanElement | null) => {
+      labelRefs.current[index] = node;
+    };
+  }
+
+  function setHoverLabelRef(index: number) {
+    return (node: HTMLSpanElement | null) => {
+      hoverLabelRefs.current[index] = node;
+    };
+  }
+
+  function animatePillLabel(index: number, hovered: boolean) {
+    const label = labelRefs.current[index];
+    const hoverLabel = hoverLabelRefs.current[index];
+    if (!label || !hoverLabel) return;
+
+    gsap.to(label, { y: hovered ? "-1.35em" : "0em", opacity: hovered ? 0 : 1, duration: 0.24, ease: "power3.out" });
+    gsap.to(hoverLabel, { y: hovered ? "0em" : "1.35em", opacity: hovered ? 1 : 0, duration: 0.24, ease: "power3.out" });
+  }
+
+  function pillLabel(label: string, index: number) {
+    return (
+      <span className="hv-pill-label-wrap" aria-hidden="true">
+        <span ref={setLabelRef(index)} className="hv-pill-label">{label}</span>
+        <span ref={setHoverLabelRef(index)} className="hv-pill-label hv-pill-label-hover">{label}</span>
+      </span>
+    );
+  }
+
   return (
     <div
       ref={containerRef}
-      className="hidden md:flex md:items-center"
+      className="hidden xl:flex xl:items-center"
       onMouseLeave={scheduleClose}
     >
-      <div className="flex flex-nowrap items-center gap-1 overflow-visible border border-cyan-100/12 bg-slate-950/58 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_0_34px_rgba(34,211,238,0.08)] backdrop-blur-2xl">
-        {directLinks.map((link) => {
+      <div ref={trackRef} className="hv-pill-nav-track">
+        <span ref={activeMarkerRef} aria-hidden className="hv-pill-active-marker" />
+        {directLinks.map((link, index) => {
           const active = isHrefActive(link.href);
           return (
             <Link
               key={link.href}
               href={link.href}
-              onMouseEnter={closeNow}
-              className={`shrink-0 px-3.5 py-1.5 text-sm font-medium tracking-tight transition ${
-                active
-                  ? "border border-cyan-100/30 bg-cyan-50/12 text-cyan-100 shadow-[0_0_18px_rgba(34,211,238,0.10)]"
-                  : "border border-transparent text-cyan-50/62 hover:border-cyan-100/18 hover:bg-cyan-50/8 hover:text-white"
-              }`}
+              ref={setPillRef(index)}
+              onMouseEnter={() => {
+                closeNow();
+                animatePillLabel(index, true);
+              }}
+              onMouseLeave={() => animatePillLabel(index, false)}
+              className={`hv-pill-nav-pill ${active ? "is-active" : ""}`}
+              aria-current={active ? "page" : undefined}
             >
-              {link.label}
+              <span className="sr-only">{link.label}</span>
+              {pillLabel(link.label, index)}
             </Link>
           );
         })}
@@ -179,6 +267,7 @@ export function NavGroups() {
         {groups.map((g) => {
           const isOpen = openKey === g.key;
           const isActive = isGroupActive(g);
+          const pillIndex = directLinks.length + groups.findIndex((group) => group.key === g.key);
           return (
             <div
               key={g.key}
@@ -191,16 +280,16 @@ export function NavGroups() {
                 aria-expanded={isOpen}
                 onClick={() => (isOpen ? closeNow() : openGroup(g.key))}
                 onFocus={() => openGroup(g.key)}
-                className={`relative inline-flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium tracking-tight transition ${
-                  isOpen || isActive
-                    ? "border border-cyan-100/30 bg-cyan-50/12 text-cyan-100 shadow-[0_0_18px_rgba(34,211,238,0.10)]"
-                    : "border border-transparent text-cyan-50/62 hover:border-cyan-100/18 hover:bg-cyan-50/8 hover:text-white"
-                }`}
+                onMouseEnter={() => animatePillLabel(pillIndex, true)}
+                onMouseLeave={() => animatePillLabel(pillIndex, false)}
+                ref={setPillRef(pillIndex)}
+                className={`hv-pill-nav-pill hv-pill-nav-button ${isOpen || isActive ? "is-active" : ""}`}
               >
-                {g.label}
+                <span className="sr-only">{g.label}</span>
+                {pillLabel(g.label, pillIndex)}
                 <svg
                   aria-hidden
-                  className={`h-3 w-3 transition ${isOpen ? "rotate-180" : ""}`}
+                  className={`relative z-[3] h-3 w-3 transition ${isOpen ? "rotate-180" : ""}`}
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -217,11 +306,11 @@ export function NavGroups() {
                   role="menu"
                   className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-2"
                 >
-                  <div className="border border-cyan-100/16 bg-slate-950/88 p-1.5 shadow-[0_24px_80px_rgba(0,0,0,0.45),0_0_34px_rgba(34,211,238,0.10)] backdrop-blur-2xl">
+                  <div className="hv-pill-menu-panel">
                     {g.items.map((item) => {
                       const itemActive = !item.external && isHrefActive(item.href);
                       const ItemIcon = item.icon;
-                      const className = `flex items-center gap-2.5 border border-transparent px-3 py-2 text-sm transition ${
+                      const className = `hv-pill-menu-link ${
                         itemActive
                           ? "border-cyan-100/24 bg-cyan-50/12 text-cyan-100"
                           : "text-cyan-50/72 hover:border-cyan-100/18 hover:bg-cyan-50/8 hover:text-white"

@@ -63,15 +63,9 @@ export default async function Home() {
     .slice(0, 10);
 
   return (
-    <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-10">
-      <div className="flex flex-col gap-10 lg:order-1">
-        <section className="group relative overflow-hidden border border-cyan-100/16 bg-gradient-to-br from-cyan-950/40 via-slate-950/60 to-slate-950/80 p-6 sm:p-10 md:p-12" style={{ clipPath: 'polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px))' }}>
-          {/* Corner accents */}
-          <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-px w-24 bg-gradient-to-r from-cyan-400/70 to-transparent" />
-          <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-24 w-px bg-gradient-to-b from-cyan-400/70 to-transparent" />
-          <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 h-px w-24 bg-gradient-to-l from-cyan-400/50 to-transparent" />
-          <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 h-24 w-px bg-gradient-to-t from-cyan-400/50 to-transparent" />
-
+    <div className="hv-home-grid grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-6">
+      <div className="hv-home-main flex flex-col gap-6 lg:order-1">
+        <section className="hv-home-hero group relative overflow-hidden rounded-lg border border-cyan-100/16 bg-gradient-to-br from-cyan-950/36 via-slate-950/58 to-slate-950/78 p-4 sm:p-5 md:p-6">
           {/* Animated stars background */}
           <div aria-hidden className="hypervoid-stars" />
 
@@ -82,14 +76,14 @@ export default async function Home() {
                 Hypervoid · 高维虚空
               </p>
             </div>
-            <h1 className="mt-3 font-mono text-3xl font-bold uppercase tracking-tight text-cyan-50 sm:mt-4 sm:text-4xl md:text-5xl">
+            <h1 className="mt-2 font-mono text-2xl font-bold uppercase tracking-tight text-cyan-50 sm:mt-3 sm:text-3xl md:text-4xl">
               <Greeting name="Charon" />
             </h1>
-            <p className="mt-2 font-mono text-xs italic text-cyan-100/70 sm:mt-3 sm:text-sm md:text-base">
+            <p className="mt-2 font-mono text-xs italic text-cyan-100/70 sm:text-sm">
               The world is big, you have to go and see.
             </p>
-            <div className="mt-4 h-px bg-gradient-to-r from-cyan-400/40 via-cyan-400/20 to-transparent sm:mt-5" />
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-cyan-50/80 sm:mt-5 sm:text-base md:text-lg">
+            <div className="mt-3 h-px bg-gradient-to-r from-cyan-400/40 via-cyan-400/20 to-transparent sm:mt-4" />
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-cyan-50/78 sm:mt-4 sm:text-base">
               <span className="text-cyan-100">「{quote}」</span>
               {quoteAuthor ? (
                 <span className="ml-2 text-xs text-cyan-50/60 sm:text-sm">
@@ -97,11 +91,10 @@ export default async function Home() {
                 </span>
               ) : null}
             </p>
-            <div className="mt-6 flex flex-wrap gap-2 sm:mt-7 sm:gap-3">
+            <div className="mt-4 flex flex-wrap gap-2 sm:mt-5">
               <Link
                 href="/posts"
-                className="group inline-flex items-center gap-1.5 border border-cyan-400/40 bg-cyan-400/10 px-5 py-2.5 font-mono text-sm font-semibold uppercase tracking-wider text-cyan-300 shadow-[0_0_20px_rgba(103,232,249,0.15)] transition hover:border-cyan-400/60 hover:bg-cyan-400/20 hover:text-cyan-100 hover:shadow-[0_0_28px_rgba(103,232,249,0.25)]"
-                style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%)' }}
+                className="group inline-flex items-center gap-1.5 rounded-md border border-cyan-400/40 bg-cyan-400/10 px-4 py-2 font-mono text-sm font-semibold uppercase tracking-wider text-cyan-300 shadow-[0_0_20px_rgba(103,232,249,0.15)] transition hover:border-cyan-400/60 hover:bg-cyan-400/20 hover:text-cyan-100 hover:shadow-[0_0_28px_rgba(103,232,249,0.25)]"
               >
                 阅读文章
                 <svg aria-hidden className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -110,15 +103,13 @@ export default async function Home() {
               </Link>
               <Link
                 href="/about"
-                className="inline-flex items-center border border-cyan-100/18 bg-cyan-950/30 px-5 py-2.5 font-mono text-sm font-medium uppercase tracking-wider text-cyan-100/80 transition hover:border-cyan-400/40 hover:bg-cyan-900/40 hover:text-cyan-300"
-                style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%)' }}
+                className="inline-flex items-center rounded-md border border-cyan-100/18 bg-cyan-950/30 px-4 py-2 font-mono text-sm font-medium uppercase tracking-wider text-cyan-100/80 transition hover:border-cyan-400/40 hover:bg-cyan-900/40 hover:text-cyan-300"
               >
                 关于我
               </Link>
               <Link
                 href="/archive"
-                className="inline-flex items-center border border-cyan-100/18 bg-cyan-950/30 px-5 py-2.5 font-mono text-sm font-medium uppercase tracking-wider text-cyan-100/80 transition hover:border-cyan-400/40 hover:bg-cyan-900/40 hover:text-cyan-300"
-                style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%)' }}
+                className="inline-flex items-center rounded-md border border-cyan-100/18 bg-cyan-950/30 px-4 py-2 font-mono text-sm font-medium uppercase tracking-wider text-cyan-100/80 transition hover:border-cyan-400/40 hover:bg-cyan-900/40 hover:text-cyan-300"
               >
                 归档
               </Link>
@@ -134,23 +125,22 @@ export default async function Home() {
 
         <PostActivityHeatmap />
 
-        <div>
-          <div className="mb-5 flex items-center justify-between">
+        <div className="hv-home-posts">
+          <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="grid h-8 w-8 place-items-center border border-cyan-400/30 bg-cyan-950/40 text-cyan-300" style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%)' }}>
+              <div className="grid h-8 w-8 place-items-center rounded-md border border-cyan-400/30 bg-cyan-950/40 text-cyan-300">
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 20h9" />
                   <path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z" />
                 </svg>
               </div>
-              <h2 className="font-mono text-xl font-bold uppercase tracking-tight text-cyan-50 sm:text-2xl">
+              <h2 className="font-mono text-lg font-bold uppercase tracking-tight text-cyan-50 sm:text-xl">
                 Latest_Posts
               </h2>
             </div>
             <Link
               href="/posts"
-              className="group inline-flex items-center gap-1.5 border border-cyan-100/18 bg-cyan-950/30 px-4 py-1.5 font-mono text-xs font-medium uppercase tracking-wider text-cyan-100/80 transition hover:border-cyan-400/40 hover:bg-cyan-900/40 hover:text-cyan-300"
-              style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%)' }}
+              className="group inline-flex items-center gap-1.5 rounded-md border border-cyan-100/18 bg-cyan-950/30 px-3 py-1.5 font-mono text-xs font-medium uppercase tracking-wider text-cyan-100/80 transition hover:border-cyan-400/40 hover:bg-cyan-900/40 hover:text-cyan-300"
             >
               View_All
               <svg aria-hidden className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -171,13 +161,13 @@ export default async function Home() {
           )}
         </div>
 
-        <section className="lg:mt-auto">
+        <section className="hv-home-subscribe">
           {isEmailConfigured() ? <SubscribeForm /> : <RssSubscribeCard />}
         </section>
       </div>
 
       <aside className="lg:order-2">
-        <div className="flex flex-col gap-6 lg:sticky lg:top-20">
+        <div className="hv-home-rail flex flex-col gap-4 lg:sticky lg:top-20">
           <PrivateSpace />
           <Suspense fallback={<Skeleton className="h-48 w-full" />}>
             <ProfileCard />

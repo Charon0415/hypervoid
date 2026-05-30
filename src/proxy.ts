@@ -42,7 +42,7 @@ function isPublicPath(pathname: string): boolean {
   // Static assets
   if (pathname.startsWith("/_next/") || pathname.startsWith("/live2d/"))
     return true;
-  if (/\.(ico|png|jpg|jpeg|gif|webp|svg|css|js|woff2?|ttf|eot)$/.test(pathname))
+  if (/\.(ico|png|jpg|jpeg|gif|webp|svg|css|js|woff2?|ttf|eot|mp4|webm|mov|mp3|m4a|ogg|wav|flac|aac|vtt|m3u8|mpd)$/.test(pathname))
     return true;
   return false;
 }
@@ -103,6 +103,9 @@ async function checkSiteLogin(req: NextRequest): Promise<NextResponse | null> {
 
 export default async function proxy(req: NextRequest): Promise<NextResponse> {
   const { pathname } = req.nextUrl;
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-pathname", pathname);
+
   const isAdminOrSearch =
     pathname.startsWith("/admin") ||
     pathname.startsWith("/api/admin") ||
@@ -113,7 +116,11 @@ export default async function proxy(req: NextRequest): Promise<NextResponse> {
   const siteLoginRedirect = await checkSiteLogin(req);
   if (siteLoginRedirect) return siteLoginRedirect;
 
-  if (!isAdminOrSearch) return NextResponse.next();
+  if (!isAdminOrSearch) {
+    return NextResponse.next({
+      request: { headers: requestHeaders },
+    });
+  }
 
   const unauthorized = await denyUnauthorized(req);
   if (unauthorized) return unauthorized;
@@ -130,7 +137,6 @@ export default async function proxy(req: NextRequest): Promise<NextResponse> {
   const scriptSrc = `script-src 'self' 'nonce-${nonce}' ${SCRIPT_HOSTS}`;
   const csp = [...COMMON_DIRECTIVES, scriptSrc].join("; ");
 
-  const requestHeaders = new Headers(req.headers);
   requestHeaders.set("x-nonce", nonce);
   requestHeaders.set("Content-Security-Policy", csp);
 

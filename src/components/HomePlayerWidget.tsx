@@ -1,5 +1,14 @@
 "use client";
 
+import {
+  ArrowRight,
+  ChevronDown,
+  Music2,
+  Pause,
+  Play,
+  SkipBack,
+  SkipForward,
+} from "lucide-react";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useStateCtx, useTimeCtx, useActions } from "@/components/PlayerProvider";
@@ -114,11 +123,7 @@ export function HomePlayerWidget() {
 
   return (
     <aside
-      className={
-        fxEnabled
-          ? "relative overflow-hidden rounded-3xl border border-border/50 bg-card"
-          : "rounded-3xl border border-border bg-card p-5"
-      }
+      className="hv-panel-sci group relative overflow-hidden p-3"
     >
       {/* Ambient blurred cover backdrop — only when effects enabled */}
       {fxEnabled && open && current?.cover ? (
@@ -130,58 +135,34 @@ export function HomePlayerWidget() {
             aria-hidden
             className="pointer-events-none absolute inset-0 h-full w-full scale-150 object-cover opacity-25 blur-2xl saturate-150 transition-opacity duration-700"
           />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-card/40 via-card/70 to-card" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/20 via-slate-950/72 to-slate-950" />
         </>
       ) : null}
 
       {/* Content */}
-      <div className={fxEnabled ? "relative z-10 p-5" : undefined}>
+      <div className="relative z-10">
         {/* Header */}
         <div className="flex items-baseline justify-between">
-          <h3 className="text-sm font-semibold tracking-tight text-foreground/80">
-            <span className="mr-1.5" aria-hidden>
-              ♪
-            </span>
+          <h3 className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-widest text-cyan-100/80">
+            <Music2 className="h-3.5 w-3.5 text-cyan-300/76" aria-hidden />
             音乐播放器
           </h3>
           <div className="flex items-center gap-1.5">
             <Link
               href="/music"
-              className="group inline-flex items-center gap-1 rounded-full border border-border bg-background/60 px-2.5 py-0.5 text-[11px] text-muted transition hover:border-primary/40 hover:text-primary backdrop-blur-sm"
+              className="group inline-flex items-center gap-1 border border-cyan-100/18 bg-cyan-950/30 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-cyan-100/70 transition hover:border-cyan-400/40 hover:bg-cyan-900/40 hover:text-cyan-300"
             >
               完整版
-              <svg
-                aria-hidden
-                className="h-3 w-3 transition group-hover:translate-x-0.5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M5 12h14M13 5l7 7-7 7" />
-              </svg>
+              <ArrowRight className="h-3 w-3 transition group-hover:translate-x-0.5" aria-hidden />
             </Link>
             <button
               type="button"
               onClick={toggleOpen}
               aria-expanded={open}
               aria-label={open ? "收起播放器" : "展开播放器"}
-              className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-border bg-background/60 text-muted transition hover:border-primary/40 hover:text-primary backdrop-blur-sm"
+              className="grid h-6 w-6 place-items-center border border-cyan-100/18 bg-cyan-950/30 text-cyan-100/68 transition hover:border-cyan-400/40 hover:text-cyan-300"
             >
-              <svg
-                aria-hidden
-                className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
+              <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
             </button>
           </div>
         </div>
@@ -190,7 +171,7 @@ export function HomePlayerWidget() {
         {!open ? (
           <p
             onClick={toggleOpen}
-            className="mt-3 cursor-pointer text-center text-xs italic leading-relaxed text-muted/60 transition-colors hover:text-muted"
+            className="mt-2 cursor-pointer border border-cyan-100/10 bg-cyan-950/20 px-2 py-2 text-center font-mono text-xs italic leading-relaxed text-cyan-50/58 transition-colors hover:border-cyan-100/20 hover:text-cyan-50/78"
           >
             「{saying || "音乐是灵魂的避难所。"}」
           </p>
@@ -200,20 +181,20 @@ export function HomePlayerWidget() {
         {open ? (
           <div className="mt-3">
             {loading && !tracksLoaded ? (
-              <p className="rounded-2xl border border-dashed border-border/60 bg-card/60 px-3 py-4 text-center text-xs text-muted backdrop-blur-sm">
+              <p className="border border-dashed border-cyan-100/18 bg-cyan-950/25 px-3 py-4 text-center text-xs text-cyan-50/58 backdrop-blur-sm">
                 加载歌单中…
               </p>
             ) : error && !tracksLoaded ? (
-              <p className="rounded-2xl border border-dashed border-border/60 bg-card/60 px-3 py-4 text-center text-xs text-muted backdrop-blur-sm">
+              <p className="border border-dashed border-cyan-100/18 bg-cyan-950/25 px-3 py-4 text-center text-xs text-cyan-50/58 backdrop-blur-sm">
                 {error}
               </p>
             ) : !current ? (
-              <div className="rounded-2xl border border-dashed border-border/60 bg-card/60 px-3 py-4 text-center backdrop-blur-sm">
-                <p className="text-xs text-muted mb-2">
+              <div className="border border-dashed border-cyan-100/18 bg-cyan-950/25 px-3 py-4 text-center backdrop-blur-sm">
+                <p className="mb-2 text-xs text-cyan-50/62">
                   暂无可播放曲目。
                 </p>
                 <p
-                  className="text-[11px] text-muted/60 leading-relaxed"
+                  className="text-[11px] leading-relaxed text-cyan-50/48"
                   style={{ fontFamily: "Georgia, 'Noto Serif SC', serif" }}
                 >
                   {saying}
@@ -244,15 +225,15 @@ export function HomePlayerWidget() {
                       />
                       {/* Glow effect — only when effects enabled */}
                       {fxEnabled && playing ? (
-                        <div className="absolute -inset-1 -z-10 rounded-full bg-primary/15 blur-md" />
+                        <div className="absolute -inset-1 -z-10 rounded-full bg-cyan-300/15 blur-md" />
                       ) : null}
                     </div>
                   ) : (
                     <div
-                      className={`flex shrink-0 items-center justify-center bg-gradient-to-br from-primary/15 to-primary/5 ${
+                      className={`flex shrink-0 items-center justify-center bg-gradient-to-br from-cyan-300/16 to-cyan-950/35 ${
                         fxEnabled
-                          ? "h-14 w-14 rounded-full text-2xl shadow-lg ring-1 ring-black/5 dark:ring-white/10"
-                          : "h-12 w-12 rounded-full text-xl"
+                          ? "h-14 w-14 rounded-full text-2xl shadow-[0_0_18px_rgba(103,232,249,0.16)] ring-1 ring-cyan-100/20"
+                          : "h-12 w-12 rounded-full text-xl text-cyan-100/76"
                       }`}
                     >
                       ♪
@@ -266,7 +247,7 @@ export function HomePlayerWidget() {
                       {current.title}
                     </p>
                     <p
-                      className="mt-0.5 truncate text-xs text-muted"
+                      className="mt-0.5 truncate text-xs text-cyan-50/56"
                       title={current.artist}
                     >
                       {current.artist}
@@ -293,7 +274,7 @@ export function HomePlayerWidget() {
                           <div
                             key={i}
                             className={`flex-1 rounded-full transition-colors duration-150 ${
-                              filled ? "bg-primary" : "bg-border/60"
+                              filled ? "bg-cyan-300" : "bg-cyan-100/18"
                             }`}
                             style={{ height: `${h * 100}%` }}
                           />
@@ -301,22 +282,22 @@ export function HomePlayerWidget() {
                       })}
                     </div>
                     <div className="mt-1 flex items-center justify-between">
-                      <span className="font-mono text-[10px] text-muted/70">
+                      <span className="font-mono text-[10px] text-cyan-50/50">
                         {formatTime(currentTime)}
                       </span>
-                      <span className="font-mono text-[10px] text-muted/70">
+                      <span className="font-mono text-[10px] text-cyan-50/50">
                         {formatTime(duration)}
                       </span>
                     </div>
                   </div>
                 ) : (
                   <div className="mt-3 flex items-center gap-2">
-                    <span className="w-8 text-right font-mono text-[10px] text-muted">
+                    <span className="w-8 text-right font-mono text-[10px] text-cyan-50/50">
                       {formatTime(currentTime)}
                     </span>
-                    <div className="relative h-1 flex-1 rounded-full bg-border">
+                    <div className="relative h-1 flex-1 bg-cyan-100/14">
                       <div
-                        className="absolute left-0 top-0 h-full rounded-full bg-primary transition-[width] duration-200"
+                        className="absolute left-0 top-0 h-full bg-cyan-300 transition-[width] duration-200"
                         style={{
                           width:
                             duration > 0
@@ -325,7 +306,7 @@ export function HomePlayerWidget() {
                         }}
                       />
                     </div>
-                    <span className="w-8 font-mono text-[10px] text-muted">
+                    <span className="w-8 font-mono text-[10px] text-cyan-50/50">
                       {formatTime(duration)}
                     </span>
                   </div>
@@ -337,58 +318,30 @@ export function HomePlayerWidget() {
                     type="button"
                     onClick={prev}
                     aria-label="上一首"
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-muted/70 transition-all hover:bg-foreground/5 hover:text-foreground hover:scale-105"
+                    className="grid h-8 w-8 place-items-center border border-transparent text-cyan-50/54 transition hover:border-cyan-100/18 hover:bg-cyan-50/8 hover:text-cyan-100"
                   >
-                    <svg
-                      className="h-3.5 w-3.5"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      aria-hidden
-                    >
-                      <path d="M6 6h2v12H6V6zm3.5 6 8.5 6V6l-8.5 6z" />
-                    </svg>
+                    <SkipBack className="h-3.5 w-3.5" aria-hidden />
                   </button>
                   <button
                     type="button"
                     onClick={togglePlay}
                     disabled={!current?.url}
                     aria-label={playing ? "暂停" : "播放"}
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-foreground text-background shadow-md transition-all hover:opacity-90 hover:scale-105 hover:shadow-lg disabled:opacity-40"
+                    className="grid h-10 w-10 place-items-center border border-cyan-300/50 bg-cyan-50 text-black shadow-[0_0_18px_rgba(103,232,249,0.16)] transition hover:bg-white disabled:opacity-40"
                   >
                     {playing ? (
-                      <svg
-                        className="h-4 w-4"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        aria-hidden
-                      >
-                        <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                      </svg>
+                      <Pause className="h-4 w-4" aria-hidden />
                     ) : (
-                      <svg
-                        className="h-4 w-4 ml-0.5"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        aria-hidden
-                      >
-                        <path d="M8 5v14l11-7L8 5z" />
-                      </svg>
+                      <Play className="ml-0.5 h-4 w-4" aria-hidden />
                     )}
                   </button>
                   <button
                     type="button"
                     onClick={next}
                     aria-label="下一首"
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-muted/70 transition-all hover:bg-foreground/5 hover:text-foreground hover:scale-105"
+                    className="grid h-8 w-8 place-items-center border border-transparent text-cyan-50/54 transition hover:border-cyan-100/18 hover:bg-cyan-50/8 hover:text-cyan-100"
                   >
-                    <svg
-                      className="h-3.5 w-3.5"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      aria-hidden
-                    >
-                      <path d="M16 18h2V6h-2v12zM6 18l8.5-6L6 6v12z" />
-                    </svg>
+                    <SkipForward className="h-3.5 w-3.5" aria-hidden />
                   </button>
                 </div>
               </>

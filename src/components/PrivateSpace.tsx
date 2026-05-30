@@ -34,7 +34,7 @@ export function PrivateSpace() {
   if (!mounted || !user?.isAdmin) return null;
 
   return (
-    <aside className="hv-panel-sci group relative overflow-hidden p-5">
+    <aside className="hv-panel-sci group relative overflow-hidden p-3">
       {/* Corner accent */}
       <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-px w-16 bg-gradient-to-r from-cyan-400/60 to-transparent" />
       <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-16 w-px bg-gradient-to-b from-cyan-400/60 to-transparent" />
@@ -63,7 +63,7 @@ export function PrivateSpace() {
         </div>
       </div>
 
-      <div className="mt-4 flex flex-col gap-1">
+      <div className="mt-2.5 flex flex-col gap-0.5">
         <SpaceLink href="/admin" icon="settings" label="管理后台" />
         <SpaceLink href="/admin/posts/new" icon="write" label="写文章" />
         <SpaceLink href="/admin/series" icon="collection" label="专题管理" />
@@ -85,10 +85,10 @@ function SpaceLink({
   return (
     <Link
       href={href}
-      className="group flex items-center gap-2.5 border border-transparent px-2.5 py-1.5 text-xs text-cyan-50/70 transition hover:border-cyan-100/20 hover:bg-cyan-950/40 hover:text-cyan-100"
+      className="group flex items-center gap-2.5 border border-transparent px-2 py-1 text-xs text-cyan-50/70 transition hover:border-cyan-100/20 hover:bg-cyan-950/40 hover:text-cyan-100"
       style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%)' }}
     >
-      <span className="grid h-6 w-6 place-items-center border border-cyan-100/20 bg-cyan-950/50 text-cyan-300/70 transition group-hover:border-cyan-400/40 group-hover:bg-cyan-900/50 group-hover:text-cyan-300" style={{ clipPath: 'polygon(0 0, calc(100% - 3px) 0, 100% 3px, 100% 100%, 0 100%)' }}>
+      <span className="grid h-5 w-5 place-items-center border border-cyan-100/20 bg-cyan-950/50 text-cyan-300/70 transition group-hover:border-cyan-400/40 group-hover:bg-cyan-900/50 group-hover:text-cyan-300" style={{ clipPath: 'polygon(0 0, calc(100% - 3px) 0, 100% 3px, 100% 100%, 0 100%)' }}>
         <Icon name={icon} />
       </span>
       {label}

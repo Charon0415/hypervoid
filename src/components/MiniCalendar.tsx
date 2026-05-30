@@ -9,7 +9,7 @@ export async function MiniCalendar() {
   const cal = await getMonthCalendar(year, month - 1);
 
   return (
-    <aside className="hv-panel-sci group relative overflow-hidden p-5">
+    <aside className="hv-panel-sci group relative overflow-hidden p-3">
       {/* Corner indicators */}
       <div aria-hidden className="pointer-events-none absolute right-0 top-0 h-px w-12 bg-gradient-to-l from-cyan-400/50 to-transparent" />
       <div aria-hidden className="pointer-events-none absolute right-0 top-0 h-12 w-px bg-gradient-to-b from-cyan-400/50 to-transparent" />
@@ -26,7 +26,7 @@ export async function MiniCalendar() {
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-7 gap-1 text-center font-mono text-[9px] uppercase tracking-wider text-cyan-50/50">
+      <div className="mt-2.5 grid grid-cols-7 gap-1 text-center font-mono text-[9px] uppercase tracking-wider text-cyan-50/50">
         {DAY_HEADER.map((d, i) => (
           <div
             key={d}
@@ -73,7 +73,7 @@ export async function MiniCalendar() {
         })}
       </div>
 
-      <div className="mt-4 flex items-center justify-end gap-3 border-t border-cyan-100/8 pt-3 font-mono text-[9px] uppercase tracking-wider text-cyan-50/50">
+      <div className="mt-2.5 flex items-center justify-end gap-2 border-t border-cyan-100/8 pt-2 font-mono text-[9px] uppercase tracking-wider text-cyan-50/50">
         <span className="inline-flex items-center gap-1.5">
           <span className="h-1.5 w-1.5 border border-cyan-400/40 bg-cyan-950/40" style={{ clipPath: 'polygon(0 0, calc(100% - 2px) 0, 100% 2px, 100% 100%, 0 100%)' }} />
           Post

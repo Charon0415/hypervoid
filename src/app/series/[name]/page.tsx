@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Layers3 } from "lucide-react";
@@ -51,10 +52,12 @@ export default async function SeriesDetailPage(
       <header className="hv-panel relative overflow-hidden p-5 sm:p-7">
         {series?.cover ? (
           <>
-            <img
+            <Image
               src={series.cover}
               alt=""
-              className="absolute inset-0 h-full w-full object-cover opacity-[0.26] saturate-[0.8]"
+              fill
+              sizes="(max-width: 768px) 100vw, 768px"
+              className="object-cover opacity-[0.26] saturate-[0.8]"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/55 to-black/30" />
           </>

@@ -22,11 +22,11 @@ function relativeTime(date: Date): string {
 }
 
 export async function RecentGuestbook() {
-  const messages = (await listVisibleMessages()).slice(0, 5);
+  const messages = (await listVisibleMessages()).slice(0, 3);
   if (!messages.length) return null;
 
   return (
-    <aside className="hv-panel-sci group relative overflow-hidden p-5">
+    <aside className="hv-panel-sci group relative overflow-hidden p-3">
       {/* Corner accent */}
       <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-px w-16 bg-gradient-to-r from-cyan-400/50 to-transparent" />
       <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-16 w-px bg-gradient-to-b from-cyan-400/50 to-transparent" />
@@ -56,21 +56,21 @@ export async function RecentGuestbook() {
           </svg>
         </Link>
       </div>
-      <ul className="mt-4 space-y-3">
+      <ul className="mt-2.5 space-y-2">
         {messages.map((m) => (
           <li key={m.id} className="group/msg flex items-start gap-2.5 border-l border-cyan-100/10 pl-3 transition hover:border-cyan-400/40">
             {m.avatarUrl ? (
               <Image
                 src={m.avatarUrl}
                 alt=""
-                width={28}
-                height={28}
+                width={24}
+                height={24}
                 unoptimized={!m.avatarUrl.includes("avatars.githubusercontent.com")}
                 className="mt-0.5 shrink-0 border border-cyan-100/20 bg-cyan-950/40 transition group-hover/msg:border-cyan-400/40"
                 style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%)' }}
               />
             ) : (
-              <div className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center border border-cyan-100/20 bg-cyan-950/40 font-mono text-xs text-cyan-100/60" style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%)' }}>
+              <div className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center border border-cyan-100/20 bg-cyan-950/40 font-mono text-xs text-cyan-100/60" style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%)' }}>
                 ?
               </div>
             )}
@@ -84,7 +84,7 @@ export async function RecentGuestbook() {
                 </span>
               </div>
               <p className="mt-1 text-xs leading-relaxed text-cyan-50/70">
-                {truncate(cleanMessage(m.message), 80)}
+                {truncate(cleanMessage(m.message), 54)}
               </p>
             </div>
           </li>

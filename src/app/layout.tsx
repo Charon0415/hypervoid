@@ -17,6 +17,7 @@ import { siteConfig } from "@/lib/site-config";
 import { CommandPaletteHost } from "@/components/CommandPaletteHost";
 import { CustomThemeStyles, CustomWallpaper } from "@/components/CustomThemeStyles";
 import { DeferredClientUI } from "@/components/DeferredClientUI";
+import { RouteChromeState } from "@/components/RouteChromeState";
 import { getSiteOverride } from "@/lib/site-config-server";
 
 const geistSans = Geist({
@@ -89,7 +90,10 @@ export default async function RootLayout({
 }>) {
   // Set by src/middleware.ts. Undefined when middleware doesn't run (e.g.
   // RSC dev compile passes); next-themes silently skips the nonce attr.
-  const nonce = (await headers()).get("x-nonce") ?? undefined;
+  const headersList = await headers();
+  const nonce = headersList.get("x-nonce") ?? undefined;
+  const pathname = headersList.get("x-pathname") ?? "";
+  const isFullScreenRoute = pathname === "/sign-in" || pathname.startsWith("/sign-in/");
   return (
     <html
       lang="zh-CN"
@@ -103,6 +107,11 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://media.steampowered.com" crossOrigin="anonymous" />
         <link rel="webmention" href="/api/webmention" />
         <Script
+          id="route-chrome-state"
+          strategy="beforeInteractive"
+          nonce={nonce}
+        >{`!function(){var p=location.pathname,f=p==="/sign-in"||p.indexOf("/sign-in/")===0;document.documentElement.dataset.fullscreenRoute=f?"true":"false"}()`}</Script>
+        <Script
           id="sw-cleanup"
           strategy="beforeInteractive"
           nonce={nonce}
@@ -110,23 +119,40 @@ export default async function RootLayout({
         <CustomThemeStyles />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded-full focus:bg-primary focus:px-5 focus:py-2.5 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-lg focus:outline-none"
-        >
-          跳到内容
-        </a>
+        <RouteChromeState />
+        {!isFullScreenRoute ? (
+          <a
+            href="#main-content"
+            className="hv-chrome-only sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded-full focus:bg-primary focus:px-5 focus:py-2.5 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-lg focus:outline-none"
+          >
+            跳到内容
+          </a>
+        ) : null}
         <SettingsProvider>
-          <Backdrop />
-          <CustomWallpaper />
+          {!isFullScreenRoute ? (
+            <div className="hv-chrome-only contents">
+              <Backdrop />
+              <CustomWallpaper />
+            </div>
+          ) : null}
           <Providers nonce={nonce}>
-            <AnnouncementWrapper />
-            <SiteHeader />
-            <BannerStrip />
-            <main id="main-content" tabIndex={-1} className="page-fade hv-main-shell mx-auto w-full max-w-[88rem] flex-1 px-4 py-7 sm:px-6 lg:px-8">
-              {children}
-            </main>
-            <SiteFooter />
+            {isFullScreenRoute ? (
+              children
+            ) : (
+              <div className="hv-route-chrome contents">
+                <div className="hv-chrome-only contents">
+                  <AnnouncementWrapper />
+                  <SiteHeader />
+                  <BannerStrip />
+                </div>
+                <main id="main-content" tabIndex={-1} className="page-fade hv-main-shell mx-auto w-full max-w-[88rem] flex-1 px-4 py-7 sm:px-6 lg:px-8">
+                  {children}
+                </main>
+                <div className="hv-chrome-only contents">
+                  <SiteFooter />
+                </div>
+              </div>
+            )}
             <DeferredClientUI />
           </Providers>
         </SettingsProvider>

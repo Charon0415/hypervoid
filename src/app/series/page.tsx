@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Layers3 } from "lucide-react";
 import type { Metadata } from "next";
@@ -61,10 +62,12 @@ export default async function SeriesIndexPage() {
 
               {s.cover ? (
                 <>
-                  <img
+                  <Image
                     src={s.cover}
                     alt=""
-                    className="absolute inset-0 h-full w-full object-cover opacity-[0.58] saturate-[0.82] transition duration-500 group-hover:scale-105 group-hover:opacity-[0.74] group-hover:saturate-100"
+                    fill
+                    sizes="(max-width: 640px) 100vw, 50vw"
+                    className="object-cover opacity-[0.58] saturate-[0.82] transition duration-500 group-hover:scale-105 group-hover:opacity-[0.74] group-hover:saturate-100"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
                   <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,rgba(103,232,249,.06)_0_1px,transparent_1px_4px)] opacity-[0.12]" />

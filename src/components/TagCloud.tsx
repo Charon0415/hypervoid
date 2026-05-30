@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Tags } from "lucide-react";
 import { getAllTags } from "@/lib/posts";
 
-const MAX_TAGS = 24;
+const MAX_TAGS = 14;
 
 export async function TagCloud() {
   const tags = (await getAllTags()).slice(0, MAX_TAGS);
@@ -13,7 +13,7 @@ export async function TagCloud() {
   const max = Math.max(...counts);
 
   return (
-    <aside className="hv-panel-sci group relative overflow-hidden p-5">
+    <aside className="hv-panel-sci group relative overflow-hidden p-3">
       {/* Corner accent */}
       <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-px w-16 bg-gradient-to-r from-cyan-400/50 to-transparent" />
       <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-16 w-px bg-gradient-to-b from-cyan-400/50 to-transparent" />
@@ -27,17 +27,17 @@ export async function TagCloud() {
         </h3>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">
+      <div className="mt-2.5 flex flex-wrap items-center gap-1">
         {tags.map((t) => {
           const s = max === min ? 0.5 : (t.count - min) / (max - min);
-          const fontSize = 0.72 + s * 0.36;
+          const fontSize = 0.66 + s * 0.24;
           const opacity = 0.56 + s * 0.38;
           return (
             <Link
               key={t.tag}
               href={"/tags/" + encodeURIComponent(t.tag)}
               title={t.tag + " · " + t.count + " 篇"}
-              className="inline-flex items-baseline gap-1 border border-cyan-100/14 bg-gradient-to-br from-cyan-950/30 to-transparent px-2.5 py-1 font-mono font-medium text-cyan-100 transition hover:border-cyan-400/40 hover:bg-cyan-900/30 hover:text-cyan-300 hover:shadow-[0_0_12px_rgba(103,232,249,0.15)]"
+              className="inline-flex items-baseline gap-1 border border-cyan-100/14 bg-gradient-to-br from-cyan-950/30 to-transparent px-1.5 py-0.5 font-mono font-medium text-cyan-100 transition hover:border-cyan-400/40 hover:bg-cyan-900/30 hover:text-cyan-300 hover:shadow-[0_0_12px_rgba(103,232,249,0.15)]"
               style={{ fontSize: String(fontSize) + "rem", opacity, clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%)' }}
             >
               <span className="text-cyan-400/70">#</span>

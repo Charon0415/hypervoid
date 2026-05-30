@@ -1,41 +1,34 @@
 import Link from "next/link";
+import { FileCode2, Rss } from "lucide-react";
 
 export function RssSubscribeCard() {
   return (
-    <div className="rounded-3xl border border-border bg-card p-6 sm:p-8">
-      <h3 className="text-lg font-semibold tracking-tight">订阅更新</h3>
-      <p className="mt-1 text-sm text-muted">
-        邮件订阅暂未开放，可以通过 RSS 阅读器（Feedly / Inoreader / NetNewsWire 等）获取新文章。
-      </p>
-      <div className="mt-4 flex flex-wrap gap-2">
-        <Link
-          href="/rss.xml"
-          prefetch={false}
-          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-        >
-          <svg
-            aria-hidden
-            className="h-3.5 w-3.5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+    <div className="hv-panel-sci group relative overflow-hidden p-3 sm:p-3.5">
+      <div className="grid min-w-0 gap-3 md:grid-cols-[minmax(0,0.85fr)_auto] md:items-end">
+        <div className="min-w-0">
+          <h3 className="font-mono text-sm font-semibold uppercase tracking-widest text-cyan-100/80">Subscribe_Updates</h3>
+          <p className="mt-1.5 text-sm leading-snug text-cyan-50/70">
+            邮件订阅暂未开放，可以通过 RSS 阅读器获取新文章。
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-1.5 md:justify-end">
+          <Link
+            href="/rss.xml"
+            prefetch={false}
+            className="inline-flex items-center gap-1.5 rounded-md border border-cyan-400/40 bg-cyan-400/10 px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-cyan-300 shadow-[0_0_16px_rgba(103,232,249,0.12)] transition hover:border-cyan-400/60 hover:bg-cyan-400/20 hover:text-cyan-100"
           >
-            <path d="M4 11a9 9 0 0 1 9 9" />
-            <path d="M4 4a16 16 0 0 1 16 16" />
-            <circle cx="5" cy="19" r="1.5" fill="currentColor" stroke="none" />
-          </svg>
-          RSS 订阅
-        </Link>
-        <Link
-          href="/rss.xml"
-          prefetch={false}
-          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-5 py-2.5 text-sm text-muted transition hover:border-primary hover:text-primary"
-        >
-          复制订阅链接
-        </Link>
+            <Rss className="h-3.5 w-3.5" aria-hidden />
+            RSS 订阅
+          </Link>
+          <Link
+            href="/rss.xml"
+            prefetch={false}
+            className="inline-flex items-center gap-1.5 rounded-md border border-cyan-100/18 bg-cyan-950/30 px-3 py-1.5 font-mono text-xs text-cyan-100/70 transition hover:border-cyan-400/40 hover:bg-cyan-900/40 hover:text-cyan-300"
+          >
+            <FileCode2 className="h-3.5 w-3.5" aria-hidden />
+            RSS XML
+          </Link>
+        </div>
       </div>
     </div>
   );

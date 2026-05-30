@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { gsap } from "gsap";
 import { usePathname } from "next/navigation";
 import { SocialIcon } from "@/components/SocialIcon";
 import { useT } from "@/components/LocaleProvider";
@@ -9,6 +10,8 @@ import { siteConfig } from "@/lib/site-config";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const popoverRef = useRef<HTMLDivElement | null>(null);
+  const linkRefs = useRef<Array<HTMLAnchorElement | null>>([]);
   const t = useT();
   const pathname = usePathname();
 
@@ -17,15 +20,29 @@ export function MobileNav() {
   }, [pathname]);
 
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    if (!open || !popoverRef.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        popoverRef.current,
+        { autoAlpha: 0, y: -10, scale: 0.96 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.24, ease: "power3.out" },
+      );
+      gsap.fromTo(
+        linkRefs.current.filter(Boolean),
+        { y: 8, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.24, stagger: 0.025, ease: "power3.out" },
+      );
+    }, popoverRef);
+
+    return () => ctx.revert();
   }, [open]);
+
+  function setLinkRef(index: number) {
+    return (node: HTMLAnchorElement | null) => {
+      linkRefs.current[index] = node;
+    };
+  }
 
   const items = [
     { href: "/", label: t.nav.home },
@@ -50,56 +67,42 @@ export function MobileNav() {
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => setOpen((value) => !value)}
         aria-label="打开菜单"
-        className="grid h-10 w-10 place-items-center border border-cyan-100/18 bg-white/[0.055] px-0 text-cyan-50/80 backdrop-blur-xl transition hover:border-cyan-100/45 hover:bg-cyan-50/10 hover:text-white md:hidden"
+        aria-expanded={open}
+        aria-controls="mobile-pill-nav"
+        className={`hv-mobile-pill-button xl:hidden ${open ? "is-open" : ""}`}
       >
-        <svg
-          aria-hidden="true"
-          className="h-4 w-4"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <line x1="3" y1="12" x2="21" y2="12" />
-          <line x1="3" y1="18" x2="21" y2="18" />
-        </svg>
+        <span className="hv-mobile-pill-line" />
+        <span className="hv-mobile-pill-line" />
+        <span className="hv-mobile-pill-line" />
       </button>
 
       {open ? (
         <div
-          className="fixed inset-0 z-50 md:hidden"
+          className="fixed inset-x-3 top-[4.85rem] z-50 xl:hidden"
           aria-modal="true"
           role="dialog"
+          id="mobile-pill-nav"
         >
           <div
-            className="absolute inset-0 bg-black/72 backdrop-blur-sm"
+            className="fixed inset-0 -z-10 bg-black/46 backdrop-blur-[2px]"
             onClick={() => setOpen(false)}
             aria-hidden
           />
           <div
-            className="absolute right-0 top-0 h-screen w-72 max-w-[85vw] overflow-y-auto border-l border-cyan-100/18 bg-slate-950/92 text-white shadow-[0_28px_90px_rgba(0,0,0,0.50)] backdrop-blur-2xl"
-            style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom, 0px))" }}
+            ref={popoverRef}
+            className="hv-mobile-pill-popover"
           >
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-cyan-100/14 bg-slate-950/82 px-5 py-4 backdrop-blur-xl">
-              <span className="font-bold tracking-tight">Hypervoid</span>
+            <div className="flex items-center justify-between border-b border-cyan-100/14 px-4 py-3">
+              <span className="font-mono text-[11px] uppercase text-cyan-50/62">Hypervoid Nav</span>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="关闭菜单"
-                className="p-1.5 text-cyan-50/62 transition hover:bg-white/[0.06] hover:text-white"
+                className="grid h-9 w-9 place-items-center rounded-full border border-cyan-100/18 bg-cyan-50/8 text-cyan-50/72 transition hover:border-cyan-100/45 hover:text-white"
               >
-                <svg
-                  className="h-5 w-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="6" y1="6" x2="18" y2="18" />
                   <line x1="6" y1="18" x2="18" y2="6" />
                 </svg>
@@ -107,12 +110,13 @@ export function MobileNav() {
             </div>
 
             <nav className="px-3 py-3">
-              <div className="flex flex-col gap-0.5">
-                {items.map((item) => (
+              <div className="grid grid-cols-2 gap-1.5">
+                {items.map((item, index) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`border px-3 py-2.5 text-sm transition ${
+                    ref={setLinkRef(index)}
+                    className={`hv-mobile-pill-link ${
                       pathname === item.href
                         ? "border-cyan-100/28 bg-cyan-50/12 font-medium text-cyan-100"
                         : "border-transparent text-cyan-50/72 hover:border-cyan-100/18 hover:bg-cyan-50/8 hover:text-white"
@@ -136,7 +140,7 @@ export function MobileNav() {
                       rel="noreferrer noopener"
                       title={s.name}
                       aria-label={s.name}
-                      className="inline-flex h-9 w-9 items-center justify-center border border-cyan-100/18 bg-white/[0.045] text-cyan-50/62 transition hover:border-cyan-100/45 hover:bg-cyan-50/10 hover:text-cyan-100"
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-cyan-100/18 bg-white/[0.045] text-cyan-50/62 transition hover:border-cyan-100/45 hover:bg-cyan-50/10 hover:text-cyan-100"
                     >
                       <SocialIcon name={s.icon} className="h-3.5 w-3.5" />
                     </a>

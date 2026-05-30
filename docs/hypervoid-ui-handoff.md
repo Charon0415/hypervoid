@@ -121,6 +121,37 @@ Root homepage currently includes:
   - tag cloud
   - recent guestbook
 
+
+### Homepage Frame Density Fix
+
+Date: 2026-05-30
+
+Problem:
+
+- The homepage looked unchanged to the user after earlier spacing tweaks because the main visual problem was not only padding.
+- Angled sci-fi frame styles, inline `clipPath` polygons, decorative corner lines, heavy shadows, and framed widget chrome visually created large empty areas around side widgets, post cards, and subscribe blocks.
+
+Resolution:
+
+- Homepage hero now uses a normal compact rounded frame instead of a large angled polygon frame.
+- Subscribe/RSS blocks were changed to compact horizontal panels with regular rounded inputs/buttons.
+- Post cards removed corner accent lines, scan-line decoration, image notches, and angled controls.
+- Global CSS now includes `Compact frame reset v2`, which disables inline/Tailwind `clip-path` angled frame shapes and hides decorative frame pseudo-elements/corner-line overlays for `hv-card`, `hv-panel`, and `hv-panel-sci`.
+- Sidebar rail, subscribe block, and stats carousel were tightened so widgets no longer look like large empty boxes.
+
+Verification:
+
+- `pnpm lint` passed.
+- `pnpm build` passed.
+- `git diff --check` passed.
+- Local production server restarted with `pnpm exec next start -p 3000`.
+- `curl -sI http://localhost:3000/` returned `200 OK`.
+- Playwright screenshot captured at `/tmp/hypervoid-frame-reset.png`.
+
+Future note:
+
+- Do not reintroduce angled `clipPath` panel frames on homepage/sidebar widgets unless the layout is redesigned around the lost visual space. Prefer thin borders, small radius, restrained glow, and dense internal structure.
+
 ## Files To Check Before Future UI Work
 
 - `AGENTS.md`: requires reading local Next docs because this is Next.js 16 with changed conventions.
@@ -129,7 +160,7 @@ Root homepage currently includes:
 - `src/components/SiteHeader.tsx`: route link split for login/home.
 - `src/app/page.tsx`: root homepage. Do not replace with login.
 - `src/app/sign-in/page.tsx`: current login page.
-- `src/components/VoidEntryLogin.tsx`: still contains the Explore/login style component, but is not currently mounted at `/`.
+- `src/components/VoidEntryLogin.tsx`: mounted by `/sign-in` for the immersive Explore/login experience and uses `/1.mp4`.
 - `src/app/globals.css`: shell styles, `hv-*` utilities, full-screen entry video CSS.
 - `src/components/SiteSettings.tsx`: new settings console.
 - `src/components/SettingsProvider.tsx`: localStorage migration and global display settings.

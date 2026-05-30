@@ -1,5 +1,5 @@
 import { getDb, schema } from "@/db/client";
-import { asc, eq, isNotNull } from "drizzle-orm";
+import { asc, isNotNull } from "drizzle-orm";
 
 export type PublicSeries = {
   slug: string;

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { inArray } from "drizzle-orm";
 import { getDb, schema } from "@/db/client";
 import { getActiveAnnouncement } from "@/db/announcements";
@@ -35,7 +34,7 @@ export async function AnnouncementWidget() {
   // 1) Multi-slot: prefer DB-managed sidebar slot
   if (slotEntry) {
     return (
-      <div className="hv-panel-sci group relative overflow-hidden p-5">
+      <div className="hv-panel-sci group relative overflow-hidden p-3">
         {/* Alert indicator */}
         <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-cyan-400 via-cyan-400/60 to-transparent" />
 
@@ -47,11 +46,11 @@ export async function AnnouncementWidget() {
           <p className="font-mono text-xs font-semibold uppercase tracking-widest text-cyan-400">Notice</p>
         </div>
 
-        <p className="mt-3 text-sm leading-relaxed text-cyan-50/80">{slotEntry.message}</p>
+        <p className="mt-1.5 text-sm leading-snug text-cyan-50/80">{slotEntry.message}</p>
         {slotEntry.link ? (
           <a
             href={slotEntry.link}
-            className="mt-3 inline-flex items-center gap-1.5 border-b border-cyan-400/30 pb-0.5 font-mono text-xs font-medium text-cyan-400 transition hover:border-cyan-400 hover:text-cyan-300"
+            className="mt-1.5 inline-flex items-center gap-1.5 border-b border-cyan-400/30 pb-0.5 font-mono text-xs font-medium text-cyan-400 transition hover:border-cyan-400 hover:text-cyan-300"
           >
             {slotEntry.linkText || "了解更多"}
             <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -74,7 +73,7 @@ export async function AnnouncementWidget() {
     legacy.announcementLinkText || process.env.ANNOUNCEMENT_LINK_TEXT || "";
 
   return (
-    <div className="hv-panel-sci group relative overflow-hidden p-5">
+    <div className="hv-panel-sci group relative overflow-hidden p-3">
       <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-cyan-400 via-cyan-400/60 to-transparent" />
 
       <div className="flex items-center gap-2">
@@ -85,11 +84,11 @@ export async function AnnouncementWidget() {
         <p className="font-mono text-xs font-semibold uppercase tracking-widest text-cyan-400">Notice</p>
       </div>
 
-      <p className="mt-3 text-sm leading-relaxed text-cyan-50/80">{message}</p>
+      <p className="mt-1.5 text-sm leading-snug text-cyan-50/80">{message}</p>
       {linkHref ? (
         <a
           href={linkHref}
-          className="mt-3 inline-flex items-center gap-1.5 border-b border-cyan-400/30 pb-0.5 font-mono text-xs font-medium text-cyan-400 transition hover:border-cyan-400 hover:text-cyan-300"
+          className="mt-1.5 inline-flex items-center gap-1.5 border-b border-cyan-400/30 pb-0.5 font-mono text-xs font-medium text-cyan-400 transition hover:border-cyan-400 hover:text-cyan-300"
         >
           {linkText || "了解更多"}
           <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

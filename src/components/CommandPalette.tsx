@@ -1,5 +1,6 @@
 "use client";
 
+import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import {
@@ -190,30 +191,20 @@ export function CommandPalette({ index }: { index: CommandIndexItem[] }) {
         if (e.target === e.currentTarget) setOpen(false);
       }}
     >
-      <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" />
-      <div className="relative z-10 w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
-        <div className="flex items-center gap-2 border-b border-border px-4 py-3">
-          <svg
-            aria-hidden
-            className="h-4 w-4 shrink-0 text-muted"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <circle cx="11" cy="11" r="7" />
-            <path d="M21 21l-4.35-4.35" />
-          </svg>
+      <div className="absolute inset-0 bg-black/64 backdrop-blur-sm" />
+      <div className="relative z-10 w-full max-w-xl overflow-hidden border border-cyan-100/18 bg-slate-950/94 shadow-[0_28px_90px_rgba(0,0,0,0.48),0_0_48px_rgba(34,211,238,0.12)] backdrop-blur-2xl">
+        <div className="flex items-center gap-2 border-b border-cyan-100/14 bg-cyan-950/18 px-4 py-3">
+          <Search className="h-4 w-4 shrink-0 text-cyan-300/70" aria-hidden />
           <input
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder="搜索页面、文章、标签或系列…"
-            className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted"
+            className="flex-1 bg-transparent text-sm text-cyan-50 outline-none placeholder:text-cyan-50/38"
             aria-label="命令面板搜索"
           />
-          <kbd className="hidden font-mono text-[10px] text-muted sm:inline">
+          <kbd className="hidden font-mono text-[10px] text-cyan-50/45 sm:inline">
             ESC
           </kbd>
         </div>
@@ -223,14 +214,14 @@ export function CommandPalette({ index }: { index: CommandIndexItem[] }) {
           role="listbox"
         >
           {filtered.length === 0 ? (
-            <p className="p-6 text-center text-sm text-muted">
+            <p className="p-6 text-center text-sm text-cyan-50/58">
               没有匹配。试试别的关键词。
             </p>
           ) : (
             <>
               {groupByType(filtered).map(([type, items]) => (
                 <section key={type} className="mb-1">
-                  <h4 className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted">
+                  <h4 className="px-3 pt-2 pb-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-cyan-400/70">
                     {LABEL[type]}
                   </h4>
                   {items.map(({ item, gi }) => {
@@ -243,10 +234,10 @@ export function CommandPalette({ index }: { index: CommandIndexItem[] }) {
                         onClick={() => go(item)}
                         role="option"
                         aria-selected={active}
-                        className={`flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-left text-sm transition ${
+                        className={`flex w-full items-center justify-between gap-3 border border-transparent px-3 py-2 text-left text-sm transition ${
                           active
-                            ? "bg-primary/10 text-foreground"
-                            : "text-foreground/85 hover:bg-background"
+                            ? "border-cyan-100/24 bg-cyan-400/10 text-cyan-50"
+                            : "text-cyan-50/78 hover:border-cyan-100/18 hover:bg-cyan-950/40 hover:text-cyan-50"
                         }`}
                       >
                         <span className="flex min-w-0 items-center gap-2">
@@ -255,7 +246,7 @@ export function CommandPalette({ index }: { index: CommandIndexItem[] }) {
                           </span>
                           <span className="truncate">{item.title}</span>
                         </span>
-                        <span className="shrink-0 font-mono text-[11px] text-muted">
+                        <span className="shrink-0 font-mono text-[11px] text-cyan-50/45">
                           {item.hint ?? ""}
                         </span>
                       </button>
@@ -266,7 +257,7 @@ export function CommandPalette({ index }: { index: CommandIndexItem[] }) {
             </>
           )}
         </div>
-        <div className="flex items-center justify-between border-t border-border bg-background/40 px-4 py-2 text-[11px] text-muted">
+        <div className="flex items-center justify-between border-t border-cyan-100/14 bg-cyan-950/22 px-4 py-2 text-[11px] text-cyan-50/52">
           <span className="flex items-center gap-3">
             <kbd className="font-mono">↑↓</kbd> 移动
             <kbd className="font-mono">Enter</kbd> 打开

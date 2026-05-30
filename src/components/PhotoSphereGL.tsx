@@ -6,7 +6,6 @@ import {
   motion,
   AnimatePresence,
   useMotionValue,
-  useSpring,
 } from "framer-motion";
 import type * as THREE from "three";
 

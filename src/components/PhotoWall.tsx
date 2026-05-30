@@ -18,7 +18,6 @@ type Photo = {
 
 /* ── motion tokens (inspired by Ant Design) ── */
 const EASE_OUT = [0.215, 0.61, 0.355, 1] as const;
-const EASE_OUT_BACK = [0.12, 0.4, 0.29, 1.46] as const;
 const EASE_OUT_QUINT = [0.23, 1, 0.32, 1] as const;
 
 function seededRandom(seed: string) {

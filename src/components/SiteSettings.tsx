@@ -45,7 +45,13 @@ function SettingSection({
   );
 }
 
-export function SiteSettings() {
+export function SiteSettings({
+  triggerClassName,
+  triggerChildren,
+}: {
+  triggerClassName?: string;
+  triggerChildren?: ReactNode;
+} = {}) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -146,7 +152,7 @@ export function SiteSettings() {
             </div>
           </div>
           <p className="mt-2 text-xs leading-5 text-cyan-50/50">
-            旧主题、色相、壁纸与字体预设已移除；站点固定使用 Hypervoid HUD 视觉。
+            旧色相、壁纸市场与字体预设已移除；右上角可快速切换主题与背景。
           </p>
         </div>
 
@@ -250,9 +256,9 @@ export function SiteSettings() {
         aria-label="界面控制"
         aria-expanded={open}
         title="界面控制 (Cmd/Ctrl+,)"
-        className="grid h-10 w-10 place-items-center border border-cyan-100/18 bg-white/[0.055] text-cyan-50/72 backdrop-blur-xl transition hover:border-cyan-100/45 hover:bg-cyan-50/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/70"
+        className={triggerClassName ?? "grid h-10 w-10 place-items-center border border-cyan-100/18 bg-white/[0.055] text-cyan-50/72 backdrop-blur-xl transition hover:border-cyan-100/45 hover:bg-cyan-50/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/70"}
       >
-        <Settings2 className="h-4 w-4" aria-hidden />
+        {triggerChildren ?? <Settings2 className="h-4 w-4" aria-hidden />}
       </button>
       {mounted && isMobile && panel ? createPortal(panel, document.body) : panel}
     </div>

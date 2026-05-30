@@ -40,6 +40,8 @@ type CurrentUser = {
 type VoidEntryLoginProps = {
   emailEnabled: boolean;
   currentUser: CurrentUser | null;
+  redirectTo?: string;
+  error?: string;
 };
 
 const statusRows = [
@@ -48,6 +50,14 @@ const statusRows = [
   ["Session", "JWT"],
   ["Access", "Protected"],
 ] as const;
+
+const errorCopy: Record<string, string> = {
+  AccessDenied: "登录被拒绝，请换一种方式重试。",
+  Configuration: "登录服务配置不完整，请稍后再试。",
+  Verification: "邮箱链接无效或已过期，请重新发送。",
+  OAuthSignin: "GitHub 登录暂时不可用，请稍后重试。",
+  OAuthCallback: "GitHub 回调失败，请重新登录。",
+};
 
 function GitHubMark({ className }: { className?: string }) {
   return (
@@ -65,7 +75,12 @@ function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-export function VoidEntryLogin({ emailEnabled, currentUser }: VoidEntryLoginProps) {
+function readableError(error: string | undefined): string | null {
+  if (!error) return null;
+  return errorCopy[error] ?? "登录失败：" + error;
+}
+
+export function VoidEntryLogin({ emailEnabled, currentUser, redirectTo = "/", error }: VoidEntryLoginProps) {
   const [entryState, setEntryState] = useState<EntryState>("explore");
   const [parallaxEnabled, setParallaxEnabled] = useState(false);
   const [loading, setLoading] = useState<AuthLoading>(null);
@@ -116,6 +131,9 @@ export function VoidEntryLogin({ emailEnabled, currentUser }: VoidEntryLoginProp
   const currentIdentity = currentUser?.login
     ? "@" + currentUser.login
     : currentUser?.name || currentUser?.email || "已登录用户";
+  const visibleError = authError ?? readableError(error);
+  const primaryHref = currentUser && redirectTo !== "/" ? redirectTo : "/posts";
+  const primaryLabel = currentUser && redirectTo !== "/" ? "继续访问" : "进入博客";
 
   async function handleSignOut() {
     setAuthError(null);
@@ -133,7 +151,7 @@ export function VoidEntryLogin({ emailEnabled, currentUser }: VoidEntryLoginProp
     setEmailSent(false);
     setLoading("github");
     try {
-      await signIn("github", { redirectTo: "/" });
+      await signIn("github", { redirectTo });
     } catch {
       setAuthError("GitHub 登录没有启动，请检查网络后重试。");
       setLoading(null);
@@ -159,7 +177,7 @@ export function VoidEntryLogin({ emailEnabled, currentUser }: VoidEntryLoginProp
       const result = await signIn("email", {
         email,
         redirect: false,
-        redirectTo: "/",
+        redirectTo,
       });
 
       if (result?.error) {
@@ -318,7 +336,7 @@ export function VoidEntryLogin({ emailEnabled, currentUser }: VoidEntryLoginProp
                 </div>
 
                 <div aria-live="polite" className="min-h-0">
-                  {authError ? (
+                  {visibleError ? (
                     <motion.div
                       initial={{ opacity: 0, y: -6 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -326,7 +344,7 @@ export function VoidEntryLogin({ emailEnabled, currentUser }: VoidEntryLoginProp
                       className="mb-5 flex items-start gap-3 border border-red-200/35 bg-red-500/12 px-4 py-3 text-sm leading-6 text-red-50"
                     >
                       <AlertCircle className="mt-1 h-4 w-4 shrink-0" aria-hidden />
-                      <span>{authError}</span>
+                      <span>{visibleError}</span>
                     </motion.div>
                   ) : null}
                 </div>
@@ -352,10 +370,10 @@ export function VoidEntryLogin({ emailEnabled, currentUser }: VoidEntryLoginProp
                         </p>
                         <div className="mt-5 grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
                           <Link
-                            href="/posts"
+                            href={primaryHref}
                             className="inline-flex min-h-11 min-w-0 items-center justify-center gap-2 whitespace-nowrap border border-cyan-100/55 bg-cyan-50 px-4 text-sm font-black uppercase text-black transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/80"
                           >
-                            进入博客
+                            {primaryLabel}
                             <ArrowRight className="h-4 w-4" aria-hidden />
                           </Link>
                           {currentUser.isAdmin ? (

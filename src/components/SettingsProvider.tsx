@@ -42,6 +42,12 @@ export const DISPLAY_MODE_OPTIONS: { key: DisplayMode; label: string; hint: stri
   { key: "simple", label: "简洁", hint: "完全隐藏背景特效" },
 ];
 
+export const BACKGROUND_OPTIONS: { key: BackgroundKey; label: string; hint: string }[] = [
+  { key: "cosmic", label: "星尘", hint: "轻量星点背景" },
+  { key: "particles", label: "粒子", hint: "更密集的粒子背景" },
+  { key: "plain", label: "纯黑", hint: "关闭动态背景" },
+];
+
 const HUE_KEY = "hypervoid:hue";
 const BG_KEY = "hypervoid:bg";
 const FONT_KEY = "hypervoid:font";
@@ -132,11 +138,18 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       }
 
       setHueState(DEFAULT_HUE);
-      setBackgroundState(DEFAULT_BACKGROUND);
-      setFontState(DEFAULT_FONT);
       applyHue(DEFAULT_HUE);
-      applyBackground(DEFAULT_BACKGROUND);
+      setFontState(DEFAULT_FONT);
       applyFont(DEFAULT_FONT);
+
+      const storedBackground = localStorage.getItem(BG_KEY) as BackgroundKey | null;
+      if (storedBackground && BACKGROUND_OPTIONS.some((o) => o.key === storedBackground)) {
+        setBackgroundState(storedBackground);
+        applyBackground(storedBackground);
+      } else {
+        setBackgroundState(DEFAULT_BACKGROUND);
+        applyBackground(DEFAULT_BACKGROUND);
+      }
 
       const storedFontSize = localStorage.getItem(
         FONT_SIZE_KEY,

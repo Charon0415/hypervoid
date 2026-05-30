@@ -1,8 +1,7 @@
-import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { auth } from "@/auth";
 import { isEmailConfigured } from "@/lib/email";
-import { SignInForm } from "./sign-in-form";
+import { VoidEntryLogin } from "@/components/VoidEntryLogin";
 
 export const metadata: Metadata = {
   title: "登录 · Hypervoid",
@@ -27,26 +26,32 @@ export default async function SignInPage(props: {
   const session = await auth();
   const { callbackUrl, error } = await props.searchParams;
   const redirectTo = safeInternalPath(callbackUrl, "/");
-
-  if (session?.user) {
-    redirect(redirectTo);
-  }
+  const user = session?.user as
+    | {
+        name?: string | null;
+        email?: string | null;
+        image?: string | null;
+        login?: string | null;
+        isAdmin?: boolean | null;
+      }
+    | undefined;
 
   return (
-    <div className="relative min-h-dvh overflow-hidden bg-black px-4 py-10 text-white">
-      <video className="absolute inset-0 h-full w-full object-cover opacity-55" autoPlay loop muted playsInline preload="metadata">
-        <source src="/1.mp4" type="video/mp4" />
-      </video>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_32%,rgba(103,232,249,0.10),transparent_34rem),linear-gradient(180deg,rgba(2,4,10,0.38),rgba(2,4,10,0.94))]" />
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(103,232,249,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(103,232,249,0.05)_1px,transparent_1px)] bg-[size:72px_72px] opacity-70" />
-
-      <main className="relative z-10 flex min-h-[calc(100dvh-5rem)] items-center justify-center">
-        <SignInForm
-          redirectTo={redirectTo}
-          error={firstValue(error)}
-          emailEnabled={isEmailConfigured()}
-        />
-      </main>
-    </div>
+    <VoidEntryLogin
+      redirectTo={redirectTo}
+      error={firstValue(error)}
+      emailEnabled={isEmailConfigured()}
+      currentUser={
+        user
+          ? {
+              name: user.name ?? null,
+              email: user.email ?? null,
+              image: user.image ?? null,
+              login: user.login ?? null,
+              isAdmin: user.isAdmin === true,
+            }
+          : null
+      }
+    />
   );
 }
