@@ -5,6 +5,7 @@ export const THEME_KEYS = [
   "card",
   "muted",
   "border",
+  "accent",
   "primary",
   "primary-foreground",
 ] as const;

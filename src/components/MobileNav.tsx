@@ -94,13 +94,13 @@ export function MobileNav() {
             ref={popoverRef}
             className="hv-mobile-pill-popover"
           >
-            <div className="flex items-center justify-between border-b border-cyan-100/14 px-4 py-3">
-              <span className="font-mono text-[11px] uppercase text-cyan-50/62">Hypervoid Nav</span>
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <span className="font-mono text-[11px] uppercase text-muted">Hypervoid Nav</span>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="关闭菜单"
-                className="grid h-9 w-9 place-items-center rounded-full border border-cyan-100/18 bg-cyan-50/8 text-cyan-50/72 transition hover:border-cyan-100/45 hover:text-white"
+                className="grid h-9 w-9 place-items-center rounded-full border border-border bg-foreground/3 text-muted transition hover:border-border hover:text-foreground"
               >
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="6" y1="6" x2="18" y2="18" />
@@ -118,8 +118,8 @@ export function MobileNav() {
                     ref={setLinkRef(index)}
                     className={`hv-mobile-pill-link ${
                       pathname === item.href
-                        ? "border-cyan-100/28 bg-cyan-50/12 font-medium text-cyan-100"
-                        : "border-transparent text-cyan-50/72 hover:border-cyan-100/18 hover:bg-cyan-50/8 hover:text-white"
+                        ? "border-border bg-foreground/5 font-medium text-accent"
+                        : "border-transparent text-muted hover:border-border hover:bg-foreground/3 hover:text-foreground"
                     }`}
                   >
                     {item.label}
@@ -127,8 +127,8 @@ export function MobileNav() {
                 ))}
               </div>
 
-              <div className="mt-4 border-t border-cyan-100/15 pt-3">
-                <p className="px-3 pb-1.5 font-mono text-[10px] uppercase text-cyan-50/45">
+              <div className="mt-4 border-t border-border pt-3">
+                <p className="px-3 pb-1.5 font-mono text-[10px] uppercase text-muted-soft">
                   {t.nav.groupLinks}
                 </p>
                 <div className="flex flex-wrap gap-1.5 px-3">
@@ -140,7 +140,7 @@ export function MobileNav() {
                       rel="noreferrer noopener"
                       title={s.name}
                       aria-label={s.name}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-cyan-100/18 bg-white/[0.045] text-cyan-50/62 transition hover:border-cyan-100/45 hover:bg-cyan-50/10 hover:text-cyan-100"
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-muted transition hover:border-border hover:bg-foreground/4 hover:text-accent"
                     >
                       <SocialIcon name={s.icon} className="h-3.5 w-3.5" />
                     </a>

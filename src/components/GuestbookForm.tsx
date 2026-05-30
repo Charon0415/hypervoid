@@ -37,7 +37,7 @@ export function GuestbookForm() {
         <p className="text-sm text-red-400">{error}</p>
       ) : null}
       <div className="flex items-center justify-between text-xs">
-        <span className="font-mono text-cyan-50/58">{message.length} / 1000</span>
+        <span className="font-mono text-muted-soft">{message.length} / 1000</span>
         <button
           type="submit"
           disabled={pending || !message.trim()}

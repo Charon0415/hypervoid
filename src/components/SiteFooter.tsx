@@ -5,50 +5,47 @@ import { siteConfig } from "@/lib/site-config";
 export function SiteFooter() {
   const year = new Date().getFullYear();
   return (
-    <footer className="relative mt-16 overflow-hidden border-t border-cyan-100/15 bg-gradient-to-b from-slate-950/80 to-black/95 text-cyan-50/60 backdrop-blur-xl">
-      {/* Top accent line */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
-
-      <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-6 text-sm sm:px-6 sm:py-8 lg:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-cyan-100/10 pb-4">
+    <footer className="relative mt-16 backdrop-blur-sm" style={{ background: "linear-gradient(135deg, rgba(239,68,68,0.08), rgba(249,115,22,0.06), rgba(234,179,8,0.05), rgba(34,197,94,0.06), rgba(6,182,212,0.08), rgba(59,130,246,0.1), rgba(99,102,241,0.08), rgba(139,92,246,0.07), rgba(217,70,239,0.06), rgba(12,18,36,0.85))" }}>
+      {/* Full spectrum top border */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[2px] opacity-50" style={{ background: "linear-gradient(90deg, #ef4444, #f97316, #eab308, #22c55e, #06b6d4, #3b82f6, #6366f1, #8b5cf6, #d946ef, #ec4899)" }} />
+      <div className="mx-auto flex max-w-[100rem] flex-col gap-5 px-4 py-6 text-sm sm:px-6 sm:py-8 lg:px-8">
+        <div className="relative flex flex-wrap items-center justify-between gap-3 pb-4">
+          <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-border" />
           <div>
-            <div className="flex items-center gap-2">
-              <span className="h-1 w-1 rounded-full bg-cyan-400/60" />
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-widest text-cyan-400/70">
-                Hypervoid_System_Footer
-              </p>
-            </div>
-            <p className="mt-2 font-mono text-xs text-cyan-50/48">
-              © {year} Hypervoid · <span className="italic">One &amp; Only</span>
+            <p className="text-xs font-medium text-muted-soft">
+              Hypervoid
+            </p>
+            <p className="mt-1 text-xs text-muted-soft">
+              &copy; {year} &middot; <span className="italic">One &amp; Only</span>
             </p>
           </div>
           <TechStackBadges />
         </div>
-        <div className="flex flex-col items-start justify-between gap-3 font-mono text-[11px] uppercase sm:flex-row sm:items-center">
-          <p className="flex flex-wrap items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 border border-cyan-400/30 bg-cyan-950/40 px-2 py-0.5 text-cyan-300" style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%)' }}>
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
+        <div className="flex flex-col items-start justify-between gap-3 text-xs sm:flex-row sm:items-center">
+          <p className="flex flex-wrap items-center gap-3 text-muted-soft">
+            <span className="inline-flex items-center gap-1.5 text-accent">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
               Online
             </span>
-            <SiteUptime className="hidden text-cyan-50/55 sm:inline" />
+            <SiteUptime className="hidden text-muted-soft sm:inline" />
           </p>
           <p className="flex flex-wrap items-center gap-3">
             <a
               href="https://github.com/HyperCharon"
               target="_blank"
               rel="noreferrer noopener"
-              className="inline-flex items-center gap-1 border-b border-transparent transition hover:border-cyan-400/50 hover:text-cyan-300"
+              className="glow-underline inline-flex items-center gap-1 text-muted transition hover:text-accent"
             >
               GitHub
               <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
               </svg>
             </a>
-            <a href="/rss.xml" className="border-b border-transparent transition hover:border-cyan-400/50 hover:text-cyan-300">
+            <a href="/rss.xml" className="text-muted transition hover:text-accent">
               RSS
             </a>
             {siteConfig.donate.enabled ? (
-              <a href="/donate" className="border-b border-transparent transition hover:border-cyan-400/50 hover:text-cyan-300">
+              <a href="/donate" className="text-muted transition hover:text-accent">
                 Donate
               </a>
             ) : null}

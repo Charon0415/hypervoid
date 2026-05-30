@@ -38,7 +38,7 @@ const MESSAGES: Record<string, { title: string; body: string; tone: "ok" | "erro
 function ToneIcon({ tone }: { tone: "ok" | "error" | "info" }) {
   if (tone === "ok") return <CheckCircle2 className="h-9 w-9 text-emerald-300" aria-hidden />;
   if (tone === "error") return <TriangleAlert className="h-9 w-9 text-red-300" aria-hidden />;
-  return <Info className="h-9 w-9 text-cyan-100/70" aria-hidden />;
+  return <Info className="h-9 w-9 text-muted" aria-hidden />;
 }
 
 export default async function SubscribeResult(props: {
@@ -52,7 +52,7 @@ export default async function SubscribeResult(props: {
       <div className="hv-panel w-full p-8">
         <ToneIcon tone={m.tone} />
         <h1 className="hv-title mt-4 text-2xl font-bold tracking-tight">{m.title}</h1>
-        <p className="mt-3 text-sm leading-7 text-cyan-50/62">{m.body}</p>
+        <p className="mt-3 text-sm leading-7 text-muted">{m.body}</p>
       </div>
       <Link href="/" className="hv-action px-4 py-2 text-sm">
         <ArrowLeft className="h-4 w-4" aria-hidden />

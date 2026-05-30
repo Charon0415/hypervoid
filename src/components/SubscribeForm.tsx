@@ -57,13 +57,13 @@ export function SubscribeForm({
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="you@example.com"
-        className="hv-input min-w-0 flex-1 rounded-md border border-cyan-100/18 bg-cyan-950/30 px-3 py-1.5 text-sm text-cyan-50 placeholder:text-cyan-50/40 transition focus:border-cyan-400/50 focus:bg-cyan-950/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20"
+        className="hv-input min-w-0 flex-1 rounded-md border border-border bg-card px-3 py-1.5 text-sm text-foreground placeholder:text-muted-soft transition focus:border-accent/50 focus:bg-card focus:outline-none focus:ring-2 focus:ring-accent-glow"
         aria-label="邮箱"
       />
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md border border-cyan-400/40 bg-cyan-400/10 px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-cyan-300 shadow-[0_0_16px_rgba(103,232,249,0.12)] transition hover:border-cyan-400/60 hover:bg-cyan-400/20 hover:text-cyan-100 hover:shadow-[0_0_24px_rgba(103,232,249,0.2)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[0_0_16px_rgba(103,232,249,0.12)]"
+        className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md border border-accent/40 bg-accent/10 px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-accent shadow-[0_0_16px_var(--accent-glow)] transition hover:border-accent/60 hover:bg-accent/20 hover:text-accent hover:shadow-[0_0_24px_var(--accent-glow)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[0_0_16px_var(--accent-glow)]"
       >
         {pending ? "提交中…" : "订阅"}
         {!pending ? (
@@ -92,12 +92,12 @@ export function SubscribeForm({
       <div className="grid min-w-0 gap-3 md:grid-cols-[minmax(0,0.85fr)_minmax(22rem,1.15fr)] md:items-end">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
-            <h3 className="font-mono text-sm font-semibold uppercase tracking-widest text-cyan-100/80">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
+            <h3 className="font-mono text-sm font-semibold uppercase tracking-widest text-accent">
               Subscribe_Updates
             </h3>
           </div>
-          <p className="mt-1.5 text-sm leading-snug text-cyan-50/70">
+          <p className="mt-1.5 text-sm leading-snug text-muted">
             新文章发布时通过邮件通知你，不发别的。随时退订。
           </p>
         </div>

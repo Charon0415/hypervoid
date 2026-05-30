@@ -20,7 +20,7 @@ export function ThemeToggle() {
       onClick={() => setTheme(next)}
       aria-label={t.common.toggleTheme}
       title={t.common.toggleTheme}
-      className="grid h-10 w-10 place-items-center border border-cyan-100/18 bg-white/[0.055] text-cyan-50/72 backdrop-blur-xl transition hover:border-cyan-100/45 hover:bg-cyan-50/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/70 touch-manipulation"
+      className="grid h-10 w-10 place-items-center border border-border bg-card text-muted backdrop-blur-xl transition hover:border-border hover:bg-card-hover hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-accent touch-manipulation"
     >
       {mounted && resolvedTheme === "dark" ? <Moon className="h-4 w-4" aria-hidden /> : <Sun className="h-4 w-4" aria-hidden />}
     </button>

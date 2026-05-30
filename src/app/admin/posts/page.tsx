@@ -44,19 +44,19 @@ export default async function AdminPostsList(props: {
     <div className="flex flex-col gap-6">
       <header className="hv-panel-sci relative overflow-hidden p-5 sm:p-6 flex items-center justify-between gap-3">
         {/* Corner accents */}
-        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
-        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-accent/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-accent/60 pointer-events-none" />
 
         <div className="flex items-center gap-3">
           <AdminBackLink href="/admin" label="后台" />
           <h1 className="hv-title font-mono text-2xl font-black tracking-wider uppercase">POST_MANAGER</h1>
-          <span className="font-mono text-sm text-cyan-50/58 uppercase">
+          <span className="font-mono text-sm text-muted uppercase">
             {allPosts.length} POSTS · {categories.length} CATS
           </span>
         </div>
         <Link
           href="/admin/posts/new"
-          className="hv-action px-4 py-2 text-sm font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_rgba(103,232,249,0.3)]"
+          className="hv-action px-4 py-2 text-sm font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_var(--accent-glow)]"
         >
           <PenLine className="h-4 w-4" aria-hidden />
           NEW_POST
@@ -84,7 +84,7 @@ export default async function AdminPostsList(props: {
               muted={cat === UNCATEGORIZED}
             />
           ))}
-          <p className="mt-3 px-2 text-[10px] leading-snug text-cyan-50/45">
+          <p className="mt-3 px-2 text-[10px] leading-snug text-muted">
             分类来自每篇文章的 <code>category</code> 字段。在编辑页修改。
           </p>
         </aside>
@@ -125,9 +125,9 @@ function CategoryLink({
       href={href}
       className={`flex items-center justify-between px-2 py-1.5 transition clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)] ${
         active
-          ? "bg-cyan-400/12 text-cyan-100 border-l-2 border-cyan-400"
-          : "text-cyan-50/72 hover:bg-cyan-400/5 hover:text-cyan-50"
-      } ${muted && !active ? "italic text-cyan-50/42" : ""}`}
+          ? "bg-accent/12 text-foreground border-l-2 border-accent"
+          : "text-foreground hover:bg-accent/5 hover:text-foreground"
+      } ${muted && !active ? "italic text-muted" : ""}`}
     >
       <span className="truncate">{label}</span>
       <span className="ml-2 shrink-0 font-mono text-[10px] opacity-70">

@@ -53,7 +53,7 @@ export function CodeBlock(props: Props) {
               </span>
             ) : null}
             {lang ? (
-              <span className="rounded-full bg-cyan-400/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-cyan-200">
+              <span className="rounded-full bg-accent/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-accent">
                 {lang}
               </span>
             ) : null}

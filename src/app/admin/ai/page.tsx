@@ -80,8 +80,8 @@ export default async function AdminAiPage() {
   return (
     <div className="flex flex-col gap-6">
       <header className="hv-panel-sci p-5 relative overflow-hidden">
-        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
-        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-accent/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-accent/60 pointer-events-none" />
 
         <AdminBackLink href="/admin" label="后台" />
         <p className="hv-kicker mt-4 uppercase">AI_CONTROL_PLANE</p>
@@ -104,8 +104,8 @@ export default async function AdminAiPage() {
               key={p.id}
               className={`hv-panel-sci p-5 ${
                 current.provider === p.id
-                  ? "border-cyan-400/55 bg-cyan-400/10"
-                  : "border-cyan-400/16 bg-cyan-400/6"
+                  ? "border-accent/55 bg-accent/10"
+                  : "border-accent/16 bg-accent/6"
               }`}
             >
               <header className="mb-2 flex items-center justify-between gap-3">
@@ -135,7 +135,7 @@ export default async function AdminAiPage() {
                   href={PROVIDER_DOCS[p.id].url}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="text-cyan-100 hover:underline"
+                  className="text-foreground hover:underline"
                 >
                   控制台 ↗
                 </a>
@@ -168,7 +168,7 @@ export default async function AdminAiPage() {
                     ? "border-red-500/50 bg-red-500/5"
                     : near
                     ? "border-amber-500/50 bg-amber-500/5"
-                    : "border-cyan-100/14 bg-black/20"
+                    : "border-border bg-black/20"
                 }`}
               >
                 <div className="flex items-baseline justify-between gap-2">
@@ -186,14 +186,14 @@ export default async function AdminAiPage() {
                   <span className="text-muted">tokens</span>
                 </div>
                 {limit > 0 ? (
-                  <div className="mt-2 h-1.5 overflow-hidden  bg-cyan-100/12">
+                  <div className="mt-2 h-1.5 overflow-hidden  bg-muted/12">
                     <div
                       className={`h-full transition-all ${
                         over
                           ? "bg-red-500"
                           : near
                           ? "bg-amber-500"
-                          : "bg-cyan-100"
+                          : "bg-accent"
                       }`}
                       style={{ width: `${pct}%` }}
                     />
@@ -225,7 +225,7 @@ export default async function AdminAiPage() {
             {quotaProviders.map((p) => (
               <label
                 key={p.key}
-                className="flex flex-col gap-1 border border-cyan-100/12 bg-black/20 p-3"
+                className="flex flex-col gap-1 border border-border bg-black/20 p-3"
               >
                 <span className="text-xs font-medium">{p.label}</span>
                 <input
@@ -234,7 +234,7 @@ export default async function AdminAiPage() {
                   defaultValue={quotas[p.key] ?? 0}
                   min={0}
                   step={1000}
-                  className="w-full rounded-md border border-cyan-100/16 bg-cyan-300/6 px-2 py-1 font-mono text-sm"
+                  className="w-full rounded-md border border-border bg-accent-soft/6 px-2 py-1 font-mono text-sm"
                   placeholder="0 = 不限"
                 />
                 <span className="text-[10px] text-muted">tokens / 天</span>
@@ -276,8 +276,8 @@ export default async function AdminAiPage() {
                       key={m.id}
                       className={`flex cursor-pointer items-start gap-3 border p-3 transition ${
                         active
-                          ? "border-cyan-200/55 bg-cyan-300/10"
-                          : "border-cyan-100/14 bg-black/20 hover:border-cyan-100/40"
+                          ? "border-accent-soft/55 bg-accent-soft/10"
+                          : "border-border bg-black/20 hover:border-accent/40"
                       } ${!providerOk ? "opacity-60" : ""}`}
                     >
                       <input
@@ -285,7 +285,7 @@ export default async function AdminAiPage() {
                         name="model"
                         value={m.id}
                         defaultChecked={active}
-                        className="mt-1 accent-cyan-300"
+                        className="mt-1 accent-accent-soft"
                       />
                       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                         <span className="flex flex-wrap items-center gap-2 text-sm font-medium">
@@ -315,8 +315,8 @@ export default async function AdminAiPage() {
                     key={row.id}
                     className={`flex cursor-pointer items-start gap-3 border p-3 transition ${
                       active
-                        ? "border-cyan-200/55 bg-cyan-300/10"
-                        : "border-cyan-100/14 bg-black/20 hover:border-cyan-100/40"
+                        ? "border-accent-soft/55 bg-accent-soft/10"
+                        : "border-border bg-black/20 hover:border-accent/40"
                     }`}
                   >
                     <input
@@ -324,7 +324,7 @@ export default async function AdminAiPage() {
                       name="model"
                       value={row.id}
                       defaultChecked={active}
-                      className="mt-1 accent-cyan-300"
+                      className="mt-1 accent-accent-soft"
                     />
                     <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                       <span className="flex flex-wrap items-center gap-2 text-sm font-medium">
@@ -332,7 +332,7 @@ export default async function AdminAiPage() {
                         <code className="rounded bg-black/25 px-1.5 py-0.5 font-mono text-[10px] text-muted">
                           {row.upstreamId}
                         </code>
-                        <span className=" bg-cyan-100/12 px-1.5 py-0.5 text-[9px] uppercase tracking-widest">
+                        <span className=" bg-muted/12 px-1.5 py-0.5 text-[9px] uppercase tracking-widest">
                           {row.protocol}
                         </span>
                       </span>
@@ -377,8 +377,8 @@ export default async function AdminAiPage() {
                   key={row.id}
                   className={`flex items-start gap-3 border p-3 text-xs ${
                     active
-                      ? "border-cyan-200/55 bg-cyan-300/10"
-                      : "border-cyan-100/14 bg-black/20"
+                      ? "border-accent-soft/55 bg-accent-soft/10"
+                      : "border-border bg-black/20"
                   }`}
                 >
                   <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -388,7 +388,7 @@ export default async function AdminAiPage() {
                         {customDisplayId(row.id)}
                       </code>
                       {active ? (
-                        <span className="ml-2  bg-cyan-100/15 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-widest text-cyan-100">
+                        <span className="ml-2  bg-accent/15 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-widest text-foreground">
                           当前启用
                         </span>
                       ) : null}
@@ -427,7 +427,7 @@ export default async function AdminAiPage() {
               name="id"
               required
               placeholder="openrouter-sonnet"
-              className="rounded-md border border-cyan-100/14 bg-black/20 px-2 py-1 font-mono text-sm"
+              className="rounded-md border border-border bg-black/20 px-2 py-1 font-mono text-sm"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs">
@@ -436,7 +436,7 @@ export default async function AdminAiPage() {
               name="label"
               required
               placeholder="OpenRouter · Claude 3.5 Sonnet"
-              className="rounded-md border border-cyan-100/14 bg-black/20 px-2 py-1 text-sm"
+              className="rounded-md border border-border bg-black/20 px-2 py-1 text-sm"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs">
@@ -444,7 +444,7 @@ export default async function AdminAiPage() {
             <select
               name="protocol"
               defaultValue="openai"
-              className="rounded-md border border-cyan-100/14 bg-black/20 px-2 py-1 text-sm"
+              className="rounded-md border border-border bg-black/20 px-2 py-1 text-sm"
             >
               <option value="openai">openai (兼容 /chat/completions)</option>
               <option value="anthropic">anthropic (兼容 /v1/messages)</option>
@@ -456,7 +456,7 @@ export default async function AdminAiPage() {
               name="baseUrl"
               required
               placeholder="https://api.xiaomimimo.com/v1 或完整 /chat/completions"
-              className="rounded-md border border-cyan-100/14 bg-black/20 px-2 py-1 font-mono text-sm"
+              className="rounded-md border border-border bg-black/20 px-2 py-1 font-mono text-sm"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs">
@@ -465,7 +465,7 @@ export default async function AdminAiPage() {
               name="upstreamId"
               required
               placeholder="anthropic/claude-3.5-sonnet"
-              className="rounded-md border border-cyan-100/14 bg-black/20 px-2 py-1 font-mono text-sm"
+              className="rounded-md border border-border bg-black/20 px-2 py-1 font-mono text-sm"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs">
@@ -475,7 +475,7 @@ export default async function AdminAiPage() {
               required
               type="password"
               placeholder="sk-or-..."
-              className="rounded-md border border-cyan-100/14 bg-black/20 px-2 py-1 font-mono text-sm"
+              className="rounded-md border border-border bg-black/20 px-2 py-1 font-mono text-sm"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs sm:col-span-2">
@@ -483,7 +483,7 @@ export default async function AdminAiPage() {
             <input
               name="hint"
               placeholder="OpenRouter 的 Sonnet — 国内可达"
-              className="rounded-md border border-cyan-100/14 bg-black/20 px-2 py-1 text-sm"
+              className="rounded-md border border-border bg-black/20 px-2 py-1 text-sm"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs sm:col-span-2">
@@ -491,7 +491,7 @@ export default async function AdminAiPage() {
             <input
               name="extraHeaders"
               placeholder={'{"HTTP-Referer": "https://hypervoid.top", "X-Title": "Hypervoid"}'}
-              className="rounded-md border border-cyan-100/14 bg-black/20 px-2 py-1 font-mono text-[11px]"
+              className="rounded-md border border-border bg-black/20 px-2 py-1 font-mono text-[11px]"
             />
             <span className="text-[10px] text-muted">
               OpenRouter 推荐填 HTTP-Referer + X-Title；MiMo 通常留空。MiMo 的 Model ID 填 mimo-v2.5-pro，不要把 [1M] 说明写进模型名。
@@ -528,7 +528,7 @@ export default async function AdminAiPage() {
 
 function FeatureCard({ title, hint }: { title: string; hint: string }) {
   return (
-    <li className="border border-cyan-100/12 bg-black/20 p-3">
+    <li className="border border-border bg-black/20 p-3">
       <p className="font-medium">{title}</p>
       <p className="mt-0.5 text-muted">{hint}</p>
     </li>

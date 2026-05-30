@@ -133,7 +133,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
       />
       <ReadingProgress />
       <ReadTracker slug={slug} />
-      <article className="mx-auto w-full max-w-3xl">
+      <article className="mx-auto w-full ">
         <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
           <Link
             href="/posts"
@@ -161,14 +161,14 @@ export default async function PostPage(props: { params: Promise<Params> }) {
           </div>
         </div>
         <header className="hv-panel relative mt-5 overflow-hidden p-5 sm:p-7">
-          <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-100/45 to-transparent" />
+          <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
           <p className="hv-kicker">Article node / reading chamber</p>
           <h1 className="hv-title mt-2 text-3xl font-black leading-tight sm:text-5xl">
             {frontmatter.title}
           </h1>
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-cyan-50/62">
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-muted">
             {frontmatter.visibility === "private" ? (
-              <span className="hv-chip border-amber-300/30 bg-amber-300/10 text-amber-200">
+              <span className="hv-chip border-accent-soft/30 bg-accent-soft/10 text-accent-soft">
                 <LockKeyhole className="h-3 w-3" aria-hidden /> 私密
               </span>
             ) : null}
@@ -212,7 +212,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
                     <Link
                       key={tag}
                       href={`/tags/${encodeURIComponent(tag)}`}
-                      className="hv-chip transition hover:border-cyan-100/42 hover:text-cyan-50"
+                      className="hv-chip transition hover:border-border hover:text-foreground"
                     >
                       #{tag}
                     </Link>
@@ -222,7 +222,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             ) : null}
           </div>
           {frontmatter.description ? (
-            <p className="mt-4 max-w-2xl text-base leading-7 text-cyan-50/66">
+            <p className="mt-4  text-base leading-7 text-muted">
               {frontmatter.description}
             </p>
           ) : null}
@@ -234,7 +234,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             <p className="hv-kicker mb-1">
               AI briefing
             </p>
-            <p className="text-sm leading-7 text-cyan-50/72">{frontmatter.summary}</p>
+            <p className="text-sm leading-7 text-muted">{frontmatter.summary}</p>
           </aside>
         ) : null}
         <div className="prose prose-zinc dark:prose-invert hv-prose mt-8 max-w-none">

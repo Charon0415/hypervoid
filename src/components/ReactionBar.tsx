@@ -108,8 +108,8 @@ export function ReactionBar({
             title={r.label}
             className={`group inline-flex items-center gap-1.5 border px-3 py-1.5 text-sm transition disabled:opacity-60 ${
               active
-                ? "border-cyan-400/40 bg-cyan-400/15 text-cyan-100 shadow-[0_0_12px_rgba(103,232,249,0.15)]"
-                : "border-cyan-100/18 bg-cyan-950/30 text-cyan-50/70 hover:border-cyan-400/30 hover:bg-cyan-900/30 hover:text-cyan-100"
+                ? "border-accent/40 bg-accent/15 text-accent shadow-[0_0_12px_var(--accent-glow)]"
+                : "border-border bg-card text-muted hover:border-accent/30 hover:bg-card-hover hover:text-accent"
             }`}
             style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%)' }}
           >

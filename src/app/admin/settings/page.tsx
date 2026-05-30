@@ -43,16 +43,16 @@ export default async function AdminSettingsPage() {
     <div className="flex flex-col gap-6">
       <header className="hv-panel-sci relative overflow-hidden p-5 sm:p-6 flex items-center gap-3">
         {/* Corner accents */}
-        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
-        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-accent/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-accent/60 pointer-events-none" />
         {/* Pulse beacon */}
-        <span className="absolute right-5 top-5 h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
+        <span className="absolute right-5 top-5 h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
 
         <AdminBackLink href="/admin" label="后台" />
         <h1 className="hv-title font-mono text-2xl font-black tracking-wider uppercase">SITE_SETTINGS</h1>
       </header>
 
-      <p className="text-sm text-cyan-50/55">
+      <p className="text-sm text-muted">
         这里改动的值会覆盖{" "}
         <code className="rounded bg-white/[0.045] px-1.5 py-0.5 text-xs">
           src/lib/site-config.ts
@@ -67,7 +67,7 @@ export default async function AdminSettingsPage() {
         <div className="grid gap-4 sm:grid-cols-2">
           {fields.map((f) => (
             <label key={f.key} className="flex flex-col gap-1.5">
-              <span className="font-mono text-sm font-medium uppercase text-cyan-50/85">{f.key}</span>
+              <span className="font-mono text-sm font-medium uppercase text-foreground">{f.key}</span>
               <input
                 name={f.key}
                 type="text"
@@ -76,11 +76,11 @@ export default async function AdminSettingsPage() {
                 className="hv-input w-full px-3 py-2 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
               />
               {f.value !== f.default ? (
-                <span className="font-mono text-[10px] uppercase text-cyan-100">
+                <span className="font-mono text-[10px] uppercase text-foreground">
                   已自定义（默认：{f.default}）
                 </span>
               ) : (
-                <span className="text-[10px] text-cyan-50/55">
+                <span className="text-[10px] text-muted">
                   默认：{f.default}
                 </span>
               )}
@@ -91,7 +91,7 @@ export default async function AdminSettingsPage() {
         <div>
           <button
             type="submit"
-            className="hv-action px-5 py-2 text-sm font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_rgba(103,232,249,0.3)]"
+            className="hv-action px-5 py-2 text-sm font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_var(--accent-glow)]"
           >
             保存设置
           </button>
@@ -125,8 +125,8 @@ export default async function AdminSettingsPage() {
               key={opt.value}
               className={`flex cursor-pointer items-start gap-3 border p-4 transition-colors clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] ${
                 loginPolicy === opt.value
-                  ? "border-cyan-400/40 bg-cyan-400/12"
-                  : "border-cyan-100/16 bg-gradient-to-br from-cyan-950/40 to-slate-950/60 hover:border-cyan-400/40"
+                  ? "border-accent/40 bg-accent/12"
+                  : "border-border bg-gradient-to-br from-card to-card hover:border-accent/40"
               }`}
             >
               <input
@@ -134,24 +134,24 @@ export default async function AdminSettingsPage() {
                 name="login_policy"
                 value={opt.value}
                 defaultChecked={loginPolicy === opt.value}
-                className="mt-0.5 accent-cyan-300"
+                className="mt-0.5 accent-accent-soft"
               />
               <div>
                 <p className="text-sm font-medium">{opt.label}</p>
-                <p className="mt-0.5 text-xs text-cyan-50/55">{opt.desc}</p>
+                <p className="mt-0.5 text-xs text-muted">{opt.desc}</p>
               </div>
             </label>
           ))}
           <div>
             <button
               type="submit"
-              className="hv-action px-5 py-2 text-sm font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_rgba(103,232,249,0.3)]"
+              className="hv-action px-5 py-2 text-sm font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_var(--accent-glow)]"
             >
               保存策略
             </button>
           </div>
         </form>
-        <p className="text-xs text-cyan-50/55">
+        <p className="text-xs text-muted">
           当前策略：
           {loginPolicy === "required"
             ? "全站登录 — 未登录用户会被拦截"
@@ -163,7 +163,7 @@ export default async function AdminSettingsPage() {
 
       <div className="hv-divider" />
 
-      <div className="text-xs text-cyan-50/55">
+      <div className="text-xs text-muted">
         <p className="font-medium">说明</p>
         <ul className="mt-1.5 list-disc space-y-0.5 pl-5">
           <li>站点文案覆盖值保留 1 分钟内存缓存；全站登录开关会在下一次请求生效。</li>

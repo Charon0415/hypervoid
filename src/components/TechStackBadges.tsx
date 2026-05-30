@@ -134,14 +134,14 @@ const BADGES: Badge[] = [
     value: "Claude",
     icon: "claude",
     href: "https://www.anthropic.com",
-    color: "bg-amber-500",
+    color: "bg-accent",
   },
   {
     label: "License",
     value: "BY-NC-SA 4.0",
     icon: "cc",
     href: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
-    color: "bg-rose-500",
+    color: "bg-accent",
   },
 ];
 

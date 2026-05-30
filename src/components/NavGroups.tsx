@@ -261,7 +261,7 @@ export function NavGroups() {
 
         <span
           aria-hidden
-          className="mx-1 h-5 w-px shrink-0 bg-cyan-100/14"
+          className="mx-1 h-5 w-px shrink-0 bg-border"
         />
 
         {groups.map((g) => {
@@ -312,8 +312,8 @@ export function NavGroups() {
                       const ItemIcon = item.icon;
                       const className = `hv-pill-menu-link ${
                         itemActive
-                          ? "border-cyan-100/24 bg-cyan-50/12 text-cyan-100"
-                          : "text-cyan-50/72 hover:border-cyan-100/18 hover:bg-cyan-50/8 hover:text-white"
+                          ? "border-border bg-foreground/5 text-accent"
+                          : "text-muted hover:border-border hover:bg-foreground/3 hover:text-foreground"
                       }`;
                       if (item.external) {
                         return (
@@ -326,7 +326,7 @@ export function NavGroups() {
                             onClick={closeNow}
                             className={className}
                           >
-                            <ItemIcon aria-hidden className="h-4 w-4 shrink-0 text-cyan-100/75" />
+                            <ItemIcon aria-hidden className="h-4 w-4 shrink-0 text-accent-soft" />
                             <span className="whitespace-nowrap">{item.label}</span>
                             <svg
                               aria-hidden
@@ -349,7 +349,7 @@ export function NavGroups() {
                           onClick={closeNow}
                           className={className}
                         >
-                          <ItemIcon aria-hidden className="h-4 w-4 shrink-0 text-cyan-100/75" />
+                          <ItemIcon aria-hidden className="h-4 w-4 shrink-0 text-accent-soft" />
                           <span>{item.label}</span>
                         </Link>
                       );

@@ -20,16 +20,16 @@ export async function SeriesBanner({ post }: { post: Post }) {
         className="block px-4 py-3 transition hover:bg-white/[0.045]"
       >
         <div className="flex items-center justify-between gap-3 text-xs">
-          <span className="inline-flex items-center gap-2 font-medium text-cyan-50">
-            <RadioTower className="h-4 w-4 text-cyan-100/75" aria-hidden />
+          <span className="inline-flex items-center gap-2 font-medium text-foreground">
+            <RadioTower className="h-4 w-4 text-accent-soft" aria-hidden />
             本文是「{seriesName}」系列的第 {position} 篇 / 共 {seriesPosts.length} 篇
           </span>
-          <span className="inline-flex items-center gap-1 font-mono uppercase text-cyan-100/58">
+          <span className="inline-flex items-center gap-1 font-mono uppercase text-muted">
             查看全部 <ArrowRight className="h-3 w-3" aria-hidden />
           </span>
         </div>
       </Link>
-      <div className="border-t border-cyan-100/12 px-4 py-3">
+      <div className="border-t border-border px-4 py-3">
         <div className="flex flex-col gap-1.5 text-sm">
           {seriesPosts.map((p, i) => {
             const isCurrent = p.slug === post.slug;
@@ -39,8 +39,8 @@ export async function SeriesBanner({ post }: { post: Post }) {
                 href={`/posts/${p.slug}`}
                 className={`flex items-baseline gap-2 rounded-md px-2 py-1 transition ${
                   isCurrent
-                    ? "bg-cyan-100/12 font-medium text-cyan-100"
-                    : "text-cyan-50/60 hover:bg-white/[0.04] hover:text-cyan-50"
+                    ? "bg-foreground/5 font-medium text-accent"
+                    : "text-muted hover:bg-card hover:text-foreground"
                 }`}
               >
                 <span className="shrink-0 font-mono text-xs opacity-70">

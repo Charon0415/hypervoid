@@ -9,7 +9,7 @@ export function PostsGrid({ children }: { children: ReactNode }) {
   return (
     <>
       <div className="flex items-center justify-end gap-3">
-        <span className="hidden font-mono text-[11px] uppercase text-cyan-50/45 sm:inline">
+        <span className="hidden font-mono text-[11px] uppercase text-muted-soft sm:inline">
           Layout matrix
         </span>
         <ColumnToggleButton twoCol={twoCol} onChange={setLayout} />

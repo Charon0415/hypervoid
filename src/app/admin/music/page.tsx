@@ -233,7 +233,7 @@ export default async function AdminMusicPage({
       </header>
 
       {err && ERROR_MESSAGES[err] ? (
-        <p className="rounded-md border border-amber-400/30 bg-amber-400/5 px-3 py-2 text-xs text-amber-700 dark:text-amber-400">
+        <p className="rounded-md border border-accent/30 bg-accent/5 px-3 py-2 text-xs text-amber-700 dark:text-accent">
           {ERROR_MESSAGES[err]}
         </p>
       ) : null}
@@ -246,14 +246,14 @@ export default async function AdminMusicPage({
               前台 APlayer 和首页小组件都会读取这里选择的统一音源。
             </p>
           </div>
-          <span className=" border border-cyan-100/14 bg-black/20 px-3 py-1 text-xs text-muted">
+          <span className=" border border-border bg-black/20 px-3 py-1 text-xs text-muted">
             当前：{MUSIC_SOURCE_LABEL[sourceConfig.mode]}
           </span>
         </div>
 
         <form action={saveSourceAction} className="mt-4 flex flex-col gap-4">
           <div className="grid gap-3 md:grid-cols-3">
-            <label className="border border-cyan-100/12 bg-black/20/60 p-4 text-sm transition has-[:checked]:border-cyan-200/55 has-[:checked]:bg-cyan-300/10">
+            <label className="border border-border bg-black/20/60 p-4 text-sm transition has-[:checked]:border-accent/55 has-[:checked]:bg-accent/10">
               <input
                 type="radio"
                 name="sourceMode"
@@ -264,7 +264,7 @@ export default async function AdminMusicPage({
               <span className="font-medium">已部署音源</span>
               <p className="mt-1 text-xs text-muted">沿用现有网易云歌单链路，受 Cookie、版权和地区影响。</p>
             </label>
-            <label className="border border-cyan-100/12 bg-black/20/60 p-4 text-sm transition has-[:checked]:border-cyan-200/55 has-[:checked]:bg-cyan-300/10">
+            <label className="border border-border bg-black/20/60 p-4 text-sm transition has-[:checked]:border-accent/55 has-[:checked]:bg-accent/10">
               <input
                 type="radio"
                 name="sourceMode"
@@ -275,7 +275,7 @@ export default async function AdminMusicPage({
               <span className="font-medium">LX 音源</span>
               <p className="mt-1 text-xs text-muted">填写可返回 JSON 曲目列表的 LX API。不要直接执行混淆 JS 音源脚本。</p>
             </label>
-            <label className="border border-cyan-100/12 bg-black/20/60 p-4 text-sm transition has-[:checked]:border-cyan-200/55 has-[:checked]:bg-cyan-300/10">
+            <label className="border border-border bg-black/20/60 p-4 text-sm transition has-[:checked]:border-accent/55 has-[:checked]:bg-accent/10">
               <input
                 type="radio"
                 name="sourceMode"
@@ -295,7 +295,7 @@ export default async function AdminMusicPage({
               type="url"
               defaultValue={sourceConfig.lxApiUrl}
               placeholder="https://example.com/playlist?id={playlistId}"
-              className="rounded-md border border-cyan-100/14 bg-black/20 px-3 py-2 text-sm transition focus:border-cyan-200/55 focus:outline-none"
+              className="rounded-md border border-border bg-black/20 px-3 py-2 text-sm transition focus:border-accent/55 focus:outline-none"
             />
             <span className="text-[11px] text-muted">
               支持 {"{playlistId}"} 占位符；返回 JSON 可为数组，或包含 tracks/list/songs/data/result.playlist 等字段。
@@ -309,7 +309,7 @@ export default async function AdminMusicPage({
               rows={8}
               defaultValue={sourceConfig.localTracksRaw}
               placeholder={LOCAL_EXAMPLE}
-              className="rounded-md border border-cyan-100/14 bg-black/20 px-3 py-2 font-mono text-xs transition focus:border-cyan-200/55 focus:outline-none"
+              className="rounded-md border border-border bg-black/20 px-3 py-2 font-mono text-xs transition focus:border-accent/55 focus:outline-none"
             />
             <span className="text-[11px] text-muted">
               每首歌至少需要 title/name 与 url；可选 artist、cover、duration、lrc。
@@ -325,7 +325,7 @@ export default async function AdminMusicPage({
             </button>
             <a
               href="/admin/music?test=connect"
-              className="rounded-md border border-cyan-100/14 bg-black/20 px-4 py-2 text-sm text-muted transition hover:border-cyan-100/40 hover:text-cyan-100"
+              className="rounded-md border border-border bg-black/20 px-4 py-2 text-sm text-muted transition hover:border-accent/40 hover:text-foreground"
             >
               测试当前音源
             </a>
@@ -333,10 +333,10 @@ export default async function AdminMusicPage({
         </form>
 
         {testResult ? (
-          <div className={"mt-4 rounded-md border px-4 py-3 " + (testResult.ok ? "border-emerald-400/30 bg-emerald-400/5" : "border-red-400/30 bg-red-400/5")}>
+          <div className={"mt-4 rounded-md border px-4 py-3 " + (testResult.ok ? "border-accent/30 bg-accent/5" : "border-red-400/30 bg-red-400/5")}>
             {testResult.ok ? (
               <p className="text-sm">
-                <span className="font-medium text-emerald-700 dark:text-emerald-400">连接成功</span>
+                <span className="font-medium text-emerald-700 dark:text-accent">连接成功</span>
                 <span className="ml-2 text-muted">
                   {testResult.source} · {testResult.tracks} 首 · 可播放 {testResult.playable} 首
                 </span>
@@ -365,7 +365,7 @@ export default async function AdminMusicPage({
             type="text"
             required
             placeholder="https://music.163.com/playlist?id=... 或 2829883282"
-            className="flex-1 rounded-md border border-cyan-100/14 bg-black/20 px-3 py-2 text-sm transition focus:border-cyan-200/55 focus:outline-none"
+            className="flex-1 rounded-md border border-border bg-black/20 px-3 py-2 text-sm transition focus:border-accent/55 focus:outline-none"
           />
           <button
             type="submit"
@@ -396,7 +396,7 @@ export default async function AdminMusicPage({
               return (
                 <div
                   key={p.id}
-                  className={"flex flex-col gap-3 overflow-hidden hv-panel p-4 transition " + (isActive ? "border-cyan-200/55 bg-cyan-300/10 shadow-md" : "border-cyan-100/16 bg-cyan-300/6 hover:border-cyan-100/40")}
+                  className={"flex flex-col gap-3 overflow-hidden hv-panel p-4 transition " + (isActive ? "border-accent/55 bg-accent/10 shadow-md" : "border-border bg-accent/6 hover:border-accent/40")}
                 >
                   <div className="flex items-start gap-3">
                     <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-muted/20">
@@ -417,7 +417,7 @@ export default async function AdminMusicPage({
                       <div className="flex items-center gap-2">
                         <h3 className="line-clamp-1 text-base font-semibold tracking-tight">{p.name}</h3>
                         {isActive ? (
-                          <span className="shrink-0  bg-cyan-100 px-2 py-0.5 text-[10px] font-medium text-slate-950">
+                          <span className="shrink-0  bg-accent px-2 py-0.5 text-[10px] font-medium text-slate-950">
                             当前
                           </span>
                         ) : null}
@@ -437,7 +437,7 @@ export default async function AdminMusicPage({
                         <input type="hidden" name="id" value={p.id} />
                         <button
                           type="submit"
-                          className="rounded-md border border-cyan-200/55 bg-cyan-100/10 px-3 py-1 text-xs font-medium text-cyan-100 transition hover:bg-cyan-100/15"
+                          className="rounded-md border border-accent/55 bg-accent/10 px-3 py-1 text-xs font-medium text-foreground transition hover:bg-accent/15"
                         >
                           设为当前
                         </button>
@@ -448,7 +448,7 @@ export default async function AdminMusicPage({
                       <button
                         type="submit"
                         title="重新拉取封面/名称"
-                        className="rounded-md border border-cyan-100/14 bg-black/20 px-3 py-1 text-xs text-muted transition hover:border-cyan-100/40 hover:text-cyan-100"
+                        className="rounded-md border border-border bg-black/20 px-3 py-1 text-xs text-muted transition hover:border-accent/40 hover:text-foreground"
                       >
                         刷新
                       </button>
@@ -457,7 +457,7 @@ export default async function AdminMusicPage({
                       href={"https://music.163.com/#/playlist?id=" + p.id}
                       target="_blank"
                       rel="noreferrer"
-                      className="rounded-md border border-cyan-100/14 bg-black/20 px-3 py-1 text-xs text-muted transition hover:border-cyan-100/40 hover:text-cyan-100"
+                      className="rounded-md border border-border bg-black/20 px-3 py-1 text-xs text-muted transition hover:border-accent/40 hover:text-foreground"
                     >
                       网易云 ↗
                     </a>
@@ -465,7 +465,7 @@ export default async function AdminMusicPage({
                       <input type="hidden" name="id" value={p.id} />
                       <button
                         type="submit"
-                        className="rounded-md border border-cyan-100/14 bg-black/20 px-3 py-1 text-xs text-muted transition hover:border-red-500/40 hover:text-red-500"
+                        className="rounded-md border border-border bg-black/20 px-3 py-1 text-xs text-muted transition hover:border-red-500/40 hover:text-red-500"
                       >
                         删除
                       </button>
@@ -481,9 +481,9 @@ export default async function AdminMusicPage({
       <section className="hv-panel p-5">
         <h2 className="text-sm font-semibold tracking-tight">已部署音源 Cookie 状态</h2>
         <div className="mt-3 flex items-center gap-3">
-          <span className={"inline-flex h-2.5 w-2.5  " + (cookieSet ? "bg-emerald-500" : "bg-amber-500")} />
+          <span className={"inline-flex h-2.5 w-2.5  " + (cookieSet ? "bg-accent" : "bg-accent")} />
           <p className="text-sm">
-            <span className={cookieSet ? "font-medium text-emerald-700 dark:text-emerald-400" : "font-medium text-amber-700 dark:text-amber-400"}>
+            <span className={cookieSet ? "font-medium text-emerald-700 dark:text-accent" : "font-medium text-amber-700 dark:text-accent"}>
               {cookieSet ? "已配置" : "未配置"}
             </span>
             <span className="ml-2 text-muted">

@@ -98,11 +98,11 @@ export function BottomTabBar() {
   return (
     <nav
       aria-label="底部导航"
-      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
-      className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-cyan-100/15 bg-slate-950/95 shadow-[0_-18px_44px_rgba(0,0,0,0.34)] backdrop-blur-xl md:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 shadow-[0_-18px_44px_rgba(0,0,0,0.34)] backdrop-blur-xl md:hidden"
+      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)", background: "linear-gradient(135deg, rgba(239,68,68,0.06), rgba(234,179,8,0.04), rgba(34,197,94,0.05), rgba(59,130,246,0.08), rgba(99,102,241,0.06), rgba(139,92,246,0.05), rgba(12,18,36,0.9))", borderTop: "1px solid rgba(255,255,255,0.06)" }}
     >
       {/* Top accent line */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[2px]" style={{ background: "var(--rainbow)", opacity: 0.4 }} />
 
       {TABS.map((t) => {
         const active = t.match(pathname);
@@ -113,13 +113,13 @@ export function BottomTabBar() {
             aria-current={active ? "page" : undefined}
             className={`relative flex flex-col items-center justify-center gap-0.5 py-2.5 font-mono text-[10px] uppercase tracking-wider transition ${
               active
-                ? "text-cyan-300"
-                : "text-cyan-50/55 hover:text-cyan-100 active:text-cyan-100"
+                ? "text-accent"
+                : "text-muted-soft hover:text-accent active:text-accent"
             }`}
           >
             {/* Active indicator */}
             {active && (
-              <div aria-hidden className="absolute inset-x-2 top-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
+              <div aria-hidden className="absolute inset-x-2 top-0 h-0.5 bg-gradient-to-r from-transparent via-accent to-transparent" />
             )}
             <span aria-hidden className={`transition ${active ? "scale-110" : ""}`}>{t.icon}</span>
             <span>{t.label}</span>

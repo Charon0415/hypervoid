@@ -33,10 +33,10 @@ export function PendingApplications({ applications }: { applications: App[] }) {
         {applications.map((app) => (
           <div
             key={app.id}
-            className="flex flex-col gap-3 border border-cyan-100/12 bg-black/20 p-4 sm:flex-row sm:items-start sm:justify-between"
+            className="flex flex-col gap-3 border border-border bg-black/20 p-4 sm:flex-row sm:items-start sm:justify-between"
           >
             <div className="min-w-0 flex-1">
-              <p className="font-medium text-cyan-50">{app.name}</p>
+              <p className="font-medium text-foreground">{app.name}</p>
               <p className="truncate font-mono text-sm text-muted">{app.url}</p>
               {app.description ? (
                 <p className="mt-1 text-sm text-muted">{app.description}</p>

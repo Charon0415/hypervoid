@@ -23,8 +23,8 @@ function statusBadge(status: number | null, errorMessage: string | null) {
   if (status === null) {
     return { label: "ERR", cls: "border-red-300/35 bg-red-500/10 text-red-100", hint: errorMessage ?? "请求失败" };
   }
-  if (status >= 200 && status < 300) return { label: String(status), cls: "border-emerald-300/35 bg-emerald-400/10 text-emerald-100", hint: "OK" };
-  if (status >= 300 && status < 400) return { label: String(status), cls: "border-amber-300/35 bg-amber-400/10 text-amber-100", hint: "重定向" };
+  if (status >= 200 && status < 300) return { label: String(status), cls: "border-emerald-300/35 bg-accent/10 text-emerald-100", hint: "OK" };
+  if (status >= 300 && status < 400) return { label: String(status), cls: "border-amber-300/35 bg-accent/10 text-amber-100", hint: "重定向" };
   return { label: String(status), cls: "border-red-300/35 bg-red-500/10 text-red-100", hint: status === 404 ? "未找到" : status === 410 ? "已下线" : "错误" };
 }
 
@@ -40,8 +40,8 @@ export default async function AdminLinkCheckPage() {
     <div className="flex flex-col gap-6">
       <header className="hv-panel-sci relative overflow-hidden flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
         {/* Corner accents */}
-        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
-        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-accent/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-accent/60 pointer-events-none" />
 
         <div className="space-y-3">
           <AdminBackLink href="/admin" label="后台" />
@@ -61,10 +61,10 @@ export default async function AdminLinkCheckPage() {
 
       <section className="hv-panel-sci flex flex-wrap items-center gap-3 p-5">
         <div className="flex-1 text-sm leading-6 text-muted">
-          {lastRun ? <span>上次扫描：<span className="font-mono text-cyan-50">{formatDateTimeCN(lastRun)}</span></span> : <span>还没有扫描记录。</span>}
+          {lastRun ? <span>上次扫描：<span className="font-mono text-foreground">{formatDateTimeCN(lastRun)}</span></span> : <span>还没有扫描记录。</span>}
         </div>
         <form action={runScanAction}>
-          <button type="submit" className="hv-action px-4 text-sm font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_16px_rgba(103,232,249,0.25)]">
+          <button type="submit" className="hv-action px-4 text-sm font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_16px_var(--accent-glow)]">
             <Play className="h-4 w-4" aria-hidden="true" />
             立即扫描
           </button>
@@ -84,7 +84,7 @@ export default async function AdminLinkCheckPage() {
       ) : (
         <div className="hv-panel-sci overflow-x-auto p-0">
           <table className="w-full min-w-[680px] text-sm">
-            <thead className="border-b border-cyan-400/20 bg-cyan-400/[0.06] text-left font-mono text-xs uppercase text-cyan-100/65">
+            <thead className="border-b border-accent/20 bg-accent/[0.06] text-left font-mono text-xs uppercase text-muted">
               <tr>
                 <th className="w-20 px-3 py-3 font-medium">STATUS</th>
                 <th className="px-3 py-3 font-medium">URL / ERROR</th>
@@ -97,14 +97,14 @@ export default async function AdminLinkCheckPage() {
               {list.map((r) => {
                 const badge = statusBadge(r.status, r.errorMessage);
                 return (
-                  <tr key={r.url} className="border-t border-cyan-400/15 transition hover:bg-cyan-400/[0.05]">
+                  <tr key={r.url} className="border-t border-accent/15 transition hover:bg-accent/[0.05]">
                     <td className="px-3 py-3">
                       <span className={"inline-flex items-center border px-2 py-0.5 font-mono text-[11px] clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)] " + badge.cls} title={badge.hint}>
                         {badge.label}
                       </span>
                     </td>
                     <td className="px-3 py-3 text-xs">
-                      <a href={r.url} target="_blank" rel="noreferrer" className="break-all text-cyan-50/82 hover:text-white">
+                      <a href={r.url} target="_blank" rel="noreferrer" className="break-all text-foreground hover:text-foreground">
                         {r.url}
                       </a>
                       {r.errorMessage ? <p className="mt-1 text-[11px] text-muted">{r.errorMessage}</p> : null}
@@ -112,7 +112,7 @@ export default async function AdminLinkCheckPage() {
                     <td className="px-3 py-3 text-xs text-muted">
                       {(r.postSlugs ?? []).slice(0, 3).map((s, i) => (
                         <span key={s}>
-                          <Link href={"/admin/posts/" + s + "/edit"} className="hover:text-cyan-50">{s}</Link>
+                          <Link href={"/admin/posts/" + s + "/edit"} className="hover:text-foreground">{s}</Link>
                           {i < Math.min(2, (r.postSlugs ?? []).length - 1) ? "，" : ""}
                         </span>
                       ))}

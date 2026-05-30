@@ -9,21 +9,21 @@ import { HeaderDock } from "@/components/HeaderDock";
 export function SiteHeader() {
   return (
     <header
-      style={{ viewTransitionName: "site-header" }}
-      className="hv-site-header sticky top-0 z-40 w-full border-b border-cyan-100/10 bg-slate-950/88 text-white backdrop-blur-xl"
+      className="hv-site-header sticky top-0 z-40 w-full text-foreground"
+      style={{ viewTransitionName: "site-header", background: "linear-gradient(135deg, rgba(239,68,68,0.08), rgba(249,115,22,0.06), rgba(234,179,8,0.05), rgba(34,197,94,0.06), rgba(6,182,212,0.08), rgba(59,130,246,0.1), rgba(99,102,241,0.08), rgba(139,92,246,0.07), rgba(217,70,239,0.06), rgba(12,18,36,0.85))", backdropFilter: "blur(24px) saturate(1.4)", WebkitBackdropFilter: "blur(24px) saturate(1.4)" }}
     >
-      <div className="mx-auto flex h-16 max-w-[88rem] items-center gap-2 px-3 sm:gap-3 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-14 max-w-[100rem] items-center gap-2 px-4 sm:gap-3 sm:px-6 lg:px-8">
         <div className="flex min-h-11 shrink-0 items-center gap-2 font-bold tracking-tight sm:gap-2.5">
           <Link
             href="/sign-in"
             aria-label="登录 Hypervoid"
             title="登录"
-            className="hv-brand-orbit group inline-flex h-10 w-10 items-center justify-center text-cyan-200 transition hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/70"
+            className="hv-brand-orbit group inline-flex h-9 w-9 items-center justify-center text-muted transition hover:text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
-            <span aria-hidden className="inline-flex h-8 w-8 items-center justify-center transition-transform group-hover:rotate-12">
+            <span aria-hidden className="inline-flex h-7 w-7 items-center justify-center transition-transform group-hover:rotate-12">
               <svg
                 viewBox="0 0 64 64"
-                className="h-7 w-7"
+                className="h-6 w-6"
                 role="img"
                 aria-label="Hypervoid"
               >
@@ -34,7 +34,7 @@ export function SiteHeader() {
                     <stop offset="100%" stopColor="currentColor" stopOpacity="0.7" />
                   </radialGradient>
                 </defs>
-                <rect width="64" height="64" rx="14" fill="#0b0f1a" />
+                <rect width="64" height="64" rx="14" fill="currentColor" opacity="0.1" />
                 <ellipse
                   cx="32"
                   cy="32"
@@ -62,10 +62,10 @@ export function SiteHeader() {
           </Link>
           <Link
             href="/"
-            className="hidden min-h-10 items-center text-white/92 transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/70 sm:inline-flex"
+            className="hidden min-h-10 items-center text-foreground transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:inline-flex"
             aria-label="返回 Hypervoid 主页"
           >
-            <HypervoidWordmark className="h-6 w-auto" />
+            <HypervoidWordmark className="h-5 w-auto" />
           </Link>
         </div>
 

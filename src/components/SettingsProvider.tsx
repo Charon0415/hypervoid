@@ -25,7 +25,7 @@ export type FontSizeKey = "normal" | "large";
 
 export type DisplayMode = "fullscreen" | "banner" | "simple";
 
-export const DEFAULT_HUE = 215;
+export const DEFAULT_HUE = 187;
 export const DEFAULT_BACKGROUND: BackgroundKey = "cosmic";
 export const DEFAULT_FONT: FontKey = "geist";
 export const DEFAULT_FONT_SIZE: FontSizeKey = "normal";
@@ -87,12 +87,12 @@ const SettingsContext = createContext<SettingsValue>({
 function applyHue(hue: number) {
   if (typeof document === "undefined") return;
   if (hue === DEFAULT_HUE) {
+    document.documentElement.style.removeProperty("--accent");
     document.documentElement.style.removeProperty("--primary");
   } else {
-    document.documentElement.style.setProperty(
-      "--primary",
-      `hsl(${hue} 70% 60%)`,
-    );
+    const color = `hsl(${hue} 70% 60%)`;
+    document.documentElement.style.setProperty("--accent", color);
+    document.documentElement.style.setProperty("--primary", color);
   }
 }
 

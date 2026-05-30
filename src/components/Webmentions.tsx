@@ -15,7 +15,7 @@ export function Webmentions({ items }: { items: Webmention[] }) {
   return (
     <section className="mt-10">
       <h2 className="hv-title mb-4 flex items-center gap-2 text-sm font-semibold tracking-normal">
-        <Link2 className="h-4 w-4 text-cyan-100/70" aria-hidden />
+        <Link2 className="h-4 w-4 text-accent-soft" aria-hidden />
         来自外部站点的提及
         <span className="hv-chip text-xs font-normal">({items.length})</span>
       </h2>
@@ -34,10 +34,10 @@ export function Webmentions({ items }: { items: Webmention[] }) {
                 sizes="40px"
                 loading="lazy"
                 unoptimized
-                className="h-10 w-10 shrink-0 border border-cyan-100/18 object-cover"
+                className="h-10 w-10 shrink-0 border border-border object-cover"
               />
             ) : (
-              <div className="grid h-10 w-10 shrink-0 place-items-center border border-cyan-100/18 bg-cyan-50/[0.055] font-mono text-xs text-cyan-100">
+              <div className="grid h-10 w-10 shrink-0 place-items-center border border-border bg-card font-mono text-xs text-accent">
                 {(w.authorName ?? hostnameOf(w.source))
                   .slice(0, 1)
                   .toUpperCase()}
@@ -48,11 +48,11 @@ export function Webmentions({ items }: { items: Webmention[] }) {
                 href={w.source}
                 target="_blank"
                 rel="noreferrer noopener nofollow"
-                className="font-medium text-cyan-50 hover:text-cyan-100"
+                className="font-medium text-foreground hover:text-accent"
               >
                 {w.authorName ?? hostnameOf(w.source)}
               </a>
-              <p className="text-[10px] text-cyan-50/48">
+              <p className="text-[10px] text-muted-soft">
                 {hostnameOf(w.source)}
                 {w.verifiedAt ? (
                   <>
@@ -64,7 +64,7 @@ export function Webmentions({ items }: { items: Webmention[] }) {
                 ) : null}
               </p>
               {w.content ? (
-                <p className="mt-1 line-clamp-3 text-sm text-cyan-50/70">
+                <p className="mt-1 line-clamp-3 text-sm text-muted">
                   {w.content}
                 </p>
               ) : null}

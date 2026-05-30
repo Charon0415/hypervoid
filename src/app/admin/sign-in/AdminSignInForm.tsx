@@ -129,13 +129,13 @@ export function AdminSignInForm({
           退出当前账号
         </button>
       ) : emailSent ? (
-        <div className="border border-cyan-100/35 bg-cyan-50/10 p-5">
+        <div className="border border-violet-100/35 bg-violet-50/10 p-5">
           <div className="flex items-start gap-4">
-            <div className="grid h-11 w-11 shrink-0 place-items-center border border-cyan-100/50 text-cyan-100">
+            <div className="grid h-11 w-11 shrink-0 place-items-center border border-violet-100/50 text-violet-100">
               <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
             </div>
             <div>
-              <p className="font-mono text-xs uppercase text-cyan-50">登录链接已发送</p>
+              <p className="font-mono text-xs uppercase text-violet-50">登录链接已发送</p>
               <p className="mt-2 text-sm leading-6 text-white/70">
                 请查看 <span className="font-semibold text-white">{emailValue}</span>，登录链接将在 15 分钟后失效。
               </p>
@@ -146,7 +146,7 @@ export function AdminSignInForm({
                   setEmailValue("");
                   setLocalError(null);
                 }}
-                className="mt-4 min-h-11 px-0 text-sm font-bold uppercase text-cyan-100 underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/60"
+                className="mt-4 min-h-11 px-0 text-sm font-bold uppercase text-violet-100 underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-100/60"
               >
                 更换邮箱
               </button>
@@ -168,7 +168,7 @@ export function AdminSignInForm({
           </div>
 
           <form className="space-y-3" onSubmit={handleEmail} noValidate>
-            <label htmlFor={emailId} className="flex items-center gap-2 font-mono text-xs uppercase text-cyan-50/72">
+            <label htmlFor={emailId} className="flex items-center gap-2 font-mono text-xs uppercase text-violet-50/72">
               <Mail className="h-3.5 w-3.5" aria-hidden="true" />
               管理员邮箱
             </label>
@@ -186,11 +186,11 @@ export function AdminSignInForm({
                 }}
                 aria-describedby={hintId}
                 disabled={loading !== null || !emailEnabled}
-                className="h-12 w-full border border-white/15 bg-black/40 px-4 pr-12 text-base text-white outline-none transition placeholder:text-white/35 focus:border-cyan-100/70 focus:bg-black/50 focus:ring-2 focus:ring-cyan-100/20 disabled:cursor-not-allowed disabled:opacity-55"
+                className="h-12 w-full border border-white/15 bg-black/40 px-4 pr-12 text-base text-white outline-none transition placeholder:text-white/35 focus:border-violet-100/70 focus:bg-black/50 focus:ring-2 focus:ring-violet-100/20 disabled:cursor-not-allowed disabled:opacity-55"
                 placeholder="admin@example.com"
               />
               {loading === "email" ? (
-                <Loader2 className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-cyan-100" aria-hidden="true" />
+                <Loader2 className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-violet-100" aria-hidden="true" />
               ) : (
                 <Mail className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/38" aria-hidden="true" />
               )}
@@ -200,7 +200,7 @@ export function AdminSignInForm({
                 ? "将发送一次性登录链接。只有 ADMIN_EMAIL 配置的邮箱能进入后台。"
                 : "邮箱登录未启用，需要配置 RESEND_API_KEY。"}
             </p>
-            <button type="submit" disabled={loading !== null || !emailEnabled} className="group inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-3 border border-white/20 bg-transparent px-5 py-3 text-sm font-black uppercase text-white transition hover:border-cyan-100/60 hover:bg-cyan-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/70 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-55">
+            <button type="submit" disabled={loading !== null || !emailEnabled} className="group inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-3 border border-white/20 bg-transparent px-5 py-3 text-sm font-black uppercase text-white transition hover:border-violet-100/60 hover:bg-violet-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-100/70 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-55">
               {loading === "email" ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Mail className="h-4 w-4" aria-hidden="true" />}
               发送邮箱登录链接
               <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" aria-hidden="true" />
@@ -211,16 +211,16 @@ export function AdminSignInForm({
 
       <div className="mt-7 grid grid-cols-2 border-y border-white/12 py-3 font-mono text-[10px] uppercase text-white/50">
         <span className="flex items-center gap-1.5">
-          <GitBranch className="h-3.5 w-3.5 text-cyan-100" aria-hidden="true" />
+          <GitBranch className="h-3.5 w-3.5 text-violet-100" aria-hidden="true" />
           GitHub 主登录
         </span>
         <span className="flex items-center justify-end gap-1.5">
-          <Mail className="h-3.5 w-3.5 text-cyan-100" aria-hidden="true" />
+          <Mail className="h-3.5 w-3.5 text-violet-100" aria-hidden="true" />
           邮箱备用
         </span>
       </div>
 
-      <p className="mt-7 text-center font-mono text-[11px] text-cyan-100/45">OWNER_ONLY / @HyperCharon</p>
+      <p className="mt-7 text-center font-mono text-[11px] text-violet-100/45">OWNER_ONLY / @HyperCharon</p>
     </section>
   );
 }

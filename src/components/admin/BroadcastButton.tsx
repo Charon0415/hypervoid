@@ -63,7 +63,7 @@ export function BroadcastButton({
     <div className="hv-panel p-4 text-sm">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="font-medium text-cyan-50">订阅通知</p>
+          <p className="font-medium text-foreground">订阅通知</p>
           <p className="mt-0.5 text-xs text-muted">
             当前订阅者：{subscriberCount}
           </p>

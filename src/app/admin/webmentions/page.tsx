@@ -25,13 +25,13 @@ function statusBadge(status: string) {
   const base = "inline-flex border px-2 py-0.5 font-mono text-[10px] font-medium uppercase clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]";
   switch (status) {
     case "verified":
-      return <span className={base + " border-emerald-300/35 bg-emerald-400/10 text-emerald-100"}>VERIFIED</span>;
+      return <span className={base + " border-emerald-300/35 bg-accent/10 text-emerald-100"}>VERIFIED</span>;
     case "pending":
-      return <span className={base + " border-amber-300/35 bg-amber-400/10 text-amber-100"}>PENDING</span>;
+      return <span className={base + " border-amber-300/35 bg-accent/10 text-amber-100"}>PENDING</span>;
     case "rejected":
       return <span className={base + " border-red-300/35 bg-red-500/10 text-red-100"}>REJECTED</span>;
     default:
-      return <span className={base + " border-cyan-100/20 bg-cyan-300/10 text-muted"}>{status}</span>;
+      return <span className={base + " border-border bg-accent-soft/10 text-muted"}>{status}</span>;
   }
 }
 
@@ -52,8 +52,8 @@ export default async function AdminWebmentionsPage() {
     <div className="flex flex-col gap-6">
       <header className="hv-panel-sci relative overflow-hidden flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
         {/* Corner accents */}
-        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
-        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-accent/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-accent/60 pointer-events-none" />
 
         <div className="space-y-3">
           <AdminBackLink href="/admin" label="后台" />
@@ -115,21 +115,21 @@ export default async function AdminWebmentionsPage() {
                 </div>
               </header>
 
-              <p className="text-sm text-cyan-50/84">
+              <p className="text-sm text-foreground">
                 <span className="text-muted">来源：</span>
-                <a href={w.source} target="_blank" rel="noreferrer noopener nofollow" className="break-all hover:text-white">
+                <a href={w.source} target="_blank" rel="noreferrer noopener nofollow" className="break-all hover:text-foreground">
                   {w.source}
                 </a>{" "}
                 <span className="font-mono text-[10px] text-muted">({hostnameOf(w.source)})</span>
               </p>
-              <p className="mt-1 text-sm text-cyan-50/84">
+              <p className="mt-1 text-sm text-foreground">
                 <span className="text-muted">目标：</span>
-                <a href={"/posts/" + (w.targetSlug ?? "")} className="break-all hover:text-white">
+                <a href={"/posts/" + (w.targetSlug ?? "")} className="break-all hover:text-foreground">
                   /posts/{w.targetSlug ?? "?"}
                 </a>
               </p>
               {w.authorName ? <p className="mt-1 text-xs text-muted">作者：{w.authorName}</p> : null}
-              {w.content ? <p className="mt-3 line-clamp-3 text-xs leading-5 text-cyan-50/72">{w.content}</p> : null}
+              {w.content ? <p className="mt-3 line-clamp-3 text-xs leading-5 text-foreground">{w.content}</p> : null}
             </li>
           ))}
         </ul>
@@ -141,9 +141,9 @@ export default async function AdminWebmentionsPage() {
 function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div className="hv-panel-sci relative overflow-hidden p-4">
-      <div className="absolute right-0 top-0 h-6 w-6 border-r border-t border-cyan-400/40 pointer-events-none" />
+      <div className="absolute right-0 top-0 h-6 w-6 border-r border-t border-accent/40 pointer-events-none" />
       <p className="hv-kicker uppercase">{label}</p>
-      <p className="mt-2 font-mono text-2xl font-semibold leading-tight text-cyan-50">
+      <p className="mt-2 font-mono text-2xl font-semibold leading-tight text-foreground">
         {value.toLocaleString("en-US")}
       </p>
     </div>

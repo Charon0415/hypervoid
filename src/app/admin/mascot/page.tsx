@@ -130,8 +130,8 @@ export default async function AdminMascotPage() {
     <div className="flex flex-col gap-8">
       <header className="hv-panel-sci relative overflow-hidden p-5">
         {/* Corner accents */}
-        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
-        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-accent/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-accent/60 pointer-events-none" />
 
         <AdminBackLink href="/admin" label="后台" />
         <p className="hv-kicker mt-4 uppercase">MASCOT_PROTOCOL</p>
@@ -163,7 +163,7 @@ export default async function AdminMascotPage() {
                   className={
                     "shrink-0 px-2.5 py-1 font-mono text-[11px] font-medium uppercase clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)] " +
                     (enabled
-                      ? "bg-cyan-400/12 text-cyan-100"
+                      ? "bg-accent/12 text-foreground"
                       : "bg-muted/20 text-muted")
                   }
                 >
@@ -179,7 +179,7 @@ export default async function AdminMascotPage() {
               >
                 <button
                   type="submit"
-                  className="border border-cyan-400/20 bg-black/20 px-4 py-2 text-sm font-medium font-mono uppercase transition hover:border-cyan-400/40 hover:text-cyan-100 clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)]"
+                  className="border border-accent/20 bg-black/20 px-4 py-2 text-sm font-medium font-mono uppercase transition hover:border-accent/40 hover:text-foreground clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)]"
                 >
                   {enabled ? policy.offText : policy.onText}
                 </button>
@@ -197,7 +197,7 @@ export default async function AdminMascotPage() {
               只影响没有本地角色记录的新访客；不会覆盖已经切换过角色的用户。
             </p>
           </div>
-          <span className="shrink-0 bg-cyan-400/12 px-2.5 py-1 font-mono text-[11px] font-medium uppercase text-cyan-100 clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]">
+          <span className="shrink-0 bg-accent/12 px-2.5 py-1 font-mono text-[11px] font-medium uppercase text-foreground clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]">
             {MASCOTS.find((m) => m.id === defaultCharacter)?.name ?? "拉姆"}
           </span>
         </div>
@@ -217,8 +217,8 @@ export default async function AdminMascotPage() {
                   className={
                     "border px-4 py-2 text-sm font-medium font-mono uppercase transition clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] " +
                     (active
-                      ? "border-cyan-400 bg-cyan-400 text-slate-950"
-                      : "border-cyan-400/20 bg-black/20 hover:border-cyan-400/40 hover:text-cyan-100")
+                      ? "border-accent bg-accent text-slate-950"
+                      : "border-accent/20 bg-black/20 hover:border-accent/40 hover:text-foreground")
                   }
                 >
                   {m.name}
@@ -268,7 +268,7 @@ export default async function AdminMascotPage() {
                 <div className="flex items-center gap-2">
                   <h2 className="font-mono text-lg font-bold tracking-wide">{m.name}</h2>
                   {m.id === defaultCharacter ? (
-                    <span className="shrink-0 bg-cyan-400 px-2 py-0.5 font-mono text-[10px] font-medium uppercase text-slate-950 clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]">
+                    <span className="shrink-0 bg-accent px-2 py-0.5 font-mono text-[10px] font-medium uppercase text-slate-950 clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]">
                       默认
                     </span>
                   ) : null}

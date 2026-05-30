@@ -22,7 +22,7 @@ export function ReadLaterButton({
       aria-label={active ? "从稍后读移除" : "稍后读"}
       title={active ? "已在稍后读 / 点击移除" : "稍后读 → /reading-list"}
       className={"hv-action h-9 w-9 p-0 " + (
-        active ? "border-cyan-100/50 bg-cyan-100/14 text-cyan-50" : ""
+        active ? "border-accent bg-accent/14 text-foreground" : ""
       )}
     >
       <Clock3 aria-hidden className="h-4 w-4" />

@@ -76,8 +76,8 @@ export function ReadingMode() {
                 onClick={() => pick(key)}
                 className={"px-3 py-2 text-left text-xs transition " + (
                   mode === key
-                    ? "bg-cyan-100/12 text-cyan-100"
-                    : "text-cyan-50/65 hover:bg-white/[0.045] hover:text-cyan-50"
+                    ? "bg-foreground/5 text-accent"
+                    : "text-muted hover:bg-card hover:text-foreground"
                 )}
               >
                 {label}

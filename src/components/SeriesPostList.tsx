@@ -32,9 +32,9 @@ export function SeriesPostList({
           </span>
         </div>
         {total > 0 ? (
-          <div className="mt-3 h-1.5 w-full overflow-hidden bg-cyan-100/10">
+          <div className="mt-3 h-1.5 w-full overflow-hidden bg-border">
             <div
-              className="h-full bg-cyan-100 shadow-[0_0_14px_rgba(103,232,249,0.45)] transition-all duration-500"
+              className="h-full bg-foreground shadow-[0_0_14px_var(--accent-glow)] transition-all duration-500"
               style={{ width: String(Math.round((readCount / total) * 100)) + "%" }}
             />
           </div>
@@ -50,7 +50,7 @@ export function SeriesPostList({
                 href={"/posts/" + post.slug}
                 className={"hv-panel hv-panel-hover group flex items-baseline gap-4 p-4 " + (isRead ? "opacity-[0.72]" : "")}
               >
-                <span className="shrink-0 font-mono text-sm text-cyan-100/55">
+                <span className="shrink-0 font-mono text-sm text-muted">
                   {String(post.frontmatter.seriesOrder ?? i + 1).padStart(
                     2,
                     "0",
@@ -60,14 +60,14 @@ export function SeriesPostList({
                   <p
                     className={"font-medium tracking-tight transition " + (
                       isRead
-                        ? "text-cyan-50/45 line-through decoration-cyan-100/25"
-                        : "text-cyan-50 group-hover:text-cyan-100"
+                        ? "text-muted-soft line-through decoration-border"
+                        : "text-foreground group-hover:text-accent"
                     )}
                   >
                     {post.frontmatter.title}
                   </p>
                   {post.frontmatter.description ? (
-                    <p className="mt-0.5 line-clamp-1 text-xs text-cyan-50/55">
+                    <p className="mt-0.5 line-clamp-1 text-xs text-muted-soft">
                       {post.frontmatter.description}
                     </p>
                   ) : null}
@@ -78,7 +78,7 @@ export function SeriesPostList({
                       <Check className="h-3 w-3" aria-hidden /> 已读
                     </span>
                   ) : null}
-                  <time className="font-mono text-xs text-cyan-50/45">
+                  <time className="font-mono text-xs text-muted-soft">
                     {post.frontmatter.date}
                   </time>
                 </div>

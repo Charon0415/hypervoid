@@ -29,12 +29,12 @@ export function AnnouncementForm({
   return (
     <form action={action} className="flex flex-col gap-5">
       <fieldset className="flex flex-col gap-2">
-        <legend className="text-sm font-medium text-cyan-50">显示位置</legend>
+        <legend className="text-sm font-medium text-violet-50">显示位置</legend>
         <div className="grid gap-2 sm:grid-cols-3">
           {SLOT_OPTIONS.map((s) => (
             <label
               key={s.value}
-              className="hv-panel flex cursor-pointer flex-col gap-0.5 p-3 transition has-[:checked]:border-cyan-200/60 has-[:checked]:bg-cyan-300/10"
+              className="hv-panel flex cursor-pointer flex-col gap-0.5 p-3 transition has-[:checked]:border-violet-200/60 has-[:checked]:bg-violet-300/10"
             >
               <span className="flex items-center gap-2">
                 <input

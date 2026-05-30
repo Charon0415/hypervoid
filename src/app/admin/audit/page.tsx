@@ -70,8 +70,8 @@ export default async function AdminAuditPage(props: {
     <div className="flex flex-col gap-6">
       <header className="hv-panel-sci relative overflow-hidden flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
         {/* Corner accents */}
-        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
-        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-accent/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-accent/60 pointer-events-none" />
 
         <div className="space-y-3">
           <AdminBackLink href="/admin" label="后台" />
@@ -112,7 +112,7 @@ export default async function AdminAuditPage(props: {
           {log.map((row) => (
             <li key={row.id} className="hv-panel-sci flex flex-wrap items-baseline gap-x-3 gap-y-2 px-3 py-2 text-sm">
               <time className="shrink-0 font-mono text-[11px] text-muted">{formatDateTimeCN(row.createdAt)}</time>
-              <span className="shrink-0 border border-cyan-400/30 bg-cyan-400/10 px-2 py-0.5 font-mono text-[10px] font-medium text-cyan-100 clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]" title={row.action}>
+              <span className="shrink-0 border border-accent/30 bg-accent/10 px-2 py-0.5 font-mono text-[10px] font-medium text-foreground clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]" title={row.action}>
                 {ACTION_LABEL[row.action] ?? row.action}
               </span>
               <span className="font-mono text-xs text-muted">@{row.actor}</span>
@@ -123,8 +123,8 @@ export default async function AdminAuditPage(props: {
               ) : null}
               {row.details ? (
                 <details className="ml-auto text-[11px] text-muted">
-                  <summary className="cursor-pointer hover:text-cyan-50">详情</summary>
-                  <pre className="mt-2 max-w-[min(42rem,80vw)] overflow-x-auto border border-cyan-400/15 bg-black/30 p-2 font-mono text-[10px] text-cyan-50/78">
+                  <summary className="cursor-pointer hover:text-foreground">详情</summary>
+                  <pre className="mt-2 max-w-[min(42rem,80vw)] overflow-x-auto border border-accent/15 bg-black/30 p-2 font-mono text-[10px] text-foreground">
                     {JSON.stringify(row.details, null, 2)}
                   </pre>
                 </details>
@@ -148,7 +148,7 @@ function FilterRow({ label, children }: { label: string; children: React.ReactNo
 
 function FilterChip({ href, active, label }: { href: string; active: boolean; label: string }) {
   return (
-    <Link href={href} className={(active ? "hv-chip-strong" : "hv-chip-sci hover:border-cyan-400/40 hover:text-cyan-50") + " px-2.5 py-0.5 transition"}>
+    <Link href={href} className={(active ? "hv-chip-strong" : "hv-chip-sci hover:border-accent/40 hover:text-foreground") + " px-2.5 py-0.5 transition"}>
       {label}
     </Link>
   );

@@ -11,12 +11,12 @@ export function FriendApplyForm() {
 
   if (!open) {
     return (
-      <p className="hv-panel border-dashed p-5 text-center text-sm text-cyan-50/68">
+      <p className="hv-panel border-dashed p-5 text-center text-sm text-muted">
         想交换友链？
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="ml-1 text-cyan-100 underline underline-offset-2 hover:text-cyan-50 transition"
+          className="ml-1 text-accent underline underline-offset-2 hover:text-foreground transition"
         >
           点此申请
         </button>
@@ -54,7 +54,7 @@ export function FriendApplyForm() {
 
   return (
     <div className="hv-panel p-5">
-      <h3 className="font-mono text-sm font-semibold uppercase tracking-wide text-cyan-100">申请友链</h3>
+      <h3 className="font-mono text-sm font-semibold uppercase tracking-wide text-accent">申请友链</h3>
       {done ? (
         <p className="mt-2 rounded-lg border border-green-400/30 bg-green-400/10 p-3 text-sm text-green-300">
           {done}
@@ -68,7 +68,7 @@ export function FriendApplyForm() {
 
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="flex flex-col gap-1">
-              <span className="text-sm font-medium text-cyan-50/78">名称 *</span>
+              <span className="text-sm font-medium text-muted">名称 *</span>
               <input
                 name="name"
                 required
@@ -79,7 +79,7 @@ export function FriendApplyForm() {
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-sm font-medium text-cyan-50/78">网址 *</span>
+              <span className="text-sm font-medium text-muted">网址 *</span>
               <input
                 name="url"
                 type="url"
@@ -91,7 +91,7 @@ export function FriendApplyForm() {
             </label>
           </div>
           <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-cyan-50/78">简介</span>
+            <span className="text-sm font-medium text-muted">简介</span>
             <input
               name="description"
               maxLength={120}
@@ -101,7 +101,7 @@ export function FriendApplyForm() {
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-cyan-50/78">邮箱</span>
+            <span className="text-sm font-medium text-muted">邮箱</span>
             <input
               name="email"
               type="email"
@@ -127,7 +127,7 @@ export function FriendApplyForm() {
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="px-4 py-2 text-sm text-cyan-50/58 hover:text-cyan-100 transition"
+              className="px-4 py-2 text-sm text-muted-soft hover:text-accent transition"
             >
               取消
             </button>

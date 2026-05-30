@@ -36,8 +36,8 @@ export function PrivateSpace() {
   return (
     <aside className="hv-panel-sci group relative overflow-hidden p-3">
       {/* Corner accent */}
-      <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-px w-16 bg-gradient-to-r from-cyan-400/60 to-transparent" />
-      <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-16 w-px bg-gradient-to-b from-cyan-400/60 to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-px w-16 bg-gradient-to-r from-accent/60 to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-16 w-px bg-gradient-to-b from-accent/60 to-transparent" />
 
       <div className="flex items-center gap-2.5">
         {user.avatar ? (
@@ -45,19 +45,19 @@ export function PrivateSpace() {
           <img
             src={user.avatar}
             alt=""
-            className="h-8 w-8 border border-cyan-100/30 bg-cyan-950/40 object-cover"
+            className="h-8 w-8 border border-border bg-card object-cover"
             style={{ clipPath: 'polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 0 100%)' }}
           />
         ) : (
-          <div className="flex h-8 w-8 items-center justify-center border border-cyan-400/30 bg-cyan-950/50 font-mono text-sm font-bold text-cyan-300" style={{ clipPath: 'polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 0 100%)' }}>
+          <div className="flex h-8 w-8 items-center justify-center border border-accent/30 bg-card font-mono text-sm font-bold text-accent" style={{ clipPath: 'polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 0 100%)' }}>
             {(user.name || user.login).slice(0, 1).toUpperCase()}
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <h3 className="font-mono text-xs font-semibold uppercase tracking-widest text-cyan-100/80">
+          <h3 className="font-mono text-xs font-semibold uppercase tracking-widest text-foreground/80">
             Private_Space
           </h3>
-          <p className="truncate font-mono text-[10px] text-cyan-50/60">
+          <p className="truncate font-mono text-[10px] text-muted">
             {user.name || user.login}
           </p>
         </div>
@@ -85,10 +85,10 @@ function SpaceLink({
   return (
     <Link
       href={href}
-      className="group flex items-center gap-2.5 border border-transparent px-2 py-1 text-xs text-cyan-50/70 transition hover:border-cyan-100/20 hover:bg-cyan-950/40 hover:text-cyan-100"
+      className="group flex items-center gap-2.5 border border-transparent px-2 py-1 text-xs text-muted transition hover:border-border hover:bg-card-hover hover:text-foreground"
       style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%)' }}
     >
-      <span className="grid h-5 w-5 place-items-center border border-cyan-100/20 bg-cyan-950/50 text-cyan-300/70 transition group-hover:border-cyan-400/40 group-hover:bg-cyan-900/50 group-hover:text-cyan-300" style={{ clipPath: 'polygon(0 0, calc(100% - 3px) 0, 100% 3px, 100% 100%, 0 100%)' }}>
+      <span className="grid h-5 w-5 place-items-center border border-border bg-card text-accent/70 transition group-hover:border-accent/40 group-hover:bg-card-hover group-hover:text-accent" style={{ clipPath: 'polygon(0 0, calc(100% - 3px) 0, 100% 3px, 100% 100%, 0 100%)' }}>
         <Icon name={icon} />
       </span>
       {label}

@@ -171,11 +171,11 @@ export function NotificationBell({ triggerClassName }: { triggerClassName?: stri
         onClick={() => setOpen((v) => !v)}
         aria-label="消息"
         title={`消息${unreadCount > 0 ? ` (${unreadCount} 未读)` : ""}`}
-        className={triggerClassName ?? "relative inline-flex h-9 w-9 items-center justify-center border border-cyan-100/18 bg-cyan-950/30 text-cyan-100/68 backdrop-blur-sm transition hover:border-cyan-400/40 hover:bg-cyan-900/40 hover:text-cyan-300"}
+        className={triggerClassName ?? "relative inline-flex h-9 w-9 items-center justify-center border border-border bg-card text-accent-soft backdrop-blur-sm transition hover:border-accent/40 hover:bg-card-hover hover:text-accent"}
       >
         <Bell className="h-4 w-4" aria-hidden />
         {unreadCount > 0 ? (
-          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center border border-cyan-100/40 bg-cyan-50 px-1 font-mono text-[10px] font-bold text-black">
+          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center border border-accent/40 bg-foreground px-1 font-mono text-[10px] font-bold text-black">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         ) : null}
@@ -185,14 +185,14 @@ export function NotificationBell({ triggerClassName }: { triggerClassName?: stri
         ? createPortal(
             <div
               id="hv-notif-panel"
-              className="fixed right-4 top-[60px] z-[80] w-[360px] max-w-[calc(100vw-2rem)] overflow-hidden border border-cyan-100/18 bg-slate-950/94 shadow-[0_28px_90px_rgba(0,0,0,0.48),0_0_48px_rgba(34,211,238,0.12)] backdrop-blur-2xl"
+              className="fixed right-4 top-[60px] z-[80] w-[360px] max-w-[calc(100vw-2rem)] overflow-hidden border border-border bg-card/94 shadow-[0_28px_90px_rgba(0,0,0,0.48),0_0_48px_var(--accent-glow)] backdrop-blur-2xl"
             >
-              <div className="flex items-center justify-between gap-2 border-b border-cyan-100/14 bg-cyan-950/18 px-4 py-2.5">
+              <div className="flex items-center justify-between gap-2 border-b border-border bg-card px-4 py-2.5">
                 <div className="flex items-baseline gap-2">
-                  <h3 className="font-mono text-xs font-semibold uppercase tracking-widest text-cyan-100/82">
+                  <h3 className="font-mono text-xs font-semibold uppercase tracking-widest text-accent">
                     {isAdmin ? "互动与更新" : "通知"}
                   </h3>
-                  <span className="font-mono text-[10px] text-cyan-50/45">
+                  <span className="font-mono text-[10px] text-muted-soft">
                     {loading ? "…" : `${notifications.length} 条`}
                   </span>
                 </div>
@@ -200,7 +200,7 @@ export function NotificationBell({ triggerClassName }: { triggerClassName?: stri
                   <button
                     type="button"
                     onClick={onClearAll}
-                    className="border border-transparent px-2 py-0.5 text-[11px] text-cyan-50/52 transition hover:border-cyan-100/18 hover:bg-cyan-50/8 hover:text-cyan-100"
+                    className="border border-transparent px-2 py-0.5 text-[11px] text-muted-soft transition hover:border-border hover:bg-foreground/3 hover:text-accent"
                   >
                     全部已读
                   </button>
@@ -209,7 +209,7 @@ export function NotificationBell({ triggerClassName }: { triggerClassName?: stri
 
               <div className="max-h-[60vh] overflow-y-auto">
                 {notifications.length === 0 ? (
-                  <p className="p-6 text-center text-sm text-cyan-50/58">
+                  <p className="p-6 text-center text-sm text-muted-soft">
                     {loading ? "加载中…" : "暂无消息。"}
                   </p>
                 ) : (
@@ -219,13 +219,13 @@ export function NotificationBell({ triggerClassName }: { triggerClassName?: stri
                       const TypeIcon = ICON_BY_TYPE[n.type];
                       const card = (
                         <div
-                          className={`flex items-start gap-3 border-b border-cyan-100/12 px-4 py-3 transition hover:bg-cyan-950/36 ${
-                            unread ? "bg-cyan-400/[0.05]" : ""
+                          className={`flex items-start gap-3 border-b border-border px-4 py-3 transition hover:bg-card ${
+                            unread ? "bg-accent-glow" : ""
                           }`}
                         >
                           <span
                             aria-hidden
-                            className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center border border-cyan-100/18 bg-cyan-950/36 text-cyan-300/78"
+                            className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center border border-border bg-card text-accent-soft"
                           >
                             <TypeIcon className="h-3.5 w-3.5" aria-hidden />
                           </span>
@@ -235,24 +235,24 @@ export function NotificationBell({ triggerClassName }: { triggerClassName?: stri
                                 {n.title}
                               </p>
                               {n.metric ? (
-                                <span className="shrink-0 font-mono text-[11px] text-cyan-300">
+                                <span className="shrink-0 font-mono text-[11px] text-accent">
                                   {n.metric}
                                 </span>
                               ) : null}
                             </div>
                             {n.body ? (
-                              <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-cyan-50/58">
+                              <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-muted-soft">
                                 {n.body}
                               </p>
                             ) : null}
-                            <p className="mt-1 font-mono text-[10px] text-cyan-50/42">
+                            <p className="mt-1 font-mono text-[10px] text-muted-soft">
                               {timeAgo(n.at)}
                             </p>
                           </div>
                           {unread ? (
                             <span
                               aria-hidden
-                              className="mt-1.5 h-1.5 w-1.5 shrink-0 bg-cyan-300"
+                              className="mt-1.5 h-1.5 w-1.5 shrink-0 bg-accent"
                             />
                           ) : null}
                         </div>
@@ -277,7 +277,7 @@ export function NotificationBell({ triggerClassName }: { triggerClassName?: stri
                 )}
               </div>
 
-              <div className="border-t border-cyan-100/14 bg-cyan-950/22 px-4 py-2 text-[11px] text-cyan-50/52">
+              <div className="border-t border-border bg-card px-4 py-2 text-[11px] text-muted-soft">
                 {isAdmin ? (
                   <span>管理员视图——见点赞 / 留言 / 新订阅。</span>
                 ) : (

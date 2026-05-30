@@ -24,22 +24,22 @@ export default async function AdminTagsPage() {
     <div className="flex flex-col gap-6">
       <header className="hv-panel-sci relative overflow-hidden p-5">
         {/* Corner accents */}
-        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
-        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-accent/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-accent/60 pointer-events-none" />
 
         <AdminBackLink href="/admin" label="后台" />
         <p className="hv-kicker mt-4 uppercase">TAG_OPERATIONS</p>
         <h1 className="hv-title mt-1 font-mono text-2xl font-semibold tracking-wider uppercase">标签管理</h1>
         <p className="mt-2 max-w-2xl text-sm text-muted">
-          改一处生效全站：重命名、合并、删除都会扫过所有文章并写入 audit。操作不可逆，建议先在 <Link href="/admin/backup" className="text-cyan-100 hover:text-white">/admin/backup</Link> 做一次快照。
+          改一处生效全站：重命名、合并、删除都会扫过所有文章并写入 audit。操作不可逆，建议先在 <Link href="/admin/backup" className="text-foreground hover:text-foreground">/admin/backup</Link> 做一次快照。
         </p>
       </header>
 
       <section className="grid gap-4 lg:grid-cols-2">
         <div className="hv-panel-sci p-5">
           <div className="flex items-center gap-2">
-            <Pencil className="h-4 w-4 text-cyan-100/70" aria-hidden="true" />
-            <h2 className="font-mono text-sm font-semibold tracking-wider uppercase text-cyan-50">RENAME</h2>
+            <Pencil className="h-4 w-4 text-muted" aria-hidden="true" />
+            <h2 className="font-mono text-sm font-semibold tracking-wider uppercase text-foreground">RENAME</h2>
           </div>
           <form action={renameTagAction} className="mt-3 flex flex-col gap-3">
             <label className="flex flex-col gap-1">
@@ -53,14 +53,14 @@ export default async function AdminTagsPage() {
               <span className="font-mono text-xs uppercase text-muted">NEW_NAME</span>
               <input type="text" name="newName" required placeholder="新名字" className="hv-input min-h-11 px-3 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]" />
             </label>
-            <button type="submit" className="hv-action self-start px-4 text-sm font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)] hover:shadow-[0_0_16px_rgba(103,232,249,0.25)]">重命名</button>
+            <button type="submit" className="hv-action self-start px-4 text-sm font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)] hover:shadow-[0_0_16px_var(--accent-glow)]">重命名</button>
           </form>
         </div>
 
         <div className="hv-panel-sci p-5">
           <div className="flex items-center gap-2">
-            <GitMerge className="h-4 w-4 text-cyan-100/70" aria-hidden="true" />
-            <h2 className="font-mono text-sm font-semibold tracking-wider uppercase text-cyan-50">MERGE_INTO</h2>
+            <GitMerge className="h-4 w-4 text-muted" aria-hidden="true" />
+            <h2 className="font-mono text-sm font-semibold tracking-wider uppercase text-foreground">MERGE_INTO</h2>
           </div>
           <p className="mt-2 text-xs text-muted">勾选下方一个或多个标签，全部并入目标标签，重复会去重。</p>
           <form action={mergeTagsAction} className="mt-3 flex flex-col gap-3" id="merge-form">
@@ -68,7 +68,7 @@ export default async function AdminTagsPage() {
               <span className="font-mono text-xs uppercase text-muted">TARGET_TAG</span>
               <input type="text" name="target" required placeholder="如：JavaScript" className="hv-input min-h-11 px-3 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]" />
             </label>
-            <button type="submit" className="hv-action self-start px-4 text-sm font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)] hover:shadow-[0_0_16px_rgba(103,232,249,0.25)]">合并所选</button>
+            <button type="submit" className="hv-action self-start px-4 text-sm font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)] hover:shadow-[0_0_16px_var(--accent-glow)]">合并所选</button>
           </form>
         </div>
       </section>
@@ -78,7 +78,7 @@ export default async function AdminTagsPage() {
       ) : (
         <div className="hv-panel-sci overflow-x-auto p-0">
           <table className="w-full min-w-[520px] text-sm">
-            <thead className="border-b border-cyan-400/20 bg-cyan-400/[0.06] text-left font-mono text-xs uppercase text-cyan-100/65">
+            <thead className="border-b border-accent/20 bg-accent/[0.06] text-left font-mono text-xs uppercase text-muted">
               <tr>
                 <th className="w-10 px-4 py-3 font-medium"></th>
                 <th className="px-4 py-3 font-medium">TAG</th>
@@ -89,14 +89,14 @@ export default async function AdminTagsPage() {
             </thead>
             <tbody>
               {tags.map((t) => (
-                <tr key={t.name} className="border-t border-cyan-400/15 transition hover:bg-cyan-400/[0.05]">
-                  <td className="px-4 py-3"><input type="checkbox" name="sources" value={t.name} form="merge-form" className="h-4 w-4 accent-cyan-300" /></td>
-                  <td className="px-4 py-3 font-mono font-medium text-cyan-50">#{t.name}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-cyan-50">{t.count}</td>
+                <tr key={t.name} className="border-t border-accent/15 transition hover:bg-accent/[0.05]">
+                  <td className="px-4 py-3"><input type="checkbox" name="sources" value={t.name} form="merge-form" className="h-4 w-4 accent-accent-soft" /></td>
+                  <td className="px-4 py-3 font-mono font-medium text-foreground">#{t.name}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-foreground">{t.count}</td>
                   <td className="px-4 py-3 text-xs text-muted">
                     {t.slugs.slice(0, 3).map((s, i) => (
                       <span key={s}>
-                        <Link href={"/admin/posts/" + s + "/edit"} className="hover:text-cyan-50">{s}</Link>
+                        <Link href={"/admin/posts/" + s + "/edit"} className="hover:text-foreground">{s}</Link>
                         {i < Math.min(2, t.slugs.length - 1) ? "，" : ""}
                       </span>
                     ))}

@@ -7,7 +7,7 @@ import { ArrowRight, Layers3, Radio } from "lucide-react";
 import { gsap } from "gsap";
 import type { PublicSeries } from "@/lib/series-public";
 
-const GLOW_COLOR = "103, 232, 249";
+const GLOW_COLOR = "167, 139, 250";
 const PARTICLE_COUNT = 10;
 const SPOTLIGHT_RADIUS = 280;
 
@@ -163,7 +163,7 @@ function TopicCard({ item, index }: { item: PublicSeries; index: number }) {
           className="object-cover opacity-[0.44] saturate-[0.78] transition duration-500 group-hover:scale-105 group-hover:opacity-[0.64] group-hover:saturate-100"
         />
       ) : (
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_18%,rgba(103,232,249,.18),transparent_38%),linear-gradient(135deg,rgba(255,255,255,.06),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_18%,var(--accent-glow),transparent_38%),linear-gradient(135deg,rgba(255,255,255,.06),transparent)]" />
       )}
       <div className="hv-magic-bento-scan" aria-hidden />
       <div className="hv-magic-bento-content">
@@ -172,9 +172,9 @@ function TopicCard({ item, index }: { item: PublicSeries; index: number }) {
           <span className="hv-magic-bento-count">{item.count} Articles</span>
         </div>
         <div className="mt-auto">
-          <h3 className={featured ? "text-xl font-black text-cyan-50 sm:text-2xl" : "text-sm font-bold text-cyan-50 sm:text-base"}>{item.name}</h3>
-          {item.description ? <p className="mt-1.5 line-clamp-2 text-sm leading-snug text-cyan-50/62">{item.description}</p> : null}
-          <span className="mt-3 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-cyan-300/76">
+          <h3 className={featured ? "text-xl font-black text-foreground sm:text-2xl" : "text-sm font-bold text-foreground sm:text-base"}>{item.name}</h3>
+          {item.description ? <p className="mt-1.5 line-clamp-2 text-sm leading-snug text-muted">{item.description}</p> : null}
+          <span className="mt-3 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-accent-soft">
             Open route <ArrowRight className="h-3 w-3" aria-hidden />
           </span>
         </div>
@@ -229,12 +229,12 @@ export function TopicMagicBento({ series }: { series: PublicSeries[] }) {
     <section ref={sectionRef} className="hv-magic-bento-section">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="grid h-7 w-7 place-items-center border border-cyan-400/30 bg-cyan-950/40 text-cyan-300" style={{ clipPath: "polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%)" }}>
+          <div className="grid h-7 w-7 place-items-center border border-accent/30 bg-card text-accent" style={{ clipPath: "polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%)" }}>
             <Layers3 className="h-3.5 w-3.5" aria-hidden />
           </div>
-          <h2 className="font-mono text-lg font-bold uppercase tracking-tight text-cyan-50 sm:text-xl">Topic_Series</h2>
+          <h2 className="font-mono text-lg font-bold uppercase tracking-tight text-foreground sm:text-xl">Topic_Series</h2>
         </div>
-        <Link href="/series" className="hv-action-compact group inline-flex items-center gap-1.5 border border-cyan-100/18 bg-cyan-950/30 px-3 py-1.5 font-mono text-xs font-medium uppercase tracking-wider text-cyan-100/80 transition hover:border-cyan-400/40 hover:bg-cyan-900/40 hover:text-cyan-300">
+        <Link href="/series" className="hv-action-compact group inline-flex items-center gap-1.5 border border-border bg-card px-3 py-1.5 font-mono text-xs font-medium uppercase tracking-wider text-accent-soft transition hover:border-accent/40 hover:bg-card-hover hover:text-accent">
           View_All
           <ArrowRight className="h-3 w-3 transition group-hover:translate-x-0.5" aria-hidden />
         </Link>
@@ -244,7 +244,7 @@ export function TopicMagicBento({ series }: { series: PublicSeries[] }) {
         {items.map((item, index) => <TopicCard key={item.slug} item={item} index={index} />)}
         {items.length === 0 ? (
           <div className="hv-magic-bento-empty">
-            <Radio className="h-8 w-8 text-cyan-100/60" aria-hidden />
+            <Radio className="h-8 w-8 text-accent-soft" aria-hidden />
             <span>No topic routes</span>
           </div>
         ) : null}

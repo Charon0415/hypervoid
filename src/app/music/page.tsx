@@ -32,10 +32,10 @@ const PLATFORM_LABEL: Record<MusicPlaylist["platform"], string> = {
 const PLATFORM_COLOR: Record<MusicPlaylist["platform"], string> = {
   netease: "text-red-500",
   spotify: "text-emerald-500",
-  apple: "text-pink-500",
+  apple: "text-accent",
   youtube: "text-red-600",
-  bandcamp: "text-cyan-500",
-  other: "text-primary",
+  bandcamp: "text-accent",
+  other: "text-accent",
 };
 
 export default async function MusicPage() {
@@ -56,7 +56,7 @@ export default async function MusicPage() {
         <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
           在循环里
         </h1>
-        <p className="mt-3 max-w-2xl text-muted">
+        <p className="mt-3  text-muted">
           这里收集最近反复听的专辑、愿意分享的播放列表，以及偏爱的曲风。
           音乐是另一种穿过虚空的方式。
         </p>

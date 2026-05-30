@@ -22,7 +22,7 @@ export function SearchHitCard({ post, query }: { post: Post; query: string }) {
           height={192}
           sizes="(min-width: 640px) 128px, 100vw"
           loading="lazy"
-          className="aspect-[4/3] w-full shrink-0 border border-cyan-100/14 object-cover opacity-[0.86] saturate-[0.85] transition group-hover:opacity-100 group-hover:saturate-100 sm:h-24 sm:w-32 sm:aspect-auto"
+          className="aspect-[4/3] w-full shrink-0 border border-border object-cover opacity-[0.86] saturate-[0.85] transition group-hover:opacity-100 group-hover:saturate-100 sm:h-24 sm:w-32 sm:aspect-auto"
         />
       ) : null}
 
@@ -33,26 +33,26 @@ export function SearchHitCard({ post, query }: { post: Post; query: string }) {
               <Pin className="h-3 w-3" aria-hidden />
             </span>
           ) : null}
-          <h3 className="hv-title line-clamp-2 text-base font-semibold leading-snug tracking-tight transition group-hover:text-cyan-100 sm:text-lg">
+          <h3 className="hv-title line-clamp-2 text-base font-semibold leading-snug tracking-tight transition group-hover:text-accent sm:text-lg">
             {highlight(frontmatter.title, query)}
           </h3>
           <ReadBadge slug={slug} />
         </div>
 
         {frontmatter.description ? (
-          <p className="line-clamp-2 text-sm leading-relaxed text-cyan-50/62">
+          <p className="line-clamp-2 text-sm leading-relaxed text-muted">
             {highlight(frontmatter.description, query)}
           </p>
         ) : null}
 
         {snippet ? (
-          <p className="line-clamp-2 border border-dashed border-cyan-100/18 bg-cyan-50/[0.035] px-2.5 py-1.5 text-xs leading-relaxed text-cyan-50/58">
-            <ScanSearch className="mr-1 inline h-3 w-3 text-cyan-100/58" aria-hidden />
+          <p className="line-clamp-2 border border-dashed border-border bg-card px-2.5 py-1.5 text-xs leading-relaxed text-muted-soft">
+            <ScanSearch className="mr-1 inline h-3 w-3 text-muted" aria-hidden />
             … {highlight(snippet, query)} …
           </p>
         ) : null}
 
-        <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase text-cyan-50/50">
+        <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase text-muted-soft">
           <time className="font-mono">{frontmatter.date}</time>
           <span className="inline-flex items-center gap-1">
             <BookOpenText className="h-3.5 w-3.5" aria-hidden />
@@ -65,7 +65,7 @@ export function SearchHitCard({ post, query }: { post: Post; query: string }) {
           {frontmatter.tags?.length ? (
             <span className="flex flex-wrap gap-1">
               {frontmatter.tags.slice(0, 3).map((tag) => (
-                <span key={tag} className="font-medium text-cyan-100/72">
+                <span key={tag} className="font-medium text-accent-soft">
                   #{tag}
                 </span>
               ))}

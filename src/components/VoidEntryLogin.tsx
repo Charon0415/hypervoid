@@ -241,25 +241,25 @@ export function VoidEntryLogin({ emailEnabled, currentUser, redirectTo = "/", er
         className="pointer-events-none absolute inset-0 z-10"
         style={{ x: parallaxEnabled && !reducedMotion ? hudX : 0, y: parallaxEnabled && !reducedMotion ? hudY : 0 }}
       >
-        <div className="absolute left-5 top-5 h-16 w-16 border-l border-t border-cyan-200/40 md:left-8 md:top-8" />
-        <div className="absolute right-5 top-5 h-16 w-16 border-r border-t border-cyan-200/40 md:right-8 md:top-8" />
-        <div className="absolute bottom-5 left-5 h-16 w-16 border-b border-l border-cyan-200/40 md:bottom-8 md:left-8" />
-        <div className="absolute bottom-5 right-5 h-16 w-16 border-b border-r border-cyan-200/40 md:bottom-8 md:right-8" />
-        <div className="absolute left-[8%] top-[20%] hidden h-px w-24 bg-cyan-200/35 md:block" />
-        <div className="absolute right-[10%] top-[28%] hidden h-px w-28 bg-cyan-200/30 md:block" />
-        <div className="absolute bottom-[23%] left-[12%] hidden h-px w-20 bg-cyan-200/25 md:block" />
-        <div className="absolute left-[18%] top-[36%] h-3 w-3 border border-cyan-100/50" />
-        <div className="absolute right-[22%] top-[18%] h-3 w-3 border border-cyan-100/50" />
-        <div className="absolute bottom-[31%] right-[18%] h-3 w-3 border border-cyan-100/50" />
+        <div className="absolute left-5 top-5 h-16 w-16 border-l border-t border-emerald-200/40 md:left-8 md:top-8" />
+        <div className="absolute right-5 top-5 h-16 w-16 border-r border-t border-emerald-200/40 md:right-8 md:top-8" />
+        <div className="absolute bottom-5 left-5 h-16 w-16 border-b border-l border-emerald-200/40 md:bottom-8 md:left-8" />
+        <div className="absolute bottom-5 right-5 h-16 w-16 border-b border-r border-emerald-200/40 md:bottom-8 md:right-8" />
+        <div className="absolute left-[8%] top-[20%] hidden h-px w-24 bg-emerald-200/35 md:block" />
+        <div className="absolute right-[10%] top-[28%] hidden h-px w-28 bg-emerald-200/30 md:block" />
+        <div className="absolute bottom-[23%] left-[12%] hidden h-px w-20 bg-emerald-200/25 md:block" />
+        <div className="absolute left-[18%] top-[36%] h-3 w-3 border border-emerald-100/50" />
+        <div className="absolute right-[22%] top-[18%] h-3 w-3 border border-emerald-100/50" />
+        <div className="absolute bottom-[31%] right-[18%] h-3 w-3 border border-emerald-100/50" />
       </motion.div>
 
       <motion.div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-[min(72vw,680px)] w-[min(72vw,680px)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-100/20 shadow-[0_0_70px_rgba(103,232,249,0.12)]"
+        className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-[min(72vw,680px)] w-[min(72vw,680px)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-100/20 shadow-[0_0_70px_rgba(167,139,250,0.12)]"
         animate={ringSpin}
         transition={{ repeat: Infinity, duration: 54, ease: "linear" }}
       >
-        <div className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 rounded-full bg-cyan-100 shadow-[0_0_18px_rgba(207,250,254,0.9)]" />
+        <div className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 rounded-full bg-emerald-100 shadow-[0_0_18px_rgba(196,181,253,0.9)]" />
       </motion.div>
       <motion.div
         aria-hidden
@@ -280,22 +280,22 @@ export function VoidEntryLogin({ emailEnabled, currentUser, redirectTo = "/", er
               exit={{ opacity: 0, scale: 1.22, filter: "blur(18px)" }}
               transition={{ duration: 0.46, ease: [0.16, 1, 0.3, 1] }}
             >
-              <div className="hypervoid-glow-pulse mb-7 inline-flex items-center gap-3 border border-cyan-100/25 bg-white/[0.045] px-4 py-2 font-mono text-[11px] uppercase text-cyan-50/85 shadow-[0_0_28px_rgba(34,211,238,0.12)] backdrop-blur-md">
-                <CircleDot className="h-3.5 w-3.5 text-cyan-200" aria-hidden />
+              <div className="hypervoid-glow-pulse mb-7 inline-flex items-center gap-3 border border-emerald-100/25 bg-white/[0.045] px-4 py-2 font-mono text-[11px] uppercase text-emerald-50/85 shadow-[0_0_28px_rgba(34,211,238,0.12)] backdrop-blur-md">
+                <CircleDot className="h-3.5 w-3.5 text-emerald-200" aria-hidden />
                 {currentUser ? "SIGNED IN / " + currentIdentity : "HV-001 / VOID ACCESS"}
               </div>
 
               <h1 className="hypervoid-glow-pulse max-w-full text-[clamp(3.1rem,14vw,10rem)] font-black uppercase leading-[0.82] text-white drop-shadow-[0_0_46px_rgba(125,211,252,0.36)]">
                 Hypervoid
               </h1>
-              <p className="mt-7 max-w-[34rem] font-mono text-xs uppercase leading-6 text-cyan-50/72 sm:text-sm">
+              <p className="mt-7 max-w-[34rem] font-mono text-xs uppercase leading-6 text-emerald-50/72 sm:text-sm">
                 {currentUser ? "Identity confirmed. Session channel is active." : "GitHub primary access online. Email magic link remains on standby."}
               </p>
 
               <button
                 type="button"
                 onClick={() => setEntryState("login")}
-                className="group mt-10 inline-flex min-h-12 cursor-pointer items-center gap-3 border border-cyan-100/35 bg-cyan-50 px-6 py-3 text-sm font-black uppercase text-black shadow-[0_0_46px_rgba(103,232,249,0.28)] transition duration-300 hover:border-white hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/80 active:scale-[0.97]"
+                className="group mt-10 inline-flex min-h-12 cursor-pointer items-center gap-3 border border-emerald-100/35 bg-emerald-50 px-6 py-3 text-sm font-black uppercase text-black shadow-[0_0_46px_rgba(167,139,250,0.28)] transition duration-300 hover:border-white hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-100/80 active:scale-[0.97]"
               >
                 Explore
                 <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" aria-hidden />
@@ -320,7 +320,7 @@ export function VoidEntryLogin({ emailEnabled, currentUser, redirectTo = "/", er
               <section className="hypervoid-glass transform-gpu border border-white/20 bg-white/10 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_0_60px_rgba(34,211,238,0.18)] backdrop-blur-xl sm:p-7">
                 <div className="mb-6 flex items-center justify-between gap-4">
                   <div>
-                    <p className="font-mono text-[11px] uppercase text-cyan-100/70">Secure Gateway / 身份入口</p>
+                    <p className="font-mono text-[11px] uppercase text-emerald-100/70">Secure Gateway / 身份入口</p>
                     <h2 className="mt-2 text-2xl font-semibold tracking-normal text-white">登录 Hypervoid</h2>
                     <p className="mt-2 text-sm leading-6 text-white/58">GitHub 为主要登录方式，邮箱 magic link 作为备用入口。</p>
                   </div>
@@ -329,7 +329,7 @@ export function VoidEntryLogin({ emailEnabled, currentUser, redirectTo = "/", er
                     onClick={() => setEntryState("explore")}
                     aria-label="Back to explore"
                     title="Back to explore"
-                    className="inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center border border-white/15 bg-white/10 text-white/80 transition hover:border-cyan-100/50 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/80"
+                    className="inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center border border-white/15 bg-white/10 text-white/80 transition hover:border-emerald-100/50 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-100/80"
                   >
                     <ArrowLeft className="h-4 w-4" aria-hidden />
                   </button>
@@ -353,25 +353,25 @@ export function VoidEntryLogin({ emailEnabled, currentUser, redirectTo = "/", er
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="border border-cyan-100/35 bg-cyan-50/10 p-5"
+                    className="border border-emerald-100/35 bg-emerald-50/10 p-5"
                   >
                     <div className="flex items-start gap-4">
                       <div
-                        className="grid h-12 w-12 shrink-0 place-items-center border border-cyan-100/50 bg-black/35 bg-cover bg-center text-sm font-black text-cyan-100"
+                        className="grid h-12 w-12 shrink-0 place-items-center border border-emerald-100/50 bg-black/35 bg-cover bg-center text-sm font-black text-emerald-100"
                         style={currentUser.image ? { backgroundImage: "url(" + currentUser.image + ")" } : undefined}
                         aria-hidden
                       >
                         {currentUser.image ? null : currentIdentity.slice(0, 1).toUpperCase()}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="font-mono text-xs uppercase text-cyan-50">GitHub 已连接</p>
+                        <p className="font-mono text-xs uppercase text-emerald-50">GitHub 已连接</p>
                         <p className="mt-2 break-all text-sm leading-6 text-white/70">
                           当前身份 <span className="font-semibold text-white">{currentIdentity}</span>，会话已生效。
                         </p>
                         <div className="mt-5 grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
                           <Link
                             href={primaryHref}
-                            className="inline-flex min-h-11 min-w-0 items-center justify-center gap-2 whitespace-nowrap border border-cyan-100/55 bg-cyan-50 px-4 text-sm font-black uppercase text-black transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/80"
+                            className="inline-flex min-h-11 min-w-0 items-center justify-center gap-2 whitespace-nowrap border border-emerald-100/55 bg-emerald-50 px-4 text-sm font-black uppercase text-black transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-100/80"
                           >
                             {primaryLabel}
                             <ArrowRight className="h-4 w-4" aria-hidden />
@@ -379,7 +379,7 @@ export function VoidEntryLogin({ emailEnabled, currentUser, redirectTo = "/", er
                           {currentUser.isAdmin ? (
                             <Link
                               href="/admin"
-                              className="inline-flex min-h-11 min-w-0 items-center justify-center gap-2 whitespace-nowrap border border-white/20 bg-white/10 px-4 text-sm font-black uppercase text-white transition hover:border-cyan-100/60 hover:bg-cyan-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/70"
+                              className="inline-flex min-h-11 min-w-0 items-center justify-center gap-2 whitespace-nowrap border border-white/20 bg-white/10 px-4 text-sm font-black uppercase text-white transition hover:border-emerald-100/60 hover:bg-emerald-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-100/70"
                             >
                               进入后台
                             </Link>
@@ -389,7 +389,7 @@ export function VoidEntryLogin({ emailEnabled, currentUser, redirectTo = "/", er
                           type="button"
                           onClick={handleSignOut}
                           disabled={loading !== null}
-                          className="mt-4 inline-flex min-h-10 cursor-pointer items-center gap-2 px-0 text-sm font-bold uppercase text-cyan-100 underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/60 disabled:cursor-not-allowed disabled:opacity-55"
+                          className="mt-4 inline-flex min-h-10 cursor-pointer items-center gap-2 px-0 text-sm font-bold uppercase text-emerald-100 underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-100/60 disabled:cursor-not-allowed disabled:opacity-55"
                         >
                           {loading === "signout" ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <LogOut className="h-4 w-4" aria-hidden />}
                           退出登录
@@ -401,14 +401,14 @@ export function VoidEntryLogin({ emailEnabled, currentUser, redirectTo = "/", er
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="border border-cyan-100/35 bg-cyan-50/10 p-5"
+                    className="border border-emerald-100/35 bg-emerald-50/10 p-5"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="grid h-11 w-11 shrink-0 place-items-center border border-cyan-100/50 text-cyan-100">
+                      <div className="grid h-11 w-11 shrink-0 place-items-center border border-emerald-100/50 text-emerald-100">
                         <CheckCircle2 className="h-5 w-5" aria-hidden />
                       </div>
                       <div>
-                        <p className="font-mono text-xs uppercase text-cyan-50">登录链接已发送</p>
+                        <p className="font-mono text-xs uppercase text-emerald-50">登录链接已发送</p>
                         <p className="mt-2 text-sm leading-6 text-white/70">
                           请查看 <span className="font-semibold text-white">{emailValue}</span>，链接将在 15 分钟后失效。
                         </p>
@@ -419,7 +419,7 @@ export function VoidEntryLogin({ emailEnabled, currentUser, redirectTo = "/", er
                             setEmailValue("");
                             setAuthError(null);
                           }}
-                          className="mt-4 min-h-11 cursor-pointer px-0 text-sm font-bold uppercase text-cyan-100 underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/60"
+                          className="mt-4 min-h-11 cursor-pointer px-0 text-sm font-bold uppercase text-emerald-100 underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-100/60"
                         >
                           更换邮箱
                         </button>
@@ -432,7 +432,7 @@ export function VoidEntryLogin({ emailEnabled, currentUser, redirectTo = "/", er
                       type="button"
                       onClick={handleGitHub}
                       disabled={loading !== null}
-                      className="group flex min-h-14 w-full cursor-pointer items-center justify-center gap-3 border border-white/70 bg-white px-5 text-sm font-black uppercase text-black shadow-[0_0_40px_rgba(255,255,255,0.16)] transition duration-200 hover:border-cyan-100 hover:bg-cyan-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/80 disabled:cursor-not-allowed disabled:opacity-55"
+                      className="group flex min-h-14 w-full cursor-pointer items-center justify-center gap-3 border border-white/70 bg-white px-5 text-sm font-black uppercase text-black shadow-[0_0_40px_rgba(255,255,255,0.16)] transition duration-200 hover:border-emerald-100 hover:bg-emerald-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-100/80 disabled:cursor-not-allowed disabled:opacity-55"
                     >
                       {loading === "github" ? (
                         <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
@@ -452,7 +452,7 @@ export function VoidEntryLogin({ emailEnabled, currentUser, redirectTo = "/", er
                     </div>
 
                     <form className="space-y-3" onSubmit={handleEmail} noValidate>
-                      <label htmlFor={emailId} className="flex items-center gap-2 font-mono text-xs uppercase text-cyan-50/72">
+                      <label htmlFor={emailId} className="flex items-center gap-2 font-mono text-xs uppercase text-emerald-50/72">
                         <Mail className="h-3.5 w-3.5" aria-hidden />
                         邮箱地址
                       </label>
@@ -470,11 +470,11 @@ export function VoidEntryLogin({ emailEnabled, currentUser, redirectTo = "/", er
                           }}
                           aria-describedby={`${emailId}-hint`}
                           disabled={loading !== null || !emailEnabled}
-                          className="h-12 w-full border border-white/15 bg-black/40 px-4 pr-12 text-base text-white outline-none transition placeholder:text-white/35 focus:border-cyan-100/70 focus:bg-black/50 focus:ring-2 focus:ring-cyan-100/20 disabled:cursor-not-allowed disabled:opacity-55"
+                          className="h-12 w-full border border-white/15 bg-black/40 px-4 pr-12 text-base text-white outline-none transition placeholder:text-white/35 focus:border-emerald-100/70 focus:bg-black/50 focus:ring-2 focus:ring-emerald-100/20 disabled:cursor-not-allowed disabled:opacity-55"
                           placeholder="you@example.com"
                         />
                         {loading === "email" ? (
-                          <Loader2 className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-cyan-100" aria-hidden />
+                          <Loader2 className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-emerald-100" aria-hidden />
                         ) : (
                           <Mail className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/38" aria-hidden />
                         )}
@@ -487,7 +487,7 @@ export function VoidEntryLogin({ emailEnabled, currentUser, redirectTo = "/", er
                       <button
                         type="submit"
                         disabled={loading !== null || !emailEnabled}
-                        className="group inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-3 border border-white/20 bg-transparent px-5 py-3 text-sm font-black uppercase text-white transition hover:border-cyan-100/60 hover:bg-cyan-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/70 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-55"
+                        className="group inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-3 border border-white/20 bg-transparent px-5 py-3 text-sm font-black uppercase text-white transition hover:border-emerald-100/60 hover:bg-emerald-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-100/70 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-55"
                       >
                         {loading === "email" ? (
                           <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
@@ -503,15 +503,15 @@ export function VoidEntryLogin({ emailEnabled, currentUser, redirectTo = "/", er
 
                 <div className="mt-5 grid grid-cols-3 border-y border-white/12 py-3 font-mono text-[10px] uppercase text-white/50">
                   <span className="flex items-center gap-1.5">
-                    <ShieldCheck className="h-3.5 w-3.5 text-cyan-100" aria-hidden />
+                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-100" aria-hidden />
                     GitHub 主登录
                   </span>
                   <span className="flex items-center justify-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5 text-cyan-100" aria-hidden />
+                    <Sparkles className="h-3.5 w-3.5 text-emerald-100" aria-hidden />
                     邮箱备用
                   </span>
                   <span className="flex items-center justify-end gap-1.5">
-                    <BadgeCheck className="h-3.5 w-3.5 text-cyan-100" aria-hidden />
+                    <BadgeCheck className="h-3.5 w-3.5 text-emerald-100" aria-hidden />
                     已验证
                   </span>
                 </div>
@@ -519,20 +519,20 @@ export function VoidEntryLogin({ emailEnabled, currentUser, redirectTo = "/", er
 
               <aside className="hypervoid-glass border border-white/20 bg-white/10 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_0_45px_rgba(14,165,233,0.12)] backdrop-blur-xl">
                 <div className="mb-5 flex items-center gap-3">
-                  <div className="grid h-10 w-10 place-items-center border border-cyan-100/30 bg-cyan-50/10 text-cyan-100">
+                  <div className="grid h-10 w-10 place-items-center border border-emerald-100/30 bg-emerald-50/10 text-emerald-100">
                     <Orbit className="h-5 w-5" aria-hidden />
                   </div>
                   <div>
-                    <p className="font-mono text-[11px] uppercase text-cyan-100/70">System Status</p>
+                    <p className="font-mono text-[11px] uppercase text-emerald-100/70">System Status</p>
                     <p className="text-sm text-white">登录通道在线</p>
                   </div>
                 </div>
                 <div className="space-y-3">
                   {statusRows.map(([label, value]) => (
                     <div key={label} className="flex items-center justify-between border-b border-white/10 pb-2 font-mono text-[11px] uppercase">
-                      <span className="text-cyan-50/60">{label}</span>
-                      <span className="inline-flex items-center gap-2 text-cyan-50">
-                        <BadgeCheck className="h-3.5 w-3.5 text-cyan-200" aria-hidden />
+                      <span className="text-emerald-50/60">{label}</span>
+                      <span className="inline-flex items-center gap-2 text-emerald-50">
+                        <BadgeCheck className="h-3.5 w-3.5 text-emerald-200" aria-hidden />
                         {label === "GitHub" && currentUser ? "已连接" : label === "邮箱中继" ? (emailEnabled ? value : "未启用") : value}
                       </span>
                     </div>

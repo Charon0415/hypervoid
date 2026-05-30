@@ -1,5 +1,6 @@
 import { SocialIcon } from "@/components/SocialIcon";
 import { Avatar } from "@/components/Avatar";
+import { BorderGlow } from "@/components/BorderGlow";
 import { siteConfig } from "@/lib/site-config";
 import { getSiteOverride } from "@/lib/site-config-server";
 
@@ -14,51 +15,60 @@ export async function ProfileCard() {
     (s) => !("hideFromProfile" in s && s.hideFromProfile),
   );
   return (
-    <aside className="hv-panel-sci group relative overflow-hidden p-3 text-center">
-      {/* Decorative corner lines */}
-      <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-px w-16 bg-gradient-to-r from-cyan-400/50 to-transparent" />
-      <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-16 w-px bg-gradient-to-b from-cyan-400/50 to-transparent" />
-      <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 h-px w-16 bg-gradient-to-l from-cyan-400/40 to-transparent" />
+    <BorderGlow
+      colors={["#ef4444", "#f97316", "#eab308", "#22c55e", "#06b6d4", "#3b82f6", "#8b5cf6", "#d946ef", "#ec4899"]}
+      glowColor="99 102 241"
+      backgroundColor="rgba(8,11,20,0.8)"
+      borderRadius={20}
+      edgeSensitivity={25}
+      glowRadius={40}
+    >
+      <aside className="group relative overflow-hidden p-6 text-center backdrop-blur-xl sm:p-8" style={{ background: "linear-gradient(145deg, rgba(239,68,68,0.08), rgba(249,115,22,0.06), rgba(234,179,8,0.06), rgba(34,197,94,0.07), rgba(6,182,212,0.09), rgba(59,130,246,0.1), rgba(99,102,241,0.08), rgba(139,92,246,0.07), rgba(217,70,239,0.06), rgba(12,18,36,0.75))", WebkitBackdropFilter: "blur(32px) saturate(1.6)" }}>
+        {/* Decorative corner lines — full spectrum */}
+        <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-px w-28" style={{ background: "linear-gradient(90deg, #ef4444, #f97316, #eab308, #22c55e, transparent)" }} />
+        <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-28 w-px" style={{ background: "linear-gradient(180deg, #ef4444, #3b82f6, #8b5cf6, transparent)" }} />
+        <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 h-px w-28" style={{ background: "linear-gradient(270deg, #ec4899, #d946ef, #8b5cf6, #3b82f6, transparent)" }} />
+        <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 h-28 w-px" style={{ background: "linear-gradient(0deg, #ec4899, #8b5cf6, #06b6d4, transparent)" }} />
 
-      <div className="relative mx-auto h-16 w-16">
-        <div
-          aria-hidden
-          className="absolute -inset-2 rounded-full bg-cyan-400/20 blur-2xl transition-all duration-500 group-hover:bg-cyan-400/30"
-        />
-        <div
-          aria-hidden
-          className="absolute -inset-1 rounded-full border border-cyan-400/30 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-          style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%)' }}
-        />
-        <Avatar
-          src={avatar}
-          alt={`${name} avatar`}
-          name={name}
-          className="relative h-16 w-16 rounded-full border-2 border-cyan-400/40 shadow-[0_0_24px_rgba(103,232,249,0.3)]"
-        />
-      </div>
+        {/* Avatar — larger */}
+        <div className="relative mx-auto h-28 w-28 sm:h-32 sm:w-32">
+          <div
+            aria-hidden
+            className="absolute -inset-4 rounded-full blur-3xl transition-all duration-500"
+            style={{ background: "radial-gradient(circle, rgba(59,130,246,0.25), rgba(139,92,246,0.15), rgba(236,72,153,0.1), transparent)" }}
+          />
+          <Avatar
+            src={avatar}
+            alt={`${name} avatar`}
+            name={name}
+            className="relative h-28 w-28 rounded-full border-2 border-white/10 shadow-[0_0_40px_rgba(59,130,246,0.35)] sm:h-32 sm:w-32"
+          />
+        </div>
 
-      <h2 className="mt-2 text-base font-bold tracking-tight text-cyan-50">{name}</h2>
-      <p className="mt-0.5 font-mono text-[10px] uppercase tracking-widest text-cyan-400/70">@{handle}</p>
-      <div className="mx-auto mt-1.5 h-px w-16 bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
-      <p className="mt-1.5 line-clamp-2 font-mono text-xs italic leading-snug text-cyan-50/70">{bio}</p>
+        {/* Name with gradient text for readability */}
+        <h2 className="mt-4 text-xl font-bold tracking-tight sm:text-2xl" style={{ background: "linear-gradient(135deg, #f0f4ff, #e0e8ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{name}</h2>
+        <p className="mt-1 font-mono text-xs uppercase tracking-[0.2em] text-accent/70 sm:text-sm">@{handle}</p>
+        <div className="mx-auto mt-3 h-px w-28" style={{ background: "linear-gradient(90deg, transparent, #ef4444, #eab308, #22c55e, #06b6d4, #3b82f6, #8b5cf6, #d946ef, transparent)" }} />
+        <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-muted sm:text-base" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>{bio}</p>
 
-      <div className="mt-3 flex flex-nowrap items-center justify-center gap-1.5">
-        {socials.map((s) => (
-          <a
-            key={s.name}
-            href={s.url}
-            target="_blank"
-            rel="noreferrer noopener"
-            title={s.name}
-            aria-label={s.name}
-            className="inline-flex h-6 w-6 shrink-0 items-center justify-center border border-cyan-100/16 bg-cyan-950/40 text-cyan-100/70 transition hover:border-cyan-400/50 hover:bg-cyan-900/50 hover:text-cyan-300 hover:shadow-[0_0_16px_rgba(103,232,249,0.2)]"
-            style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%)' }}
-          >
-            <SocialIcon name={s.icon} className="h-3 w-3" />
-          </a>
-        ))}
-      </div>
-    </aside>
+        {/* Social icons — larger */}
+        <div className="mt-5 flex flex-nowrap items-center justify-center gap-2.5">
+          {socials.map((s) => (
+            <a
+              key={s.name}
+              href={s.url}
+              target="_blank"
+              rel="noreferrer noopener"
+              title={s.name}
+              aria-label={s.name}
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition hover:shadow-[0_0_20px_var(--rainbow-glow)]"
+              style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.15), rgba(99,102,241,0.12), rgba(139,92,246,0.1), rgba(12,18,36,0.8))", border: "1px solid rgba(255,255,255,0.1)", color: "var(--accent-soft)" }}
+            >
+              <SocialIcon name={s.icon} className="h-4 w-4" />
+            </a>
+          ))}
+        </div>
+      </aside>
+    </BorderGlow>
   );
 }

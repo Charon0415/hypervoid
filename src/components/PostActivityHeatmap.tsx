@@ -3,11 +3,11 @@ import { getPostHeatmap } from "@/lib/stats";
 const WEEKS = 18;
 
 function cellColor(count: number): string {
-  if (count <= 0) return "bg-cyan-50/[0.04]";
-  if (count === 1) return "bg-cyan-100/22";
-  if (count === 2) return "bg-cyan-100/38";
-  if (count === 3) return "bg-cyan-100/55";
-  return "bg-cyan-100/75";
+  if (count <= 0) return "bg-zinc-800/50";
+  if (count === 1) return "bg-blue-900/60";
+  if (count === 2) return "bg-blue-700/60";
+  if (count === 3) return "bg-blue-500/60";
+  return "bg-blue-400/70";
 }
 
 const MONTHS = [
@@ -50,10 +50,10 @@ export async function PostActivityHeatmap() {
   return (
     <section className="hv-panel flex flex-col gap-2 p-4 sm:p-5">
       <div className="flex items-baseline gap-2 text-sm">
-        <span className="font-semibold tracking-tight text-cyan-50">
+        <span className="font-semibold tracking-tight text-foreground">
           {totalPosts} 篇
         </span>
-        <span className="text-xs text-cyan-50/55">
+        <span className="text-xs text-muted-soft">
           过去 {WEEKS} 周 · {activeDays} 个活跃日
         </span>
       </div>
@@ -63,7 +63,7 @@ export async function PostActivityHeatmap() {
         {monthLabels.map((m, i) => (
           <div key={i} className="relative h-3 flex-1">
             {m !== null ? (
-              <span className="absolute left-0 top-0 text-[10px] leading-none text-cyan-50/45">
+              <span className="absolute left-0 top-0 text-[10px] leading-none text-muted-soft">
                 {MONTHS[m]}
               </span>
             ) : null}
@@ -75,7 +75,7 @@ export async function PostActivityHeatmap() {
         {/* Row 0-6: each row = day label + 18 week cells */}
         {[0, 1, 2, 3, 4, 5, 6].map((row) => (
           <div key={row} className="flex items-center gap-[2px]">
-            <span className="mr-0.5 flex w-4 shrink-0 items-center justify-end pr-0.5 text-[9px] leading-none text-cyan-50/45/60">
+            <span className="mr-0.5 flex w-4 shrink-0 items-center justify-end pr-0.5 text-[9px] leading-none text-muted-soft">
               {DAY_ABBR[row] ?? ""}
             </span>
             {weeks.map((week) => {
@@ -94,7 +94,7 @@ export async function PostActivityHeatmap() {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center justify-end gap-[2px] text-[10px] text-cyan-50/45/70">
+      <div className="flex items-center justify-end gap-[2px] text-[10px] text-muted-soft">
         <span className="mr-0.5">少</span>
         {[0, 1, 2, 3, 4].map((n) => (
           <div

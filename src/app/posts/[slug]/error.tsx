@@ -18,11 +18,11 @@ export default function PostError({
   return (
     <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-6 py-24 text-center">
       <div className="hv-panel p-8">
-        <FileWarning className="mx-auto h-10 w-10 text-cyan-100/65" aria-hidden />
+        <FileWarning className="mx-auto h-10 w-10 text-muted" aria-hidden />
         <h2 className="hv-title mt-4 text-xl font-semibold tracking-normal">
           文章加载失败
         </h2>
-        <p className="mt-2 text-sm text-cyan-50/60">
+        <p className="mt-2 text-sm text-muted">
           可能是网络波动或这篇文章暂时不可用。
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">

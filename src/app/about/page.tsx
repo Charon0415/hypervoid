@@ -5,11 +5,11 @@ export const metadata: Metadata = { title: "关于", description: "关于 Charon
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto ">
       <header className="hv-panel relative mb-6 overflow-hidden p-5 sm:p-7">
-        <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent" />
-        <div aria-hidden className="absolute left-0 top-0 h-8 w-8 border-l border-t border-cyan-400/40" />
-        <div aria-hidden className="absolute right-0 top-0 h-2 w-2 rounded-full bg-cyan-400/60 animate-pulse" />
+        <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/60 to-transparent" />
+        <div aria-hidden className="absolute left-0 top-0 h-8 w-8 border-l border-t border-accent/40" />
+        <div aria-hidden className="absolute right-0 top-0 h-2 w-2 rounded-full bg-accent animate-pulse" />
         <p className="hv-kicker">About / System_Info</p>
         <h1 className="hv-title mt-2 text-3xl font-black uppercase tracking-tight sm:text-4xl">
           关于

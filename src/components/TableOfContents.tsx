@@ -36,12 +36,12 @@ export function TableOfContents({ items }: { items: TOCItem[] }) {
   return (
     <nav aria-label="目录" className="text-sm">
       <div className="mb-3 flex items-center gap-2">
-        <span className="h-1 w-1 rounded-full bg-cyan-400/60" />
-        <p className="font-mono text-[10px] font-semibold uppercase tracking-widest text-cyan-400/70">
+        <span className="h-1 w-1 rounded-full bg-accent-soft" />
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-widest text-accent-soft">
           Navigation_Matrix
         </p>
       </div>
-      <ul className="flex flex-col gap-0.5 border-l-2 border-cyan-100/15">
+      <ul className="flex flex-col gap-0.5 border-l-2 border-border">
         {items.map((item) => {
           const isActive = item.id === activeId;
           const indent = (item.depth - minDepth) * 12;
@@ -53,8 +53,8 @@ export function TableOfContents({ items }: { items: TOCItem[] }) {
                 className={
                   "block border-l-2 py-1.5 pr-2 font-mono text-xs transition " +
                   (isActive
-                    ? "-ml-0.5 border-cyan-400 bg-cyan-400/10 font-semibold text-cyan-100"
-                    : "border-transparent text-cyan-50/55 hover:border-cyan-100/30 hover:bg-cyan-950/30 hover:text-cyan-50")
+                    ? "-ml-0.5 border-accent bg-accent/10 font-semibold text-accent"
+                    : "border-transparent text-muted-soft hover:border-border hover:bg-card hover:text-foreground")
                 }
               >
                 {item.text}

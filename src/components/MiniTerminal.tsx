@@ -430,13 +430,13 @@ export function MiniTerminal({
       className="hypervoid-terminal hv-panel-sci flex flex-col overflow-hidden"
       onClick={promptHandler}
     >
-      <header className="flex items-center gap-2 border-b border-cyan-100/14 bg-cyan-950/24 px-3 py-1.5">
+      <header className="flex items-center gap-2 border-b border-border bg-card px-3 py-1.5">
         <span aria-hidden className="flex gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-rose-400/80" />
-          <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
+          <span className="h-2.5 w-2.5 rounded-full bg-accent" />
+          <span className="h-2.5 w-2.5 rounded-full bg-accent" />
           <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/80" />
         </span>
-        <span className="ml-1 font-mono text-[11px] text-cyan-50/52">
+        <span className="ml-1 font-mono text-[11px] text-muted-soft">
           {prompt}: ~
         </span>
         <button
@@ -447,7 +447,7 @@ export function MiniTerminal({
           }}
           aria-label="清屏"
           title="清屏 (Ctrl+L)"
-          className="ml-auto rounded p-1 text-cyan-50/52 transition hover:bg-cyan-50/8 hover:text-cyan-100"
+          className="ml-auto rounded p-1 text-muted-soft transition hover:bg-foreground/3 hover:text-accent"
         >
           <Trash2 className="h-3 w-3" aria-hidden />
         </button>
@@ -460,15 +460,15 @@ export function MiniTerminal({
         {lines.map(({ id, line }) => {
           if (line.kind === "input") {
             return (
-              <div key={id} className="flex gap-1.5 text-cyan-50/82">
-                <span className="shrink-0 text-cyan-300/80">{">"}</span>
+              <div key={id} className="flex gap-1.5 text-foreground">
+                <span className="shrink-0 text-accent">{">"}</span>
                 <span className="break-all">{line.text}</span>
               </div>
             );
           }
           if (line.kind === "muted") {
             return (
-              <div key={id} className="break-words text-cyan-50/52">
+              <div key={id} className="break-words text-muted-soft">
                 {line.text}
               </div>
             );
@@ -477,7 +477,7 @@ export function MiniTerminal({
             return (
               <div
                 key={id}
-                className="break-words text-rose-500 dark:text-rose-400"
+                className="break-words text-red-500 dark:text-red-400"
               >
                 {line.text}
               </div>
@@ -491,7 +491,7 @@ export function MiniTerminal({
                   onClick={(e) => e.stopPropagation()}
                   target={line.external ? "_blank" : undefined}
                   rel={line.external ? "noreferrer noopener" : undefined}
-                  className="text-cyan-300 hover:text-cyan-100 hover:underline"
+                  className="text-accent hover:text-accent-soft hover:underline"
                 >
                   {line.text}
                 </Link>
@@ -499,7 +499,7 @@ export function MiniTerminal({
             );
           }
           return (
-            <div key={id} className="break-words text-cyan-50/88">
+            <div key={id} className="break-words text-foreground">
               {line.text}
             </div>
           );
@@ -508,9 +508,9 @@ export function MiniTerminal({
 
       <form
         onSubmit={onSubmit}
-        className="flex items-center gap-1.5 border-t border-cyan-100/14 bg-cyan-950/22 px-3 py-2"
+        className="flex items-center gap-1.5 border-t border-border bg-card px-3 py-2"
       >
-        <span aria-hidden className="font-mono text-xs text-cyan-300/80">
+        <span aria-hidden className="font-mono text-xs text-accent">
           {">"}
         </span>
         <input
@@ -526,7 +526,7 @@ export function MiniTerminal({
           spellCheck={false}
           aria-label="终端命令输入"
           placeholder="help"
-          className="min-w-0 flex-1 bg-transparent font-mono text-xs text-cyan-50 placeholder:text-cyan-50/42 focus:outline-none"
+          className="min-w-0 flex-1 bg-transparent font-mono text-xs text-foreground placeholder:text-muted-soft focus:outline-none"
         />
       </form>
     </section>

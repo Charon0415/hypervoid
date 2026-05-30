@@ -127,7 +127,7 @@ export default async function PostOgImage({
                 letterSpacing: "1px",
               }}
             >
-              · 高维虚空
+              · 高维空间
             </span>
           </div>
         </div>

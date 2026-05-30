@@ -22,7 +22,7 @@ export function BookmarkButton({
       aria-label={active ? "取消收藏" : "收藏文章"}
       title={active ? "取消收藏" : "加入收藏 → /bookmarks"}
       className={"hv-action h-9 w-9 p-0 " + (
-        active ? "border-cyan-100/50 bg-cyan-100/14 text-cyan-50" : ""
+        active ? "border-accent bg-accent/14 text-foreground" : ""
       )}
     >
       <Bookmark

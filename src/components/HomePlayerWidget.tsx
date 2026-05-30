@@ -143,14 +143,14 @@ export function HomePlayerWidget() {
       <div className="relative z-10">
         {/* Header */}
         <div className="flex items-baseline justify-between">
-          <h3 className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-widest text-cyan-100/80">
-            <Music2 className="h-3.5 w-3.5 text-cyan-300/76" aria-hidden />
+          <h3 className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-widest text-foreground/80">
+            <Music2 className="h-3.5 w-3.5 text-accent/76" aria-hidden />
             音乐播放器
           </h3>
           <div className="flex items-center gap-1.5">
             <Link
               href="/music"
-              className="group inline-flex items-center gap-1 border border-cyan-100/18 bg-cyan-950/30 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-cyan-100/70 transition hover:border-cyan-400/40 hover:bg-cyan-900/40 hover:text-cyan-300"
+              className="group inline-flex items-center gap-1 border border-border bg-card px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted transition hover:border-accent/40 hover:bg-card-hover hover:text-accent"
             >
               完整版
               <ArrowRight className="h-3 w-3 transition group-hover:translate-x-0.5" aria-hidden />
@@ -160,7 +160,7 @@ export function HomePlayerWidget() {
               onClick={toggleOpen}
               aria-expanded={open}
               aria-label={open ? "收起播放器" : "展开播放器"}
-              className="grid h-6 w-6 place-items-center border border-cyan-100/18 bg-cyan-950/30 text-cyan-100/68 transition hover:border-cyan-400/40 hover:text-cyan-300"
+              className="grid h-6 w-6 place-items-center border border-border bg-card text-muted transition hover:border-accent/40 hover:text-accent"
             >
               <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
             </button>
@@ -171,7 +171,7 @@ export function HomePlayerWidget() {
         {!open ? (
           <p
             onClick={toggleOpen}
-            className="mt-2 cursor-pointer border border-cyan-100/10 bg-cyan-950/20 px-2 py-2 text-center font-mono text-xs italic leading-relaxed text-cyan-50/58 transition-colors hover:border-cyan-100/20 hover:text-cyan-50/78"
+            className="mt-2 cursor-pointer border border-border bg-card px-2 py-2 text-center font-mono text-xs italic leading-relaxed text-muted transition-colors hover:border-border hover:text-foreground"
           >
             「{saying || "音乐是灵魂的避难所。"}」
           </p>
@@ -181,20 +181,20 @@ export function HomePlayerWidget() {
         {open ? (
           <div className="mt-3">
             {loading && !tracksLoaded ? (
-              <p className="border border-dashed border-cyan-100/18 bg-cyan-950/25 px-3 py-4 text-center text-xs text-cyan-50/58 backdrop-blur-sm">
+              <p className="border border-dashed border-border bg-card px-3 py-4 text-center text-xs text-muted backdrop-blur-sm">
                 加载歌单中…
               </p>
             ) : error && !tracksLoaded ? (
-              <p className="border border-dashed border-cyan-100/18 bg-cyan-950/25 px-3 py-4 text-center text-xs text-cyan-50/58 backdrop-blur-sm">
+              <p className="border border-dashed border-border bg-card px-3 py-4 text-center text-xs text-muted backdrop-blur-sm">
                 {error}
               </p>
             ) : !current ? (
-              <div className="border border-dashed border-cyan-100/18 bg-cyan-950/25 px-3 py-4 text-center backdrop-blur-sm">
-                <p className="mb-2 text-xs text-cyan-50/62">
+              <div className="border border-dashed border-border bg-card px-3 py-4 text-center backdrop-blur-sm">
+                <p className="mb-2 text-xs text-muted">
                   暂无可播放曲目。
                 </p>
                 <p
-                  className="text-[11px] leading-relaxed text-cyan-50/48"
+                  className="text-[11px] leading-relaxed text-muted-soft"
                   style={{ fontFamily: "Georgia, 'Noto Serif SC', serif" }}
                 >
                   {saying}
@@ -225,15 +225,15 @@ export function HomePlayerWidget() {
                       />
                       {/* Glow effect — only when effects enabled */}
                       {fxEnabled && playing ? (
-                        <div className="absolute -inset-1 -z-10 rounded-full bg-cyan-300/15 blur-md" />
+                        <div className="absolute -inset-1 -z-10 rounded-full bg-accent/15 blur-md" />
                       ) : null}
                     </div>
                   ) : (
                     <div
-                      className={`flex shrink-0 items-center justify-center bg-gradient-to-br from-cyan-300/16 to-cyan-950/35 ${
+                      className={`flex shrink-0 items-center justify-center bg-gradient-to-br from-accent/16 to-card/35 ${
                         fxEnabled
-                          ? "h-14 w-14 rounded-full text-2xl shadow-[0_0_18px_rgba(103,232,249,0.16)] ring-1 ring-cyan-100/20"
-                          : "h-12 w-12 rounded-full text-xl text-cyan-100/76"
+                          ? "h-14 w-14 rounded-full text-2xl shadow-[0_0_18px_rgba(6,182,212,0.16)] ring-1 ring-accent/20"
+                          : "h-12 w-12 rounded-full text-xl text-muted"
                       }`}
                     >
                       ♪
@@ -247,7 +247,7 @@ export function HomePlayerWidget() {
                       {current.title}
                     </p>
                     <p
-                      className="mt-0.5 truncate text-xs text-cyan-50/56"
+                      className="mt-0.5 truncate text-xs text-muted"
                       title={current.artist}
                     >
                       {current.artist}
@@ -274,7 +274,7 @@ export function HomePlayerWidget() {
                           <div
                             key={i}
                             className={`flex-1 rounded-full transition-colors duration-150 ${
-                              filled ? "bg-cyan-300" : "bg-cyan-100/18"
+                              filled ? "bg-accent" : "bg-border"
                             }`}
                             style={{ height: `${h * 100}%` }}
                           />
@@ -282,22 +282,22 @@ export function HomePlayerWidget() {
                       })}
                     </div>
                     <div className="mt-1 flex items-center justify-between">
-                      <span className="font-mono text-[10px] text-cyan-50/50">
+                      <span className="font-mono text-[10px] text-muted-soft">
                         {formatTime(currentTime)}
                       </span>
-                      <span className="font-mono text-[10px] text-cyan-50/50">
+                      <span className="font-mono text-[10px] text-muted-soft">
                         {formatTime(duration)}
                       </span>
                     </div>
                   </div>
                 ) : (
                   <div className="mt-3 flex items-center gap-2">
-                    <span className="w-8 text-right font-mono text-[10px] text-cyan-50/50">
+                    <span className="w-8 text-right font-mono text-[10px] text-muted-soft">
                       {formatTime(currentTime)}
                     </span>
-                    <div className="relative h-1 flex-1 bg-cyan-100/14">
+                    <div className="relative h-1 flex-1 bg-border">
                       <div
-                        className="absolute left-0 top-0 h-full bg-cyan-300 transition-[width] duration-200"
+                        className="absolute left-0 top-0 h-full bg-accent transition-[width] duration-200"
                         style={{
                           width:
                             duration > 0
@@ -306,7 +306,7 @@ export function HomePlayerWidget() {
                         }}
                       />
                     </div>
-                    <span className="w-8 font-mono text-[10px] text-cyan-50/50">
+                    <span className="w-8 font-mono text-[10px] text-muted-soft">
                       {formatTime(duration)}
                     </span>
                   </div>
@@ -318,7 +318,7 @@ export function HomePlayerWidget() {
                     type="button"
                     onClick={prev}
                     aria-label="上一首"
-                    className="grid h-8 w-8 place-items-center border border-transparent text-cyan-50/54 transition hover:border-cyan-100/18 hover:bg-cyan-50/8 hover:text-cyan-100"
+                    className="grid h-8 w-8 place-items-center border border-transparent text-muted transition hover:border-border hover:bg-card hover:text-foreground"
                   >
                     <SkipBack className="h-3.5 w-3.5" aria-hidden />
                   </button>
@@ -327,7 +327,7 @@ export function HomePlayerWidget() {
                     onClick={togglePlay}
                     disabled={!current?.url}
                     aria-label={playing ? "暂停" : "播放"}
-                    className="grid h-10 w-10 place-items-center border border-cyan-300/50 bg-cyan-50 text-black shadow-[0_0_18px_rgba(103,232,249,0.16)] transition hover:bg-white disabled:opacity-40"
+                    className="grid h-10 w-10 place-items-center border border-accent/50 bg-accent text-background shadow-[0_0_18px_rgba(6,182,212,0.16)] transition hover:bg-accent-soft disabled:opacity-40"
                   >
                     {playing ? (
                       <Pause className="h-4 w-4" aria-hidden />
@@ -339,7 +339,7 @@ export function HomePlayerWidget() {
                     type="button"
                     onClick={next}
                     aria-label="下一首"
-                    className="grid h-8 w-8 place-items-center border border-transparent text-cyan-50/54 transition hover:border-cyan-100/18 hover:bg-cyan-50/8 hover:text-cyan-100"
+                    className="grid h-8 w-8 place-items-center border border-transparent text-muted transition hover:border-border hover:bg-card hover:text-foreground"
                   >
                     <SkipForward className="h-3.5 w-3.5" aria-hidden />
                   </button>

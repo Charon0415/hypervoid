@@ -197,7 +197,7 @@ export function PostEditor({
             onChange={(e) =>
               update("slug", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))
             }
-            className={`${inputClass} ${mode === "edit" ? "cursor-not-allowed bg-cyan-50/[0.02] text-cyan-50/40" : ""}`}
+            className={`${inputClass} ${mode === "edit" ? "cursor-not-allowed bg-violet-50/[0.02] text-violet-50/40" : ""}`}
             pattern="[a-z0-9][a-z0-9-]*"
           />
         </Field>
@@ -263,7 +263,7 @@ export function PostEditor({
             ) : null}
             {suggestedTags.length > 0 ? (
               <div className="flex flex-wrap items-center gap-1.5 text-xs">
-                <span className="text-cyan-50/50">建议：</span>
+                <span className="text-violet-50/50">建议：</span>
                 {suggestedTags.map((t) => {
                   const current = state.tags
                     .split(/[,，]/)
@@ -282,8 +282,8 @@ export function PostEditor({
                       disabled={has}
                       className={`inline-flex items-center gap-1 border px-2 py-0.5 transition ${
                         has
-                          ? "border-cyan-100/30 bg-cyan-100/10 text-cyan-100 opacity-60"
-                          : "border-cyan-100/16 bg-white/[0.035] text-cyan-50/62 hover:border-cyan-100/40 hover:text-cyan-50"
+                          ? "border-violet-100/30 bg-violet-100/10 text-violet-100 opacity-60"
+                          : "border-violet-100/16 bg-white/[0.035] text-violet-50/62 hover:border-violet-100/40 hover:text-violet-50"
                       }`}
                       title={has ? "已加入" : "点击加入"}
                     >
@@ -294,7 +294,7 @@ export function PostEditor({
                 <button
                   type="button"
                   onClick={() => setSuggestedTags([])}
-                  className="text-cyan-50/50 hover:text-cyan-50"
+                  className="text-violet-50/50 hover:text-violet-50"
                   title="收起"
                 >
                   ×
@@ -386,15 +386,15 @@ export function PostEditor({
           </Field>
         ) : (
           <Field label="置顶" hint="勾选后会出现在列表最上方">
-            <label className="inline-flex h-10 items-center gap-2 border border-cyan-100/16 bg-white/[0.035] px-3 text-sm text-cyan-50/72">
+            <label className="inline-flex h-10 items-center gap-2 border border-violet-100/16 bg-white/[0.035] px-3 text-sm text-violet-50/72">
               <input
                 type="checkbox"
                 name="pinned"
                 checked={state.pinned}
                 onChange={(e) => update("pinned", e.target.checked)}
-                className="h-4 w-4 accent-cyan-300"
+                className="h-4 w-4 accent-violet-300"
               />
-              <span className="inline-flex items-center gap-1.5"><Pin className="h-3.5 w-3.5 text-cyan-100/70" aria-hidden />置顶这篇文章</span>
+              <span className="inline-flex items-center gap-1.5"><Pin className="h-3.5 w-3.5 text-violet-100/70" aria-hidden />置顶这篇文章</span>
             </label>
           </Field>
         )}
@@ -492,7 +492,7 @@ export function PostEditor({
 }
 
 const inputClass =
-  "w-full border border-cyan-100/16 bg-white/[0.035] px-3 py-2 text-sm text-cyan-50 placeholder:text-cyan-50/35 transition focus:border-cyan-100/45 focus:outline-none";
+  "w-full border border-violet-100/16 bg-white/[0.035] px-3 py-2 text-sm text-violet-50 placeholder:text-violet-50/35 transition focus:border-violet-100/45 focus:outline-none";
 
 function Field({
   label,
@@ -507,12 +507,12 @@ function Field({
 }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-sm font-medium text-cyan-50">
+      <span className="text-sm font-medium text-violet-50">
         {label}
         {required ? <span className="text-red-300"> *</span> : null}
       </span>
       {children}
-      {hint ? <span className="text-xs text-cyan-50/45">{hint}</span> : null}
+      {hint ? <span className="text-xs text-violet-50/45">{hint}</span> : null}
     </label>
   );
 }

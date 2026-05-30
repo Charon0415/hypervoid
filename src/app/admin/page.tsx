@@ -248,23 +248,23 @@ export default async function AdminHome() {
     <div className="flex flex-col gap-8">
       <header className="hv-panel-sci relative overflow-hidden p-5 sm:p-7 flex flex-wrap items-center justify-between gap-3">
         {/* Corner accent lines */}
-        <div className="absolute left-0 top-0 h-12 w-12 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
-        <div className="absolute right-0 bottom-0 h-12 w-12 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute left-0 top-0 h-12 w-12 border-l-2 border-t-2 border-accent/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-12 w-12 border-r-2 border-b-2 border-accent/60 pointer-events-none" />
 
         {/* Pulse beacon */}
-        <div className="absolute right-5 top-5 h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
+        <div className="absolute right-5 top-5 h-2 w-2 rounded-full bg-accent animate-pulse" />
 
         <div className="min-w-0">
           <p className="hv-kicker">ADMIN_CONSOLE / CONTROL_DECK</p>
           <h1 className="hv-title mt-2 text-2xl font-black tracking-tight sm:text-4xl uppercase">管理后台</h1>
-          <p className="mt-2 font-mono text-sm text-cyan-50/60 uppercase">
-            OPERATOR：<span className="font-medium text-cyan-100">@{login}</span>
+          <p className="mt-2 font-mono text-sm text-muted uppercase">
+            OPERATOR：<span className="font-medium text-foreground">@{login}</span>
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Link
             href="/admin/posts/new"
-            className="hv-action px-3 py-2 text-sm font-medium sm:px-4 clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_rgba(103,232,249,0.3)]"
+            className="hv-action px-3 py-2 text-sm font-medium sm:px-4 clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_var(--accent-glow)]"
           >
             <PenLine className="h-4 w-4" aria-hidden />
             新文章
@@ -277,7 +277,7 @@ export default async function AdminHome() {
           >
             <button
               type="submit"
-              className="hv-action px-3 py-2 text-sm clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_rgba(103,232,249,0.3)]"
+              className="hv-action px-3 py-2 text-sm clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_var(--accent-glow)]"
             >
               <LogOut className="h-4 w-4" aria-hidden />
               退出
@@ -303,24 +303,24 @@ export default async function AdminHome() {
             RECENT_PUBLISHED
           </h2>
           {recentPublished.length === 0 ? (
-            <p className="mt-3 text-sm text-cyan-50/58">还没有已发布文章。</p>
+            <p className="mt-3 text-sm text-muted">还没有已发布文章。</p>
           ) : (
             <ul className="mt-3 flex flex-col gap-1.5">
               {recentPublished.map((p) => (
                 <li
                   key={p.slug}
-                  className="flex items-baseline justify-between gap-3 border border-transparent px-2 py-1.5 transition hover:border-cyan-400/30 hover:bg-cyan-400/5 clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
+                  className="flex items-baseline justify-between gap-3 border border-transparent px-2 py-1.5 transition hover:border-accent/30 hover:bg-accent/5 clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
                 >
                   <Link
                     href={`/admin/posts/${p.slug}/edit`}
-                    className="min-w-0 flex-1 truncate text-sm text-cyan-50/78 hover:text-cyan-100"
+                    className="min-w-0 flex-1 truncate text-sm text-foreground hover:text-foreground"
                   >
                     {p.visibility === "private" ? (
-                      <LockKeyhole className="mr-1 inline h-3.5 w-3.5 text-cyan-100/70" aria-label="私密" />
+                      <LockKeyhole className="mr-1 inline h-3.5 w-3.5 text-muted" aria-label="私密" />
                     ) : null}
                     {p.title}
                   </Link>
-                  <time className="shrink-0 font-mono text-[11px] text-cyan-50/45 uppercase">
+                  <time className="shrink-0 font-mono text-[11px] text-muted uppercase">
                     {p.publishAt ? formatDateCN(p.publishAt) : "—"}
                   </time>
                 </li>
@@ -329,7 +329,7 @@ export default async function AdminHome() {
           )}
           <Link
             href="/admin/posts"
-            className="hv-action mt-3 min-h-8 px-3 text-xs font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)] hover:shadow-[0_0_16px_rgba(103,232,249,0.25)]"
+            className="hv-action mt-3 min-h-8 px-3 text-xs font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)] hover:shadow-[0_0_16px_var(--accent-glow)]"
           >
             VIEW_ALL <ArrowRight className="h-3.5 w-3.5" aria-hidden />
           </Link>
@@ -359,7 +359,7 @@ export default async function AdminHome() {
               <p className="flex items-center gap-1.5 font-medium text-amber-200">
                 <ShieldAlert className="h-3.5 w-3.5" aria-hidden /> {missingSummary.length} 篇已发布文章还没 AI 摘要
               </p>
-              <p className="mt-1 text-cyan-50/55">
+              <p className="mt-1 text-muted">
                 保存后会自动生成；老文章可去编辑页手动点「生成 AI 摘要」
               </p>
             </div>
@@ -372,7 +372,7 @@ export default async function AdminHome() {
           <h2 className="hv-kicker uppercase">
             ADMIN_FUNCTIONS
           </h2>
-          <p className="mt-1 text-xs text-cyan-50/55">
+          <p className="mt-1 text-xs text-muted">
             按使用场景分组，常用入口不用在一整屏卡片里找。
           </p>
         </div>
@@ -382,11 +382,11 @@ export default async function AdminHome() {
               key={group.title}
               className="hv-panel-sci p-4"
             >
-              <div className="mb-3 border-b border-cyan-400/20 pb-3">
+              <div className="mb-3 border-b border-accent/20 pb-3">
                 <h3 className="hv-title font-mono text-base font-semibold tracking-wider uppercase">
                   {group.title}
                 </h3>
-                <p className="mt-1 text-xs text-cyan-50/55">{group.desc}</p>
+                <p className="mt-1 text-xs text-muted">{group.desc}</p>
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
                 {group.items.map((item) => (
@@ -404,8 +404,8 @@ export default async function AdminHome() {
         </div>
       </section>
 
-      <p className="text-xs text-cyan-50/55">
-        <Sparkles className="inline h-3.5 w-3.5 text-cyan-100/65" aria-hidden /> 站点已运行 <span className="font-mono">{stats.daysOnline}</span> 天
+      <p className="text-xs text-muted">
+        <Sparkles className="inline h-3.5 w-3.5 text-muted" aria-hidden /> 站点已运行 <span className="font-mono">{stats.daysOnline}</span> 天
       </p>
     </div>
   );
@@ -423,16 +423,16 @@ function StatCard({
   return (
     <div className="hv-panel-sci p-4 relative overflow-hidden">
       {/* Corner accent */}
-      <div className="absolute right-0 top-0 h-8 w-8 border-r border-t border-cyan-400/40 pointer-events-none" />
+      <div className="absolute right-0 top-0 h-8 w-8 border-r border-t border-accent/40 pointer-events-none" />
 
       <p className="hv-kicker uppercase">
         {label}
       </p>
-      <p className="mt-1 font-mono text-2xl font-bold leading-tight text-cyan-50 sm:text-3xl">
+      <p className="mt-1 font-mono text-2xl font-bold leading-tight text-foreground sm:text-3xl">
         {value.toLocaleString("en-US")}
       </p>
       {hint ? (
-        <p className="mt-0.5 text-[11px] text-cyan-50/50">{hint}</p>
+        <p className="mt-0.5 text-[11px] text-muted">{hint}</p>
       ) : null}
     </div>
   );
@@ -452,13 +452,13 @@ function PendingCard({
   return (
     <Link
       href={href}
-      className="hv-panel-sci group flex items-center justify-between gap-3 p-3 transition hover:border-cyan-400/40 hover:shadow-[0_0_20px_rgba(103,232,249,0.15)]"
+      className="hv-panel-sci group flex items-center justify-between gap-3 p-3 transition hover:border-accent/40 hover:shadow-[0_0_20px_var(--accent-glow)]"
     >
       <div>
-        <p className="font-mono text-xs text-cyan-50/58 uppercase">{label}</p>
-        <p className="text-xs text-cyan-50/42">{description}</p>
+        <p className="font-mono text-xs text-muted uppercase">{label}</p>
+        <p className="text-xs text-muted">{description}</p>
       </div>
-      <span className="font-mono text-2xl font-bold text-cyan-50 group-hover:text-cyan-100">
+      <span className="font-mono text-2xl font-bold text-foreground group-hover:text-foreground">
         {count}
       </span>
     </Link>
@@ -479,20 +479,20 @@ function NavTile({
   return (
     <Link
       href={href}
-      className="group relative border border-cyan-400/16 bg-gradient-to-br from-cyan-950/40 to-slate-950/60 p-3 transition hover:border-cyan-400/40 hover:bg-cyan-400/8 clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_16px_rgba(103,232,249,0.2)]"
+      className="group relative border border-accent/16 bg-card p-3 transition hover:border-accent/40 hover:bg-accent/8 clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_16px_var(--accent-glow)]"
     >
       {/* Corner accent */}
-      <div className="absolute right-0 top-0 h-6 w-6 border-r border-t border-cyan-400/30 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute right-0 top-0 h-6 w-6 border-r border-t border-accent/30 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
 
       <div className="flex items-baseline justify-between gap-2">
-        <h3 className="text-sm font-semibold text-cyan-50 group-hover:text-cyan-100">
+        <h3 className="text-sm font-semibold text-foreground group-hover:text-foreground">
           {title} <ArrowRight className="inline h-3.5 w-3.5" aria-hidden />
         </h3>
         {count !== undefined ? (
-          <span className="font-mono text-xs text-cyan-50/50">{count}</span>
+          <span className="font-mono text-xs text-muted">{count}</span>
         ) : null}
       </div>
-      <p className="mt-1 text-[11px] leading-relaxed text-cyan-50/52">{desc}</p>
+      <p className="mt-1 text-[11px] leading-relaxed text-muted">{desc}</p>
     </Link>
   );
 }

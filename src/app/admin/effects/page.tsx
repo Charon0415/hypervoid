@@ -48,7 +48,7 @@ const EFFECTS: EffectDef[] = [
 function ToggleIcon({ on }: { on: boolean }) {
   return (
     <svg
-      className={`h-5 w-5 ${on ? "text-cyan-100" : "text-muted"}`}
+      className={`h-5 w-5 ${on ? "text-foreground" : "text-muted"}`}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -94,8 +94,8 @@ export default async function AdminEffectsPage() {
     <div className="flex flex-col gap-8">
       <header className="hv-panel-sci relative overflow-hidden p-5">
         {/* Corner accents */}
-        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
-        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-accent/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-accent/60 pointer-events-none" />
 
         <AdminBackLink href="/admin" label="后台" />
         <p className="hv-kicker mt-4 uppercase">VISUAL_EFFECTS</p>
@@ -116,8 +116,8 @@ export default async function AdminEffectsPage() {
                 type="submit"
                 className={`flex w-full items-center gap-4 hv-panel-sci p-5 text-left transition ${
                   isOn
-                    ? "border-cyan-400/40 bg-cyan-400/12 shadow-[0_0_18px_rgba(103,232,249,0.18)]"
-                    : "hover:border-cyan-400/40"
+                    ? "border-accent/40 bg-accent/12 shadow-[0_0_18px_var(--accent-glow)]"
+                    : "hover:border-accent/40"
                 }`}
               >
                 <div className="shrink-0">
@@ -131,13 +131,13 @@ export default async function AdminEffectsPage() {
                     <span
                       className={`shrink-0 px-2 py-0.5 font-mono text-[10px] font-medium uppercase clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)] ${
                         isOn
-                          ? "bg-cyan-400/15 text-cyan-100"
+                          ? "bg-accent/15 text-foreground"
                           : "bg-muted/30 text-muted"
                       }`}
                     >
                       {isOn ? "ONLINE" : "OFFLINE"}
                     </span>
-                    {isOn ? <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" /> : null}
+                    {isOn ? <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" /> : null}
                   </div>
                   <p className="mt-1 text-xs text-muted leading-relaxed">
                     {effect.desc}

@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { PostCard } from "@/components/PostCard";
+import { FeaturedPostCard } from "@/components/FeaturedPostCard";
+import { StaggerReveal } from "@/components/StaggerReveal";
 import { SubscribeForm } from "@/components/SubscribeForm";
 import { RssSubscribeCard } from "@/components/RssSubscribeCard";
 import { isEmailConfigured } from "@/lib/email";
@@ -10,12 +12,11 @@ import { ProfileCard } from "@/components/ProfileCard";
 import { MiniCalendar } from "@/components/MiniCalendar";
 import { MiniTerminal } from "@/components/MiniTerminal";
 import { PostActivityHeatmap } from "@/components/PostActivityHeatmap";
-import { AdaptivePostGrid } from "@/components/AdaptivePostGrid";
 import { TopicCollections } from "@/components/TopicCollections";
 import { TagCloud } from "@/components/TagCloud";
 import { RecentGuestbook } from "@/components/RecentGuestbook";
 import { PrivateSpace } from "@/components/PrivateSpace";
-import { Greeting } from "@/components/Greeting";
+import { HeroSection } from "@/components/HeroSection";
 import { DailyPick } from "@/components/DailyPick";
 import { HomePlayerWidget } from "@/components/HomePlayerWidget";
 import { getAllPostMeta } from "@/lib/posts";
@@ -42,12 +43,6 @@ export default async function Home() {
   const recent = all;
   const dailyPick = pickByDay(all);
 
-  // Server-side snapshot for the MiniTerminal — only ships titles+slugs
-  // for the latest 20 posts and top 10 tag counts to the client, so the
-  // terminal can navigate without making its own API calls. We don't
-  // call auth() here on purpose: this page is ISR (`revalidate = 60`),
-  // and reading cookies would bust the static cache for every visitor.
-  // The terminal's `whoami` falls back to "guest".
   const terminalPosts = all
     .slice(0, 20)
     .map((p) => ({ slug: p.slug, title: p.frontmatter.title }));
@@ -63,140 +58,143 @@ export default async function Home() {
     .slice(0, 10);
 
   return (
-    <div className="hv-home-grid grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-6">
-      <div className="hv-home-main flex flex-col gap-6 lg:order-1">
-        <section className="hv-home-hero group relative overflow-hidden rounded-lg border border-cyan-100/16 bg-gradient-to-br from-cyan-950/36 via-slate-950/58 to-slate-950/78 p-4 sm:p-5 md:p-6">
-          {/* Animated stars background */}
-          <div aria-hidden className="hypervoid-stars" />
+    <>
+      {/* ═══ HERO ═══ */}
+      <HeroSection
+        quote={quote}
+        quoteAuthor={quoteAuthor}
+        marqueeItems={[
+          "Next.js 16", "React 19", "TypeScript", "Tailwind v4", "Drizzle ORM",
+          "Neon Postgres", "Vercel", "Auth.js", "Giscus", "Umami",
+          "DeepSeek", "Claude", "Live2D", "Sci-Fi HUD",
+        ]}
+      />
 
-          <div className="relative">
-            <div className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
-              <p className="font-mono text-xs font-semibold uppercase tracking-widest text-cyan-400 sm:text-sm">
-                Hypervoid · 高维虚空
-              </p>
+      {/* ═══ MAIN + SIDEBAR ═══ */}
+      <div className="mt-8 w-full px-4 sm:px-6 lg:px-8 lg:mt-12">
+      <div className="mx-auto grid max-w-[100rem] grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-10">
+        <main className="flex flex-col gap-8 lg:order-1">
+
+          {/* ── Daily Pick — floating card ── */}
+          {dailyPick ? (
+            <div className="-mt-4 lg:-mt-6">
+              <DailyPick post={dailyPick} />
             </div>
-            <h1 className="mt-2 font-mono text-2xl font-bold uppercase tracking-tight text-cyan-50 sm:mt-3 sm:text-3xl md:text-4xl">
-              <Greeting name="Charon" />
-            </h1>
-            <p className="mt-2 font-mono text-xs italic text-cyan-100/70 sm:text-sm">
-              The world is big, you have to go and see.
-            </p>
-            <div className="mt-3 h-px bg-gradient-to-r from-cyan-400/40 via-cyan-400/20 to-transparent sm:mt-4" />
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-cyan-50/78 sm:mt-4 sm:text-base">
-              <span className="text-cyan-100">「{quote}」</span>
-              {quoteAuthor ? (
-                <span className="ml-2 text-xs text-cyan-50/60 sm:text-sm">
-                  —— {quoteAuthor}
-                </span>
-              ) : null}
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2 sm:mt-5">
+          ) : null}
+
+          {/* ── Topic Series — breakout bento ── */}
+          <div className="-mx-4 sm:-mx-6 md:-mx-8">
+            <div className="px-4 sm:px-6 md:px-8">
+              <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+                <TopicCollections />
+              </Suspense>
+            </div>
+          </div>
+
+          {/* ── Activity Heatmap ── */}
+          <PostActivityHeatmap />
+
+          {/* ── Posts Section ── */}
+          <section>
+            <div className="mb-5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="grid h-9 w-9 place-items-center rounded-xl border border-accent/25 bg-card text-accent-soft">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 20h9" />
+                    <path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z" />
+                  </svg>
+                </div>
+                <h2 className="bg-gradient-to-r from-accent-soft via-accent-soft to-accent-soft bg-clip-text font-mono text-xl font-bold uppercase tracking-tight text-transparent sm:text-2xl">
+                  Latest_Posts
+                </h2>
+              </div>
               <Link
                 href="/posts"
-                className="group inline-flex items-center gap-1.5 rounded-md border border-cyan-400/40 bg-cyan-400/10 px-4 py-2 font-mono text-sm font-semibold uppercase tracking-wider text-cyan-300 shadow-[0_0_20px_rgba(103,232,249,0.15)] transition hover:border-cyan-400/60 hover:bg-cyan-400/20 hover:text-cyan-100 hover:shadow-[0_0_28px_rgba(103,232,249,0.25)]"
+                className="group inline-flex items-center gap-1.5 rounded-full border border-accent/20 bg-card px-4 py-1.5 font-mono text-xs font-medium uppercase tracking-wider text-accent-soft transition hover:border-accent/40 hover:bg-card-hover hover:text-accent-soft"
               >
-                阅读文章
+                View_All
                 <svg aria-hidden className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12h14M13 5l7 7-7 7" />
                 </svg>
               </Link>
-              <Link
-                href="/about"
-                className="inline-flex items-center rounded-md border border-cyan-100/18 bg-cyan-950/30 px-4 py-2 font-mono text-sm font-medium uppercase tracking-wider text-cyan-100/80 transition hover:border-cyan-400/40 hover:bg-cyan-900/40 hover:text-cyan-300"
-              >
-                关于我
-              </Link>
-              <Link
-                href="/archive"
-                className="inline-flex items-center rounded-md border border-cyan-100/18 bg-cyan-950/30 px-4 py-2 font-mono text-sm font-medium uppercase tracking-wider text-cyan-100/80 transition hover:border-cyan-400/40 hover:bg-cyan-900/40 hover:text-cyan-300"
-              >
-                归档
-              </Link>
             </div>
-          </div>
-        </section>
 
-        {dailyPick ? <DailyPick post={dailyPick} /> : null}
+            {recent.length ? (
+              <div className="flex flex-col gap-5">
+                {/* Featured post — full width */}
+                <FeaturedPostCard post={recent[0]} />
 
-        <Suspense fallback={<Skeleton className="h-64 w-full" />}>
-          <TopicCollections />
-        </Suspense>
-
-        <PostActivityHeatmap />
-
-        <div className="hv-home-posts">
-          <div className="mb-3 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="grid h-8 w-8 place-items-center rounded-md border border-cyan-400/30 bg-cyan-950/40 text-cyan-300">
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 20h9" />
-                  <path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z" />
-                </svg>
+                {/* Remaining posts — staggered reveal */}
+                {recent.length > 1 ? (
+                  <StaggerReveal className="grid gap-4 sm:grid-cols-2">
+                    {recent.slice(1).map((post, i) => (
+                      <div key={post.slug} className={i === 0 ? "sm:col-span-2" : ""}>
+                        <PostCard post={post} />
+                      </div>
+                    ))}
+                  </StaggerReveal>
+                ) : null}
               </div>
-              <h2 className="font-mono text-lg font-bold uppercase tracking-tight text-cyan-50 sm:text-xl">
-                Latest_Posts
-              </h2>
+            ) : (
+              <p className="rounded-2xl border border-dashed border-accent/20 p-10 text-center font-mono text-sm text-muted">
+                还没有文章。
+              </p>
+            )}
+          </section>
+
+          {/* ── Subscribe — gradient band ── */}
+          <section className="relative overflow-hidden rounded-2xl py-8 px-6 backdrop-blur-2xl sm:px-10"
+            style={{ background: "linear-gradient(145deg, rgba(239,68,68,0.1), rgba(249,115,22,0.08), rgba(234,179,8,0.07), rgba(34,197,94,0.08), rgba(6,182,212,0.1), rgba(59,130,246,0.12), rgba(99,102,241,0.1), rgba(139,92,246,0.09), rgba(217,70,239,0.08), rgba(12,18,36,0.82))", border: "1px solid rgba(255,255,255,0.1)", WebkitBackdropFilter: "blur(40px) saturate(1.6)" }}>
+            <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px" style={{ background: "var(--rainbow)", opacity: 0.4 }} />
+            <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px" style={{ background: "var(--rainbow)", opacity: 0.3 }} />
+            <div className="mx-auto max-w-2xl">
+              {isEmailConfigured() ? <SubscribeForm /> : <RssSubscribeCard />}
             </div>
-            <Link
-              href="/posts"
-              className="group inline-flex items-center gap-1.5 rounded-md border border-cyan-100/18 bg-cyan-950/30 px-3 py-1.5 font-mono text-xs font-medium uppercase tracking-wider text-cyan-100/80 transition hover:border-cyan-400/40 hover:bg-cyan-900/40 hover:text-cyan-300"
-            >
-              View_All
-              <svg aria-hidden className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M13 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
-          {recent.length ? (
-            <AdaptivePostGrid>
-              {recent.map((post) => (
-                <PostCard key={post.slug} post={post} />
-              ))}
-            </AdaptivePostGrid>
-          ) : (
-            <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
-              还没有文章。
-            </p>
-          )}
-        </div>
+          </section>
+        </main>
 
-        <section className="hv-home-subscribe">
-          {isEmailConfigured() ? <SubscribeForm /> : <RssSubscribeCard />}
-        </section>
+        {/* ═══ SIDEBAR — staggered, varied spacing ═══ */}
+        <aside className="lg:order-2">
+          <div className="flex flex-col gap-5 lg:sticky lg:top-20">
+            <PrivateSpace />
+
+            <Suspense fallback={<Skeleton className="h-48 w-full" />}>
+              <ProfileCard />
+            </Suspense>
+
+            <Suspense fallback={<Skeleton className="h-24 w-full" />}>
+              <SiteStats />
+            </Suspense>
+
+            <Suspense fallback={null}>
+              <AnnouncementWidget />
+            </Suspense>
+
+            <div className="hidden lg:block">
+              <MiniTerminal posts={terminalPosts} tags={terminalTags} me={null} />
+            </div>
+
+            <div className="hidden md:contents">
+              <Suspense fallback={<Skeleton className="h-44 w-full" />}>
+                <MiniCalendar />
+              </Suspense>
+            </div>
+
+            <HomePlayerWidget />
+
+            <div className="hidden md:contents">
+              <Suspense fallback={<Skeleton className="h-32 w-full" />}>
+                <TagCloud />
+              </Suspense>
+            </div>
+
+            <Suspense fallback={<Skeleton className="h-40 w-full" />}>
+              <RecentGuestbook />
+            </Suspense>
+          </div>
+        </aside>
       </div>
-
-      <aside className="lg:order-2">
-        <div className="hv-home-rail flex flex-col gap-4 lg:sticky lg:top-20">
-          <PrivateSpace />
-          <Suspense fallback={<Skeleton className="h-48 w-full" />}>
-            <ProfileCard />
-          </Suspense>
-          <Suspense fallback={<Skeleton className="h-24 w-full" />}>
-            <SiteStats />
-          </Suspense>
-          <Suspense fallback={null}>
-            <AnnouncementWidget />
-          </Suspense>
-          <div className="hidden lg:block">
-            <MiniTerminal posts={terminalPosts} tags={terminalTags} me={null} />
-          </div>
-          <div className="hidden md:contents">
-            <Suspense fallback={<Skeleton className="h-44 w-full" />}>
-              <MiniCalendar />
-            </Suspense>
-          </div>
-          <HomePlayerWidget />
-          <div className="hidden md:contents">
-            <Suspense fallback={<Skeleton className="h-32 w-full" />}>
-              <TagCloud />
-            </Suspense>
-          </div>
-          <Suspense fallback={<Skeleton className="h-40 w-full" />}>
-            <RecentGuestbook />
-          </Suspense>
-        </div>
-      </aside>
-    </div>
+      </div>
+    </>
   );
 }

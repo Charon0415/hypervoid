@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { listVisibleMessages } from "@/db/guestbook";
 import { formatDateCN } from "@/lib/datetime";
+import { MessageCircle } from "lucide-react";
 
 function cleanMessage(s: string): string {
   return s.replace(/[\r\n]+/g, " ").replace(/\s+/g, " ").trim();
@@ -26,39 +27,20 @@ export async function RecentGuestbook() {
   if (!messages.length) return null;
 
   return (
-    <aside className="hv-panel-sci group relative overflow-hidden p-3">
-      {/* Corner accent */}
-      <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-px w-16 bg-gradient-to-r from-cyan-400/50 to-transparent" />
-      <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-16 w-px bg-gradient-to-b from-cyan-400/50 to-transparent" />
-
-      <div className="flex items-baseline justify-between">
-        <h3 className="font-mono text-xs font-semibold uppercase tracking-widest text-cyan-100/80">
-          Guestbook
-        </h3>
-        <Link
-          href="/guestbook"
-          className="group inline-flex items-center gap-1 border border-cyan-100/18 bg-cyan-950/30 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-cyan-100/70 transition hover:border-cyan-400/40 hover:bg-cyan-900/40 hover:text-cyan-300"
-          style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%)' }}
-        >
-          All
-          <svg
-            aria-hidden
-            className="h-3 w-3 transition group-hover:translate-x-0.5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M5 12h14" />
-            <path d="M13 5l7 7-7 7" />
-          </svg>
+    <div className="hv-card p-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <MessageCircle className="h-4 w-4 text-accent" aria-hidden />
+          <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-accent">Guestbook</span>
+        </div>
+        <Link href="/guestbook" className="text-xs text-muted transition hover:text-accent">
+          All →
         </Link>
       </div>
-      <ul className="mt-2.5 space-y-2">
+
+      <div className="mt-3 flex flex-col gap-2.5">
         {messages.map((m) => (
-          <li key={m.id} className="group/msg flex items-start gap-2.5 border-l border-cyan-100/10 pl-3 transition hover:border-cyan-400/40">
+          <div key={m.id} className="flex items-start gap-2.5 rounded-lg p-2 transition hover:bg-card-hover">
             {m.avatarUrl ? (
               <Image
                 src={m.avatarUrl}
@@ -66,30 +48,21 @@ export async function RecentGuestbook() {
                 width={24}
                 height={24}
                 unoptimized={!m.avatarUrl.includes("avatars.githubusercontent.com")}
-                className="mt-0.5 shrink-0 border border-cyan-100/20 bg-cyan-950/40 transition group-hover/msg:border-cyan-400/40"
-                style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%)' }}
+                className="shrink-0 rounded-full"
               />
             ) : (
-              <div className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center border border-cyan-100/20 bg-cyan-950/40 font-mono text-xs text-cyan-100/60" style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%)' }}>
-                ?
-              </div>
+              <div className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-card text-[10px] text-muted">?</div>
             )}
             <div className="min-w-0 flex-1">
-              <div className="flex items-baseline gap-2">
-                <span className="font-mono text-xs font-semibold text-cyan-100/90 transition group-hover/msg:text-cyan-300">
-                  {m.githubLogin || "匿名"}
-                </span>
-                <span className="font-mono text-[9px] uppercase tracking-wider text-cyan-50/40">
-                  {relativeTime(m.createdAt)}
-                </span>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-xs font-medium text-foreground">{m.githubLogin || "匿名"}</span>
+                <span className="text-[10px] text-muted-soft">{relativeTime(m.createdAt)}</span>
               </div>
-              <p className="mt-1 text-xs leading-relaxed text-cyan-50/70">
-                {truncate(cleanMessage(m.message), 54)}
-              </p>
+              <p className="mt-0.5 text-xs leading-relaxed text-muted">{truncate(cleanMessage(m.message), 60)}</p>
             </div>
-          </li>
+          </div>
         ))}
-      </ul>
-    </aside>
+      </div>
+    </div>
   );
 }

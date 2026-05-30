@@ -87,7 +87,7 @@ export function KnowledgeGraphCanvas({
 
   if (simNodes.length === 0) {
     return (
-      <p className="hv-panel border-dashed p-12 text-center text-cyan-50/60">
+      <p className="hv-panel border-dashed p-12 text-center text-muted">
         还没有互相链接的文章。在两篇文章之间加上 <code>/posts/&lt;slug&gt;</code>{" "}
         或 <code>[[slug]]</code> 形式的链接，它们就会出现在这里。
       </p>
@@ -123,9 +123,9 @@ export function KnowledgeGraphCanvas({
                 y1={s.y}
                 x2={t.x}
                 y2={t.y}
-                stroke={active ? "rgb(103 232 249)" : "rgba(103,232,249,0.22)"}
+                stroke={active ? "var(--accent-soft)" : "var(--accent)"}
                 strokeWidth={active ? 1.5 : 1}
-                strokeOpacity={active ? 0.9 : 0.42}
+                strokeOpacity={active ? 0.9 : 0.22}
               />
             );
           })}
@@ -148,8 +148,8 @@ export function KnowledgeGraphCanvas({
               >
                 <circle
                   r={r}
-                  fill={isHovered ? "rgba(103,232,249,0.22)" : "rgba(255,255,255,0.055)"}
-                  stroke={isHovered ? "rgb(103 232 249)" : "rgba(103,232,249,0.34)"}
+                  fill={isHovered ? "var(--accent-glow)" : "var(--card)"}
+                  stroke={isHovered ? "var(--accent-soft)" : "var(--accent)"}
                   strokeWidth={isHovered ? 2 : 1.5}
                 />
                 <text

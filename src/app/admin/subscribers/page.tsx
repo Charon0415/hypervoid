@@ -33,12 +33,12 @@ function statusOf(sub: {
   if (sub.verified) {
     return {
       label: "已确认",
-      cls: "border-emerald-400/35 bg-emerald-400/10 text-emerald-200",
+      cls: "border-accent/35 bg-accent/10 text-emerald-200",
     };
   }
   return {
     label: "待确认",
-    cls: "border-amber-400/35 bg-amber-400/10 text-amber-200",
+    cls: "border-accent/35 bg-accent/10 text-amber-200",
   };
 }
 
@@ -55,8 +55,8 @@ export default async function AdminSubscribersPage() {
     <div className="flex flex-col gap-6">
       <header className="hv-panel-sci relative overflow-hidden flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
         {/* Corner accents */}
-        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
-        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-accent/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-accent/60 pointer-events-none" />
 
         <div className="space-y-3">
           <AdminBackLink href="/admin" label="后台" />
@@ -84,7 +84,7 @@ export default async function AdminSubscribersPage() {
       ) : (
         <div className="hv-panel-sci overflow-x-auto p-0">
           <table className="w-full min-w-[680px] text-sm">
-            <thead className="border-b border-cyan-400/20 bg-cyan-400/[0.06] text-left font-mono text-xs uppercase text-cyan-100/65">
+            <thead className="border-b border-accent/20 bg-accent/[0.06] text-left font-mono text-xs uppercase text-muted">
               <tr>
                 <th className="px-4 py-3 font-medium">EMAIL</th>
                 <th className="px-4 py-3 font-medium">STATUS</th>
@@ -99,9 +99,9 @@ export default async function AdminSubscribersPage() {
                 return (
                   <tr
                     key={sub.id}
-                    className="border-t border-cyan-400/15 transition hover:bg-cyan-400/[0.05]"
+                    className="border-t border-accent/15 transition hover:bg-accent/[0.05]"
                   >
-                    <td className="px-4 py-3 font-mono text-xs text-cyan-50/85">
+                    <td className="px-4 py-3 font-mono text-xs text-foreground">
                       {sub.email}
                     </td>
                     <td className="px-4 py-3">
@@ -177,11 +177,11 @@ function StatTile({
       ? "text-emerald-200"
       : accent === "amber"
         ? "text-amber-200"
-        : "text-cyan-50";
+        : "text-foreground";
   return (
     <div className="hv-panel-sci relative overflow-hidden p-4">
       {/* Corner accent */}
-      <div className="absolute right-0 top-0 h-8 w-8 border-r border-t border-cyan-400/40 pointer-events-none" />
+      <div className="absolute right-0 top-0 h-8 w-8 border-r border-t border-accent/40 pointer-events-none" />
       <p className="hv-kicker uppercase">{label}</p>
       <p className={"mt-2 font-mono text-2xl font-semibold leading-tight sm:text-3xl " + accentClass}>
         {value.toLocaleString("en-US")}

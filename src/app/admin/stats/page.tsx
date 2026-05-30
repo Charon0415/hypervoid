@@ -56,8 +56,8 @@ export default async function AdminStatsPage() {
     <div className="flex flex-col gap-8">
       <header className="hv-panel-sci p-5 sm:p-6 flex items-center gap-3 relative overflow-hidden">
         {/* Corner accents */}
-        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
-        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-accent/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-accent/60 pointer-events-none" />
 
         <AdminBackLink href="/admin" label="后台" />
         <h1 className="hv-title font-mono text-2xl font-black tracking-wider uppercase">ANALYTICS_DECK</h1>
@@ -74,7 +74,7 @@ export default async function AdminStatsPage() {
       {/* Monthly bar chart — pure CSS */}
       <section className="hv-panel-sci p-4 sm:p-5">
         <h2 className="hv-title font-mono text-sm font-semibold tracking-wider uppercase">
-          <BarChart3 className="mr-1 inline h-4 w-4 text-cyan-100/70" aria-hidden />MONTHLY_TREND
+          <BarChart3 className="mr-1 inline h-4 w-4 text-muted" aria-hidden />MONTHLY_TREND
         </h2>
         <div className="mt-4 flex h-36 items-end gap-1 sm:mt-5 sm:h-44 sm:gap-2">
           {monthly.map((m) => {
@@ -91,14 +91,14 @@ export default async function AdminStatsPage() {
                 <div
                   className={`w-full transition clip-path-[polygon(0_0,calc(100%-2px)_0,100%_2px,100%_100%,0_100%)] ${
                     m.count === 0
-                      ? "bg-cyan-50/[0.04]"
+                      ? "bg-foreground/[0.04]"
                       : isThisMonth
-                        ? "bg-cyan-400/80 shadow-[0_0_12px_rgba(103,232,249,0.4)]"
-                        : "bg-cyan-100/45 group-hover:bg-cyan-100/75 group-hover:shadow-[0_0_8px_rgba(103,232,249,0.3)]"
+                        ? "bg-accent/80 shadow-[0_0_12px_var(--accent-glow)]"
+                        : "bg-accent/45 group-hover:bg-accent/75 group-hover:shadow-[0_0_8px_var(--accent-glow)]"
                   }`}
                   style={{ height: `${Math.max(2, heightPct)}%` }}
                 />
-                <span className="text-[8px] font-mono text-cyan-50/50 sm:text-[9px] uppercase">
+                <span className="text-[8px] font-mono text-muted sm:text-[9px] uppercase">
                   {m.month.slice(5)}
                 </span>
                 <span className="absolute -top-5 hidden font-mono text-[10px] text-foreground/80 group-hover:block">
@@ -127,7 +127,7 @@ export default async function AdminStatsPage() {
 
       <VisitorList rows={visitors} total={visitorCount} />
 
-      <p className="text-xs text-cyan-50/50">
+      <p className="text-xs text-muted">
         实时从数据库读取。访问量来自服务端计数（每次完整渲染 +1），点赞来自访客手动操作。
       </p>
     </div>
@@ -146,15 +146,15 @@ function VisitorList({
       <div className="flex flex-wrap items-baseline justify-between gap-1.5">
         <h2 className="hv-title font-mono text-sm font-semibold tracking-wider uppercase">
           VISITOR_LOG
-          <span className="ml-2 font-mono text-xs font-normal text-cyan-50/50">
+          <span className="ml-2 font-mono text-xs font-normal text-muted">
             {total} ACCOUNTS
           </span>
         </h2>
-        <p className="font-mono text-[10px] text-cyan-50/50 uppercase">RECENT 50</p>
+        <p className="font-mono text-[10px] text-muted uppercase">RECENT 50</p>
       </div>
 
       {rows.length === 0 ? (
-        <p className="mt-4 text-sm text-cyan-50/50">
+        <p className="mt-4 text-sm text-muted">
           还没有访客登录过博客。
         </p>
       ) : (
@@ -162,7 +162,7 @@ function VisitorList({
           {rows.map((v) => (
             <li
               key={v.githubLogin}
-              className="flex items-center gap-3 px-2 py-2 transition hover:bg-cyan-400/5 sm:py-1.5 clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)] border border-transparent hover:border-cyan-400/20"
+              className="flex items-center gap-3 px-2 py-2 transition hover:bg-accent/5 sm:py-1.5 clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)] border border-transparent hover:border-accent/20"
             >
               {v.avatarUrl ? (
                 <Image
@@ -172,10 +172,10 @@ function VisitorList({
                   height={72}
                   sizes="36px"
                   loading="lazy"
-                  className="h-9 w-9 shrink-0 border border-cyan-100/18 sm:h-7 sm:w-7 clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]"
+                  className="h-9 w-9 shrink-0 border border-border sm:h-7 sm:w-7 clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]"
                 />
               ) : (
-                <div className="h-9 w-9 shrink-0 border border-cyan-100/18 bg-cyan-50/[0.055] sm:h-7 sm:w-7 clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]" />
+                <div className="h-9 w-9 shrink-0 border border-border bg-foreground/[0.055] sm:h-7 sm:w-7 clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]" />
               )}
               <div className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2">
                 <span className="truncate text-sm">
@@ -185,19 +185,19 @@ function VisitorList({
                   href={`https://github.com/${v.githubLogin}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="shrink-0 truncate font-mono text-[11px] text-cyan-50/50 hover:text-cyan-100 sm:text-xs"
+                  className="shrink-0 truncate font-mono text-[11px] text-muted hover:text-foreground sm:text-xs"
                 >
                   @{v.githubLogin}
                 </Link>
-                <time className="font-mono text-[10px] text-cyan-50/40 sm:hidden uppercase">
+                <time className="font-mono text-[10px] text-muted sm:hidden uppercase">
                   {formatDateTimeCN(v.lastSeenAt)}
                 </time>
               </div>
               <span className="shrink-0 font-mono text-xs">
                 <span className="font-bold">{v.loginCount}</span>
-                <span className="ml-0.5 text-cyan-50/50">次</span>
+                <span className="ml-0.5 text-muted">次</span>
               </span>
-              <time className="hidden shrink-0 font-mono text-[10px] text-cyan-50/50 sm:inline uppercase">
+              <time className="hidden shrink-0 font-mono text-[10px] text-muted sm:inline uppercase">
                 {formatDateTimeCN(v.lastSeenAt)}
               </time>
             </li>
@@ -212,12 +212,12 @@ function BigStat({ label, value }: { label: string; value: number }) {
   return (
     <div className="hv-panel-sci p-3 sm:p-4 relative overflow-hidden">
       {/* Corner accent */}
-      <div className="absolute right-0 top-0 h-6 w-6 border-r border-t border-cyan-400/40 pointer-events-none" />
+      <div className="absolute right-0 top-0 h-6 w-6 border-r border-t border-accent/40 pointer-events-none" />
 
       <p className="hv-kicker sm:text-[11px] uppercase">
         {label}
       </p>
-      <p className="mt-1 font-mono text-xl font-bold leading-tight text-cyan-50 sm:text-2xl lg:text-3xl">
+      <p className="mt-1 font-mono text-xl font-bold leading-tight text-foreground sm:text-2xl lg:text-3xl">
         {value.toLocaleString("en-US")}
       </p>
     </div>
@@ -245,30 +245,30 @@ function TopList({
     <div className="hv-panel-sci p-4 sm:p-5">
       <h2 className="hv-title font-mono text-sm font-semibold tracking-wider uppercase">{title}</h2>
       {rows.length === 0 ? (
-        <p className="mt-3 text-sm text-cyan-50/50">还没有数据。</p>
+        <p className="mt-3 text-sm text-muted">还没有数据。</p>
       ) : (
         <ol className="mt-3 flex flex-col gap-1.5">
           {rows.map((r, i) => (
             <li
               key={r.slug}
-              className="flex items-baseline gap-2 px-2 py-1.5 transition hover:bg-cyan-400/5 sm:gap-3 clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)] border border-transparent hover:border-cyan-400/20"
+              className="flex items-baseline gap-2 px-2 py-1.5 transition hover:bg-accent/5 sm:gap-3 clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)] border border-transparent hover:border-accent/20"
             >
-              <span className="w-5 shrink-0 text-right font-mono text-xs text-cyan-50/50">
+              <span className="w-5 shrink-0 text-right font-mono text-xs text-muted">
                 {i + 1}
               </span>
               <Link
                 href={`/posts/${r.slug}`}
                 target="_blank"
                 rel="noreferrer"
-                className="min-w-0 flex-1 truncate text-sm hover:text-cyan-100"
+                className="min-w-0 flex-1 truncate text-sm hover:text-foreground"
               >
                 {r.title}
               </Link>
               <span className="shrink-0 font-mono text-xs">
                 <span className="font-bold">{r[metricKey].toLocaleString("en-US")}</span>{" "}
-                <span className="text-cyan-50/50">{metricLabel}</span>
+                <span className="text-muted">{metricLabel}</span>
               </span>
-              <time className="hidden shrink-0 font-mono text-[10px] text-cyan-50/50 sm:inline uppercase">
+              <time className="hidden shrink-0 font-mono text-[10px] text-muted sm:inline uppercase">
                 {r.publishAt ? formatDateCN(r.publishAt) : "—"}
               </time>
             </li>

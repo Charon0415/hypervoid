@@ -34,8 +34,8 @@ export default async function AdminReactionsPage() {
     <div className="flex flex-col gap-6">
       <header className="hv-panel-sci relative overflow-hidden flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
         {/* Corner accents */}
-        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
-        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-accent/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-accent/60 pointer-events-none" />
 
         <div className="space-y-3">
           <AdminBackLink href="/admin" label="后台" />
@@ -53,9 +53,9 @@ export default async function AdminReactionsPage() {
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-5">
         {REACTION_EMOJIS.map((e) => (
           <div key={e.key} className="hv-panel-sci relative overflow-hidden p-4 text-center">
-            <div className="absolute right-0 top-0 h-6 w-6 border-r border-t border-cyan-400/40 pointer-events-none" />
+            <div className="absolute right-0 top-0 h-6 w-6 border-r border-t border-accent/40 pointer-events-none" />
             <p className="text-2xl leading-none">{e.glyph}</p>
-            <p className="mt-2 font-mono text-xl font-semibold leading-tight text-cyan-50">
+            <p className="mt-2 font-mono text-xl font-semibold leading-tight text-foreground">
               {totals[e.key].toLocaleString("en-US")}
             </p>
             <p className="text-[11px] text-muted">{e.label}</p>
@@ -70,7 +70,7 @@ export default async function AdminReactionsPage() {
       ) : (
         <div className="hv-panel-sci overflow-x-auto p-0">
           <table className="w-full min-w-[560px] text-sm">
-            <thead className="border-b border-cyan-400/20 bg-cyan-400/[0.06] text-left font-mono text-xs uppercase text-cyan-100/65">
+            <thead className="border-b border-accent/20 bg-accent/[0.06] text-left font-mono text-xs uppercase text-muted">
               <tr>
                 <th className="px-4 py-3 font-medium">POST</th>
                 {REACTION_EMOJIS.map((e) => (
@@ -83,9 +83,9 @@ export default async function AdminReactionsPage() {
             </thead>
             <tbody>
               {rows.map((r) => (
-                <tr key={r.slug} className="border-t border-cyan-400/15 transition hover:bg-cyan-400/[0.05]">
+                <tr key={r.slug} className="border-t border-accent/15 transition hover:bg-accent/[0.05]">
                   <td className="max-w-[20rem] truncate px-4 py-2">
-                    <Link href={"/posts/" + r.slug} className="font-medium text-cyan-50 hover:text-white" title={r.title}>
+                    <Link href={"/posts/" + r.slug} className="font-medium text-foreground hover:text-foreground" title={r.title}>
                       {r.title}
                     </Link>
                   </td>
@@ -94,7 +94,7 @@ export default async function AdminReactionsPage() {
                       {r.counts[e.key] || ""}
                     </td>
                   ))}
-                  <td className="px-4 py-2 text-right font-mono text-sm font-medium text-cyan-50">
+                  <td className="px-4 py-2 text-right font-mono text-sm font-medium text-foreground">
                     {r.total}
                   </td>
                 </tr>

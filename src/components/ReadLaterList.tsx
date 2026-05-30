@@ -20,7 +20,7 @@ export function ReadLaterList() {
 
   if (!ready) {
     return (
-      <p className="hv-panel border-dashed p-8 text-center text-cyan-50/60">
+      <p className="hv-panel border-dashed p-8 text-center text-muted">
         加载中…
       </p>
     );
@@ -28,8 +28,8 @@ export function ReadLaterList() {
 
   if (items.length === 0) {
     return (
-      <div className="hv-panel border-dashed p-8 text-center text-cyan-50/60">
-        <Clock3 className="mx-auto h-8 w-8 text-cyan-100/55" aria-hidden />
+      <div className="hv-panel border-dashed p-8 text-center text-muted">
+        <Clock3 className="mx-auto h-8 w-8 text-muted" aria-hidden />
         <p className="mt-3">
           稍后读队列是空的。文章页点时钟图标，把感兴趣的文章塞进来。
         </p>
@@ -44,8 +44,8 @@ export function ReadLaterList() {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm text-cyan-50/58">
-          共 <span className="font-mono text-cyan-50">{items.length}</span> 篇
+        <p className="text-sm text-muted-soft">
+          共 <span className="font-mono text-foreground">{items.length}</span> 篇
         </p>
         <button
           type="button"
@@ -67,16 +67,16 @@ export function ReadLaterList() {
             <div className="min-w-0 flex-1">
               <Link
                 href={"/posts/" + it.slug}
-                className="line-clamp-1 text-sm font-medium text-cyan-50 hover:text-cyan-100"
+                className="line-clamp-1 text-sm font-medium text-foreground hover:text-accent"
               >
                 {it.title}
               </Link>
               {it.description ? (
-                <p className="mt-0.5 line-clamp-2 text-xs text-cyan-50/55">
+                <p className="mt-0.5 line-clamp-2 text-xs text-muted-soft">
                   {it.description}
                 </p>
               ) : null}
-              <p className="mt-1 font-mono text-[10px] uppercase text-cyan-50/45">
+              <p className="mt-1 font-mono text-[10px] uppercase text-muted-soft">
                 加入于 {formatRelative(it.addedAt)}
               </p>
             </div>
@@ -84,7 +84,7 @@ export function ReadLaterList() {
               type="button"
               onClick={() => remove(it.slug)}
               aria-label="移除"
-              className="shrink-0 border border-cyan-100/14 bg-white/[0.035] px-2 py-1 text-[10px] text-cyan-50/45 opacity-100 transition hover:border-red-400/45 hover:text-red-300 sm:opacity-0 sm:group-hover:opacity-100"
+              className="shrink-0 border border-border bg-card px-2 py-1 text-[10px] text-muted-soft opacity-100 transition hover:border-red-400/45 hover:text-red-300 sm:opacity-0 sm:group-hover:opacity-100"
             >
               移除
             </button>

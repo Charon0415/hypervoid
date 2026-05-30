@@ -25,8 +25,8 @@ export default async function AdminRedirectsPage() {
     <div className="flex flex-col gap-6">
       <header className="hv-panel-sci relative overflow-hidden flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
         {/* Corner accents */}
-        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
-        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-accent/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-accent/60 pointer-events-none" />
 
         <div className="space-y-3">
           <AdminBackLink href="/admin" label="后台" />
@@ -43,8 +43,8 @@ export default async function AdminRedirectsPage() {
 
       <section className="hv-panel-sci p-5">
         <div className="flex items-center gap-2">
-          <Link2 className="h-4 w-4 text-cyan-100/70" aria-hidden="true" />
-          <h2 className="font-mono text-sm font-semibold tracking-wider uppercase text-cyan-50">NEW_REDIRECT</h2>
+          <Link2 className="h-4 w-4 text-muted" aria-hidden="true" />
+          <h2 className="font-mono text-sm font-semibold tracking-wider uppercase text-foreground">NEW_REDIRECT</h2>
         </div>
         <form action={createAction} className="mt-4 grid gap-3 lg:grid-cols-[1.1fr_2fr_1.2fr_auto] lg:items-end">
           <label className="flex flex-col gap-1">
@@ -62,7 +62,7 @@ export default async function AdminRedirectsPage() {
             <span className="font-mono text-xs uppercase text-muted">NOTE</span>
             <input type="text" name="note" placeholder="为什么造这条短链" className="hv-input min-h-11 px-3 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]" />
           </label>
-          <button type="submit" className="hv-action px-4 text-sm font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_16px_rgba(103,232,249,0.25)]">
+          <button type="submit" className="hv-action px-4 text-sm font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_16px_var(--accent-glow)]">
             <Plus className="h-4 w-4" aria-hidden="true" />
             创建
           </button>
@@ -76,7 +76,7 @@ export default async function AdminRedirectsPage() {
       ) : (
         <div className="hv-panel-sci overflow-x-auto p-0">
           <table className="w-full min-w-[680px] text-sm">
-            <thead className="border-b border-cyan-400/20 bg-cyan-400/[0.06] text-left font-mono text-xs uppercase text-cyan-100/65">
+            <thead className="border-b border-accent/20 bg-accent/[0.06] text-left font-mono text-xs uppercase text-muted">
               <tr>
                 <th className="px-4 py-3 font-medium">LINK</th>
                 <th className="px-4 py-3 font-medium">TARGET</th>
@@ -87,18 +87,18 @@ export default async function AdminRedirectsPage() {
             </thead>
             <tbody>
               {list.map((r) => (
-                <tr key={r.id} className="border-t border-cyan-400/15 transition hover:bg-cyan-400/[0.05]">
+                <tr key={r.id} className="border-t border-accent/15 transition hover:bg-accent/[0.05]">
                   <td className="px-4 py-3 font-mono text-xs">
-                    <a href={"/r/" + r.code} target="_blank" rel="noreferrer" className="text-cyan-100 hover:text-white">
+                    <a href={"/r/" + r.code} target="_blank" rel="noreferrer" className="text-foreground hover:text-foreground">
                       /r/{r.code}
                     </a>
                   </td>
                   <td className="px-4 py-3 text-xs">
-                    <a href={r.toUrl} target="_blank" rel="noreferrer" className="break-all text-cyan-50/80 hover:text-white">
+                    <a href={r.toUrl} target="_blank" rel="noreferrer" className="break-all text-foreground hover:text-foreground">
                       {r.toUrl}
                     </a>
                   </td>
-                  <td className="px-4 py-3 font-mono text-xs text-cyan-50">{r.hits.toLocaleString("en-US")}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-foreground">{r.hits.toLocaleString("en-US")}</td>
                   <td className="px-4 py-3 text-xs text-muted">
                     {r.note ? <span>{r.note}</span> : null}
                     {r.note ? <span className="mx-1.5">·</span> : null}

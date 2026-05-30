@@ -14,8 +14,8 @@ export function CommentsImpl() {
 
   if (!REPO || !REPO_ID || !CATEGORY || !CATEGORY_ID) {
     return (
-      <div className="flex items-start gap-2 border border-dashed border-cyan-100/20 bg-cyan-50/[0.035] p-4 text-sm text-cyan-50/62">
-        <MessageSquareWarning className="mt-0.5 h-4 w-4 shrink-0 text-cyan-100/65" aria-hidden />
+      <div className="flex items-start gap-2 border border-dashed border-border bg-card p-4 text-sm text-muted">
+        <MessageSquareWarning className="mt-0.5 h-4 w-4 shrink-0 text-accent-soft" aria-hidden />
         评论功能尚未启用：需要在环境变量中配置 Giscus（NEXT_PUBLIC_GISCUS_*）。
       </div>
     );

@@ -35,8 +35,8 @@ export default async function AdminBackupPage() {
     <div className="flex flex-col gap-6">
       <header className="hv-panel-sci relative overflow-hidden flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
         {/* Corner accents */}
-        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
-        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-accent/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-accent/60 pointer-events-none" />
 
         <div className="space-y-3">
           <AdminBackLink href="/admin" label="后台" />
@@ -48,7 +48,7 @@ export default async function AdminBackupPage() {
         </div>
         {blobReady ? (
           <form action={createBackupAction}>
-            <button type="submit" className="hv-action px-4 text-sm font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_16px_rgba(103,232,249,0.25)]">
+            <button type="submit" className="hv-action px-4 text-sm font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_16px_var(--accent-glow)]">
               <Plus className="h-4 w-4" aria-hidden="true" />
               创建快照
             </button>
@@ -76,7 +76,7 @@ export default async function AdminBackupPage() {
       ) : (
         <div className="hv-panel-sci overflow-x-auto p-0">
           <table className="w-full min-w-[560px] text-sm">
-            <thead className="border-b border-cyan-400/20 bg-cyan-400/[0.06] text-left font-mono text-xs uppercase text-cyan-100/65">
+            <thead className="border-b border-accent/20 bg-accent/[0.06] text-left font-mono text-xs uppercase text-muted">
               <tr>
                 <th className="px-4 py-3 font-medium">TIME</th>
                 <th className="px-4 py-3 font-medium">SIZE</th>
@@ -89,9 +89,9 @@ export default async function AdminBackupPage() {
                 const tableEntries = Object.entries(b.tableCounts ?? {});
                 const totalRows = tableEntries.reduce((sum, [, n]) => sum + (n > 0 ? n : 0), 0);
                 return (
-                  <tr key={b.id} className="border-t border-cyan-400/15 transition hover:bg-cyan-400/[0.05]">
-                    <td className="px-4 py-3 font-mono text-xs text-cyan-50/85">{formatDateTimeCN(b.createdAt)}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-cyan-50/85">{formatBytes(b.sizeBytes)}</td>
+                  <tr key={b.id} className="border-t border-accent/15 transition hover:bg-accent/[0.05]">
+                    <td className="px-4 py-3 font-mono text-xs text-foreground">{formatDateTimeCN(b.createdAt)}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-foreground">{formatBytes(b.sizeBytes)}</td>
                     <td className="px-4 py-3 text-xs text-muted">
                       {tableEntries.length} 张表 · <span className="font-mono">{totalRows.toLocaleString("en-US")}</span> 行
                     </td>

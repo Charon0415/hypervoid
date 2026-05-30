@@ -14,7 +14,7 @@ export default async function PrivatePage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16">
+    <div className="mx-auto  px-4 py-16">
       <h1 className="text-3xl font-bold tracking-tight">私密空间</h1>
       <p className="mt-4 text-muted">
         这是仅登录用户可见的私密区域。你可以在这里放置个人笔记、收藏或其他私密内容。

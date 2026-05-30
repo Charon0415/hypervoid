@@ -192,19 +192,19 @@ export function CommandPalette({ index }: { index: CommandIndexItem[] }) {
       }}
     >
       <div className="absolute inset-0 bg-black/64 backdrop-blur-sm" />
-      <div className="relative z-10 w-full max-w-xl overflow-hidden border border-cyan-100/18 bg-slate-950/94 shadow-[0_28px_90px_rgba(0,0,0,0.48),0_0_48px_rgba(34,211,238,0.12)] backdrop-blur-2xl">
-        <div className="flex items-center gap-2 border-b border-cyan-100/14 bg-cyan-950/18 px-4 py-3">
-          <Search className="h-4 w-4 shrink-0 text-cyan-300/70" aria-hidden />
+      <div className="relative z-10 w-full max-w-xl overflow-hidden border border-border bg-card/94 shadow-[0_28px_90px_rgba(0,0,0,0.48),0_0_48px_var(--accent-glow)] backdrop-blur-2xl">
+        <div className="flex items-center gap-2 border-b border-border bg-card px-4 py-3">
+          <Search className="h-4 w-4 shrink-0 text-accent-soft" aria-hidden />
           <input
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder="搜索页面、文章、标签或系列…"
-            className="flex-1 bg-transparent text-sm text-cyan-50 outline-none placeholder:text-cyan-50/38"
+            className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-soft"
             aria-label="命令面板搜索"
           />
-          <kbd className="hidden font-mono text-[10px] text-cyan-50/45 sm:inline">
+          <kbd className="hidden font-mono text-[10px] text-muted-soft sm:inline">
             ESC
           </kbd>
         </div>
@@ -214,14 +214,14 @@ export function CommandPalette({ index }: { index: CommandIndexItem[] }) {
           role="listbox"
         >
           {filtered.length === 0 ? (
-            <p className="p-6 text-center text-sm text-cyan-50/58">
+            <p className="p-6 text-center text-sm text-muted-soft">
               没有匹配。试试别的关键词。
             </p>
           ) : (
             <>
               {groupByType(filtered).map(([type, items]) => (
                 <section key={type} className="mb-1">
-                  <h4 className="px-3 pt-2 pb-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-cyan-400/70">
+                  <h4 className="px-3 pt-2 pb-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-accent-soft">
                     {LABEL[type]}
                   </h4>
                   {items.map(({ item, gi }) => {
@@ -236,8 +236,8 @@ export function CommandPalette({ index }: { index: CommandIndexItem[] }) {
                         aria-selected={active}
                         className={`flex w-full items-center justify-between gap-3 border border-transparent px-3 py-2 text-left text-sm transition ${
                           active
-                            ? "border-cyan-100/24 bg-cyan-400/10 text-cyan-50"
-                            : "text-cyan-50/78 hover:border-cyan-100/18 hover:bg-cyan-950/40 hover:text-cyan-50"
+                            ? "border-border bg-accent/10 text-foreground"
+                            : "text-muted hover:border-border hover:bg-card hover:text-foreground"
                         }`}
                       >
                         <span className="flex min-w-0 items-center gap-2">
@@ -246,7 +246,7 @@ export function CommandPalette({ index }: { index: CommandIndexItem[] }) {
                           </span>
                           <span className="truncate">{item.title}</span>
                         </span>
-                        <span className="shrink-0 font-mono text-[11px] text-cyan-50/45">
+                        <span className="shrink-0 font-mono text-[11px] text-muted-soft">
                           {item.hint ?? ""}
                         </span>
                       </button>
@@ -257,7 +257,7 @@ export function CommandPalette({ index }: { index: CommandIndexItem[] }) {
             </>
           )}
         </div>
-        <div className="flex items-center justify-between border-t border-cyan-100/14 bg-cyan-950/22 px-4 py-2 text-[11px] text-cyan-50/52">
+        <div className="flex items-center justify-between border-t border-border bg-card px-4 py-2 text-[11px] text-muted-soft">
           <span className="flex items-center gap-3">
             <kbd className="font-mono">↑↓</kbd> 移动
             <kbd className="font-mono">Enter</kbd> 打开

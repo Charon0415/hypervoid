@@ -4,7 +4,7 @@
 
 **The world is big, you have to go and see.**
 
-_A personal coordinate carved out of `hyper` × `void` — "高维虚空" — Charon's long-form record of technology, reading, anime, games, and life._
+_A personal coordinate carved out of `hyper` × `void` — "高维空间" — Charon's long-form record of technology, reading, anime, games, and life._
 
 🌐 [hypervoid.top](https://hypervoid.top)
 &nbsp;·&nbsp;

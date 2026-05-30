@@ -5,8 +5,15 @@ export function AdaptivePostGrid({ children }: { children: ReactNode[] }) {
 
   return (
     <section>
-      <div className="grid gap-3 sm:grid-cols-2">
-        {children}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {children.map((child, i) => (
+          <div
+            key={i}
+            className={i === 0 ? "sm:col-span-2 lg:col-span-2" : ""}
+          >
+            {child}
+          </div>
+        ))}
       </div>
     </section>
   );

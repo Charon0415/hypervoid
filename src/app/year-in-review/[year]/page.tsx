@@ -48,21 +48,21 @@ export default async function YearInReviewPage(props: {
   const isEmpty = data.postCount === 0;
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-10 py-2">
+    <div className="mx-auto flex  flex-col gap-10 py-2">
       <header className="hv-panel relative overflow-hidden p-6 text-center sm:p-8">
         <p className="hv-kicker justify-center">
           Year in Review
         </p>
         <h1 className="hv-title mt-2 font-black tracking-tight">
           <span className="block text-5xl sm:text-7xl">{y}</span>
-          <span className="mt-2 block text-base text-cyan-50/62 sm:text-lg">
+          <span className="mt-2 block text-base text-muted sm:text-lg">
             {siteConfig.name} 的一年
           </span>
         </h1>
       </header>
 
       {isEmpty ? (
-        <p className="hv-panel border-dashed p-12 text-center text-cyan-50/60">
+        <p className="hv-panel border-dashed p-12 text-center text-muted">
           {y} 年还没有公开发布的文章。
         </p>
       ) : (
@@ -78,13 +78,13 @@ export default async function YearInReviewPage(props: {
             <p className="text-xs uppercase tracking-wider text-muted">
               累计阅读时长
             </p>
-            <p className="mt-2 font-mono text-3xl font-bold text-cyan-50">
+            <p className="mt-2 font-mono text-3xl font-bold text-foreground">
               {Math.floor(data.totalReadingMinutes / 60)}{" "}
-              <span className="text-base font-normal text-cyan-50/55">小时</span>{" "}
+              <span className="text-base font-normal text-muted-soft">小时</span>{" "}
               {data.totalReadingMinutes % 60}{" "}
-              <span className="text-base font-normal text-cyan-50/55">分钟</span>
+              <span className="text-base font-normal text-muted-soft">分钟</span>
             </p>
-            <p className="mt-1 text-xs text-cyan-50/48">
+            <p className="mt-1 text-xs text-muted-soft">
               按平均 250 字 / 分钟估算（不含代码块）
             </p>
           </section>
@@ -103,15 +103,15 @@ export default async function YearInReviewPage(props: {
                   >
                     <div className="flex h-full w-full items-end">
                       <div
-                        className="w-full bg-cyan-100/45 shadow-[0_0_16px_rgba(103,232,249,0.18)] transition hover:bg-cyan-100/80"
+                        className="w-full bg-accent/45 shadow-[0_0_16px_var(--accent-glow)] transition hover:bg-accent/80"
                         style={{ height: `${pct}%` }}
                         title={`${MONTH_NAMES[m.month - 1]}: ${m.count} 篇`}
                       />
                     </div>
-                    <span className="font-mono text-[10px] text-cyan-50/45">
+                    <span className="font-mono text-[10px] text-muted-soft">
                       {m.count > 0 ? m.count : ""}
                     </span>
-                    <span className="text-[10px] text-cyan-50/45">
+                    <span className="text-[10px] text-muted-soft">
                       {m.month}
                     </span>
                   </div>
@@ -129,18 +129,18 @@ export default async function YearInReviewPage(props: {
                 {data.topPosts.map((p, i) => (
                   <li
                     key={p.slug}
-                    className="flex items-center gap-3 border border-cyan-100/12 bg-white/[0.035] px-3 py-2"
+                    className="flex items-center gap-3 border border-border bg-white/[0.035] px-3 py-2"
                   >
-                    <span className="font-mono text-lg font-bold text-cyan-100">
+                    <span className="font-mono text-lg font-bold text-foreground">
                       {i + 1}
                     </span>
                     <Link
                       href={`/posts/${p.slug}`}
-                      className="min-w-0 flex-1 truncate text-sm font-medium text-cyan-50 hover:text-cyan-100"
+                      className="min-w-0 flex-1 truncate text-sm font-medium text-foreground hover:text-foreground"
                     >
                       {p.title}
                     </Link>
-                    <span className="inline-flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-cyan-50/55">
+                    <span className="inline-flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-muted-soft">
                       <Eye className="inline h-3.5 w-3.5" aria-hidden /> {p.views} / <Heart className="inline h-3.5 w-3.5" aria-hidden /> {p.reactions}
                     </span>
                   </li>
@@ -159,10 +159,10 @@ export default async function YearInReviewPage(props: {
                   <Link
                     key={t.tag}
                     href={`/tags/${encodeURIComponent(t.tag)}`}
-                    className="hv-chip gap-1.5 px-3 py-1 text-xs transition hover:border-cyan-100/42 hover:text-cyan-50"
+                    className="hv-chip gap-1.5 px-3 py-1 text-xs transition hover:border-border hover:text-foreground"
                   >
                     <span>#{t.tag}</span>
-                    <span className="font-mono text-[10px] text-cyan-50/45">
+                    <span className="font-mono text-[10px] text-muted-soft">
                       ×{t.count}
                     </span>
                   </Link>
@@ -173,7 +173,7 @@ export default async function YearInReviewPage(props: {
         </>
       )}
 
-      <nav className="flex items-center justify-between border-t border-cyan-100/12 pt-6 text-xs text-cyan-50/58">
+      <nav className="flex items-center justify-between border-t border-border pt-6 text-xs text-muted">
         <Link
           href={`/year-in-review/${y - 1}`}
           className="hv-action min-h-8 px-3"
@@ -208,10 +208,10 @@ function Stat({
       <p className="hv-kicker">
         {label}
       </p>
-      <p className="mt-1 font-mono text-2xl font-bold leading-tight text-cyan-50">
+      <p className="mt-1 font-mono text-2xl font-bold leading-tight text-foreground">
         {value.toLocaleString("en-US")}
         {suffix ? (
-          <span className="ml-1 text-xs font-normal text-cyan-50/55">
+          <span className="ml-1 text-xs font-normal text-muted-soft">
             {suffix}
           </span>
         ) : null}

@@ -39,8 +39,8 @@ export default async function AdminSeriesPage() {
     <div className="flex flex-col gap-6">
       <header className="hv-panel-sci p-5 relative overflow-hidden">
         {/* Corner accents */}
-        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
-        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-accent/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-accent/60 pointer-events-none" />
 
         <AdminBackLink href="/admin" label="后台" />
         <p className="hv-kicker mt-4 uppercase">SERIES_REGISTRY</p>
@@ -54,7 +54,7 @@ export default async function AdminSeriesPage() {
 
       {/* Create new series */}
       <section className="hv-panel-sci p-5">
-        <h2 className="font-mono text-sm font-semibold tracking-wider text-cyan-50 uppercase">CREATE_NEW_SERIES</h2>
+        <h2 className="font-mono text-sm font-semibold tracking-wider text-foreground uppercase">CREATE_NEW_SERIES</h2>
         <form action={createSeriesAction} className="mt-3 grid gap-3 sm:grid-cols-2">
           <label className="flex flex-col gap-1">
             <span className="font-mono text-xs text-muted uppercase">SERIES_NAME *</span>
@@ -98,7 +98,7 @@ export default async function AdminSeriesPage() {
           <div className="sm:col-span-2">
             <button
               type="submit"
-              className="hv-action px-5 text-sm font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_rgba(103,232,249,0.3)]"
+              className="hv-action px-5 text-sm font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_var(--accent-glow)]"
             >
               CREATE
             </button>
@@ -135,7 +135,7 @@ function SeriesCard({
       <details className="group">
         <summary className="flex cursor-pointer items-center justify-between gap-3">
           <div className="flex items-baseline gap-2">
-            <h2 className="font-mono text-base font-semibold tracking-wider text-cyan-50 uppercase">{s.name}</h2>
+            <h2 className="font-mono text-base font-semibold tracking-wider text-foreground uppercase">{s.name}</h2>
             <span className="font-mono text-xs text-muted">/{s.slug}</span>
             <span className="hv-chip-sci">{s.count} 篇</span>
           </div>
@@ -197,7 +197,7 @@ function SeriesCard({
           <div className="flex gap-2 sm:col-span-2">
             <button
               type="submit"
-              className="hv-action px-4 text-sm font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)] hover:shadow-[0_0_16px_rgba(103,232,249,0.25)]"
+              className="hv-action px-4 text-sm font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)] hover:shadow-[0_0_16px_var(--accent-glow)]"
             >
               SAVE
             </button>
@@ -228,14 +228,14 @@ function SeriesCard({
             {s.posts.map((p, i) => (
               <li
                 key={p.slug}
-                className="flex items-center gap-2 border border-transparent px-2 py-1.5 text-sm transition hover:border-cyan-400/20 hover:bg-cyan-400/5 clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
+                className="flex items-center gap-2 border border-transparent px-2 py-1.5 text-sm transition hover:border-accent/20 hover:bg-accent/5 clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
               >
-                <span className="grid h-5 w-5 shrink-0 place-items-center border border-cyan-400/30 bg-cyan-400/10 font-mono text-[10px] text-cyan-100 clip-path-[polygon(0_0,calc(100%-3px)_0,100%_3px,100%_100%,0_100%)]">
+                <span className="grid h-5 w-5 shrink-0 place-items-center border border-accent/30 bg-accent/10 font-mono text-[10px] text-foreground clip-path-[polygon(0_0,calc(100%-3px)_0,100%_3px,100%_100%,0_100%)]">
                   {p.seriesOrder ?? i + 1}
                 </span>
                 <Link
                   href={`/admin/posts/${p.slug}/edit`}
-                  className="min-w-0 flex-1 truncate text-cyan-50/86 hover:text-white"
+                  className="min-w-0 flex-1 truncate text-foreground hover:text-foreground"
                 >
                   {p.title}
                 </Link>

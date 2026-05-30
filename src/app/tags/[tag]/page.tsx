@@ -43,11 +43,11 @@ export default async function TagDetailPage(props: {
         所有标签
       </Link>
       <header className="hv-panel relative overflow-hidden p-5 sm:p-7">
-        <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-100/45 to-transparent" />
+        <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
         <p className="hv-kicker">Filtered channel / tag transmission</p>
         <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
           <h1 className="hv-title flex items-center gap-3 text-3xl font-black leading-tight sm:text-5xl">
-            <Hash className="h-8 w-8 text-cyan-100/70 sm:h-10 sm:w-10" aria-hidden />
+            <Hash className="h-8 w-8 text-muted sm:h-10 sm:w-10" aria-hidden />
             {decoded}
           </h1>
           <span className="hv-chip hv-chip-strong">{posts.length} nodes</span>

@@ -35,7 +35,7 @@ function Field({
 }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-sm font-medium text-cyan-50">
+      <span className="text-sm font-medium text-violet-50">
         {label}
         {required ? <span className="text-red-300"> *</span> : null}
       </span>

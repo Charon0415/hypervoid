@@ -15,6 +15,7 @@ const FIELD_LABELS: Record<ThemeKey, string> = {
   card: "卡片底色",
   muted: "次要文字",
   border: "边框",
+  accent: "强调色",
   primary: "主色",
   "primary-foreground": "主色之上文字",
 };
@@ -25,7 +26,8 @@ const DEFAULT_LIGHT: Record<ThemeKey, string> = {
   card: "#ffffff",
   muted: "#71717a",
   border: "#e4e4e7",
-  primary: "#1d4ed8",
+  accent: "#0891b2",
+  primary: "#0891b2",
   "primary-foreground": "#ffffff",
 };
 
@@ -35,7 +37,8 @@ const DEFAULT_DARK: Record<ThemeKey, string> = {
   card: "#18181b",
   muted: "#a1a1aa",
   border: "#27272a",
-  primary: "#3b82f6",
+  accent: "#06b6d4",
+  primary: "#06b6d4",
   "primary-foreground": "#ffffff",
 };
 
@@ -326,7 +329,7 @@ export function ThemeEditor({ initial }: { initial: ThemeEditorInitial }) {
                 max={100}
                 value={wallpaperOpacity}
                 onChange={(e) => setWallpaperOpacity(Number(e.target.value))}
-                className="w-full accent-cyan-300"
+                className="w-full accent-accent"
               />
               <span className="text-[11px] text-muted/80">
                 越低越淡。100% 完全显示。
@@ -345,7 +348,7 @@ export function ThemeEditor({ initial }: { initial: ThemeEditorInitial }) {
                 max={20}
                 value={wallpaperBlur}
                 onChange={(e) => setWallpaperBlur(Number(e.target.value))}
-                className="w-full accent-cyan-300"
+                className="w-full accent-accent"
               />
               <span className="text-[11px] text-muted/80">
                 高于 0 时为壁纸添加 backdrop blur，避免抢戏正文。
@@ -365,14 +368,14 @@ export function ThemeEditor({ initial }: { initial: ThemeEditorInitial }) {
             <button
               type="button"
               onClick={onExport}
-              className="rounded-md border border-cyan-100/16 bg-cyan-300/6 px-3 py-1.5 text-sm transition hover:border-cyan-200/55 hover:text-cyan-100"
+              className="rounded-md border border-border bg-accent/6 px-3 py-1.5 text-sm transition hover:border-accent/55 hover:text-foreground"
             >
               导出 JSON
             </button>
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className="rounded-md border border-cyan-100/16 bg-cyan-300/6 px-3 py-1.5 text-sm transition hover:border-cyan-200/55 hover:text-cyan-100"
+              className="rounded-md border border-border bg-accent/6 px-3 py-1.5 text-sm transition hover:border-accent/55 hover:text-foreground"
             >
               导入 JSON…
             </button>
@@ -390,7 +393,7 @@ export function ThemeEditor({ initial }: { initial: ThemeEditorInitial }) {
             <button
               type="button"
               onClick={onReset}
-              className="rounded-md border border-cyan-100/16 bg-cyan-300/6 px-3 py-1.5 text-sm text-muted transition hover:border-amber-500 hover:text-amber-600"
+              className="rounded-md border border-border bg-accent/6 px-3 py-1.5 text-sm text-muted transition hover:border-amber-500 hover:text-amber-600"
             >
               恢复默认配色
             </button>
@@ -424,7 +427,7 @@ export function ThemeEditor({ initial }: { initial: ThemeEditorInitial }) {
         <div className="hv-panel p-5">
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-sm font-semibold tracking-tight">实时预览</h3>
-            <div className="flex rounded-md border border-cyan-100/14 bg-black/20 p-0.5 text-[11px]">
+            <div className="flex rounded-md border border-border bg-black/20 p-0.5 text-[11px]">
               <button
                 type="button"
                 onClick={() => setPreviewMode("light")}
@@ -499,7 +502,7 @@ function WallpaperField({
         ) : null}
       </span>
       {value ? (
-        <div className="relative aspect-video overflow-hidden border border-cyan-100/12 bg-black/20">
+        <div className="relative aspect-video overflow-hidden border border-border bg-black/20">
           <Image
             src={value}
             alt=""
@@ -511,7 +514,7 @@ function WallpaperField({
           />
         </div>
       ) : (
-        <div className="flex aspect-video items-center justify-center rounded-lg border border-dashed border-cyan-100/14 bg-black/20 text-xs text-muted">
+        <div className="flex aspect-video items-center justify-center rounded-lg border border-dashed border-border bg-black/20 text-xs text-muted">
           未设置壁纸
         </div>
       )}
@@ -520,14 +523,14 @@ function WallpaperField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="https://...  或留空"
-        className="rounded-md border border-cyan-100/14 bg-black/20 px-2 py-1 font-mono text-[11px] transition focus:border-cyan-200/55 focus:outline-none"
+        className="rounded-md border border-border bg-black/20 px-2 py-1 font-mono text-[11px] transition focus:border-accent/55 focus:outline-none"
       />
       <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={onUploadClick}
           disabled={uploading}
-          className="rounded-md border border-cyan-100/16 bg-cyan-300/6 px-2.5 py-1 text-[11px] transition hover:border-cyan-200/55 hover:text-cyan-100 disabled:opacity-50"
+          className="rounded-md border border-border bg-accent/6 px-2.5 py-1 text-[11px] transition hover:border-accent/55 hover:text-foreground disabled:opacity-50"
         >
           {uploading ? "上传中…" : "上传图片"}
         </button>
@@ -577,7 +580,7 @@ function ColorGrid({
                     --{key}
                   </code>
                   {isDirty ? (
-                    <span className="text-[10px] text-cyan-100">·已改</span>
+                    <span className="text-[10px] text-foreground">·已改</span>
                   ) : null}
                 </span>
                 <div className="flex items-center gap-2">
@@ -585,7 +588,7 @@ function ColorGrid({
                     type="color"
                     value={isHex(val) ? val.slice(0, 7) : defaults[key]}
                     onChange={(e) => onChange(mode, key, e.target.value)}
-                    className="h-8 w-12 cursor-pointer rounded border border-cyan-100/16 bg-cyan-300/6"
+                    className="h-8 w-12 cursor-pointer rounded border border-border bg-accent/6"
                   />
                   <input
                     type="text"
@@ -594,7 +597,7 @@ function ColorGrid({
                     placeholder={defaults[key]}
                     className={`flex-1 rounded-md border bg-background px-2 py-1 font-mono text-xs ${
                       isHex(val)
-                        ? "border-cyan-100/16"
+                        ? "border-border"
                         : "border-amber-500/60 text-amber-700 dark:text-amber-300"
                     }`}
                   />

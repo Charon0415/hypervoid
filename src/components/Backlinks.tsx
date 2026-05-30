@@ -7,7 +7,7 @@ export function Backlinks({ posts }: { posts: Post[] }) {
   return (
     <section className="mt-12">
       <h2 className="hv-title mb-4 flex items-center gap-2 text-xl font-semibold tracking-normal">
-        <CornerDownRight className="h-5 w-5 text-cyan-100/70" aria-hidden />
+        <CornerDownRight className="h-5 w-5 text-accent-soft" aria-hidden />
         被这些文章引用
         <span className="hv-chip text-xs font-normal">
           ({posts.length})
@@ -20,10 +20,10 @@ export function Backlinks({ posts }: { posts: Post[] }) {
             href={`/posts/${p.slug}`}
             className="hv-panel hv-panel-hover group flex flex-col gap-1 p-3"
           >
-            <p className="line-clamp-1 text-sm font-medium tracking-tight text-cyan-50 transition group-hover:text-cyan-100">
+            <p className="line-clamp-1 text-sm font-medium tracking-tight text-foreground transition group-hover:text-accent">
               {p.frontmatter.title}
             </p>
-            <p className="text-[10px] text-cyan-50/48">
+            <p className="text-[10px] text-muted-soft">
               {p.frontmatter.date}
               {p.frontmatter.tags.length > 0 ? (
                 <>

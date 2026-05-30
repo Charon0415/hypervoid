@@ -43,7 +43,7 @@ export default async function SeriesDetailPage(
   const series = seriesList.find((s) => s.name === decoded);
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6">
+    <div className="mx-auto flex  flex-col gap-6">
       <Link href="/series" className="hv-action w-fit px-4 text-sm font-medium">
         <ArrowLeft className="h-4 w-4" aria-hidden />
         所有系列
@@ -65,14 +65,14 @@ export default async function SeriesDetailPage(
         <div className="relative z-10">
           <p className="hv-kicker">Series route / sequential reading</p>
           <h1 className="hv-title mt-2 flex items-center gap-3 text-3xl font-black leading-tight sm:text-5xl">
-            <Layers3 className="h-8 w-8 text-cyan-100/70 sm:h-10 sm:w-10" aria-hidden />
+            <Layers3 className="h-8 w-8 text-muted sm:h-10 sm:w-10" aria-hidden />
             {decoded}
           </h1>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <span className="hv-chip hv-chip-strong">{posts.length} nodes</span>
           </div>
           {series?.description ? (
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-cyan-50/66">
+            <p className="mt-4  text-sm leading-7 text-muted">
               {series.description}
             </p>
           ) : null}

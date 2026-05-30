@@ -47,8 +47,8 @@ export function MermaidDiagram({ code }: { code: string }) {
 
   if (error) {
     return (
-      <div className="not-prose my-6 rounded-xl border border-amber-500/40 bg-amber-500/5 p-4 text-xs">
-        <p className="font-medium text-amber-700 dark:text-amber-400">
+      <div className="not-prose my-6 rounded-xl border border-accent/40 bg-accent-glow p-4 text-xs">
+        <p className="font-medium text-foreground">
           Mermaid 解析失败
         </p>
         <p className="mt-1 text-muted">{error}</p>

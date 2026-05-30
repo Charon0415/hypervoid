@@ -13,6 +13,7 @@ import { AnnouncementWrapper } from "@/components/AnnouncementWrapper";
 import { Backdrop } from "@/components/Backdrop";
 import { BannerStrip } from "@/components/BannerStrip";
 import { SettingsProvider } from "@/components/SettingsProvider";
+import { ScrollProgress } from "@/components/ScrollProgress";
 import { siteConfig } from "@/lib/site-config";
 import { CommandPaletteHost } from "@/components/CommandPaletteHost";
 import { CustomThemeStyles, CustomWallpaper } from "@/components/CustomThemeStyles";
@@ -119,6 +120,7 @@ export default async function RootLayout({
         <CustomThemeStyles />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <ScrollProgress />
         <RouteChromeState />
         {!isFullScreenRoute ? (
           <a
@@ -145,7 +147,7 @@ export default async function RootLayout({
                   <SiteHeader />
                   <BannerStrip />
                 </div>
-                <main id="main-content" tabIndex={-1} className="page-fade hv-main-shell mx-auto w-full max-w-[88rem] flex-1 px-4 py-7 sm:px-6 lg:px-8">
+                <main id="main-content" tabIndex={-1} className="page-fade hv-main-shell w-full flex-1 px-0 py-0 sm:px-0 lg:px-0">
                   {children}
                 </main>
                 <div className="hv-chrome-only contents">
