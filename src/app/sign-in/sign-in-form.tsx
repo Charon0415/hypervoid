@@ -1,28 +1,8 @@
 "use client";
 
 import { useId, useState, type FormEvent } from "react";
-import { motion } from "framer-motion";
-import {
-  AlertCircle,
-  ArrowRight,
-  CheckCircle2,
-  Loader2,
-  Mail,
-} from "lucide-react";
+import { AlertCircle, ArrowRight, CheckCircle2, GitBranch, Loader2, Mail } from "lucide-react";
 import { signIn } from "@/auth.client";
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 12 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.055,
-      duration: 0.42,
-      ease: [0.16, 1, 0.3, 1] as const,
-    },
-  }),
-};
 
 const errorCopy: Record<string, string> = {
   AccessDenied: "登录被拒绝，请换一种方式重试。",
@@ -32,14 +12,18 @@ const errorCopy: Record<string, string> = {
   OAuthCallback: "GitHub 回调失败，请重新登录。",
 };
 
+function readableError(error: string | undefined): string | null {
+  if (!error) return null;
+  return errorCopy[error] ?? "登录失败：" + error;
+}
+
+function isValidEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
 function GitHubMark({ className }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden="true"
-    >
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -47,11 +31,6 @@ function GitHubMark({ className }: { className?: string }) {
       />
     </svg>
   );
-}
-
-function readableError(error: string | undefined): string | null {
-  if (!error) return null;
-  return errorCopy[error] ?? `登录失败：${error}`;
 }
 
 export function SignInForm({
@@ -64,6 +43,7 @@ export function SignInForm({
   emailEnabled: boolean;
 }) {
   const emailId = useId();
+  const hintId = emailId + "-hint";
   const [loading, setLoading] = useState<"github" | "email" | null>(null);
   const [emailValue, setEmailValue] = useState("");
   const [emailSent, setEmailSent] = useState(false);
@@ -73,17 +53,18 @@ export function SignInForm({
 
   async function handleGitHub() {
     setLocalError(null);
+    setEmailSent(false);
     setLoading("github");
     try {
       await signIn("github", { redirectTo });
     } catch {
-      setLocalError("GitHub 登录没有启动，请检查网络后重试。");
+      setLocalError("GitHub 授权没有启动，请检查网络后重试。");
       setLoading(null);
     }
   }
 
-  async function handleEmail(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function handleEmail(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     setLocalError(null);
 
     const email = emailValue.trim();
@@ -91,7 +72,7 @@ export function SignInForm({
       setLocalError("邮箱登录尚未配置 RESEND_API_KEY。");
       return;
     }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!isValidEmail(email)) {
       setLocalError("请输入有效的邮箱地址。");
       return;
     }
@@ -105,68 +86,46 @@ export function SignInForm({
       });
 
       if (result?.error) {
-        setLocalError(readableError(result.error) ?? "发送失败，请稍后重试。");
+        setLocalError(readableError(result.error) ?? "邮箱登录链接发送失败，请稍后再试。");
         return;
       }
 
       setEmailValue(email);
       setEmailSent(true);
     } catch {
-      setLocalError("发送失败，请稍后重试。");
+      setLocalError("邮箱登录链接发送失败，请稍后再试。");
     } finally {
       setLoading(null);
     }
   }
 
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      className="relative w-full overflow-hidden border border-white/18 bg-black/58 p-5 text-white shadow-[0_30px_120px_rgba(0,0,0,.52)] backdrop-blur-xl sm:p-7"
-    >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#b8f2ff]/70 to-transparent" />
-      <div className="pointer-events-none absolute -right-24 -top-24 h-48 w-48 bg-[radial-gradient(circle,rgba(99,214,255,.22),transparent_62%)]" />
+    <section className="hv-panel w-full max-w-[460px] p-7">
+      <div className="mb-7 text-center">
+        <p className="hv-kicker">Secure Gateway</p>
+        <h1 className="hv-title mt-2 text-2xl font-semibold">登录 Hypervoid</h1>
+        <p className="mt-2 text-sm text-muted">GitHub 为主要登录方式，邮箱 magic link 作为备用入口。</p>
+      </div>
 
-      <motion.div custom={0} variants={fadeUp}>
-        <p className="text-xs font-semibold uppercase text-[#b8f2ff]/78">
-          Secure Gateway / 身份入口
-        </p>
-        <h2 className="mt-3 text-3xl font-black uppercase leading-none text-white">
-          登录 Hypervoid
-        </h2>
-        <p className="mt-4 text-sm leading-6 text-white/62">
-          GitHub 为主要登录方式，邮箱 magic link 作为备用入口。
-        </p>
-      </motion.div>
-
-      <div aria-live="polite" className="mt-5">
+      <div aria-live="polite">
         {visibleError ? (
-          <motion.div
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            role="alert"
-            className="flex items-start gap-3 border border-red-200/36 bg-red-500/12 px-4 py-3 text-sm leading-6 text-red-50"
-          >
+          <div role="alert" className="mb-5 flex items-start gap-3 border border-red-400/35 bg-red-500/10 px-4 py-3 text-sm leading-6 text-red-100">
             <AlertCircle className="mt-1 h-4 w-4 shrink-0" aria-hidden="true" />
             <span>{visibleError}</span>
-          </motion.div>
+          </div>
         ) : null}
       </div>
 
       {emailSent ? (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-6 border border-[#b8f2ff]/40 bg-[#b8f2ff]/10 p-5 text-white"
-        >
+        <div className="border border-cyan-100/35 bg-cyan-50/10 p-5">
           <div className="flex items-start gap-4">
-            <div className="grid h-11 w-11 shrink-0 place-items-center border border-[#b8f2ff]/60 text-[#b8f2ff]">
+            <div className="grid h-11 w-11 shrink-0 place-items-center border border-cyan-100/50 text-cyan-100">
               <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
             </div>
             <div>
-              <p className="font-bold uppercase">登录链接已发送</p>
-              <p className="mt-2 text-sm leading-6 text-white/64">
-                请查看 <span className="font-semibold text-white">{emailValue}</span>，链接将在 15 分钟后失效。
+              <p className="font-mono text-xs uppercase text-cyan-50">登录链接已发送</p>
+              <p className="mt-2 text-sm leading-6 text-white/70">
+                请查看 <span className="font-semibold text-white">{emailValue}</span>，登录链接将在 15 分钟后失效。
               </p>
               <button
                 type="button"
@@ -175,85 +134,79 @@ export function SignInForm({
                   setEmailValue("");
                   setLocalError(null);
                 }}
-                className="mt-4 min-h-11 px-0 text-sm font-bold uppercase text-[#b8f2ff] underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#b8f2ff]/50"
+                className="mt-4 min-h-11 px-0 text-sm font-bold uppercase text-cyan-100 underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/60"
               >
                 更换邮箱
               </button>
             </div>
           </div>
-        </motion.div>
+        </div>
       ) : (
         <>
-          <motion.div custom={1} variants={fadeUp} className="mt-7">
-            <button
-              type="button"
-              onClick={handleGitHub}
-              disabled={loading !== null}
-              className="group flex min-h-14 w-full cursor-pointer items-center justify-center gap-3 border border-white/70 bg-white px-5 text-sm font-bold uppercase text-black transition duration-200 hover:border-[#b8f2ff] hover:bg-[#b8f2ff] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#b8f2ff]/60 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {loading === "github" ? (
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-              ) : (
-                <GitHubMark className="h-4 w-4" />
-              )}
-              <span>使用 GitHub 登录</span>
-              <ArrowRight className="ml-auto h-4 w-4 opacity-70 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
-            </button>
-          </motion.div>
+          <button type="button" onClick={handleGitHub} disabled={loading !== null} className="hv-action hv-chip-strong w-full px-5 text-sm font-semibold disabled:opacity-55">
+            {loading === "github" ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <GitHubMark className="h-4 w-4" />}
+            使用 GitHub 登录
+            <span className="ml-auto hidden border border-black/20 px-2 py-1 font-mono text-[10px] font-black sm:inline-flex">推荐</span>
+          </button>
 
-          <motion.div custom={2} variants={fadeUp} className="my-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-            <div className="h-px bg-white/20" />
-            <span className="text-xs font-bold uppercase text-white/42">邮箱备用登录</span>
-            <div className="h-px bg-white/20" />
-          </motion.div>
+          <div className="my-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+            <div className="h-px bg-white/18" />
+            <span className="font-mono text-[10px] uppercase text-white/45">邮箱备用登录</span>
+            <div className="h-px bg-white/18" />
+          </div>
 
-          <motion.form custom={3} variants={fadeUp} onSubmit={handleEmail} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor={emailId} className="text-xs font-bold uppercase text-white/72">
-                邮箱地址
-              </label>
-              <div className="relative">
-                <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/44" aria-hidden="true" />
-                <input
-                  id={emailId}
-                  name="email"
-                  type="email"
-                  value={emailValue}
-                  onChange={(e) => {
-                    setEmailValue(e.target.value);
-                    setLocalError(null);
-                  }}
-                  placeholder="you@example.com"
-                  autoComplete="email"
-                  inputMode="email"
-                  disabled={loading !== null || !emailEnabled}
-                  aria-describedby={`${emailId}-hint`}
-                  className="min-h-13 w-full border border-white/20 bg-white/[0.055] pl-11 pr-4 text-base text-white outline-none transition-colors placeholder:text-white/32 focus:border-[#b8f2ff]/70 focus:ring-2 focus:ring-[#b8f2ff]/22 disabled:cursor-not-allowed disabled:opacity-55"
-                />
-              </div>
-              <p id={`${emailId}-hint`} className="text-xs leading-5 text-white/48">
-                {emailEnabled
-                  ? "发送一次性登录链接，无需密码。"
-                  : "邮箱登录未启用，需要配置 RESEND_API_KEY。"}
-              </p>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading !== null || !emailEnabled}
-              className="group flex min-h-13 w-full cursor-pointer items-center justify-center gap-3 border border-white/24 bg-transparent px-5 text-sm font-bold uppercase text-white transition duration-200 hover:border-[#b8f2ff]/70 hover:bg-[#b8f2ff]/12 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#b8f2ff]/50 disabled:cursor-not-allowed disabled:opacity-50"
-            >
+          <form className="space-y-3" onSubmit={handleEmail} noValidate>
+            <label htmlFor={emailId} className="flex items-center gap-2 font-mono text-xs uppercase text-cyan-50/72">
+              <Mail className="h-3.5 w-3.5" aria-hidden="true" />
+              邮箱地址
+            </label>
+            <div className="relative">
+              <input
+                id={emailId}
+                name="email"
+                type="email"
+                autoComplete="email"
+                inputMode="email"
+                value={emailValue}
+                onChange={(event) => {
+                  setEmailValue(event.target.value);
+                  setLocalError(null);
+                }}
+                aria-describedby={hintId}
+                disabled={loading !== null || !emailEnabled}
+                className="h-12 w-full border border-white/15 bg-black/40 px-4 pr-12 text-base text-white outline-none transition placeholder:text-white/35 focus:border-cyan-100/70 focus:bg-black/50 focus:ring-2 focus:ring-cyan-100/20 disabled:cursor-not-allowed disabled:opacity-55"
+                placeholder="you@example.com"
+              />
               {loading === "email" ? (
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                <Loader2 className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-cyan-100" aria-hidden="true" />
               ) : (
-                <Mail className="h-4 w-4" aria-hidden="true" />
+                <Mail className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/38" aria-hidden="true" />
               )}
-              <span>发送邮箱登录链接</span>
-              <ArrowRight className="ml-auto h-4 w-4 opacity-70 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
+            </div>
+            <p id={hintId} className="text-xs leading-5 text-white/50">
+              {emailEnabled
+                ? "将发送一次性登录链接，无需密码。"
+                : "邮箱登录未启用，需要配置 RESEND_API_KEY。"}
+            </p>
+            <button type="submit" disabled={loading !== null || !emailEnabled} className="group inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-3 border border-white/20 bg-transparent px-5 py-3 text-sm font-black uppercase text-white transition hover:border-cyan-100/60 hover:bg-cyan-50/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/70 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-55">
+              {loading === "email" ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Mail className="h-4 w-4" aria-hidden="true" />}
+              发送邮箱登录链接
+              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" aria-hidden="true" />
             </button>
-          </motion.form>
+          </form>
         </>
       )}
-    </motion.div>
+
+      <div className="mt-7 grid grid-cols-2 border-y border-white/12 py-3 font-mono text-[10px] uppercase text-white/50">
+        <span className="flex items-center gap-1.5">
+          <GitBranch className="h-3.5 w-3.5 text-cyan-100" aria-hidden="true" />
+          GitHub 主登录
+        </span>
+        <span className="flex items-center justify-end gap-1.5">
+          <Mail className="h-3.5 w-3.5 text-cyan-100" aria-hidden="true" />
+          邮箱备用
+        </span>
+      </div>
+    </section>
   );
 }
