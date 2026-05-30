@@ -847,6 +847,96 @@ body::after {
   transform: translateY(-2px);
 }
 
+/* Sci-fi card with angled corners and technical aesthetics */
+.hv-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(6, 9, 20, 0.95), rgba(2, 4, 10, 0.98));
+  border: 1px solid rgba(103, 232, 249, 0.16);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 16px) 0,
+    100% 16px,
+    100% 100%,
+    16px 100%,
+    0 calc(100% - 16px)
+  );
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hv-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 10% 20%, rgba(103, 232, 249, 0.08), transparent 50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.hv-card:hover::before {
+  opacity: 1;
+}
+
+.hv-card:hover {
+  border-color: rgba(103, 232, 249, 0.35);
+  box-shadow:
+    0 0 32px rgba(103, 232, 249, 0.15),
+    inset 0 0 48px rgba(103, 232, 249, 0.03);
+  transform: translateY(-2px);
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(400%);
+    opacity: 0;
+  }
+}
+
+.group:hover .animate-scan {
+  animation: scan 2s ease-in-out infinite;
+}
+
+/* Sci-fi panel for sidebar widgets */
+.hv-panel-sci {
+  position: relative;
+  background: linear-gradient(135deg, rgba(6, 9, 20, 0.92), rgba(2, 4, 10, 0.95));
+  border: 1px solid rgba(103, 232, 249, 0.14);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 12px) 0,
+    100% 12px,
+    100% 100%,
+    0 100%
+  );
+  transition: all 0.3s ease;
+}
+
+.hv-panel-sci::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 80% 20%, rgba(103, 232, 249, 0.06), transparent 60%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.hv-panel-sci:hover::before {
+  opacity: 1;
+}
+
+.hv-panel-sci:hover {
+  border-color: rgba(103, 232, 249, 0.28);
+  box-shadow: 0 0 24px rgba(103, 232, 249, 0.1);
+}
+
 .hv-kicker {
   font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.68rem;
@@ -879,6 +969,32 @@ body::after {
   border-color: rgba(207, 250, 254, 0.36);
   background: rgba(207, 250, 254, 0.92);
   color: #02040a;
+}
+
+/* Sci-fi technical chip with angled edge */
+.hv-chip-sci {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem 0.25rem 0.5rem;
+  background: linear-gradient(135deg, rgba(103, 232, 249, 0.12), rgba(103, 232, 249, 0.06));
+  border: 1px solid rgba(103, 232, 249, 0.3);
+  color: rgb(103, 232, 249);
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+  transition: all 0.2s ease;
+}
+
+.hv-chip-sci:hover {
+  background: linear-gradient(135deg, rgba(103, 232, 249, 0.18), rgba(103, 232, 249, 0.1));
+  border-color: rgba(103, 232, 249, 0.5);
+  box-shadow: 0 0 12px rgba(103, 232, 249, 0.2);
+}
+
+.hv-chip-sci-dim {
+  background: linear-gradient(135deg, rgba(103, 232, 249, 0.06), rgba(103, 232, 249, 0.03));
+  border-color: rgba(103, 232, 249, 0.16);
+  color: rgba(103, 232, 249, 0.7);
 }
 
 .hv-action {

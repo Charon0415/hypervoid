@@ -68,7 +68,7 @@ export async function SiteStats() {
     },
     {
       label: "运行",
-      value: `${stats.daysOnline.toLocaleString()} 天`,
+      value: `${stats.daysOnline.toLocaleString()} 天`,
       icon: (
         <svg
           aria-hidden
@@ -88,29 +88,45 @@ export async function SiteStats() {
   ];
 
   return (
-    <aside className="hv-panel p-5">
-      <h3 className="hv-title text-sm font-semibold tracking-normal">
-        站点统计
-      </h3>
-      <div className="mt-3 grid grid-cols-2 gap-2">
+    <aside className="hv-panel-sci group relative overflow-hidden p-5">
+      {/* Corner accents */}
+      <div aria-hidden className="pointer-events-none absolute right-0 top-0 h-px w-12 bg-gradient-to-l from-cyan-400/60 to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute right-0 top-0 h-12 w-px bg-gradient-to-b from-cyan-400/60 to-transparent" />
+
+      <div className="flex items-center justify-between">
+        <h3 className="font-mono text-xs font-semibold uppercase tracking-widest text-cyan-100/80">
+          Site_Stats
+        </h3>
+        <div className="flex items-center gap-1">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
+          <span className="font-mono text-[9px] uppercase tracking-wider text-cyan-400/70">Live</span>
+        </div>
+      </div>
+
+      <div className="mt-4 grid grid-cols-2 gap-2">
         {items.map((item) => (
           <div
             key={item.label}
-            className="relative overflow-hidden border border-cyan-100/12 bg-white/[0.035] px-3 py-2.5"
+            className="group/stat relative overflow-hidden border border-cyan-100/10 bg-gradient-to-br from-cyan-950/30 to-transparent px-3 py-2.5 transition hover:border-cyan-400/30 hover:bg-cyan-950/40"
+            style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%)' }}
           >
+            {/* Scan line on hover */}
+            <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent opacity-0 transition-opacity group-hover/stat:opacity-100" />
+
             <span
               aria-hidden
-              className="absolute right-2 top-2 grid h-5 w-5 place-items-center border border-cyan-100/14 bg-cyan-50/[0.055] text-cyan-100/70"
+              className="absolute right-2 top-2 grid h-5 w-5 place-items-center border border-cyan-100/14 bg-cyan-950/60 text-cyan-100/70 transition group-hover/stat:border-cyan-400/40 group-hover/stat:text-cyan-300"
+              style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%)' }}
             >
               {item.icon}
             </span>
             <p
-              className="whitespace-nowrap pr-6 font-mono text-base font-semibold leading-tight text-cyan-50"
+              className="whitespace-nowrap pr-6 font-mono text-base font-bold leading-tight text-cyan-100 transition group-hover/stat:text-cyan-300"
               title={item.value}
             >
               {item.value}
             </p>
-            <p className="mt-0.5 text-[11px] leading-tight text-cyan-50/50">
+            <p className="mt-0.5 font-mono text-[10px] uppercase leading-tight tracking-wider text-cyan-50/50">
               {item.label}
             </p>
           </div>
