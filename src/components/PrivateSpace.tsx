@@ -34,31 +34,36 @@ export function PrivateSpace() {
   if (!mounted || !user?.isAdmin) return null;
 
   return (
-    <aside className="rounded-3xl border border-border bg-card p-5">
+    <aside className="hv-panel-sci group relative overflow-hidden p-5">
+      {/* Corner accent */}
+      <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-px w-16 bg-gradient-to-r from-cyan-400/60 to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-16 w-px bg-gradient-to-b from-cyan-400/60 to-transparent" />
+
       <div className="flex items-center gap-2.5">
         {user.avatar ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={user.avatar}
             alt=""
-            className="h-8 w-8 rounded-full border border-border object-cover"
+            className="h-8 w-8 border border-cyan-100/30 bg-cyan-950/40 object-cover"
+            style={{ clipPath: 'polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 0 100%)' }}
           />
         ) : (
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
+          <div className="flex h-8 w-8 items-center justify-center border border-cyan-400/30 bg-cyan-950/50 font-mono text-sm font-bold text-cyan-300" style={{ clipPath: 'polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 0 100%)' }}>
             {(user.name || user.login).slice(0, 1).toUpperCase()}
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-semibold tracking-tight text-foreground/80">
-            私人空间
+          <h3 className="font-mono text-xs font-semibold uppercase tracking-widest text-cyan-100/80">
+            Private_Space
           </h3>
-          <p className="truncate text-[11px] text-muted">
+          <p className="truncate font-mono text-[10px] text-cyan-50/60">
             {user.name || user.login}
           </p>
         </div>
       </div>
 
-      <div className="mt-4 flex flex-col gap-1.5">
+      <div className="mt-4 flex flex-col gap-1">
         <SpaceLink href="/admin" icon="settings" label="管理后台" />
         <SpaceLink href="/admin/posts/new" icon="write" label="写文章" />
         <SpaceLink href="/admin/series" icon="collection" label="专题管理" />
@@ -80,9 +85,10 @@ function SpaceLink({
   return (
     <Link
       href={href}
-      className="group flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-muted transition hover:bg-primary/5 hover:text-primary"
+      className="group flex items-center gap-2.5 border border-transparent px-2.5 py-1.5 text-xs text-cyan-50/70 transition hover:border-cyan-100/20 hover:bg-cyan-950/40 hover:text-cyan-100"
+      style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%)' }}
     >
-      <span className="grid h-7 w-7 place-items-center rounded-lg bg-primary/5 text-primary/60 transition group-hover:bg-primary/10 group-hover:text-primary">
+      <span className="grid h-6 w-6 place-items-center border border-cyan-100/20 bg-cyan-950/50 text-cyan-300/70 transition group-hover:border-cyan-400/40 group-hover:bg-cyan-900/50 group-hover:text-cyan-300" style={{ clipPath: 'polygon(0 0, calc(100% - 3px) 0, 100% 3px, 100% 100%, 0 100%)' }}>
         <Icon name={icon} />
       </span>
       {label}
