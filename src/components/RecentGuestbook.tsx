@@ -26,16 +26,21 @@ export async function RecentGuestbook() {
   if (!messages.length) return null;
 
   return (
-    <aside className="rounded-3xl border border-border bg-card p-5">
+    <aside className="hv-panel-sci group relative overflow-hidden p-5">
+      {/* Corner accent */}
+      <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-px w-16 bg-gradient-to-r from-cyan-400/50 to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-16 w-px bg-gradient-to-b from-cyan-400/50 to-transparent" />
+
       <div className="flex items-baseline justify-between">
-        <h3 className="text-sm font-semibold tracking-tight text-foreground/80">
-          近期留言
+        <h3 className="font-mono text-xs font-semibold uppercase tracking-widest text-cyan-100/80">
+          Guestbook
         </h3>
         <Link
           href="/guestbook"
-          className="group inline-flex items-center gap-1 rounded-full border border-border bg-background px-2.5 py-0.5 text-[11px] text-muted transition hover:border-primary/40 hover:text-primary"
+          className="group inline-flex items-center gap-1 border border-cyan-100/18 bg-cyan-950/30 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-cyan-100/70 transition hover:border-cyan-400/40 hover:bg-cyan-900/40 hover:text-cyan-300"
+          style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%)' }}
         >
-          全部
+          All
           <svg
             aria-hidden
             className="h-3 w-3 transition group-hover:translate-x-0.5"
@@ -51,13 +56,43 @@ export async function RecentGuestbook() {
           </svg>
         </Link>
       </div>
-      <ul className="mt-3 space-y-3">
+      <ul className="mt-4 space-y-3">
         {messages.map((m) => (
-          <li key={m.id} className="flex items-start gap-2.5">
+          <li key={m.id} className="group/msg flex items-start gap-2.5 border-l border-cyan-100/10 pl-3 transition hover:border-cyan-400/40">
             {m.avatarUrl ? (
               <Image
                 src={m.avatarUrl}
                 alt=""
+                width={28}
+                height={28}
+                unoptimized={!m.avatarUrl.includes("avatars.githubusercontent.com")}
+                className="mt-0.5 shrink-0 border border-cyan-100/20 bg-cyan-950/40 transition group-hover/msg:border-cyan-400/40"
+                style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%)' }}
+              />
+            ) : (
+              <div className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center border border-cyan-100/20 bg-cyan-950/40 font-mono text-xs text-cyan-100/60" style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%)' }}>
+                ?
+              </div>
+            )}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-baseline gap-2">
+                <span className="font-mono text-xs font-semibold text-cyan-100/90 transition group-hover/msg:text-cyan-300">
+                  {m.githubLogin || "匿名"}
+                </span>
+                <span className="font-mono text-[9px] uppercase tracking-wider text-cyan-50/40">
+                  {relativeTime(m.createdAt)}
+                </span>
+              </div>
+              <p className="mt-1 text-xs leading-relaxed text-cyan-50/70">
+                {truncate(cleanMessage(m.message), 80)}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </aside>
+  );
+}
                 width={28}
                 height={28}
                 sizes="28px"
