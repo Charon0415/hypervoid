@@ -106,11 +106,12 @@ export function ReactionBar({
             disabled={!!pendingKey}
             aria-pressed={active}
             title={r.label}
-            className={`group inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition disabled:opacity-60 ${
+            className={`group inline-flex items-center gap-1.5 border px-3 py-1.5 text-sm transition disabled:opacity-60 ${
               active
-                ? "border-primary bg-primary/10 text-primary"
-                : "border-border bg-card text-muted hover:border-primary hover:text-foreground"
+                ? "border-cyan-400/40 bg-cyan-400/15 text-cyan-100 shadow-[0_0_12px_rgba(103,232,249,0.15)]"
+                : "border-cyan-100/18 bg-cyan-950/30 text-cyan-50/70 hover:border-cyan-400/30 hover:bg-cyan-900/30 hover:text-cyan-100"
             }`}
+            style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%)' }}
           >
             <span
               aria-hidden
