@@ -93,31 +93,3 @@ export async function RecentGuestbook() {
     </aside>
   );
 }
-                width={28}
-                height={28}
-                sizes="28px"
-                loading="lazy"
-                className="mt-0.5 h-7 w-7 shrink-0 rounded-full border border-border object-cover"
-              />
-            ) : (
-              <div className="mt-0.5 h-7 w-7 shrink-0 rounded-full border border-border bg-background" />
-            )}
-            <div className="min-w-0 flex-1">
-              <div className="flex items-baseline justify-between gap-2 text-xs">
-                <span className="truncate font-medium text-foreground">
-                  {m.githubName ?? m.githubLogin}
-                </span>
-                <span className="shrink-0 text-muted">
-                  {relativeTime(m.createdAt)}
-                </span>
-              </div>
-              <p className="mt-0.5 text-xs leading-snug text-muted">
-                {truncate(cleanMessage(m.message), 60)}
-              </p>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </aside>
-  );
-}
