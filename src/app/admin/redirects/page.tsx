@@ -23,42 +23,46 @@ export default async function AdminRedirectsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="hv-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+      <header className="hv-panel-sci relative overflow-hidden flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+        {/* Corner accents */}
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+
         <div className="space-y-3">
           <AdminBackLink href="/admin" label="后台" />
           <div>
-            <p className="hv-kicker">Redirect Router</p>
-            <h1 className="hv-title mt-1 text-2xl font-semibold">短链管理</h1>
+            <p className="hv-kicker uppercase">REDIRECT_ROUTER</p>
+            <h1 className="hv-title mt-1 font-mono text-2xl font-semibold tracking-wider uppercase">短链管理</h1>
             <p className="mt-2 max-w-2xl text-sm text-muted">
               访问 <code>{siteConfig.url}/r/&lt;短码&gt;</code> 会 307 跳转到目标地址并累计命中。
             </p>
           </div>
         </div>
-        <span className="hv-chip">共 {list.length} 条</span>
+        <span className="hv-chip-sci">{list.length} LINKS</span>
       </header>
 
-      <section className="hv-panel p-5">
+      <section className="hv-panel-sci p-5">
         <div className="flex items-center gap-2">
           <Link2 className="h-4 w-4 text-cyan-100/70" aria-hidden="true" />
-          <h2 className="text-sm font-semibold tracking-tight text-cyan-50">新建短链</h2>
+          <h2 className="font-mono text-sm font-semibold tracking-wider uppercase text-cyan-50">NEW_REDIRECT</h2>
         </div>
         <form action={createAction} className="mt-4 grid gap-3 lg:grid-cols-[1.1fr_2fr_1.2fr_auto] lg:items-end">
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-muted">短码</span>
+            <span className="font-mono text-xs uppercase text-muted">CODE</span>
             <div className="flex items-center gap-1">
               <span className="font-mono text-xs text-muted">/r/</span>
-              <input type="text" name="code" required pattern="[\w-]+" placeholder="welcome" className="hv-input min-h-11 flex-1 px-3 font-mono text-sm" />
+              <input type="text" name="code" required pattern="[\w-]+" placeholder="welcome" className="hv-input min-h-11 flex-1 px-3 font-mono text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]" />
             </div>
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-muted">目标地址</span>
-            <input type="url" name="toUrl" required placeholder="https://..." className="hv-input min-h-11 px-3 text-sm" />
+            <span className="font-mono text-xs uppercase text-muted">TARGET_URL</span>
+            <input type="url" name="toUrl" required placeholder="https://..." className="hv-input min-h-11 px-3 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]" />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-muted">备注</span>
-            <input type="text" name="note" placeholder="为什么造这条短链" className="hv-input min-h-11 px-3 text-sm" />
+            <span className="font-mono text-xs uppercase text-muted">NOTE</span>
+            <input type="text" name="note" placeholder="为什么造这条短链" className="hv-input min-h-11 px-3 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]" />
           </label>
-          <button type="submit" className="hv-action px-4 text-sm">
+          <button type="submit" className="hv-action px-4 text-sm font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_16px_rgba(103,232,249,0.25)]">
             <Plus className="h-4 w-4" aria-hidden="true" />
             创建
           </button>
@@ -66,24 +70,24 @@ export default async function AdminRedirectsPage() {
       </section>
 
       {list.length === 0 ? (
-        <p className="hv-panel border-dashed p-8 text-center text-sm text-muted">
+        <p className="hv-panel-sci border-dashed p-8 text-center text-sm text-muted">
           还没有短链。
         </p>
       ) : (
-        <div className="hv-panel overflow-x-auto p-0">
+        <div className="hv-panel-sci overflow-x-auto p-0">
           <table className="w-full min-w-[680px] text-sm">
-            <thead className="border-b border-cyan-200/10 bg-cyan-300/[0.04] text-left text-xs uppercase text-cyan-100/65">
+            <thead className="border-b border-cyan-400/20 bg-cyan-400/[0.06] text-left font-mono text-xs uppercase text-cyan-100/65">
               <tr>
-                <th className="px-4 py-3 font-medium">短链</th>
-                <th className="px-4 py-3 font-medium">目标</th>
-                <th className="px-4 py-3 font-medium">命中</th>
-                <th className="px-4 py-3 font-medium">备注 / 创建</th>
+                <th className="px-4 py-3 font-medium">LINK</th>
+                <th className="px-4 py-3 font-medium">TARGET</th>
+                <th className="px-4 py-3 font-medium">HITS</th>
+                <th className="px-4 py-3 font-medium">NOTE / CREATED</th>
                 <th className="px-4 py-3"></th>
               </tr>
             </thead>
             <tbody>
               {list.map((r) => (
-                <tr key={r.id} className="border-t border-cyan-200/10 transition hover:bg-cyan-300/[0.035]">
+                <tr key={r.id} className="border-t border-cyan-400/15 transition hover:bg-cyan-400/[0.05]">
                   <td className="px-4 py-3 font-mono text-xs">
                     <a href={"/r/" + r.code} target="_blank" rel="noreferrer" className="text-cyan-100 hover:text-white">
                       /r/{r.code}
@@ -107,7 +111,7 @@ export default async function AdminRedirectsPage() {
                         await deleteAction(r.id);
                       }}
                     >
-                      <button type="submit" className="inline-flex items-center gap-1 border border-red-400/35 bg-red-500/10 px-3 py-1 text-[11px] text-red-200 transition hover:border-red-300 hover:bg-red-500/15">
+                      <button type="submit" className="inline-flex items-center gap-1 border border-red-400/35 bg-red-500/10 px-3 py-1 text-[11px] text-red-200 transition hover:border-red-300 hover:bg-red-500/15 font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]">
                         <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                         删除
                       </button>

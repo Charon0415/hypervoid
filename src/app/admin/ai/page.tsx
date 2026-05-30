@@ -79,16 +79,19 @@ export default async function AdminAiPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="hv-panel p-5">
+      <header className="hv-panel-sci p-5 relative overflow-hidden">
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+
         <AdminBackLink href="/admin" label="后台" />
-        <p className="hv-kicker mt-4">AI Control Plane</p>
-        <h1 className="hv-title mt-1 text-2xl font-semibold">AI 配置</h1>
+        <p className="hv-kicker mt-4 uppercase">AI_CONTROL_PLANE</p>
+        <h1 className="hv-title mt-1 font-mono text-2xl font-semibold tracking-wider uppercase">AI 配置</h1>
       </header>
 
       <p className="text-sm text-muted">
         所有 AI 功能(文章摘要、标签建议、AskAI、康娜聊天、写作助手)共用这里选的模型。
         当前生效:{" "}
-        <span className="font-mono text-foreground">{current.label}</span>{" "}
+        <span className="font-mono text-foreground uppercase">{current.label}</span>{" "}
         <span className="text-[10px] text-muted">({current.upstreamId})</span>
       </p>
 
@@ -99,24 +102,24 @@ export default async function AdminAiPage() {
           return (
             <div
               key={p.id}
-              className={`hv-panel p-5 ${
+              className={`hv-panel-sci p-5 ${
                 current.provider === p.id
-                  ? "border-cyan-200/55 bg-cyan-300/10"
-                  : "border-cyan-100/16 bg-cyan-300/6"
+                  ? "border-cyan-400/55 bg-cyan-400/10"
+                  : "border-cyan-400/16 bg-cyan-400/6"
               }`}
             >
               <header className="mb-2 flex items-center justify-between gap-3">
-                <h2 className="text-sm font-semibold tracking-tight">
+                <h2 className="font-mono text-sm font-semibold tracking-wider uppercase">
                   {p.label}
                 </h2>
                 <span
-                  className={` px-2 py-0.5 text-[10px] font-medium ${
+                  className={`px-2 py-0.5 text-[10px] font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)] ${
                     ok
                       ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
                       : "bg-red-500/15 text-red-700 dark:text-red-300"
                   }`}
                 >
-                  {ok ? "已配置" : "未配置"}
+                  {ok ? "READY" : "NOT_SET"}
                 </span>
               </header>
               <p className="font-mono text-[11px] text-muted">{masked}</p>

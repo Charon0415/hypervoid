@@ -53,12 +53,16 @@ export default async function AdminSubscribersPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="hv-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+      <header className="hv-panel-sci relative overflow-hidden flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+        {/* Corner accents */}
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+
         <div className="space-y-3">
           <AdminBackLink href="/admin" label="后台" />
           <div>
-            <p className="hv-kicker">Subscriber Relay</p>
-            <h1 className="hv-title mt-1 text-2xl font-semibold">订阅者管理</h1>
+            <p className="hv-kicker uppercase">SUBSCRIBER_RELAY</p>
+            <h1 className="hv-title mt-1 font-mono text-2xl font-semibold tracking-wider uppercase">订阅者管理</h1>
           </div>
         </div>
         <p className="max-w-xl text-sm text-muted">
@@ -74,18 +78,18 @@ export default async function AdminSubscribersPage() {
       </section>
 
       {subs.length === 0 ? (
-        <p className="hv-panel border-dashed p-8 text-center text-sm text-muted">
+        <p className="hv-panel-sci border-dashed p-8 text-center text-sm text-muted">
           还没有订阅者。
         </p>
       ) : (
-        <div className="hv-panel overflow-x-auto p-0">
+        <div className="hv-panel-sci overflow-x-auto p-0">
           <table className="w-full min-w-[680px] text-sm">
-            <thead className="border-b border-cyan-200/10 bg-cyan-300/[0.04] text-left text-xs uppercase text-cyan-100/65">
+            <thead className="border-b border-cyan-400/20 bg-cyan-400/[0.06] text-left font-mono text-xs uppercase text-cyan-100/65">
               <tr>
-                <th className="px-4 py-3 font-medium">邮箱</th>
-                <th className="px-4 py-3 font-medium">状态</th>
-                <th className="px-4 py-3 font-medium">订阅时间</th>
-                <th className="px-4 py-3 font-medium">确认时间</th>
+                <th className="px-4 py-3 font-medium">EMAIL</th>
+                <th className="px-4 py-3 font-medium">STATUS</th>
+                <th className="px-4 py-3 font-medium">SUBSCRIBED</th>
+                <th className="px-4 py-3 font-medium">CONFIRMED</th>
                 <th className="px-4 py-3"></th>
               </tr>
             </thead>
@@ -95,20 +99,20 @@ export default async function AdminSubscribersPage() {
                 return (
                   <tr
                     key={sub.id}
-                    className="border-t border-cyan-200/10 transition hover:bg-cyan-300/[0.035]"
+                    className="border-t border-cyan-400/15 transition hover:bg-cyan-400/[0.05]"
                   >
                     <td className="px-4 py-3 font-mono text-xs text-cyan-50/85">
                       {sub.email}
                     </td>
                     <td className="px-4 py-3">
-                      <span className={"inline-flex border px-2 py-0.5 font-mono text-[11px] " + s.cls}>
+                      <span className={"inline-flex border px-2 py-0.5 font-mono text-[11px] uppercase clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)] " + s.cls}>
                         {s.label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 font-mono text-xs text-muted">
+                    <td className="px-4 py-3 font-mono text-xs text-muted uppercase">
                       {formatDateTimeCN(sub.createdAt)}
                     </td>
-                    <td className="px-4 py-3 font-mono text-xs text-muted">
+                    <td className="px-4 py-3 font-mono text-xs text-muted uppercase">
                       {sub.verifiedAt ? formatDateTimeCN(sub.verifiedAt) : "—"}
                     </td>
                     <td className="px-4 py-3">
@@ -120,7 +124,7 @@ export default async function AdminSubscribersPage() {
                               await restoreAction(sub.id);
                             }}
                           >
-                            <button type="submit" className="hv-action min-h-0 px-3 py-1 text-[11px]">
+                            <button type="submit" className="hv-action min-h-0 px-3 py-1 text-[11px] font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]">
                               恢复
                             </button>
                           </form>
@@ -131,7 +135,7 @@ export default async function AdminSubscribersPage() {
                               await unsubscribeAction(sub.id);
                             }}
                           >
-                            <button type="submit" className="hv-action min-h-0 px-3 py-1 text-[11px] hover:border-amber-300/60 hover:text-amber-100">
+                            <button type="submit" className="hv-action min-h-0 px-3 py-1 text-[11px] font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)] hover:border-amber-300/60 hover:text-amber-100">
                               退订
                             </button>
                           </form>
@@ -142,7 +146,7 @@ export default async function AdminSubscribersPage() {
                             await deleteAction(sub.id);
                           }}
                         >
-                          <button type="submit" className="min-h-0 border border-red-400/35 bg-red-500/10 px-3 py-1 text-[11px] text-red-200 transition hover:border-red-300 hover:bg-red-500/15">
+                          <button type="submit" className="min-h-0 border border-red-400/35 bg-red-500/10 px-3 py-1 text-[11px] text-red-200 transition hover:border-red-300 hover:bg-red-500/15 font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]">
                             删除
                           </button>
                         </form>
@@ -175,8 +179,10 @@ function StatTile({
         ? "text-amber-200"
         : "text-cyan-50";
   return (
-    <div className="hv-panel p-4">
-      <p className="hv-kicker">{label}</p>
+    <div className="hv-panel-sci relative overflow-hidden p-4">
+      {/* Corner accent */}
+      <div className="absolute right-0 top-0 h-8 w-8 border-r border-t border-cyan-400/40 pointer-events-none" />
+      <p className="hv-kicker uppercase">{label}</p>
       <p className={"mt-2 font-mono text-2xl font-semibold leading-tight sm:text-3xl " + accentClass}>
         {value.toLocaleString("en-US")}
       </p>

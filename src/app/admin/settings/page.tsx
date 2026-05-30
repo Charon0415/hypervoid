@@ -41,9 +41,15 @@ export default async function AdminSettingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="hv-panel p-5 sm:p-6 flex items-center gap-3">
+      <header className="hv-panel-sci relative overflow-hidden p-5 sm:p-6 flex items-center gap-3">
+        {/* Corner accents */}
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        {/* Pulse beacon */}
+        <span className="absolute right-5 top-5 h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
+
         <AdminBackLink href="/admin" label="后台" />
-        <h1 className="hv-title text-2xl font-black tracking-tight">站点设置</h1>
+        <h1 className="hv-title font-mono text-2xl font-black tracking-wider uppercase">SITE_SETTINGS</h1>
       </header>
 
       <p className="text-sm text-cyan-50/55">
@@ -61,16 +67,16 @@ export default async function AdminSettingsPage() {
         <div className="grid gap-4 sm:grid-cols-2">
           {fields.map((f) => (
             <label key={f.key} className="flex flex-col gap-1.5">
-              <span className="text-sm font-medium">{f.key}</span>
+              <span className="font-mono text-sm font-medium uppercase text-cyan-50/85">{f.key}</span>
               <input
                 name={f.key}
                 type="text"
                 defaultValue={f.value}
                 placeholder={f.default}
-                className="w-full rounded-md border border-cyan-100/16 bg-white/[0.035] px-3 py-2 text-sm transition focus:border-cyan-100/45 focus:outline-none"
+                className="hv-input w-full px-3 py-2 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
               />
               {f.value !== f.default ? (
-                <span className="text-[10px] text-cyan-100">
+                <span className="font-mono text-[10px] uppercase text-cyan-100">
                   已自定义（默认：{f.default}）
                 </span>
               ) : (
@@ -85,18 +91,18 @@ export default async function AdminSettingsPage() {
         <div>
           <button
             type="submit"
-            className="hv-action px-5 py-2 text-sm font-medium"
+            className="hv-action px-5 py-2 text-sm font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_rgba(103,232,249,0.3)]"
           >
             保存设置
           </button>
         </div>
       </form>
 
-      <hr className="border-cyan-100/16" />
+      <div className="hv-divider" />
 
       {/* Login policy */}
       <section className="flex flex-col gap-4">
-        <h2 className="hv-title text-lg font-semibold tracking-normal">访问控制</h2>
+        <h2 className="hv-title font-mono text-lg font-semibold tracking-wider uppercase">ACCESS_CONTROL</h2>
         <form action={setLoginPolicyAction} className="flex flex-col gap-3">
           {[
             {
@@ -117,10 +123,10 @@ export default async function AdminSettingsPage() {
           ].map((opt) => (
             <label
               key={opt.value}
-              className={`flex cursor-pointer items-start gap-3 border p-4 transition-colors ${
+              className={`flex cursor-pointer items-start gap-3 border p-4 transition-colors clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] ${
                 loginPolicy === opt.value
-                  ? "border-cyan-100/45 bg-cyan-100/12"
-                  : "border-cyan-100/16 bg-white/[0.035] hover:border-cyan-100/40"
+                  ? "border-cyan-400/40 bg-cyan-400/12"
+                  : "border-cyan-100/16 bg-gradient-to-br from-cyan-950/40 to-slate-950/60 hover:border-cyan-400/40"
               }`}
             >
               <input
@@ -139,7 +145,7 @@ export default async function AdminSettingsPage() {
           <div>
             <button
               type="submit"
-              className="hv-action px-5 py-2 text-sm font-medium"
+              className="hv-action px-5 py-2 text-sm font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_rgba(103,232,249,0.3)]"
             >
               保存策略
             </button>
@@ -155,7 +161,7 @@ export default async function AdminSettingsPage() {
         </p>
       </section>
 
-      <hr className="border-cyan-100/16" />
+      <div className="hv-divider" />
 
       <div className="text-xs text-cyan-50/55">
         <p className="font-medium">说明</p>

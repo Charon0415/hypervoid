@@ -38,36 +38,40 @@ export default async function AdminLinkCheckPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="hv-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+      <header className="hv-panel-sci relative overflow-hidden flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+        {/* Corner accents */}
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+
         <div className="space-y-3">
           <AdminBackLink href="/admin" label="后台" />
           <div>
-            <p className="hv-kicker">Outbound Link Scan</p>
-            <h1 className="hv-title mt-1 text-2xl font-semibold">失效链接巡检</h1>
+            <p className="hv-kicker uppercase">OUTBOUND_LINK_SCAN</p>
+            <h1 className="hv-title mt-1 font-mono text-2xl font-semibold tracking-wider uppercase">失效链接巡检</h1>
             <p className="mt-2 max-w-2xl text-sm text-muted">
               扫描所有已发布公开文章里的外链，并发 6 路，HEAD 失败回退 GET。
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <span className="hv-chip">链接 {list.length}</span>
-          <span className={broken.length > 0 ? "border border-red-300/35 bg-red-500/10 px-2 py-0.5 font-mono text-xs text-red-100" : "hv-chip"}>异常 {broken.length}</span>
+          <span className="hv-chip-sci">LINKS {list.length}</span>
+          <span className={broken.length > 0 ? "border border-red-300/35 bg-red-500/10 px-2 py-0.5 font-mono text-xs uppercase text-red-100 clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]" : "hv-chip-sci"}>BROKEN {broken.length}</span>
         </div>
       </header>
 
-      <section className="hv-panel flex flex-wrap items-center gap-3 p-5">
+      <section className="hv-panel-sci flex flex-wrap items-center gap-3 p-5">
         <div className="flex-1 text-sm leading-6 text-muted">
           {lastRun ? <span>上次扫描：<span className="font-mono text-cyan-50">{formatDateTimeCN(lastRun)}</span></span> : <span>还没有扫描记录。</span>}
         </div>
         <form action={runScanAction}>
-          <button type="submit" className="hv-action px-4 text-sm">
+          <button type="submit" className="hv-action px-4 text-sm font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_16px_rgba(103,232,249,0.25)]">
             <Play className="h-4 w-4" aria-hidden="true" />
             立即扫描
           </button>
         </form>
         {list.length > 0 ? (
           <form action={clearAllAction}>
-            <button type="submit" className="inline-flex min-h-11 items-center gap-2 border border-red-400/35 bg-red-500/10 px-3 text-sm text-red-100 transition hover:border-red-300 hover:bg-red-500/15">
+            <button type="submit" className="inline-flex min-h-11 items-center gap-2 border border-red-400/35 bg-red-500/10 px-3 text-sm text-red-100 transition hover:border-red-300 hover:bg-red-500/15 font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)]">
               <Trash2 className="h-4 w-4" aria-hidden="true" />
               清空历史
             </button>
@@ -76,16 +80,16 @@ export default async function AdminLinkCheckPage() {
       </section>
 
       {list.length === 0 ? (
-        <p className="hv-panel border-dashed p-8 text-center text-sm text-muted">还没有扫描记录。点上面「立即扫描」开始。</p>
+        <p className="hv-panel-sci border-dashed p-8 text-center text-sm text-muted">还没有扫描记录。点上面「立即扫描」开始。</p>
       ) : (
-        <div className="hv-panel overflow-x-auto p-0">
+        <div className="hv-panel-sci overflow-x-auto p-0">
           <table className="w-full min-w-[680px] text-sm">
-            <thead className="border-b border-cyan-200/10 bg-cyan-300/[0.04] text-left text-xs uppercase text-cyan-100/65">
+            <thead className="border-b border-cyan-400/20 bg-cyan-400/[0.06] text-left font-mono text-xs uppercase text-cyan-100/65">
               <tr>
-                <th className="w-20 px-3 py-3 font-medium">状态</th>
-                <th className="px-3 py-3 font-medium">URL / 错误</th>
-                <th className="px-3 py-3 font-medium">出现于</th>
-                <th className="px-3 py-3 font-medium">最近检查</th>
+                <th className="w-20 px-3 py-3 font-medium">STATUS</th>
+                <th className="px-3 py-3 font-medium">URL / ERROR</th>
+                <th className="px-3 py-3 font-medium">USED_IN</th>
+                <th className="px-3 py-3 font-medium">LAST_CHECK</th>
                 <th className="px-3 py-3"></th>
               </tr>
             </thead>
@@ -93,9 +97,9 @@ export default async function AdminLinkCheckPage() {
               {list.map((r) => {
                 const badge = statusBadge(r.status, r.errorMessage);
                 return (
-                  <tr key={r.url} className="border-t border-cyan-200/10 transition hover:bg-cyan-300/[0.035]">
+                  <tr key={r.url} className="border-t border-cyan-400/15 transition hover:bg-cyan-400/[0.05]">
                     <td className="px-3 py-3">
-                      <span className={"inline-flex items-center border px-2 py-0.5 font-mono text-[11px] " + badge.cls} title={badge.hint}>
+                      <span className={"inline-flex items-center border px-2 py-0.5 font-mono text-[11px] clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)] " + badge.cls} title={badge.hint}>
                         {badge.label}
                       </span>
                     </td>
@@ -122,7 +126,7 @@ export default async function AdminLinkCheckPage() {
                           await deleteLinkAction(r.url);
                         }}
                       >
-                        <button type="submit" className="border border-red-400/35 bg-red-500/10 px-3 py-1 text-[11px] text-red-200 transition hover:border-red-300 hover:bg-red-500/15">
+                        <button type="submit" className="border border-red-400/35 bg-red-500/10 px-3 py-1 text-[11px] text-red-200 transition hover:border-red-300 hover:bg-red-500/15 font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]">
                           删除
                         </button>
                       </form>

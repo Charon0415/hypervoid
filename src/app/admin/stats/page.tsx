@@ -54,23 +54,27 @@ export default async function AdminStatsPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="hv-panel p-5 sm:p-6 flex items-center gap-3">
+      <header className="hv-panel-sci p-5 sm:p-6 flex items-center gap-3 relative overflow-hidden">
+        {/* Corner accents */}
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+
         <AdminBackLink href="/admin" label="后台" />
-        <h1 className="hv-title text-2xl font-black tracking-tight">数据看板</h1>
+        <h1 className="hv-title font-mono text-2xl font-black tracking-wider uppercase">ANALYTICS_DECK</h1>
       </header>
 
       <section className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
-        <BigStat label="已发布" value={stats.posts} />
-        <BigStat label="总浏览" value={stats.views} />
-        <BigStat label="总点赞" value={stats.likes} />
-        <BigStat label="订阅者" value={subs} />
-        <BigStat label="在线天数" value={stats.daysOnline} />
+        <BigStat label="PUBLISHED" value={stats.posts} />
+        <BigStat label="TOTAL_VIEWS" value={stats.views} />
+        <BigStat label="TOTAL_LIKES" value={stats.likes} />
+        <BigStat label="SUBSCRIBERS" value={subs} />
+        <BigStat label="DAYS_ONLINE" value={stats.daysOnline} />
       </section>
 
       {/* Monthly bar chart — pure CSS */}
-      <section className="hv-panel p-4 sm:p-5">
-        <h2 className="hv-title text-sm font-semibold tracking-normal">
-          <BarChart3 className="mr-1 inline h-4 w-4 text-cyan-100/70" aria-hidden />近 12 个月发文趋势
+      <section className="hv-panel-sci p-4 sm:p-5">
+        <h2 className="hv-title font-mono text-sm font-semibold tracking-wider uppercase">
+          <BarChart3 className="mr-1 inline h-4 w-4 text-cyan-100/70" aria-hidden />MONTHLY_TREND
         </h2>
         <div className="mt-4 flex h-36 items-end gap-1 sm:mt-5 sm:h-44 sm:gap-2">
           {monthly.map((m) => {
@@ -85,16 +89,16 @@ export default async function AdminStatsPage() {
                 title={`${m.month} · ${m.count} 篇`}
               >
                 <div
-                  className={`w-full transition ${
+                  className={`w-full transition clip-path-[polygon(0_0,calc(100%-2px)_0,100%_2px,100%_100%,0_100%)] ${
                     m.count === 0
                       ? "bg-cyan-50/[0.04]"
                       : isThisMonth
-                        ? "bg-cyan-100/80"
-                        : "bg-cyan-100/45 group-hover:bg-cyan-100/75"
+                        ? "bg-cyan-400/80 shadow-[0_0_12px_rgba(103,232,249,0.4)]"
+                        : "bg-cyan-100/45 group-hover:bg-cyan-100/75 group-hover:shadow-[0_0_8px_rgba(103,232,249,0.3)]"
                   }`}
                   style={{ height: `${Math.max(2, heightPct)}%` }}
                 />
-                <span className="text-[8px] font-mono text-cyan-50/50 sm:text-[9px]">
+                <span className="text-[8px] font-mono text-cyan-50/50 sm:text-[9px] uppercase">
                   {m.month.slice(5)}
                 </span>
                 <span className="absolute -top-5 hidden font-mono text-[10px] text-foreground/80 group-hover:block">
@@ -138,15 +142,15 @@ function VisitorList({
   total: number;
 }) {
   return (
-    <section className="hv-panel p-4 sm:p-5">
+    <section className="hv-panel-sci p-4 sm:p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-1.5">
-        <h2 className="hv-title text-sm font-semibold tracking-normal">
-          访客记录
+        <h2 className="hv-title font-mono text-sm font-semibold tracking-wider uppercase">
+          VISITOR_LOG
           <span className="ml-2 font-mono text-xs font-normal text-cyan-50/50">
-            共 {total} 个 GitHub 账号
+            {total} ACCOUNTS
           </span>
         </h2>
-        <p className="text-[10px] text-cyan-50/50">按最近登录时间排序 · 上限 50</p>
+        <p className="font-mono text-[10px] text-cyan-50/50 uppercase">RECENT 50</p>
       </div>
 
       {rows.length === 0 ? (
@@ -158,7 +162,7 @@ function VisitorList({
           {rows.map((v) => (
             <li
               key={v.githubLogin}
-              className="flex items-center gap-3 rounded-md px-2 py-2 transition hover:bg-white/[0.045] sm:py-1.5"
+              className="flex items-center gap-3 px-2 py-2 transition hover:bg-cyan-400/5 sm:py-1.5 clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)] border border-transparent hover:border-cyan-400/20"
             >
               {v.avatarUrl ? (
                 <Image
@@ -168,10 +172,10 @@ function VisitorList({
                   height={72}
                   sizes="36px"
                   loading="lazy"
-                  className="h-9 w-9 shrink-0 border border-cyan-100/18 sm:h-7 sm:w-7"
+                  className="h-9 w-9 shrink-0 border border-cyan-100/18 sm:h-7 sm:w-7 clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]"
                 />
               ) : (
-                <div className="h-9 w-9 shrink-0 border border-cyan-100/18 bg-cyan-50/[0.055] sm:h-7 sm:w-7" />
+                <div className="h-9 w-9 shrink-0 border border-cyan-100/18 bg-cyan-50/[0.055] sm:h-7 sm:w-7 clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]" />
               )}
               <div className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2">
                 <span className="truncate text-sm">
@@ -185,7 +189,7 @@ function VisitorList({
                 >
                   @{v.githubLogin}
                 </Link>
-                <time className="font-mono text-[10px] text-cyan-50/40 sm:hidden">
+                <time className="font-mono text-[10px] text-cyan-50/40 sm:hidden uppercase">
                   {formatDateTimeCN(v.lastSeenAt)}
                 </time>
               </div>
@@ -193,7 +197,7 @@ function VisitorList({
                 <span className="font-bold">{v.loginCount}</span>
                 <span className="ml-0.5 text-cyan-50/50">次</span>
               </span>
-              <time className="hidden shrink-0 font-mono text-[10px] text-cyan-50/50 sm:inline">
+              <time className="hidden shrink-0 font-mono text-[10px] text-cyan-50/50 sm:inline uppercase">
                 {formatDateTimeCN(v.lastSeenAt)}
               </time>
             </li>
@@ -206,8 +210,11 @@ function VisitorList({
 
 function BigStat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="hv-panel p-3 sm:p-4">
-      <p className="hv-kicker sm:text-[11px]">
+    <div className="hv-panel-sci p-3 sm:p-4 relative overflow-hidden">
+      {/* Corner accent */}
+      <div className="absolute right-0 top-0 h-6 w-6 border-r border-t border-cyan-400/40 pointer-events-none" />
+
+      <p className="hv-kicker sm:text-[11px] uppercase">
         {label}
       </p>
       <p className="mt-1 font-mono text-xl font-bold leading-tight text-cyan-50 sm:text-2xl lg:text-3xl">
@@ -235,8 +242,8 @@ function TopList({
   metricLabel: string;
 }) {
   return (
-    <div className="hv-panel p-4 sm:p-5">
-      <h2 className="hv-title text-sm font-semibold tracking-normal">{title}</h2>
+    <div className="hv-panel-sci p-4 sm:p-5">
+      <h2 className="hv-title font-mono text-sm font-semibold tracking-wider uppercase">{title}</h2>
       {rows.length === 0 ? (
         <p className="mt-3 text-sm text-cyan-50/50">还没有数据。</p>
       ) : (
@@ -244,7 +251,7 @@ function TopList({
           {rows.map((r, i) => (
             <li
               key={r.slug}
-              className="flex items-baseline gap-2 rounded-md px-2 py-1.5 transition hover:bg-white/[0.045] sm:gap-3"
+              className="flex items-baseline gap-2 px-2 py-1.5 transition hover:bg-cyan-400/5 sm:gap-3 clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)] border border-transparent hover:border-cyan-400/20"
             >
               <span className="w-5 shrink-0 text-right font-mono text-xs text-cyan-50/50">
                 {i + 1}
@@ -261,7 +268,7 @@ function TopList({
                 <span className="font-bold">{r[metricKey].toLocaleString("en-US")}</span>{" "}
                 <span className="text-cyan-50/50">{metricLabel}</span>
               </span>
-              <time className="hidden shrink-0 font-mono text-[10px] text-cyan-50/50 sm:inline">
+              <time className="hidden shrink-0 font-mono text-[10px] text-cyan-50/50 sm:inline uppercase">
                 {r.publishAt ? formatDateCN(r.publishAt) : "—"}
               </time>
             </li>

@@ -20,9 +20,15 @@ export default async function AdminThemesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-center gap-3">
+      <header className="hv-panel-sci relative overflow-hidden flex items-center gap-3 p-5 sm:p-6">
+        {/* Corner accents */}
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+        {/* Pulse beacon */}
+        <span className="absolute right-5 top-5 h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
+
         <AdminBackLink href="/admin" label="后台" />
-        <h1 className="text-2xl font-bold tracking-tight">主题定制</h1>
+        <h1 className="hv-title font-mono text-2xl font-bold tracking-wider uppercase">THEME_EDITOR</h1>
       </header>
 
       <p className="text-sm text-muted">

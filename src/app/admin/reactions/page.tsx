@@ -32,23 +32,28 @@ export default async function AdminReactionsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="hv-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+      <header className="hv-panel-sci relative overflow-hidden flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+        {/* Corner accents */}
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+
         <div className="space-y-3">
           <AdminBackLink href="/admin" label="后台" />
           <div>
-            <p className="hv-kicker">Reaction Telemetry</p>
-            <h1 className="hv-title mt-1 text-2xl font-semibold">反应数据</h1>
+            <p className="hv-kicker uppercase">REACTION_TELEMETRY</p>
+            <h1 className="hv-title mt-1 font-mono text-2xl font-semibold tracking-wider uppercase">反应数据</h1>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <span className="hv-chip">反应 {grandTotal}</span>
-          <span className="hv-chip">文章 {rows.length}</span>
+          <span className="hv-chip-sci">REACTIONS {grandTotal}</span>
+          <span className="hv-chip-sci">POSTS {rows.length}</span>
         </div>
       </header>
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-5">
         {REACTION_EMOJIS.map((e) => (
-          <div key={e.key} className="hv-panel p-4 text-center">
+          <div key={e.key} className="hv-panel-sci relative overflow-hidden p-4 text-center">
+            <div className="absolute right-0 top-0 h-6 w-6 border-r border-t border-cyan-400/40 pointer-events-none" />
             <p className="text-2xl leading-none">{e.glyph}</p>
             <p className="mt-2 font-mono text-xl font-semibold leading-tight text-cyan-50">
               {totals[e.key].toLocaleString("en-US")}
@@ -59,26 +64,26 @@ export default async function AdminReactionsPage() {
       </section>
 
       {rows.length === 0 ? (
-        <p className="hv-panel border-dashed p-8 text-center text-sm text-muted">
+        <p className="hv-panel-sci border-dashed p-8 text-center text-sm text-muted">
           还没有反应数据。
         </p>
       ) : (
-        <div className="hv-panel overflow-x-auto p-0">
+        <div className="hv-panel-sci overflow-x-auto p-0">
           <table className="w-full min-w-[560px] text-sm">
-            <thead className="border-b border-cyan-200/10 bg-cyan-300/[0.04] text-left text-xs uppercase text-cyan-100/65">
+            <thead className="border-b border-cyan-400/20 bg-cyan-400/[0.06] text-left font-mono text-xs uppercase text-cyan-100/65">
               <tr>
-                <th className="px-4 py-3 font-medium">文章</th>
+                <th className="px-4 py-3 font-medium">POST</th>
                 {REACTION_EMOJIS.map((e) => (
                   <th key={e.key} className="px-2 py-3 text-center font-medium" title={e.label}>
                     {e.glyph}
                   </th>
                 ))}
-                <th className="px-4 py-3 text-right font-medium">合计</th>
+                <th className="px-4 py-3 text-right font-medium">TOTAL</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((r) => (
-                <tr key={r.slug} className="border-t border-cyan-200/10 transition hover:bg-cyan-300/[0.035]">
+                <tr key={r.slug} className="border-t border-cyan-400/15 transition hover:bg-cyan-400/[0.05]">
                   <td className="max-w-[20rem] truncate px-4 py-2">
                     <Link href={"/posts/" + r.slug} className="font-medium text-cyan-50 hover:text-white" title={r.title}>
                       {r.title}

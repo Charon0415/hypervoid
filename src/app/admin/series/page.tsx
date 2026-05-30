@@ -37,11 +37,15 @@ export default async function AdminSeriesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="hv-panel p-5">
+      <header className="hv-panel-sci p-5 relative overflow-hidden">
+        {/* Corner accents */}
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+
         <AdminBackLink href="/admin" label="后台" />
-        <p className="hv-kicker mt-4">Series Registry</p>
-        <h1 className="hv-title mt-1 text-2xl font-semibold">专题合集</h1>
-        <p className="mt-2 text-sm text-muted">共 {series.length} 个系列。管理文章专题、分组和排序。</p>
+        <p className="hv-kicker mt-4 uppercase">SERIES_REGISTRY</p>
+        <h1 className="hv-title mt-1 font-mono text-2xl font-semibold tracking-wider uppercase">专题合集</h1>
+        <p className="mt-2 font-mono text-sm text-muted uppercase">{series.length} SERIES</p>
       </header>
 
       <p className="text-sm text-muted">
@@ -49,54 +53,54 @@ export default async function AdminSeriesPage() {
       </p>
 
       {/* Create new series */}
-      <section className="hv-panel p-5">
-        <h2 className="text-sm font-semibold tracking-tight text-cyan-50">创建新系列</h2>
+      <section className="hv-panel-sci p-5">
+        <h2 className="font-mono text-sm font-semibold tracking-wider text-cyan-50 uppercase">CREATE_NEW_SERIES</h2>
         <form action={createSeriesAction} className="mt-3 grid gap-3 sm:grid-cols-2">
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-muted">系列名称 *</span>
+            <span className="font-mono text-xs text-muted uppercase">SERIES_NAME *</span>
             <input
               type="text"
               name="name"
               required
               placeholder="如：Next.js 实战"
-              className="hv-input min-h-11 px-3 text-sm"
+              className="hv-input min-h-11 px-3 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-muted">URL slug *</span>
+            <span className="font-mono text-xs text-muted uppercase">URL_SLUG *</span>
             <input
               type="text"
               name="slug"
               required
               pattern="[a-z0-9][a-z0-9-]*"
               placeholder="如：nextjs-practice"
-              className="hv-input min-h-11 px-3 font-mono text-sm"
+              className="hv-input min-h-11 px-3 font-mono text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
             />
           </label>
           <label className="flex flex-col gap-1 sm:col-span-2">
-            <span className="text-xs text-muted">简介（可选）</span>
+            <span className="font-mono text-xs text-muted uppercase">DESCRIPTION</span>
             <input
               type="text"
               name="description"
               placeholder="一句话描述这个系列"
-              className="hv-input min-h-11 px-3 text-sm"
+              className="hv-input min-h-11 px-3 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
             />
           </label>
           <label className="flex flex-col gap-1 sm:col-span-2">
-            <span className="text-xs text-muted">封面图 URL（可选）</span>
+            <span className="font-mono text-xs text-muted uppercase">COVER_URL</span>
             <input
               type="text"
               name="cover"
               placeholder="/images/series-cover.jpg 或外部 URL"
-              className="hv-input min-h-11 px-3 text-sm"
+              className="hv-input min-h-11 px-3 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
             />
           </label>
           <div className="sm:col-span-2">
             <button
               type="submit"
-              className="hv-action px-5 text-sm font-medium"
+              className="hv-action px-5 text-sm font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_rgba(103,232,249,0.3)]"
             >
-              创建系列
+              CREATE
             </button>
           </div>
         </form>
@@ -104,7 +108,7 @@ export default async function AdminSeriesPage() {
 
       {/* Series list */}
       {series.length === 0 ? (
-        <p className="hv-panel border-dashed p-8 text-center text-sm text-muted">
+        <p className="hv-panel-sci border-dashed p-8 text-center text-sm text-muted">
           还没有任何系列。使用上方表单创建第一个。
         </p>
       ) : (
@@ -126,76 +130,76 @@ function SeriesCard({
   unassignedPosts: Awaited<ReturnType<typeof listAllPosts>>;
 }) {
   return (
-    <div className="hv-panel p-5">
+    <div className="hv-panel-sci p-5">
       {/* Header with edit form */}
       <details className="group">
         <summary className="flex cursor-pointer items-center justify-between gap-3">
           <div className="flex items-baseline gap-2">
-            <h2 className="text-base font-semibold tracking-tight text-cyan-50">{s.name}</h2>
+            <h2 className="font-mono text-base font-semibold tracking-wider text-cyan-50 uppercase">{s.name}</h2>
             <span className="font-mono text-xs text-muted">/{s.slug}</span>
-            <span className="font-mono text-xs text-muted">{s.count} 篇</span>
+            <span className="hv-chip-sci">{s.count} 篇</span>
           </div>
           <div className="flex items-center gap-2">
             <Link
               href={`/series/${encodeURIComponent(s.name)}`}
-              className="hv-action min-h-0 px-2.5 py-1 text-[11px]"
+              className="hv-action min-h-0 px-2.5 py-1 text-[11px] font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
             >
-              前台查看
+              VIEW
             </Link>
-            <span className="text-[11px] text-muted group-open:hidden">展开编辑</span>
-            <span className="hidden text-[11px] text-muted group-open:inline">收起</span>
+            <span className="font-mono text-[11px] text-muted group-open:hidden uppercase">EXPAND</span>
+            <span className="hidden font-mono text-[11px] text-muted group-open:inline uppercase">COLLAPSE</span>
           </div>
         </summary>
 
         <form action={updateSeriesAction} className="mt-4 grid gap-3 sm:grid-cols-2">
           <input type="hidden" name="oldSlug" value={s.slug} />
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-muted">系列名称</span>
+            <span className="font-mono text-xs text-muted uppercase">SERIES_NAME</span>
             <input
               type="text"
               name="name"
               defaultValue={s.name}
               required
-              className="hv-input min-h-11 px-3 text-sm"
+              className="hv-input min-h-11 px-3 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-muted">URL slug</span>
+            <span className="font-mono text-xs text-muted uppercase">URL_SLUG</span>
             <input
               type="text"
               name="slug"
               defaultValue={s.slug}
               required
               pattern="[a-z0-9][a-z0-9-]*"
-              className="hv-input min-h-11 px-3 font-mono text-sm"
+              className="hv-input min-h-11 px-3 font-mono text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
             />
           </label>
           <label className="flex flex-col gap-1 sm:col-span-2">
-            <span className="text-xs text-muted">简介</span>
+            <span className="font-mono text-xs text-muted uppercase">DESCRIPTION</span>
             <input
               type="text"
               name="description"
               defaultValue={s.description ?? ""}
               placeholder="一句话描述"
-              className="hv-input min-h-11 px-3 text-sm"
+              className="hv-input min-h-11 px-3 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
             />
           </label>
           <label className="flex flex-col gap-1 sm:col-span-2">
-            <span className="text-xs text-muted">封面图 URL</span>
+            <span className="font-mono text-xs text-muted uppercase">COVER_URL</span>
             <input
               type="text"
               name="cover"
               defaultValue={s.cover ?? ""}
               placeholder="/images/cover.jpg"
-              className="hv-input min-h-11 px-3 text-sm"
+              className="hv-input min-h-11 px-3 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
             />
           </label>
           <div className="flex gap-2 sm:col-span-2">
             <button
               type="submit"
-              className="hv-action px-4 text-sm font-medium"
+              className="hv-action px-4 text-sm font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)] hover:shadow-[0_0_16px_rgba(103,232,249,0.25)]"
             >
-              保存修改
+              SAVE
             </button>
             <form
               action={async () => {
@@ -205,9 +209,9 @@ function SeriesCard({
             >
               <button
                 type="submit"
-                className="border border-red-400/35 bg-red-500/10 px-4 py-2 text-sm text-red-200 transition hover:border-red-300 hover:bg-red-500/15"
+                className="border border-red-400/35 bg-red-500/10 px-4 py-2 text-sm text-red-200 transition hover:border-red-300 hover:bg-red-500/15 font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
               >
-                删除系列
+                DELETE
               </button>
             </form>
           </div>
@@ -216,7 +220,7 @@ function SeriesCard({
 
       {/* Posts in this series */}
       <div className="mt-4">
-        <h3 className="text-xs font-medium text-muted">系列内文章</h3>
+        <h3 className="font-mono text-xs font-medium text-muted uppercase">POSTS_IN_SERIES</h3>
         {s.posts.length === 0 ? (
           <p className="mt-2 text-xs text-muted">暂无文章。在下方添加。</p>
         ) : (
@@ -224,9 +228,9 @@ function SeriesCard({
             {s.posts.map((p, i) => (
               <li
                 key={p.slug}
-                className="flex items-center gap-2 border border-transparent px-2 py-1.5 text-sm transition hover:border-cyan-100/12 hover:bg-cyan-300/[0.035]"
+                className="flex items-center gap-2 border border-transparent px-2 py-1.5 text-sm transition hover:border-cyan-400/20 hover:bg-cyan-400/5 clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
               >
-                <span className="grid h-5 w-5 shrink-0 place-items-center border border-cyan-100/20 bg-cyan-300/10 font-mono text-[10px] text-cyan-100">
+                <span className="grid h-5 w-5 shrink-0 place-items-center border border-cyan-400/30 bg-cyan-400/10 font-mono text-[10px] text-cyan-100 clip-path-[polygon(0_0,calc(100%-3px)_0,100%_3px,100%_100%,0_100%)]">
                   {p.seriesOrder ?? i + 1}
                 </span>
                 <Link
@@ -241,10 +245,10 @@ function SeriesCard({
                 }}>
                   <button
                     type="submit"
-                    className="shrink-0 border border-red-400/25 bg-red-500/5 px-1.5 py-0.5 text-[10px] text-red-200 transition hover:border-red-300"
+                    className="shrink-0 border border-red-400/25 bg-red-500/5 px-1.5 py-0.5 font-mono text-[10px] text-red-200 transition hover:border-red-300 uppercase clip-path-[polygon(0_0,calc(100%-3px)_0,100%_3px,100%_100%,0_100%)]"
                     title="从系列中移除"
                   >
-                    移除
+                    REMOVE
                   </button>
                 </form>
               </li>
@@ -266,7 +270,7 @@ function SeriesCard({
               name="postSlug"
               required
               defaultValue=""
-              className="hv-input flex-1 px-3 py-1.5 text-sm"
+              className="hv-input flex-1 px-3 py-1.5 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
             >
               <option value="" disabled>
                 添加文章到此系列…
@@ -279,9 +283,9 @@ function SeriesCard({
             </select>
             <button
               type="submit"
-              className="hv-action min-h-0 px-3 py-1.5 text-sm"
+              className="hv-action min-h-0 px-3 py-1.5 text-sm font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
             >
-              添加
+              ADD
             </button>
           </form>
         )}

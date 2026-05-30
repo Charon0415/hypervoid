@@ -92,10 +92,14 @@ export default async function AdminEffectsPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="hv-panel p-5">
+      <header className="hv-panel-sci relative overflow-hidden p-5">
+        {/* Corner accents */}
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+
         <AdminBackLink href="/admin" label="后台" />
-        <p className="hv-kicker mt-4">Visual Effects</p>
-        <h1 className="hv-title mt-1 text-2xl font-semibold">视觉特效</h1>
+        <p className="hv-kicker mt-4 uppercase">VISUAL_EFFECTS</p>
+        <h1 className="hv-title mt-1 font-mono text-2xl font-semibold tracking-wider uppercase">视觉特效</h1>
       </header>
 
       <p className="text-sm text-muted">
@@ -110,10 +114,10 @@ export default async function AdminEffectsPage() {
             <form key={effect.key} action={toggleEffect.bind(null, effect.key, values[i])}>
               <button
                 type="submit"
-                className={`flex w-full items-center gap-4 hv-panel p-5 text-left transition ${
+                className={`flex w-full items-center gap-4 hv-panel-sci p-5 text-left transition ${
                   isOn
-                    ? "border-cyan-200/55 bg-cyan-300/10 shadow-sm"
-                    : "border-cyan-100/16 bg-cyan-300/6 hover:border-cyan-100/40"
+                    ? "border-cyan-400/40 bg-cyan-400/12 shadow-[0_0_18px_rgba(103,232,249,0.18)]"
+                    : "hover:border-cyan-400/40"
                 }`}
               >
                 <div className="shrink-0">
@@ -121,18 +125,19 @@ export default async function AdminEffectsPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <h2 className="text-sm font-semibold tracking-tight">
+                    <h2 className="font-mono text-sm font-semibold tracking-wide uppercase">
                       {effect.name}
                     </h2>
                     <span
-                      className={`shrink-0  px-2 py-0.5 text-[10px] font-medium ${
+                      className={`shrink-0 px-2 py-0.5 font-mono text-[10px] font-medium uppercase clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)] ${
                         isOn
-                          ? "bg-cyan-300/15 text-cyan-100"
+                          ? "bg-cyan-400/15 text-cyan-100"
                           : "bg-muted/30 text-muted"
                       }`}
                     >
-                      {isOn ? "已开启" : "已关闭"}
+                      {isOn ? "ONLINE" : "OFFLINE"}
                     </span>
+                    {isOn ? <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" /> : null}
                   </div>
                   <p className="mt-1 text-xs text-muted leading-relaxed">
                     {effect.desc}
@@ -145,7 +150,7 @@ export default async function AdminEffectsPage() {
       </div>
 
       <div className="text-xs text-muted">
-        <p className="font-medium">说明</p>
+        <p className="font-mono font-medium uppercase">说明</p>
         <ul className="mt-1.5 list-disc space-y-0.5 pl-5">
           <li>所有特效默认关闭，需手动开启。</li>
           <li>设置保存在数据库中，切换后刷新前端即可生效，无需重新部署。</li>

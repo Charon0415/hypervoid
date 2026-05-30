@@ -22,14 +22,14 @@ function hostnameOf(rawUrl: string): string {
 }
 
 function statusBadge(status: string) {
-  const base = "inline-flex border px-2 py-0.5 font-mono text-[10px] font-medium";
+  const base = "inline-flex border px-2 py-0.5 font-mono text-[10px] font-medium uppercase clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]";
   switch (status) {
     case "verified":
-      return <span className={base + " border-emerald-300/35 bg-emerald-400/10 text-emerald-100"}>已验证</span>;
+      return <span className={base + " border-emerald-300/35 bg-emerald-400/10 text-emerald-100"}>VERIFIED</span>;
     case "pending":
-      return <span className={base + " border-amber-300/35 bg-amber-400/10 text-amber-100"}>待验证</span>;
+      return <span className={base + " border-amber-300/35 bg-amber-400/10 text-amber-100"}>PENDING</span>;
     case "rejected":
-      return <span className={base + " border-red-300/35 bg-red-500/10 text-red-100"}>已拒绝</span>;
+      return <span className={base + " border-red-300/35 bg-red-500/10 text-red-100"}>REJECTED</span>;
     default:
       return <span className={base + " border-cyan-100/20 bg-cyan-300/10 text-muted"}>{status}</span>;
   }
@@ -50,12 +50,16 @@ export default async function AdminWebmentionsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="hv-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+      <header className="hv-panel-sci relative overflow-hidden flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+        {/* Corner accents */}
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+
         <div className="space-y-3">
           <AdminBackLink href="/admin" label="后台" />
           <div>
-            <p className="hv-kicker">Webmention Gate</p>
-            <h1 className="hv-title mt-1 text-2xl font-semibold">Webmention 审核</h1>
+            <p className="hv-kicker uppercase">WEBMENTION_GATE</p>
+            <h1 className="hv-title mt-1 font-mono text-2xl font-semibold tracking-wider uppercase">Webmention 审核</h1>
           </div>
         </div>
       </header>
@@ -68,22 +72,22 @@ export default async function AdminWebmentionsPage() {
       </section>
 
       {list.length === 0 ? (
-        <p className="hv-panel border-dashed p-8 text-center text-sm text-muted">
+        <p className="hv-panel-sci border-dashed p-8 text-center text-sm text-muted">
           还没有 Webmention 进来。
         </p>
       ) : (
         <ul className="flex flex-col gap-3">
           {list.map((w) => (
-            <li key={w.id} className={"hv-panel p-4 " + (w.hidden ? "opacity-60" : "")}>
+            <li key={w.id} className={"hv-panel-sci p-4 " + (w.hidden ? "opacity-60" : "")}>
               <header className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-2">
                   {statusBadge(w.status)}
                   {w.hidden ? (
-                    <span className="border border-zinc-300/25 bg-zinc-400/10 px-2 py-0.5 text-[10px] text-zinc-200">
-                      已隐藏
+                    <span className="border border-zinc-300/25 bg-zinc-400/10 px-2 py-0.5 font-mono text-[10px] uppercase text-zinc-200 clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]">
+                      HIDDEN
                     </span>
                   ) : null}
-                  <span className="font-mono text-[10px] text-muted">
+                  <span className="font-mono text-[10px] text-muted uppercase">
                     {formatDateTimeCN(w.createdAt)}
                   </span>
                 </div>
@@ -94,7 +98,7 @@ export default async function AdminWebmentionsPage() {
                       await toggleHiddenAction(w.id, !w.hidden);
                     }}
                   >
-                    <button type="submit" className="hv-action min-h-0 px-3 py-1 text-[11px]">
+                    <button type="submit" className="hv-action min-h-0 px-3 py-1 text-[11px] font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]">
                       {w.hidden ? "显示" : "隐藏"}
                     </button>
                   </form>
@@ -104,7 +108,7 @@ export default async function AdminWebmentionsPage() {
                       await deleteAction(w.id);
                     }}
                   >
-                    <button type="submit" className="border border-red-400/35 bg-red-500/10 px-3 py-1 text-[11px] text-red-200 transition hover:border-red-300 hover:bg-red-500/15">
+                    <button type="submit" className="border border-red-400/35 bg-red-500/10 px-3 py-1 text-[11px] text-red-200 transition hover:border-red-300 hover:bg-red-500/15 font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]">
                       删除
                     </button>
                   </form>
@@ -136,8 +140,9 @@ export default async function AdminWebmentionsPage() {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="hv-panel p-4">
-      <p className="hv-kicker">{label}</p>
+    <div className="hv-panel-sci relative overflow-hidden p-4">
+      <div className="absolute right-0 top-0 h-6 w-6 border-r border-t border-cyan-400/40 pointer-events-none" />
+      <p className="hv-kicker uppercase">{label}</p>
       <p className="mt-2 font-mono text-2xl font-semibold leading-tight text-cyan-50">
         {value.toLocaleString("en-US")}
       </p>

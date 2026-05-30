@@ -22,10 +22,14 @@ export default async function AdminResourcesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="hv-panel p-5">
+      <header className="hv-panel-sci relative overflow-hidden p-5">
+        {/* Corner accents */}
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+
         <AdminBackLink href="/admin" label="后台" />
-        <p className="hv-kicker mt-4">Resource Directory</p>
-        <h1 className="hv-title mt-1 text-2xl font-semibold">资源库管理</h1>
+        <p className="hv-kicker mt-4 uppercase">RESOURCE_DIRECTORY</p>
+        <h1 className="hv-title mt-1 font-mono text-2xl font-semibold tracking-wider uppercase">资源库管理</h1>
         <p className="mt-2 text-sm text-muted">共 {list.length} 条 · {grouped.size} 类。按分类分组展示，按排序升序。</p>
       </header>
 
@@ -33,79 +37,79 @@ export default async function AdminResourcesPage() {
         分享收藏的链接、软件、工具。<code>/resources</code> 按 <code>分类</code> 分组展示，按 <code>排序</code> 升序。
       </p>
 
-      <section className="hv-panel p-5">
-        <div className="flex items-center gap-2"><Plus className="h-4 w-4 text-cyan-100/70" aria-hidden="true" /><h2 className="text-sm font-semibold tracking-tight text-cyan-50">新建资源</h2></div>
+      <section className="hv-panel-sci p-5">
+        <div className="flex items-center gap-2"><Plus className="h-4 w-4 text-cyan-100/70" aria-hidden="true" /><h2 className="font-mono text-sm font-semibold tracking-wider uppercase text-cyan-50">NEW_RESOURCE</h2></div>
         <form
           action={createAction}
           className="mt-3 grid gap-3 sm:grid-cols-[1.4fr_2fr_1fr_0.6fr_0.6fr_auto] sm:items-end"
         >
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-muted">标题</span>
+            <span className="font-mono text-xs uppercase text-muted">TITLE</span>
             <input
               type="text"
               name="title"
               required
               placeholder="Figma"
-              className="hv-input min-h-11 px-3 text-sm"
+              className="hv-input min-h-11 px-3 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-muted">URL</span>
+            <span className="font-mono text-xs uppercase text-muted">URL</span>
             <input
               type="url"
               name="url"
               required
               placeholder="https://..."
-              className="hv-input min-h-11 px-3 text-sm"
+              className="hv-input min-h-11 px-3 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-muted">分类</span>
+            <span className="font-mono text-xs uppercase text-muted">CATEGORY</span>
             <input
               type="text"
               name="category"
               placeholder="设计 / 开发 / 软件"
-              className="hv-input min-h-11 px-3 text-sm"
+              className="hv-input min-h-11 px-3 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-muted">图标</span>
+            <span className="font-mono text-xs uppercase text-muted">ICON</span>
             <input
               type="text"
               name="icon"
               placeholder="🎨"
-              className="hv-input min-h-11 px-3 text-sm"
+              className="hv-input min-h-11 px-3 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-muted">排序</span>
+            <span className="font-mono text-xs uppercase text-muted">SORT</span>
             <input
               type="number"
               name="sortOrder"
               defaultValue={0}
-              className="hv-input min-h-11 w-full px-3 text-sm"
+              className="hv-input min-h-11 w-full px-3 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
             />
           </label>
           <button
             type="submit"
-            className="hv-action px-4 text-sm font-medium"
+            className="hv-action px-4 text-sm font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_16px_rgba(103,232,249,0.25)]"
           >
             创建
           </button>
           <label className="flex flex-col gap-1 sm:col-span-full">
-            <span className="text-xs text-muted">描述（可选）</span>
+            <span className="font-mono text-xs uppercase text-muted">DESCRIPTION（可选）</span>
             <input
               type="text"
               name="description"
               placeholder="一句话说说这是什么"
-              className="hv-input min-h-11 px-3 text-sm"
+              className="hv-input min-h-11 px-3 text-sm clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
             />
           </label>
         </form>
       </section>
 
       {list.length === 0 ? (
-        <p className="hv-panel border-dashed p-8 text-center text-sm text-muted">
+        <p className="hv-panel-sci border-dashed p-8 text-center text-sm text-muted">
           还没有资源。
         </p>
       ) : (
@@ -113,9 +117,9 @@ export default async function AdminResourcesPage() {
           {[...grouped.entries()].map(([category, items]) => (
             <section
               key={category}
-              className="hv-panel p-5"
+              className="hv-panel-sci p-5"
             >
-              <h3 className="mb-3 text-sm font-semibold tracking-tight text-cyan-50">
+              <h3 className="mb-3 font-mono text-sm font-semibold tracking-wider uppercase text-cyan-50">
                 {category}{" "}
                 <span className="ml-1 text-xs text-muted">{items.length}</span>
               </h3>
@@ -123,10 +127,10 @@ export default async function AdminResourcesPage() {
                 {items.map((r) => (
                   <details
                     key={r.id}
-                    className="group border border-cyan-100/12 bg-black/20"
+                    className="group border border-cyan-400/15 bg-black/20 clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)]"
                   >
                     <summary className="flex cursor-pointer list-none items-center gap-3 px-3 py-2 text-sm">
-                      <span className="grid h-8 w-8 shrink-0 place-items-center border border-cyan-100/16 bg-cyan-300/10 text-sm leading-none">
+                      <span className="grid h-8 w-8 shrink-0 place-items-center border border-cyan-400/25 bg-cyan-400/10 text-sm leading-none clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]">
                         {r.icon || <Link2 className="h-4 w-4" aria-hidden="true" />}
                       </span>
                       <span className="flex-1 truncate">
@@ -138,8 +142,8 @@ export default async function AdminResourcesPage() {
                         ) : null}
                       </span>
                       {r.hidden ? (
-                        <span className="border border-amber-300/35 bg-amber-400/10 px-2 py-0.5 text-[10px] text-amber-100">
-                          隐藏
+                        <span className="border border-amber-300/35 bg-amber-400/10 px-2 py-0.5 font-mono text-[10px] uppercase text-amber-100 clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]">
+                          HIDDEN
                         </span>
                       ) : null}
                       <span className="font-mono text-[10px] text-muted">
@@ -149,7 +153,7 @@ export default async function AdminResourcesPage() {
                     </summary>
                     <form
                       action={updateAction}
-                      className="grid gap-2 border-t border-cyan-200/10 px-3 py-3 text-sm sm:grid-cols-[1.4fr_2fr_1fr_0.6fr_0.6fr]"
+                      className="grid gap-2 border-t border-cyan-400/15 px-3 py-3 text-sm sm:grid-cols-[1.4fr_2fr_1fr_0.6fr_0.6fr]"
                     >
                       <input type="hidden" name="id" value={r.id} />
                       <input
@@ -204,7 +208,7 @@ export default async function AdminResourcesPage() {
                         <div className="flex gap-2">
                           <button
                             type="submit"
-                            className="hv-action min-h-0 px-3 py-1 text-xs font-medium"
+                            className="hv-action min-h-0 px-3 py-1 text-xs font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
                           >
                             <Save className="h-3.5 w-3.5" aria-hidden="true" />保存
                           </button>
@@ -216,11 +220,11 @@ export default async function AdminResourcesPage() {
                         "use server";
                         await deleteAction(r.id);
                       }}
-                      className="border-t border-cyan-200/10 px-3 py-2 text-right"
+                      className="border-t border-cyan-400/15 px-3 py-2 text-right"
                     >
                       <button
                         type="submit"
-                        className="inline-flex items-center gap-1 border border-red-400/35 bg-red-500/10 px-3 py-1 text-[11px] text-red-200 transition hover:border-red-300 hover:bg-red-500/15"
+                        className="inline-flex items-center gap-1 border border-red-400/35 bg-red-500/10 px-3 py-1 text-[11px] text-red-200 transition hover:border-red-300 hover:bg-red-500/15 font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
                       >
                         <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />删除
                       </button>

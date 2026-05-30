@@ -68,19 +68,23 @@ export default async function AdminAuditPage(props: {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="hv-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+      <header className="hv-panel-sci relative overflow-hidden flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+        {/* Corner accents */}
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+
         <div className="space-y-3">
           <AdminBackLink href="/admin" label="后台" />
           <div>
-            <p className="hv-kicker">Immutable Audit Trail</p>
-            <h1 className="hv-title mt-1 text-2xl font-semibold">操作审计</h1>
+            <p className="hv-kicker uppercase">IMMUTABLE_AUDIT_TRAIL</p>
+            <h1 className="hv-title mt-1 font-mono text-2xl font-semibold tracking-wider uppercase">操作审计</h1>
             <p className="mt-2 max-w-2xl text-sm text-muted">所有改动数据库或外部资源的后台操作都会留痕。仅追加，不可编辑。</p>
           </div>
         </div>
-        <span className="hv-chip">{activeCount > 0 ? log.length + " 条过滤结果" : "最近 " + log.length + " 条"}</span>
+        <span className="hv-chip-sci">{activeCount > 0 ? log.length + " 条过滤结果" : "最近 " + log.length + " 条"}</span>
       </header>
 
-      <section className="hv-panel flex flex-col gap-3 p-4 text-xs">
+      <section className="hv-panel-sci flex flex-col gap-3 p-4 text-xs">
         <FilterRow label="操作人">
           <FilterChip href={buildHref({ actor: undefined })} active={!filters.actor} label="全部" />
           {facets.actors.map((a) => (
@@ -102,13 +106,13 @@ export default async function AdminAuditPage(props: {
       </section>
 
       {log.length === 0 ? (
-        <p className="hv-panel border-dashed p-8 text-center text-sm text-muted">还没有审计记录。</p>
+        <p className="hv-panel-sci border-dashed p-8 text-center text-sm text-muted">还没有审计记录。</p>
       ) : (
         <ol className="flex flex-col gap-2">
           {log.map((row) => (
-            <li key={row.id} className="hv-panel flex flex-wrap items-baseline gap-x-3 gap-y-2 px-3 py-2 text-sm">
+            <li key={row.id} className="hv-panel-sci flex flex-wrap items-baseline gap-x-3 gap-y-2 px-3 py-2 text-sm">
               <time className="shrink-0 font-mono text-[11px] text-muted">{formatDateTimeCN(row.createdAt)}</time>
-              <span className="shrink-0 border border-cyan-100/24 bg-cyan-300/10 px-2 py-0.5 text-[10px] font-medium text-cyan-100" title={row.action}>
+              <span className="shrink-0 border border-cyan-400/30 bg-cyan-400/10 px-2 py-0.5 font-mono text-[10px] font-medium text-cyan-100 clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]" title={row.action}>
                 {ACTION_LABEL[row.action] ?? row.action}
               </span>
               <span className="font-mono text-xs text-muted">@{row.actor}</span>
@@ -120,7 +124,7 @@ export default async function AdminAuditPage(props: {
               {row.details ? (
                 <details className="ml-auto text-[11px] text-muted">
                   <summary className="cursor-pointer hover:text-cyan-50">详情</summary>
-                  <pre className="mt-2 max-w-[min(42rem,80vw)] overflow-x-auto border border-cyan-100/12 bg-black/30 p-2 font-mono text-[10px] text-cyan-50/78">
+                  <pre className="mt-2 max-w-[min(42rem,80vw)] overflow-x-auto border border-cyan-400/15 bg-black/30 p-2 font-mono text-[10px] text-cyan-50/78">
                     {JSON.stringify(row.details, null, 2)}
                   </pre>
                 </details>
@@ -144,7 +148,7 @@ function FilterRow({ label, children }: { label: string; children: React.ReactNo
 
 function FilterChip({ href, active, label }: { href: string; active: boolean; label: string }) {
   return (
-    <Link href={href} className={(active ? "hv-chip-strong" : "hv-chip hover:border-cyan-100/40 hover:text-cyan-50") + " px-2.5 py-0.5 transition"}>
+    <Link href={href} className={(active ? "hv-chip-strong" : "hv-chip-sci hover:border-cyan-400/40 hover:text-cyan-50") + " px-2.5 py-0.5 transition"}>
       {label}
     </Link>
   );

@@ -21,25 +21,29 @@ export default async function AdminFriendsList() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="hv-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+      <header className="hv-panel-sci relative overflow-hidden flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+        {/* Corner accents */}
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+
         <div className="space-y-3">
           <AdminBackLink href="/admin" label="后台" />
           <div>
-            <p className="hv-kicker">Link Constellation</p>
-            <h1 className="hv-title mt-1 text-2xl font-semibold">友链管理</h1>
-            <p className="mt-2 text-sm text-muted">共 {friends.length} 个节点，待审核 {pending.length} 条。</p>
+            <p className="hv-kicker uppercase">LINK_CONSTELLATION</p>
+            <h1 className="hv-title mt-1 font-mono text-2xl font-semibold tracking-wider uppercase">友链管理</h1>
+            <p className="mt-2 font-mono text-sm text-muted uppercase">{friends.length} NODES · {pending.length} PENDING</p>
           </div>
         </div>
-        <Link href="/admin/friends/new" className="hv-action px-4 text-sm">
+        <Link href="/admin/friends/new" className="hv-action px-4 text-sm font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_rgba(103,232,249,0.3)]">
           <Plus className="h-4 w-4" aria-hidden="true" />
-          添加友链
+          ADD_LINK
         </Link>
       </header>
 
       {pending.length > 0 && <PendingApplications applications={pending} />}
 
       {friends.length === 0 ? (
-        <p className="hv-panel border-dashed p-8 text-center text-sm text-muted">
+        <p className="hv-panel-sci border-dashed p-8 text-center text-sm text-muted">
           还没有友链。
         </p>
       ) : (
@@ -48,7 +52,7 @@ export default async function AdminFriendsList() {
             <Link
               key={f.id}
               href={"/admin/friends/" + f.id + "/edit"}
-              className="hv-panel hv-panel-hover group flex gap-3 p-4"
+              className="hv-panel-sci group flex gap-3 p-4"
             >
               {f.avatar ? (
                 <Image
@@ -59,15 +63,15 @@ export default async function AdminFriendsList() {
                   sizes="48px"
                   loading="lazy"
                   unoptimized
-                  className="h-12 w-12 shrink-0 border border-cyan-100/20 object-cover"
+                  className="h-12 w-12 shrink-0 border border-cyan-400/30 object-cover clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]"
                 />
               ) : (
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center border border-cyan-100/20 bg-cyan-300/10 font-mono text-sm font-medium text-cyan-100">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center border border-cyan-400/30 bg-cyan-400/10 font-mono text-sm font-medium text-cyan-100 clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)]">
                   {f.name.slice(0, 1).toUpperCase()}
                 </div>
               )}
               <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold text-cyan-50 group-hover:text-white">
+                <p className="truncate font-mono font-semibold uppercase tracking-wide text-cyan-50 group-hover:text-white">
                   {f.name}
                 </p>
                 <p className="truncate font-mono text-xs text-muted">{f.url}</p>
@@ -77,7 +81,7 @@ export default async function AdminFriendsList() {
                   </p>
                 ) : null}
               </div>
-              <span className="hv-chip shrink-0">#{f.sortOrder}</span>
+              <span className="hv-chip-sci shrink-0">#{f.sortOrder}</span>
             </Link>
           ))}
         </div>

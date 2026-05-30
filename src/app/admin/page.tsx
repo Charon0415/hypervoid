@@ -246,18 +246,25 @@ export default async function AdminHome() {
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="hv-panel relative overflow-hidden p-5 sm:p-7 flex flex-wrap items-center justify-between gap-3">
+      <header className="hv-panel-sci relative overflow-hidden p-5 sm:p-7 flex flex-wrap items-center justify-between gap-3">
+        {/* Corner accent lines */}
+        <div className="absolute left-0 top-0 h-12 w-12 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-12 w-12 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+
+        {/* Pulse beacon */}
+        <div className="absolute right-5 top-5 h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
+
         <div className="min-w-0">
-          <p className="hv-kicker">Admin console / control deck</p>
-          <h1 className="hv-title mt-2 text-2xl font-black tracking-tight sm:text-4xl">管理后台</h1>
-          <p className="mt-2 text-sm text-cyan-50/60">
-            登录身份：<span className="font-medium">@{login}</span>
+          <p className="hv-kicker">ADMIN_CONSOLE / CONTROL_DECK</p>
+          <h1 className="hv-title mt-2 text-2xl font-black tracking-tight sm:text-4xl uppercase">管理后台</h1>
+          <p className="mt-2 font-mono text-sm text-cyan-50/60 uppercase">
+            OPERATOR：<span className="font-medium text-cyan-100">@{login}</span>
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Link
             href="/admin/posts/new"
-            className="hv-action px-3 py-2 text-sm font-medium sm:px-4"
+            className="hv-action px-3 py-2 text-sm font-medium sm:px-4 clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_rgba(103,232,249,0.3)]"
           >
             <PenLine className="h-4 w-4" aria-hidden />
             新文章
@@ -270,7 +277,7 @@ export default async function AdminHome() {
           >
             <button
               type="submit"
-              className="hv-action px-3 py-2 text-sm"
+              className="hv-action px-3 py-2 text-sm clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_rgba(103,232,249,0.3)]"
             >
               <LogOut className="h-4 w-4" aria-hidden />
               退出
@@ -280,20 +287,20 @@ export default async function AdminHome() {
       </header>
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatCard label="已发布" value={stats.posts} hint="visible 文章" />
-        <StatCard label="总浏览" value={stats.views} hint="累计 PV" />
-        <StatCard label="总点赞" value={stats.likes} hint="累计 reactions" />
+        <StatCard label="PUBLISHED" value={stats.posts} hint="visible 文章" />
+        <StatCard label="TOTAL_VIEWS" value={stats.views} hint="累计 PV" />
+        <StatCard label="TOTAL_LIKES" value={stats.likes} hint="累计 reactions" />
         <StatCard
-          label="订阅者"
+          label="SUBSCRIBERS"
           value={subscriberCount}
           hint="已确认邮箱"
         />
       </section>
 
       <section className="grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <div className="hv-panel p-5">
-          <h2 className="hv-title text-sm font-semibold tracking-normal">
-            最近 5 篇已发布
+        <div className="hv-panel-sci p-5">
+          <h2 className="hv-title font-mono text-sm font-semibold tracking-wider uppercase">
+            RECENT_PUBLISHED
           </h2>
           {recentPublished.length === 0 ? (
             <p className="mt-3 text-sm text-cyan-50/58">还没有已发布文章。</p>
@@ -302,7 +309,7 @@ export default async function AdminHome() {
               {recentPublished.map((p) => (
                 <li
                   key={p.slug}
-                  className="flex items-baseline justify-between gap-3 border border-transparent px-2 py-1.5 transition hover:border-cyan-100/14 hover:bg-white/[0.04]"
+                  className="flex items-baseline justify-between gap-3 border border-transparent px-2 py-1.5 transition hover:border-cyan-400/30 hover:bg-cyan-400/5 clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]"
                 >
                   <Link
                     href={`/admin/posts/${p.slug}/edit`}
@@ -313,7 +320,7 @@ export default async function AdminHome() {
                     ) : null}
                     {p.title}
                   </Link>
-                  <time className="shrink-0 font-mono text-[11px] text-cyan-50/45">
+                  <time className="shrink-0 font-mono text-[11px] text-cyan-50/45 uppercase">
                     {p.publishAt ? formatDateCN(p.publishAt) : "—"}
                   </time>
                 </li>
@@ -322,9 +329,9 @@ export default async function AdminHome() {
           )}
           <Link
             href="/admin/posts"
-            className="hv-action mt-3 min-h-8 px-3 text-xs"
+            className="hv-action mt-3 min-h-8 px-3 text-xs font-mono uppercase clip-path-[polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)] hover:shadow-[0_0_16px_rgba(103,232,249,0.25)]"
           >
-            全部文章 <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+            VIEW_ALL <ArrowRight className="h-3.5 w-3.5" aria-hidden />
           </Link>
         </div>
 
@@ -362,8 +369,8 @@ export default async function AdminHome() {
 
       <section className="flex flex-col gap-4">
         <div>
-          <h2 className="hv-kicker">
-            后台功能
+          <h2 className="hv-kicker uppercase">
+            ADMIN_FUNCTIONS
           </h2>
           <p className="mt-1 text-xs text-cyan-50/55">
             按使用场景分组，常用入口不用在一整屏卡片里找。
@@ -373,10 +380,10 @@ export default async function AdminHome() {
           {ADMIN_NAV_GROUPS.map((group) => (
             <div
               key={group.title}
-              className="hv-panel p-4"
+              className="hv-panel-sci p-4"
             >
-              <div className="mb-3 border-b border-cyan-100/12 pb-3">
-                <h3 className="hv-title text-base font-semibold tracking-normal">
+              <div className="mb-3 border-b border-cyan-400/20 pb-3">
+                <h3 className="hv-title font-mono text-base font-semibold tracking-wider uppercase">
                   {group.title}
                 </h3>
                 <p className="mt-1 text-xs text-cyan-50/55">{group.desc}</p>
@@ -414,8 +421,11 @@ function StatCard({
   hint?: string;
 }) {
   return (
-    <div className="hv-panel p-4">
-      <p className="hv-kicker">
+    <div className="hv-panel-sci p-4 relative overflow-hidden">
+      {/* Corner accent */}
+      <div className="absolute right-0 top-0 h-8 w-8 border-r border-t border-cyan-400/40 pointer-events-none" />
+
+      <p className="hv-kicker uppercase">
         {label}
       </p>
       <p className="mt-1 font-mono text-2xl font-bold leading-tight text-cyan-50 sm:text-3xl">
@@ -442,10 +452,10 @@ function PendingCard({
   return (
     <Link
       href={href}
-      className="hv-panel hv-panel-hover group flex items-center justify-between gap-3 p-3"
+      className="hv-panel-sci group flex items-center justify-between gap-3 p-3 transition hover:border-cyan-400/40 hover:shadow-[0_0_20px_rgba(103,232,249,0.15)]"
     >
       <div>
-        <p className="text-xs text-cyan-50/58">{label}</p>
+        <p className="font-mono text-xs text-cyan-50/58 uppercase">{label}</p>
         <p className="text-xs text-cyan-50/42">{description}</p>
       </div>
       <span className="font-mono text-2xl font-bold text-cyan-50 group-hover:text-cyan-100">
@@ -469,8 +479,11 @@ function NavTile({
   return (
     <Link
       href={href}
-      className="group border border-cyan-100/12 bg-white/[0.035] p-3 transition hover:border-cyan-100/40 hover:bg-cyan-100/10"
+      className="group relative border border-cyan-400/16 bg-gradient-to-br from-cyan-950/40 to-slate-950/60 p-3 transition hover:border-cyan-400/40 hover:bg-cyan-400/8 clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_16px_rgba(103,232,249,0.2)]"
     >
+      {/* Corner accent */}
+      <div className="absolute right-0 top-0 h-6 w-6 border-r border-t border-cyan-400/30 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
+
       <div className="flex items-baseline justify-between gap-2">
         <h3 className="text-sm font-semibold text-cyan-50 group-hover:text-cyan-100">
           {title} <ArrowRight className="inline h-3.5 w-3.5" aria-hidden />

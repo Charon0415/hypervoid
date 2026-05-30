@@ -42,27 +42,31 @@ export default async function AdminPostsList(props: {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="hv-panel relative overflow-hidden p-5 sm:p-6 flex items-center justify-between gap-3">
+      <header className="hv-panel-sci relative overflow-hidden p-5 sm:p-6 flex items-center justify-between gap-3">
+        {/* Corner accents */}
+        <div className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2 border-cyan-400/60 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 h-10 w-10 border-r-2 border-b-2 border-cyan-400/60 pointer-events-none" />
+
         <div className="flex items-center gap-3">
           <AdminBackLink href="/admin" label="后台" />
-          <h1 className="hv-title text-2xl font-black tracking-tight">文章管理</h1>
-          <span className="text-sm text-cyan-50/58">
-            共 {allPosts.length} 篇 · {categories.length} 个分类
+          <h1 className="hv-title font-mono text-2xl font-black tracking-wider uppercase">POST_MANAGER</h1>
+          <span className="font-mono text-sm text-cyan-50/58 uppercase">
+            {allPosts.length} POSTS · {categories.length} CATS
           </span>
         </div>
         <Link
           href="/admin/posts/new"
-          className="hv-action px-4 py-2 text-sm font-medium"
+          className="hv-action px-4 py-2 text-sm font-medium font-mono uppercase clip-path-[polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,0_100%)] hover:shadow-[0_0_20px_rgba(103,232,249,0.3)]"
         >
           <PenLine className="h-4 w-4" aria-hidden />
-          新建文章
+          NEW_POST
         </Link>
       </header>
 
       <div className="grid gap-5 lg:grid-cols-[200px_minmax(0,1fr)]">
-        <aside className="hv-panel flex flex-col gap-1 p-3 text-sm">
-          <p className="hv-kicker mb-1 flex items-center gap-1 px-2">
-            <Folder className="h-3.5 w-3.5" aria-hidden /> 分类
+        <aside className="hv-panel-sci flex flex-col gap-1 p-3 text-sm">
+          <p className="hv-kicker mb-1 flex items-center gap-1 px-2 uppercase">
+            <Folder className="h-3.5 w-3.5" aria-hidden /> CATEGORIES
           </p>
           <CategoryLink
             href="/admin/posts"
@@ -119,10 +123,10 @@ function CategoryLink({
   return (
     <Link
       href={href}
-      className={`flex items-center justify-between px-2 py-1.5 transition ${
+      className={`flex items-center justify-between px-2 py-1.5 transition clip-path-[polygon(0_0,calc(100%-4px)_0,100%_4px,100%_100%,0_100%)] ${
         active
-          ? "bg-cyan-100/12 text-cyan-100"
-          : "text-cyan-50/72 hover:bg-white/[0.045] hover:text-cyan-50"
+          ? "bg-cyan-400/12 text-cyan-100 border-l-2 border-cyan-400"
+          : "text-cyan-50/72 hover:bg-cyan-400/5 hover:text-cyan-50"
       } ${muted && !active ? "italic text-cyan-50/42" : ""}`}
     >
       <span className="truncate">{label}</span>
